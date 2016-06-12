@@ -1,0 +1,221 @@
+<table class='tablesorter displaytable' id='tableReport' cellspacing=0 cellpadding=0>
+    <thead>
+                      <tr>
+           <th style='min-width: 50px;width:50px;'>
+                                                Lp
+                                            </th >
+            <th style='min-width: 115px;width:115px;'>
+                klient
+            </th>
+            <th style='min-width: 200px;width:200px;'>
+                nazwa pełna
+            </th>
+             <th style='min-width: 55px;width:55px;'>
+                umowy
+            </th>
+            <th style='min-width: 55px;width:55px;'>
+                drukarki
+            </th>
+            <th style='min-width: 55px;width:55px;'>
+                abonament
+            </th>
+             <th style='min-width: 70px;width:70px;'>
+                wart. black
+            </th>
+              <th style='min-width: 70px;width:70px;'>
+                wart. kolor
+            </th>
+            <th style='min-width: 75px;width:75px;text-align: center;'>
+                netto
+            </th>
+            <th style='min-width: 75px;width:75px;text-align: center;' onclick="invMgr.showInvoice()">
+                faktura
+            </th>
+        </tr>
+    </thead>
+    <tbody>
+         {$turns = 1} 
+            {foreach from=$dataReports item=item key=key name=loopek2}
+                {if $key!='suma' && $key!='blad'}
+                {if isset($item.blad) && $item.blad=='1'}
+                        <tr style='border-bottom:none;border-top:1px solid lightgrey;background-color: red;'>
+                {else}
+                        <tr style='border-bottom:none;border-top:1px solid lightgrey'>
+                {/if}
+                    <td>{$turns}</td>
+                    <td class='tdLink'  onClick='showNewClientAdd("{$item.rowidclient}")'>{$item.nazwakrotka|escape:'htmlall'}</td>
+                    <td class='tdLink'  onClick='showNewClientAdd("{$item.rowidclient}")'>{$item.nazwapelna|escape:'htmlall'}</td>
+                    <td class='tdLink' style='text-align:center;' onClick='showUmowyDoKlienta("{$item.rowidclient}")'>{$item.drukumowy|escape:'htmlall'}</td>
+                    <td class='tdLink' style='text-align:center;' onClick='showDrukarkiDoKlienta("{$item.rowidclient}")'>{$item.drukumowy|escape:'htmlall'}</td>
+                    <td class='tdNumber' style='padding-right:20px;' >
+                               {if !empty($item.wartoscabonament)} {$item.wartoscabonament|number_format:2:",":" "|escape:'htmlall'}{/if}     
+                    </td>
+                    <td class='tdNumber' style='padding-right:20px;' >
+                               {if isset($item.wartoscblack)} {$item.wartoscblack|number_format:2:",":" "|escape:'htmlall'}{/if}     
+                    </td>
+                      <td class='tdNumber' style='padding-right:20px;' >
+                               {if isset($item.wartosckolor)} {$item.wartosckolor|number_format:2:",":" "|escape:'htmlall'}{/if}     
+                    </td>
+                    <td class='tdNumber tdLink' title='Pokaż szczegóły' style='padding-right:20px;font-weight: bold;color:blue;' 
+                        onClick="showSzczegolyRaportRozwin('tr_{$key}')">
+                               {if isset($item.wartosc)} {$item.wartosc|number_format:2:",":" "|escape:'htmlall'}{/if}     
+                    </td>
+                    <td align="center">
+                        <input type="image" src="{$smarty.const.SCIEZKA}/{$smarty.const.SMARTVERSION}/img/add.png" onClick='invMgr.add({$item|json_encode nofilter}, invMgr.getSelectedAgreementIds("#tr_{$key}", ".to_invoice_agreement:checked"))'/>
+                        <span class="invoice-count {$item.nip}">0</span>
+                        <span style="display: none;" class="invoice-details {$item.nip}"></span>
+                    </td>
+                </tr>
+                  <tr id='tr_{$key}' stan='0' style='display:none'>
+                    <td colspan="9" >
+                        
+                        <div class="divRep">
+                             <table class='tablesorter displaytable'  cellspacing=0 cellpadding=0>
+                                    <thead>
+                                        <tr>
+                                             <th style='min-width: 50px;width:50px;'>
+                                                Lp
+                                            </th >
+                                             <th style='min-width: 70px;width:70px;display:none;'>
+                                                rowid
+                                            </th>
+                                            <th style='min-width: 70px;width:70px;'>
+                                                nr umowy
+                                            </th>
+                                             <th style='min-width: 115px;width:115px;'>
+                                                drukarka
+                                            </th>
+                                           
+                                             <th style='min-width: 70px;width:70px;'>
+                                                rozliczenie
+                                            </th>
+                                            <th style='min-width: 90px;width:90px;'>
+                                                abonament
+                                            </th>
+                                             <th style='min-width: 55px;width:55px;'>
+                                                stron black w abonam.
+                                            </th>
+                                            <th style='min-width: 55px;width:55px;'>
+                                                cena za strone black
+                                            </th>
+                                              <th style='min-width: 55px;width:55px;'>
+                                                stron kolor w abonam.
+                                            </th>
+                                            <th style='min-width: 55px;width:55px;'>
+                                                cena za strone kolor
+                                            </th>
+                                             <th style='min-width: 70px;width:70px;'>
+                                                black powyżej
+                                            </th>
+                                              <th style='min-width: 70px;width:70px;'>
+                                                wartość black
+                                            </th>
+                                              <th style='min-width: 70px;width:70px;'>
+                                                kolor powyżej
+                                            </th>
+                                            <th style='min-width: 70px;width:70px;'>
+                                                wartość kolor
+                                            </th>
+                                             <th style='min-width: 70px;width:70px;'>
+                                                opłata instalacyjna
+                                            </th>
+                                             <th style='min-width: 70px;width:70px'>
+                                                kwota
+                                            </th>
+                                             <th style='min-width: 70px;width:70px'>
+                                                wybierz do faktury
+                                            </th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                         {foreach from=$dataReports[$key].umowy item=item2 key=key2 name=loopek}
+                                              {if isset($item2.blad) && $item2.blad=='1'}
+                                                        <tr style='background-color: #FFCCCC;'>
+                                                {else}
+                                                        <tr>
+                                                {/if}
+                                                
+                                                    <td>{$smarty.foreach.loopek.index+1}</td>
+                                                    <td class='tdWartosc'  style='display: none;'>{$key2}</td>
+                                                    <td class='tdWartosc'  onClick="showNewAgreementAdd('{$item2.rowidumowa}')">{$item2.nrumowy}</td>
+                                                    
+                                                    <td class='tdLink' style='vertical-align: top;' onClick='showNewPrinterAdd("{$item2.serial}")'>
+                                                        {$item2.serial|escape:'htmlall'}<br/>
+                                                        <font style='color:blue'>{$item2.model|escape:'htmlall'}</font>
+                                                    </td>
+                                                    <td class='tdWartosc'  >{$item2.rozliczenie}</td>
+                                                      <td class='tdNumber' style='padding-right:20px;' >
+                                                                {if isset($item2.wartoscabonament)} {$item2.wartoscabonament|number_format:2:",":" "|escape:'htmlall'}{/if}     
+                                                     </td>
+                                                      <td class='tdNumber' style='padding-right:20px;' >
+                                                                {if isset($item2.stronwabonamencie)} {$item2.stronwabonamencie|number_format:0:",":" "|escape:'htmlall'}{/if}     
+                                                     </td>
+                                                       <td class='tdNumber' style='padding-right:20px;' >
+                                                                {if isset($item2.cenazastrone)} {$item2.cenazastrone|number_format:3:",":" "|escape:'htmlall'}{/if}
+                                                     </td>
+                                                      <td class='tdNumber' style='padding-right:20px;' >
+                                                                {if isset($item2.iloscstron_kolor)} {$item2.iloscstron_kolor|number_format:0:",":" "|escape:'htmlall'}{/if}     
+                                                     </td>
+                                                       <td class='tdNumber' style='padding-right:20px;' >
+                                                                {if isset($item2.cenazastrone_kolor)} {$item2.cenazastrone_kolor|number_format:3:",":" "|escape:'htmlall'}{/if}
+                                                     </td>
+                                                       <td class='tdNumber' style='padding-right:20px;' >
+                                                                {if isset($item2.stronblackpowyzej)} {$item2.stronblackpowyzej|number_format:0:",":" "|escape:'htmlall'}{/if}     
+                                                     </td>
+                                                       <td class='tdNumber' style='padding-right:20px;' >
+                                                                {if isset($item2.wartoscblack)} {$item2.wartoscblack|number_format:3:",":" "|escape:'htmlall'}{/if}
+                                                     </td>
+                                                       <td class='tdNumber' style='padding-right:20px;' >
+                                                                {if isset($item2.stronkolorpowyzej)} {$item2.stronkolorpowyzej|number_format:0:",":" "|escape:'htmlall'}{/if}     
+                                                     </td>
+                                                       <td class='tdNumber' style='padding-right:20px;' >
+                                                                {if isset($item2.wartosckolor)} {$item2.wartosckolor|number_format:3:",":" "|escape:'htmlall'}{/if}
+                                                     </td>
+                                                       <td class='tdNumber' style='padding-right:20px;' >
+                                                                {if isset($item2.oplatainstalacyjna)} {$item2.oplatainstalacyjna|number_format:2:",":" "|escape:'htmlall'}{/if}     
+                                                     </td>
+                                                      <td class='tdNumber' style='padding-right:20px;color:blue;' >
+                                                                {if isset($item2.wartosc)} {$item2.wartosc|number_format:2:",":" "|escape:'htmlall'}{/if}     
+                                                     </td>
+                                                     <td>
+                                                         <input type="checkbox" class="to_invoice_agreement" checked="true" value="{$item2.nrumowy}" />
+                                                     </td>
+                                                </tr>
+                                          {/foreach}
+                                    </tbody>
+                            </table>
+                        </div>
+                        
+                        
+                    </td>
+                    
+                </tr>
+                 {$turns = $turns+1} 
+                {/if}
+                
+              
+                
+            {/foreach}
+                <tr >
+                    <td class='tdLink'  ></td>
+                    <td class='tdLink'  ></td>
+                    <td class='tdLink'  ></td>
+                    <td class='tdLink' style='text-align:center;' ></td>
+                    <td class='tdLink' style='text-align:center;' ></td>
+                    <td class='tdNumber' style='padding-right:20px;' >
+                     
+                    </td>
+                    <td class='tdNumber' style='padding-right:20px;' >
+                     
+                    </td>
+                      <td class='tdNumber tdLink' title='Pokaż szczegóły' style='padding-right:20px;font-weight: bold;color:brown;' >
+                     Suma:
+                    </td>
+                    <td class='tdNumber tdLink' title='Pokaż szczegóły' style='padding-right:20px;font-weight: bold;color:brown;' >
+                               {if isset($dataReports.suma)} {$dataReports.suma|number_format:2:",":" "|escape:'htmlall'}{/if}     
+                    </td>
+                </tr>
+    </tbody>    
+        
+</table>
+       

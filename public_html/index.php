@@ -1,0 +1,1 @@
+<?php   session_start(); define('DS', DIRECTORY_SEPARATOR);define('ROOT', dirname(dirname(__FILE__)));// echo $_GET['url'];    $url=$_GET['url'];require_once (ROOT . DS . 'library' . DS . 'bootstrap.php'); 

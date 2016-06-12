@@ -1,0 +1,1 @@
+<div id='actionerror' class='acl_actionerror' style='height:80px;min-height: 80px;max-height: 80px;color:red;display:block;margin-top:80px;'><span>Brak uprawnień do tej treści.</span></div>

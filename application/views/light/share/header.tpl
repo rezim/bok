@@ -1,0 +1,119 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8" />
+    <title>{if !isset($title) || $title==''}{$smarty.const.TITLE}{else}{$title}{/if}</title>
+    <meta name="keywords" content="{if !isset($keywords) || $keywords==''}{$smarty.const.KEYWORDS}{else}{$keywords}{/if}">
+    <meta name='description' content="{if !isset($description) || $description==''}{$smarty.const.DESCRIPTION}{else}{$description}{/if}"/>
+    
+    
+    
+        <link rel="stylesheet" type="text/css" href="{$smarty.const.SCIEZKA}/{$smarty.const.SMARTVERSION}/css/style.css" title="default" />
+        <link rel="stylesheet" type="text/css" href="{$smarty.const.SCIEZKA}/{$smarty.const.SMARTVERSION}/css/menu.css" title="default" />
+         <link rel="stylesheet" type="text/css" href="{$smarty.const.SCIEZKA}/{$smarty.const.SMARTVERSION}/css/acl.css" title="default" />   
+        <link rel="stylesheet" type="text/css" href="{$smarty.const.SCIEZKA}/{$smarty.const.SMARTVERSION}/css/colorbox.css" title="default" />
+        <link rel="stylesheet" type="text/css" href="{$smarty.const.SCIEZKA}/{$smarty.const.SMARTVERSION}/css/jquery-ui-1.10.4.custom.min.css" title="default" />
+        <link rel="stylesheet" type="text/css" href="{$smarty.const.SCIEZKA}/{$smarty.const.SMARTVERSION}/css/jquery-ui-timepicker-addon.css" title="default" />
+        <link rel="stylesheet" type="text/css" href="{$smarty.const.SCIEZKA}/{$smarty.const.SMARTVERSION}/css/sort.css" title="default" />
+        <link rel="stylesheet" type="text/css" href="{$smarty.const.SCIEZKA}/{$smarty.const.SMARTVERSION}/css/dropzone.css" title="default" />
+    <script type="text/javascript">
+        function loadScript(src, callback) 
+            {
+                    var head = document.getElementsByTagName('head')[0],
+                        script = document.createElement('script');
+                    done = false;
+                    script.setAttribute('src', src);
+                    script.setAttribute('type', 'text/javascript');
+                    script.setAttribute('charset', 'utf-8');
+                    script.onload = script.onreadstatechange = function() {
+                        if (!done && (!this.readyState || this.readyState === 'loaded' || this.readyState === 'complete')) {
+                            done = true;
+                            script.onload = script.onreadystatechange = null;
+                                if (callback) {
+                                    callback();
+                                }
+                            }
+                    }
+                    head.insertBefore(script, head.firstChild);
+            }
+            
+     </script>
+     <script type="text/javascript">
+        var sciezka = "{$smarty.const.SCIEZKA}";
+        {if isset($uprawnienia)}
+            var val2 = '{$uprawnienia}';
+         {/if}
+     </script>
+        <script type="text/javascript" src="{$smarty.const.SCIEZKA}/js/jquery-1.11.0.min.js"></script>
+        <script type="text/javascript" src="{$smarty.const.SCIEZKA}/js/jquery-ui-1.10.4.custom.min.js"></script>
+        <script type="text/javascript" src="{$smarty.const.SCIEZKA}/js/jquery-ui-timepicker-addon.js"></script>
+        <script type="text/javascript" src="{$smarty.const.SCIEZKA}/js/js.js"></script>
+        <script type="text/javascript" src="{$smarty.const.SCIEZKA}/js/acl.js"></script>
+        <script type="text/javascript" src="{$smarty.const.SCIEZKA}/js/jquery.tablesorter.min.js"></script>
+        <script type="text/javascript" src="{$smarty.const.SCIEZKA}/js/dropzone.js"></script>
+        <script type="text/javascript" src="{$smarty.const.SCIEZKA}/js/invoices.js"></script>
+</head>
+ <?php flush(); ?>
+<body>
+<div id='divContainer' >
+     
+    {if isset($smarty.session.login) && $smarty.session.login==1}
+        <img src='http://www.otus.pl/templates/otus/images/obraz/logo.png' alt='Otus' title='Otus' border='0' height='82' width='150'
+       style='position:absolute;left:40px;'
+       ></img>
+    <div id='divHeader' >
+         {if isset($smarty.session.przypisanemenu['but_addclient'])}
+                <a id='but_addclient' href="#" onclick='showNewClientAdd("0");return false;' class="butaddclient" >Nowy klient</a>
+        {/if}
+        {if isset($smarty.session.przypisanemenu['but_addprinter'])}
+        <a id='but_addprinter' href="#" onclick='showNewPrinterAdd("");return false;'  class="butaddprinter">Nowa drukarka</a>
+        {/if}
+        {if isset($smarty.session.przypisanemenu['but_addagreement'])}
+        <a id='but_addagreement' href="#" onclick='showNewAgreementAdd("0");return false;' class="butaddumowa">Nowa umowa</a>
+        {/if}
+        {if isset($smarty.session.przypisanemenu['but_addtoner'])}
+        <a id='but_addtoner' href="#" onclick='showNewTonerAdd("0","");return false;' class="butaddtoner">Nowy toner</a>
+        {/if}
+         {if isset($smarty.session.przypisanemenu['but_addcase'])}
+        <a id='but_addcase' href="javascript:void(0);" onclick='showNewNotiAdd("0");return false;' class="butaddcase">Nowe zgłoszenie</a>
+        {/if}
+        
+    </div>
+    <div class='liniaRozdzielajaca'></div>
+    <div id='leftMenu'>
+        
+        <div id='cssmenu'>
+                <ul>
+                   <li><a href='{$smarty.const.SCIEZKA}/acls/logout/notemplate'><span>Wyloguj</span></a></li>
+                     {if isset($smarty.session.przypisanemenu['li_printersshow'])}
+                   <li id='li_printersshow'><a href='{$smarty.const.SCIEZKA}/printers/show'><span>Drukarki</span></a></li>
+                   {/if}
+                   {if isset($smarty.session.przypisanemenu['li_clientsshow'])}
+                   <li id='li_clientsshow'><a href='{$smarty.const.SCIEZKA}/clients/show' ><span>Klienci</span></a></li>
+                   {/if}
+                   {if isset($smarty.session.przypisanemenu['li_agreementsshow'])}
+                   <li id='li_agreementsshow'><a href='{$smarty.const.SCIEZKA}/agreements/show'><span>Umowy</span></a></li>
+                   {/if}
+                   {if isset($smarty.session.przypisanemenu['li_tonersshow'])}
+                   <li id='li_tonersshow'><a href='{$smarty.const.SCIEZKA}/toners/show'><span>Tonery</span></a></li>
+                   {/if}
+                   {if isset($smarty.session.przypisanemenu['li_reportsshow'])}
+                   <li id='li_reportsshow'><a href='{$smarty.const.SCIEZKA}/reports/show' ><span>Raporty</span></a></li>
+                   {/if}
+                   
+                   {if isset($smarty.session.przypisanemenu['li_passwordshow'])}
+                   <li id='li_passwordshow' class='last'><a href='{$smarty.const.SCIEZKA}/acls/passshow' ><span>Hasło</span></a></li>
+                   {/if}
+                  
+                     {if isset($smarty.session.przypisanemenu['li_casesshow'])}
+                   <li id='li_caseshow' class='last'><a href='{$smarty.const.SCIEZKA}/notifications/show' ><span>Zgłoszenia</span></a></li>
+                   {/if}
+                 
+                 {*  <li class='active'><a href='/logs/show' ><span>Historia</span></a></li>*}
+                </ul>
+         </div>
+   
+        
+    </div>{/if} 
+    <div id='rightCenter'>
+   
