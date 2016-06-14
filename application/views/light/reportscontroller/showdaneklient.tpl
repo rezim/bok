@@ -137,7 +137,19 @@
                                                 
                                                     <td>{$smarty.foreach.loopek.index+1}</td>
                                                     <td class='tdWartosc'  style='display: none;'>{$key2}</td>
-                                                    <td class='tdWartosc'  onClick="showNewAgreementAdd('{$item2.rowidumowa}')">{$item2.nrumowy}</td>
+
+                                                    <td class='tdWartosc'  onClick="showNewAgreementAdd('{$item2.rowidumowa}')"
+                                                        
+                                                    title="
+Strony czarne start - Licznik: {$item2.strony_black_start|number_format:0:",":" "|escape:'htmlall'}, Data: {$item2.data_wiadomosci_black_start}
+Strony czarne koniec - Licznik: {$item2.strony_black_koniec|number_format:0:",":" "|escape:'htmlall'}, Data: {$item2.data_wiadomosci_black_koniec}                                                    
+Strony kolorowe start - Licznik: {$item2.strony_kolor_start|number_format:0:",":" "|escape:'htmlall'}, Data: {$item2.data_wiadomosci_kolor_start}
+Strony kolorowe koniec - Licznik: {$item2.strony_kolor_koniec|number_format:0:",":" "|escape:'htmlall'}, Data: {$item2.data_wiadomosci_kolor_koniec}                                                     
+                                                    "    
+                                                        
+                                                        
+                                                        
+                                                        >{$item2.nrumowy}</td>
                                                     
                                                     <td class='tdLink' style='vertical-align: top;' onClick='showNewPrinterAdd("{$item2.serial}")'>
                                                         {$item2.serial|escape:'htmlall'}<br/>

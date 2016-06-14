@@ -124,6 +124,7 @@ class report extends Model
                 c.nazwakrotka as 'nazwakrotka', 
                 c.nazwapelna as 'nazwapelna', 
                 c.terminplatnosci as 'terminplatnosci',
+		        c.nip as 'nip',
                 b.iloscstron as 'currentiloscstron', 
                 a.abonament as 'abonament', 
                 a.rozliczenie as 'rozliczenie', 

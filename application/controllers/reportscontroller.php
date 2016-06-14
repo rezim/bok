@@ -159,6 +159,8 @@ class reportsController extends Controller
             
             
             $dataReports[$item['rowidclient']]['umowy'][$item['rowidumowa']]['nrumowy'] = $item['nrumowy'];
+            $dataReports[$item['rowidclient']]['umowy'][$item['rowidumowa']]['rowidumowa'] = $item['rowidumowa'];
+
           $dataReports[$item['rowidclient']]['umowy'][$item['rowidumowa']]['model'] = $item['model'];
             $dataReports[$item['rowidclient']]['umowy'][$item['rowidumowa']]['stronwabonamencie'] = $item['stronwabonamencie'];
             $dataReports[$item['rowidclient']]['umowy'][$item['rowidumowa']]['cenazastrone'] = $item['cenazastrone'];
