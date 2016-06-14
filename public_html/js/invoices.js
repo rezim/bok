@@ -205,23 +205,15 @@ InvoiceManager = function(api_token, endpoint, company_name) {
             }
         });
 
-        console.log(getLastDayInMonth('2016', '01'));
-        console.log(getLastDayInMonth('2016', '02'));
-        console.log(getLastDayInMonth('2016', '03'));
-        console.log(getLastDayInMonth('2015', '04'));
-
-        var now = new Date(currentPeriodInvoices.period.dateTo);
-
-        now.setDate(now.getDate() + 14);
         return {
             "api_token": api_token,
             "invoice": {
                 "kind":"vat",
                 "number": null,
-                "seller_name": company_name,
-                "sell_date": currentPeriodInvoices.period.dateTo,
-                "issue_date": currentPeriodInvoices.period.dateTo,
-                "payment_to": now,
+                // "seller_name": company_name,
+                "sell_date": dateFormat(getLastDayInMonth(currentPeriodInvoices.period.dateFrom)),
+                "issue_date": dateFormat(getLastDayInMonth(currentPeriodInvoices.period.dateFrom)),
+                "payment_to": dateFormat(addDaysToDate(getLastDayInMonth(currentPeriodInvoices.period.dateFrom),invoice['terminplatnosci'])),
                 "buyer_name": invoice["nazwapelna"],
                 "buyer_tax_no": invoice["nip"],
                 "positions":positions,
@@ -253,9 +245,6 @@ InvoiceManager = function(api_token, endpoint, company_name) {
         $.ajax({
             url: url,
             type: 'DELETE',
-            data: {
-                "api_token": api_token
-            },
             success: callback
         });
     };
@@ -275,15 +264,26 @@ InvoiceManager = function(api_token, endpoint, company_name) {
     };
 
     /**
-     * @param year
-     * @param month
+     * @param {string} date
      */
-    var getLastDayInMonth = function(year, month) {
-        month = (month < 11) ? month+1:month;
-        var today = new Date([year,parseInt(month),1].join('-'));
-        var yesterday = new Date(today);
-        yesterday.setDate(today.getDate() - 1);
+    var getLastDayInMonth = function(date) {
+        var d = new Date(date);
+        var dd = new Date(d.getFullYear(), d.getMonth()+1, 1);
 
-        return [yesterday.getFullYear(), yesterday.getMonth()+1, yesterday.getDate()].join('-');
+        return new Date(dd-1);
     };
+
+    var dateFormat = function(date) {
+        var d = new Date(date);
+
+        return d.toISOString().split('T')[0];
+    };
+
+    var addDaysToDate = function(date, days) {
+        var d = new Date(date);
+        d.setDate(d.getDate() + days);
+        
+        return d;
+    }
+    
 };
