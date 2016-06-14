@@ -11,8 +11,11 @@ class aclsController extends Controller
    }
    function login()
    {
-       // commented out by TR, do not want to install https locally
-       // redirectToHTTPS();
+        // sometimes we do not want to install https in dev env.
+        // below allows to disable it in configuration
+        if (!defined('DISABLE_HTTPS') || !DISABLE_HTTPS) {
+            redirectToHTTPS();
+        }
         if(isset($_SESSION['login']) && $_SESSION['login']==1)
         {
 
