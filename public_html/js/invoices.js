@@ -16,12 +16,16 @@ InvoiceManager = function(api_token, endpoint, company_name) {
         window.open(url, title);
     };
 
-    this.removeInvoice = function(id) {
+    this.removeInvoice = function(id, rowSelector) {
         var url = [endpoint, 'invoices', [id,'json'].join('.')].join('/');
-        console.log([url, ['api_token', api_token].join('=')].join('?') );
-        del(url, function(inv) {
-            alert(inv);
-        });
+
+        if (confirm('Czy na pewno chcesz usunąć fakturę?')) {
+            del(url, function (inv) {
+                alert('Faktura została usunięta!');
+                self.refreshInvoices();
+                $(rowSelector).remove();
+            });
+        }
     };
 
     this.add = function (invoice, agreementIds) {
@@ -90,50 +94,8 @@ InvoiceManager = function(api_token, endpoint, company_name) {
                 $.each(groupedInvoices, function (key, group) {
                     $('.invoice-count.' + key).text(group.length).css({'color':'green', 'font-weight': 'bold', 'cursor':'pointer', 'position': 'relative', 'top': '-3px', 'left':'10px'}).click(function() {
 
-                        var table$ = $('<table />');
+                        createInvoiceListView(key, group);
 
-                        var row$ = $('<tr/>');
-
-                        ['Nazwa klienta', 'Cena netto', 'Wartość VAT', 'Wartość brutto', ''].forEach(function(th) {
-                            row$.append($('<th>').html(th));
-                        });
-
-                        table$.append(row$);
-
-                        for(var i=0; i < group.length; i++) {
-                            row$ = $('<tr/>');
-
-                            row$.append($('<td/>').html(group[i].buyer_name));
-                            row$.append($('<td/>').html(group[i].price_net));
-                            row$.append($('<td/>').html(group[i].price_tax));
-                            row$.append($('<td/>').html(group[i].price_gross));
-
-                            var actionShow = $('<img>');
-                            actionShow.attr('class', 'imgAkcja imgNormalLogs');
-                            actionShow.attr('onclick', 'invMgr.showInvoice("'+group[i].token+'","'+group[i].buyer_name+'")');
-
-                            //actionShow.attr('title', 'Pokaż fakturę');
-
-                            var actionDelete = $('<img>');
-                            actionDelete.attr('class', 'imgAkcja imgusun').click(function() {alert('clicked')});
-                            actionDelete.attr('onclick', 'invMgr.removeInvoice("'+group[i].id+'")');
-
-                            //actionDelete.attr('title', 'Pokaż fakturę');
-
-
-                            row$.append($('<td/>').append(actionShow).append(actionDelete));
-
-                            table$.append(row$);
-
-                            $('.invoice-details.' + key).empty().append(table$);
-                        }
-
-                        $.colorbox({
-                            height:650+'px',
-                            width: 600+'px',
-                            html:['<table>', table$.html(), '</table>'].join(),
-                            title: group[0].buyer_name
-                        });
                     });
 
                 })
@@ -141,6 +103,56 @@ InvoiceManager = function(api_token, endpoint, company_name) {
         } else {
             console.log('could not get invoices, no period defined');
         }
+    };
+
+    var createInvoiceListView = function(key, group) {
+
+        var table$ = $('<table />').attr('class', 'tablesorter displaytable');
+
+        var head$ = $('<thead />');
+
+        [{'name': 'Lp', 'width': '15px'}, {'name': 'Nazwa klienta', 'width': '220px'}, {'name': 'Cena netto', 'width': '100px'}, {'name': 'Wartość VAT', 'width': '100px'}, {'name': 'Wartość brutto', 'width': '100px'}, {'name':'', 'width': '100px'}].forEach(function(th) {
+            head$.append($('<th>').attr('style', ['width', th['width']].join(':')).html(th['name']));
+        });
+
+        table$.append(head$);
+
+        var body$ = $('<tbody />');
+
+        for(var i=0; i < group.length; i++) {
+            row$ = $('<tr/>').attr('id', ['row',group[i].id].join('-'));
+
+            row$.append($('<td/>').html(i+1));
+            row$.append($('<td/>').html(group[i].buyer_name));
+            row$.append($('<td align="right"/>').html(group[i].price_net));
+            row$.append($('<td align="right"/>').html(group[i].price_tax));
+            row$.append($('<td align="right"/>').html(group[i].price_gross));
+
+            var actionShow = $('<img>');
+            actionShow.attr('class', 'imgAkcja imgNormalLogs');
+            actionShow.attr('onclick', 'invMgr.showInvoice("'+group[i].token+'","'+group[i].buyer_name+'")');
+
+            //actionShow.attr('title', 'Pokaż fakturę');
+
+            var actionDelete = $('<img>');
+            actionDelete.attr('class', 'imgAkcja imgusun').click(function() {alert('clicked')});
+            actionDelete.attr('onclick', 'invMgr.removeInvoice("'+group[i].id+'","' + ['#colorbox #row',group[i].id].join('-') + '")');
+
+            row$.append($('<td align="right"/>').append(actionShow).append(actionDelete));
+
+            body$.append(row$);
+        }
+
+        table$.append(body$);
+
+        $('.invoice-details.' + key).empty().append(table$);
+
+        $.colorbox({
+            height:650+'px',
+            width: 1185+'px',
+            html: table$[0].outerHTML,
+            title: group[0].buyer_name
+        });
     };
 
     /**
@@ -241,10 +253,10 @@ InvoiceManager = function(api_token, endpoint, company_name) {
     };
 
     var del = function(url, callback) {
-        var api_token_param = ["api_token", api_token].join('=');
         $.ajax({
-            url: url,
-            type: 'DELETE',
+            url:url,
+            type: 'post',
+            data: {_method: 'delete', api_token :api_token},
             success: callback
         });
     };
