@@ -11,6 +11,15 @@ InvoiceManager = function(api_token, endpoint, company_name) {
         invoices: []
     };
 
+    var status = {
+        issued: "wystawiona",
+        sent: "wysłana",
+        paid: "opłacona",
+        partial: "częściowo opłacona",
+        rejected: "odrzucona"
+    };
+
+
     this.showInvoice = function(token, title) {
         var url = [invoiceViewUrl, token].join('/');
         window.open(url, title);
@@ -135,7 +144,7 @@ InvoiceManager = function(api_token, endpoint, company_name) {
 
         var head$ = $('<thead />');
 
-        [{'name': 'Lp', 'width': '15px'}, {'name': 'Nazwa klienta', 'width': '220px'}, {'name': 'Umowy', 'width': '220px'}, {'name': 'Cena netto', 'width': '100px'}, {'name': 'Wartość VAT', 'width': '100px'}, {'name': 'Wartość brutto', 'width': '100px'}, {'name':'', 'width': '100px'}].forEach(function(th) {
+        [{'name': 'Lp', 'width': '15px'}, {'name': 'Nazwa klienta', 'width': '220px'}, {'name': 'Umowy', 'width': '220px'}, {'name': 'Cena netto', 'width': '100px'}, {'name': 'Wartość VAT', 'width': '100px'}, {'name': 'Wartość brutto', 'width': '100px'}, {'name':'Status', 'width': '100px'}, {'name':'', 'width': '100px'}].forEach(function(th) {
             head$.append($('<th>').attr('style', ['width', th['width']].join(':')).html(th['name']));
         });
 
@@ -156,6 +165,7 @@ InvoiceManager = function(api_token, endpoint, company_name) {
             row$.append($('<td align="right"/>').html(group[i].price_net));
             row$.append($('<td align="right"/>').html(group[i].price_tax));
             row$.append($('<td align="right"/>').html(group[i].price_gross));
+            row$.append($('<td align="right"/>').html(status[group[i].status]));
 
             var actionShow = $('<img>');
             actionShow.attr('class', 'imgAkcja imgNormalLogs');
