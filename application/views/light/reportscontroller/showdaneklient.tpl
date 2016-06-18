@@ -66,7 +66,7 @@
                         <span style="display: none;" class="invoice-details {$item.nip}"></span>
                     </td>
                 </tr>
-                  <tr id='tr_{$key}' stan='0' style='display:none'>
+                  <tr id='tr_{$key}' class="agreements-list {$item.nip}" stan='0' style='display:none'>
                     <td colspan="9" >
                         
                         <div class="divRep">
@@ -130,9 +130,9 @@
                                     <tbody>
                                          {foreach from=$dataReports[$key].umowy item=item2 key=key2 name=loopek}
                                               {if isset($item2.blad) && $item2.blad=='1'}
-                                                        <tr style='background-color: #FFCCCC;'>
+                                                        <tr style='background-color: #FFCCCC;' class="{$item2.nrumowy|replace:'/':'-'}">
                                                 {else}
-                                                        <tr>
+                                                        <tr class="{$item2.nrumowy|replace:'/':'-'}">
                                                 {/if}
                                                 
                                                     <td>{$smarty.foreach.loopek.index+1}</td>

@@ -88,16 +88,40 @@ InvoiceManager = function(api_token, endpoint, company_name) {
                 });
 
                 // reset all invoice counts
-                $('.invoice-count').text('0').css({'color':'red', 'position': 'relative', 'top': '-3px', 'left':'10px'});
+                $('.invoice-count').text('0').css({'color':'red'});
+
+
+                // set initial state for all agreements, visible and selected
+                $('.to_invoice_agreement').prop('checked', true).show();
 
                 // set new invoice counts
                 $.each(groupedInvoices, function (key, group) {
-                    $('.invoice-count.' + key).text(group.length).css({'color':'green', 'font-weight': 'bold', 'cursor':'pointer', 'position': 'relative', 'top': '-3px', 'left':'10px'}).click(function() {
-
+                    $('.invoice-count.' + key).text(group.length).click(function() {
                         createInvoiceListView(key, group);
-
                     });
 
+                    var allAgrCount = 0;
+                    var selector = [];
+                    var selectorPrefix = ['.agreements-list',key].join('.');
+
+                    group.forEach(function(invoice) {
+                        var agreements = invoice.internal_note.split(',');
+                        if (agreements.length > 0) {
+                            agreements.forEach(function(agreement) {
+                                // split().join() instead of replace all which is not defined :/
+                                selector.push([selectorPrefix, ['.',agreement.split('/').join('-')].join(''), '.to_invoice_agreement'].join(' '));
+                            });
+                        }
+                        allAgrCount += agreements.length;
+                    });
+                    // uncheck and hide all agreements already on invoice
+                    $(selector.join(',')).prop('checked', false).hide();
+
+                    if ($([selectorPrefix,".to_invoice_agreement"].join(' ')).length != allAgrCount) {
+                        $('.invoice-count.' + key).css({'color':'red', 'font-weight': 'bold'});
+                    } else {
+                        $('.invoice-count.' + key).css({'color':'green', 'font-weight': 'bold'});
+                    }
                 })
             });
         } else {
@@ -111,7 +135,7 @@ InvoiceManager = function(api_token, endpoint, company_name) {
 
         var head$ = $('<thead />');
 
-        [{'name': 'Lp', 'width': '15px'}, {'name': 'Nazwa klienta', 'width': '220px'}, {'name': 'Cena netto', 'width': '100px'}, {'name': 'Wartość VAT', 'width': '100px'}, {'name': 'Wartość brutto', 'width': '100px'}, {'name':'', 'width': '100px'}].forEach(function(th) {
+        [{'name': 'Lp', 'width': '15px'}, {'name': 'Nazwa klienta', 'width': '220px'}, {'name': 'Umowy', 'width': '220px'}, {'name': 'Cena netto', 'width': '100px'}, {'name': 'Wartość VAT', 'width': '100px'}, {'name': 'Wartość brutto', 'width': '100px'}, {'name':'', 'width': '100px'}].forEach(function(th) {
             head$.append($('<th>').attr('style', ['width', th['width']].join(':')).html(th['name']));
         });
 
@@ -124,6 +148,7 @@ InvoiceManager = function(api_token, endpoint, company_name) {
 
             row$.append($('<td/>').html(i+1));
             row$.append($('<td/>').html(group[i].buyer_name));
+            row$.append($('<td/>').html(group[i].internal_note.split(',').join(', ')));
             row$.append($('<td align="right"/>').html(group[i].price_net));
             row$.append($('<td align="right"/>').html(group[i].price_tax));
             row$.append($('<td align="right"/>').html(group[i].price_gross));
@@ -229,7 +254,9 @@ InvoiceManager = function(api_token, endpoint, company_name) {
                 "buyer_name": invoice["nazwapelna"],
                 "buyer_tax_no": invoice["nip"],
                 "positions":positions,
-                "show_discount": "1"
+                "show_discount": "1",
+                "internal_note": agreementIds.join(','),
+                "description": "some test description" // uwagi
             }};
     };
 

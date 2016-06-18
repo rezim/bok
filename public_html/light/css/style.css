@@ -835,13 +835,20 @@ body
 }
 .trDane:hover
 {
-    cursor:hand;cursor:pointer;
+    cursor:pointer;
     color:red;
 }
 .trDane:hover td:first-child { font-weight: bold; }
 
 .trDane2:hover
 {
-    cursor:hand;cursor:pointer;
+    cursor:pointer;
     color:red;
+}
+
+.invoice-count {
+	position: relative;
+	top: -3px;
+	left: 10px;
+	cursor: pointer;
 }
