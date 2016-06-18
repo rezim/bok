@@ -105,7 +105,7 @@ InvoiceManager = function(api_token, endpoint, company_name) {
                     var selectorPrefix = ['.agreements-list',key].join('.');
 
                     group.forEach(function(invoice) {
-                        var agreements = invoice.internal_note.split(',');
+                        var agreements = (invoice.internal_note) ? invoice.internal_note.split(',') : [];
                         if (agreements.length > 0) {
                             agreements.forEach(function(agreement) {
                                 // split().join() instead of replace all which is not defined :/
@@ -144,11 +144,15 @@ InvoiceManager = function(api_token, endpoint, company_name) {
         var body$ = $('<tbody />');
 
         for(var i=0; i < group.length; i++) {
-            row$ = $('<tr/>').attr('id', ['row',group[i].id].join('-'));
+            row$ = $('<tr/>').attr('id', ['row', group[i].id].join('-'));
 
-            row$.append($('<td/>').html(i+1));
+            row$.append($('<td/>').html(i + 1));
             row$.append($('<td/>').html(group[i].buyer_name));
-            row$.append($('<td/>').html(group[i].internal_note.split(',').join(', ')));
+            if (group[i].internal_note) {
+                row$.append($('<td/>').html(group[i].internal_note.split(',').join(', ')));
+            } else {
+                row$.append($('<td/>'));
+            }
             row$.append($('<td align="right"/>').html(group[i].price_net));
             row$.append($('<td align="right"/>').html(group[i].price_tax));
             row$.append($('<td align="right"/>').html(group[i].price_gross));
