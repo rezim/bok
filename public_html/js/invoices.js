@@ -25,15 +25,21 @@ InvoiceManager = function(api_token, endpoint, company_name) {
         window.open(url, title);
     };
 
-    this.removeInvoice = function(id, rowSelector) {
-        var url = [endpoint, 'invoices', [id,'json'].join('.')].join('/');
+    this.removeInvoice = function(id, rowSelector, sts) {
 
-        if (confirm('Czy na pewno chcesz usunąć fakturę?')) {
-            del(url, function (inv) {
-                alert('Faktura została usunięta!');
-                self.refreshInvoices();
-                $(rowSelector).remove();
-            });
+        if (sts == 'issued') {
+
+            var url = [endpoint, 'invoices', [id, 'json'].join('.')].join('/');
+
+            if (confirm('Czy na pewno chcesz usunąć fakturę?')) {
+                del(url, function (inv) {
+                    alert('Faktura została usunięta!');
+                    self.refreshInvoices();
+                    $(rowSelector).remove();
+                });
+            }
+        } else {
+            alert('Nie moża usunąć faktury, której status jest "' + status[sts] + '"!');
         }
     };
 
@@ -174,8 +180,8 @@ InvoiceManager = function(api_token, endpoint, company_name) {
             //actionShow.attr('title', 'Pokaż fakturę');
 
             var actionDelete = $('<img>');
-            actionDelete.attr('class', 'imgAkcja imgusun').click(function() {alert('clicked')});
-            actionDelete.attr('onclick', 'invMgr.removeInvoice("'+group[i].id+'","' + ['#colorbox #row',group[i].id].join('-') + '")');
+            actionDelete.attr('class', 'imgAkcja imgusun');
+            actionDelete.attr('onclick', 'invMgr.removeInvoice("'+group[i].id+'","' + ['#colorbox #row',group[i].id].join('-') + '","' + group[i].status + '")');
 
             row$.append($('<td align="right"/>').append(actionShow).append(actionDelete));
 

@@ -13,7 +13,7 @@
             </th>
           
             <th style='min-width: 85px;width:85px;'>
-                nr firmware
+                lokalizacja
             </th>
            
             <th style='min-width: 55px;width:55px;'>
@@ -70,7 +70,7 @@
                     <td>{$item.serial|escape:'htmlall'}</td>
                     <td>{$item.model|escape:'htmlall'} </td>
                     
-                    <td>{$item.nr_firmware|escape:'htmlall'}</td>
+                    <td>{$item.lokalizacja|escape:'htmlall'}</td>
                    
                     <td >
                         {if !empty($item.black_toner)}
