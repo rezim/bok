@@ -48,7 +48,7 @@ class aclsController extends Controller
                 $p = new PassHash();
                 $pass = $p->hash($_POST['pass']);
 
-                $dataAcl = $this->acl->getByLogin($_POST['login']); //$_POST['login']);
+                $dataAcl = $this->acl->getByLogin($_POST['login']);
 
 
                 if(empty($dataAcl))
@@ -56,11 +56,10 @@ class aclsController extends Controller
                     echo('Brak takiego konta lub błędne hasło.');return;die();
                 }
 
-                // commented out by TR,
-//                if(!$p->check_password($dataAcl[0]['haslo'],$_POST['pass']))
-//                {
-//                    echo('Brak takiego konta lub błędne hasło.');return;die();
-//                }
+                if(!$p->check_password($dataAcl[0]['haslo'],$_POST['pass']))
+                {
+                    echo('Brak takiego konta lub błędne hasło.');return;die();
+                }
                 
                 $this->acl->refreshSession($dataAcl[0]['rowid']);
                
