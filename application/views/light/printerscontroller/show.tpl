@@ -8,9 +8,7 @@
             {if isset($clientnazwakrotka)}
                 value='{$clientnazwakrotka}'
             {/if}
-            >  
-     
-     
+            >
      
      <a href="#" class="buttonpokaz" onClick="pokazDrukarki('divRightCenter{$czycolorbox}','divLoader{$czycolorbox}','{$czycolorbox}');return false;">Filtruj</a>
 </div>

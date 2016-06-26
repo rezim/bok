@@ -19,15 +19,23 @@ InvoiceManager = function(api_token, endpoint, company_name) {
         rejected: "odrzucona"
     };
 
+    var getStatus = function(invStatus, sentTime) {
+        var result = invStatus;
+        if (result == 'wystawiona' && sentTime) {
+            result = 'wysłana';
+        }
+
+        return result;
+    };
 
     this.showInvoice = function(token, title) {
         var url = [invoiceViewUrl, token].join('/');
         window.open(url, title);
     };
 
-    this.removeInvoice = function(id, rowSelector, sts) {
+    this.removeInvoice = function(id, rowSelector, status) {
 
-        if (sts == 'issued') {
+        if (status == 'wystawiona') {
 
             var url = [endpoint, 'invoices', [id, 'json'].join('.')].join('/');
 
@@ -39,7 +47,7 @@ InvoiceManager = function(api_token, endpoint, company_name) {
                 });
             }
         } else {
-            alert('Nie moża usunąć faktury, której status jest "' + status[sts] + '"!');
+            alert('Nie moża usunąć faktury, której status jest "' + status + '"!');
         }
     };
 
@@ -171,7 +179,7 @@ InvoiceManager = function(api_token, endpoint, company_name) {
             row$.append($('<td align="right"/>').html(group[i].price_net));
             row$.append($('<td align="right"/>').html(group[i].price_tax));
             row$.append($('<td align="right"/>').html(group[i].price_gross));
-            row$.append($('<td align="right"/>').html(status[group[i].status]));
+            row$.append($('<td align="right"/>').html(getStatus(status[group[i].status], group[i].sent_time)));
 
             var actionShow = $('<img>');
             actionShow.attr('class', 'imgAkcja imgNormalLogs');
@@ -181,7 +189,7 @@ InvoiceManager = function(api_token, endpoint, company_name) {
 
             var actionDelete = $('<img>');
             actionDelete.attr('class', 'imgAkcja imgusun');
-            actionDelete.attr('onclick', 'invMgr.removeInvoice("'+group[i].id+'","' + ['#colorbox #row',group[i].id].join('-') + '","' + group[i].status + '")');
+            actionDelete.attr('onclick', 'invMgr.removeInvoice("'+group[i].id+'","' + ['#colorbox #row',group[i].id].join('-') + '","' + getStatus(status[group[i].status], group[i].sent_time) + '")');
 
             row$.append($('<td align="right"/>').append(actionShow).append(actionDelete));
 
@@ -273,10 +281,14 @@ InvoiceManager = function(api_token, endpoint, company_name) {
                 "payment_to": dateFormat(addDaysToDate(getLastDayInMonth(currentPeriodInvoices.period.dateFrom),invoice['terminplatnosci'])),
                 "buyer_name": invoice["nazwapelna"],
                 "buyer_tax_no": invoice["nip"],
+                "buyer_email": 'tregimowicz@gmail.com', // invoice["mailfaktury"],
+                "buyer_post_code": invoice["kodpocztowy"],
+                "buyer_city": invoice["miasto"],
+                "buyer_street": invoice["ulica"],
                 "positions":positions,
                 "show_discount": "1",
-                "internal_note": agreementIds.join(','),
-                "description": "some test description" // uwagi
+                "internal_note": agreementIds.join(',')
+                // "description": "some test description" // uwagi
             }};
     };
 
