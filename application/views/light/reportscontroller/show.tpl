@@ -22,7 +22,7 @@
      <input type="text" id='txtdrukarka' class='textBoxNormal' style='width:90px;min-width: 90px;'>  
      
      
-     <a href="#" class="buttonpokaz" onClick='generujRaport(function(data, params){literal}{invMgr.refreshInvoices(params);}{/literal});return false;'>Generuj</a>
+     <a href="#" class="buttonpokaz" onClick='generujRaport(function(data, params){literal}{invMgr.refreshInvoices(params);invMgr.showAgreementWarnings(params);}{/literal});return false;'>Generuj</a>
 </div>
 <div class='divLoader' id='divLoader'>
 </div>

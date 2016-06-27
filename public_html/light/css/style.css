@@ -852,3 +852,9 @@ body
 	left: 10px;
 	cursor: pointer;
 }
+
+#tableReport .fa-exclamation-triangle {
+	color: red;
+	margin-right: 3px;
+	display: none
+}

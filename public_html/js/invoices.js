@@ -152,6 +152,39 @@ InvoiceManager = function(api_token, endpoint, company_name) {
         }
     };
 
+    /**
+     * @type {{dateFrom: *, dateTo: *}} period
+     */
+    this.showAgreementWarnings = function(period) {
+        $('.agreements-list').each(function(idx, list) {
+
+            var anyWarning = false;
+            $(list).find('.agreement-nb').each(function(index, agreement) {
+                var blackenddate = $(agreement).attr('blackenddate');
+                var colorenddate = $(agreement).attr('colorenddate');
+
+                if (blackenddate && blackenddate != '0000-00-00') {
+                    if (blackenddate.split(' ')[0] != dateFormat(period.dateTo)) {
+                        $(agreement).find('.fa.fa-exclamation-triangle').show();
+                        anyWarning = true;
+                    }
+                }
+
+                if (colorenddate && colorenddate != '0000-00-00') {
+                    if (colorenddate.split(' ')[0] != dateFormat(period.dateTo)) {
+                        $(agreement).find('.fa.fa-exclamation-triangle').show();
+                        anyWarning = true;
+                    }
+                }
+
+            });
+
+            if (anyWarning) {
+                $('.' + $(list).attr('id')).find('.fa.fa-exclamation-triangle').show();
+            }
+        });
+    };
+
     var createInvoiceListView = function(key, group) {
 
         var table$ = $('<table />').attr('class', 'tablesorter displaytable');

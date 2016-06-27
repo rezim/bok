@@ -38,12 +38,12 @@
             {foreach from=$dataReports item=item key=key name=loopek2}
                 {if $key!='suma' && $key!='blad'}
                 {if isset($item.blad) && $item.blad=='1'}
-                        <tr style='border-bottom:none;border-top:1px solid lightgrey;background-color: red;'>
+                        <tr class="tr_{$key}" style='border-bottom:none;border-top:1px solid lightgrey;background-color: red;'>
                 {else}
-                        <tr style='border-bottom:none;border-top:1px solid lightgrey'>
+                        <tr class="tr_{$key}" style='border-bottom:none;border-top:1px solid lightgrey'>
                 {/if}
                     <td>{$turns}</td>
-                    <td class='tdLink'  onClick='showNewClientAdd("{$item.rowidclient}")'>{$item.nazwakrotka|escape:'htmlall'}</td>
+                    <td class='tdLink'  onClick='showNewClientAdd("{$item.rowidclient}")'><span class="fa fa-exclamation-triangle"></span>{$item.nazwakrotka|escape:'htmlall'}</td>
                     <td class='tdLink'  onClick='showNewClientAdd("{$item.rowidclient}")'>{$item.nazwapelna|escape:'htmlall'}</td>
                     <td class='tdLink' style='text-align:center;' onClick='showUmowyDoKlienta("{$item.rowidclient}")'>{$item.drukumowy|escape:'htmlall'}</td>
                     <td class='tdLink' style='text-align:center;' onClick='showDrukarkiDoKlienta("{$item.rowidclient}")'>{$item.drukumowy|escape:'htmlall'}</td>
@@ -79,7 +79,7 @@
                                              <th style='min-width: 70px;width:70px;display:none;'>
                                                 rowid
                                             </th>
-                                            <th style='min-width: 70px;width:70px;'>
+                                            <th style='min-width: 80px;width:80px;'>
                                                 nr umowy
                                             </th>
                                              <th style='min-width: 115px;width:115px;'>
@@ -138,8 +138,11 @@
                                                     <td>{$smarty.foreach.loopek.index+1}</td>
                                                     <td class='tdWartosc'  style='display: none;'>{$key2}</td>
 
-                                                    <td class='tdWartosc'  onClick="showNewAgreementAdd('{$item2.rowidumowa}')"
-                                                        
+                                                    <td class='tdWartosc agreement-nb' onClick="showNewAgreementAdd('{$item2.rowidumowa}')"
+                                                    blackStartDate="{$item2.data_wiadomosci_black_start}"
+                                                    blackEndDate="{$item2.data_wiadomosci_black_koniec}"
+                                                    colorStartDate="{$item2.data_wiadomosci_kolor_start}"
+                                                    colorEndDate="{$item2.data_wiadomosci_kolor_koniec}"
                                                     title="
 Strony czarne start - Licznik: {$item2.strony_black_start|number_format:0:",":" "|escape:'htmlall'}, Data: {$item2.data_wiadomosci_black_start}
 Strony czarne koniec - Licznik: {$item2.strony_black_koniec|number_format:0:",":" "|escape:'htmlall'}, Data: {$item2.data_wiadomosci_black_koniec}                                                    
@@ -149,7 +152,7 @@ Strony kolorowe koniec - Licznik: {$item2.strony_kolor_koniec|number_format:0:",
                                                         
                                                         
                                                         
-                                                        >{$item2.nrumowy}</td>
+                                                        ><span class="fa fa-exclamation-triangle"></span>{$item2.nrumowy}</td>
                                                     
                                                     <td class='tdLink' style='vertical-align: top;' onClick='showNewPrinterAdd("{$item2.serial}")'>
                                                         {$item2.serial|escape:'htmlall'}<br/>
