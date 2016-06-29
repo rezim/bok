@@ -314,7 +314,7 @@ InvoiceManager = function(api_token, endpoint, company_name) {
                 "payment_to": dateFormat(addDaysToDate(getLastDayInMonth(currentPeriodInvoices.period.dateFrom),invoice['terminplatnosci'])),
                 "buyer_name": invoice["nazwapelna"],
                 "buyer_tax_no": invoice["nip"],
-                "buyer_email": 'tregimowicz@gmail.com', // invoice["mailfaktury"],
+                "buyer_email": invoice["mailfaktury"],
                 "buyer_post_code": invoice["kodpocztowy"],
                 "buyer_city": invoice["miasto"],
                 "buyer_street": invoice["ulica"],
