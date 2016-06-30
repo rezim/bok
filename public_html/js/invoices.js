@@ -96,7 +96,13 @@ InvoiceManager = function(api_token, endpoint, company_name) {
             params.push("period=more");
             params.push(["date_from", currentPeriodInvoices.period.dateFrom].join('='));
             params.push(["date_to", currentPeriodInvoices.period.dateTo].join('='));
-            get(params, function (invoices, status) {
+
+            var params1 = params.concat([["page", 1].join('=')]);
+            var params2 = params.concat([["page", 2].join('=')]);
+
+            $.when(get(params1), get(params2)).done(function(inv1, inv2) {
+
+                var invoices = inv1[0].concat(inv2[0]);
 
                 currentPeriodInvoices.invoices = invoices;
 
@@ -156,33 +162,43 @@ InvoiceManager = function(api_token, endpoint, company_name) {
      * @type {{dateFrom: *, dateTo: *}} period
      */
     this.showAgreementWarnings = function(period) {
-        $('.agreements-list').each(function(idx, list) {
+        var today = new Date();
+        today = new Date(dateFormat(today));
+        var dateTo = new Date(dateFormat(period.dateTo));
 
-            var anyWarning = false;
-            $(list).find('.agreement-nb').each(function(index, agreement) {
-                var blackenddate = $(agreement).attr('blackenddate');
-                var colorenddate = $(agreement).attr('colorenddate');
+        if (dateTo <= today) {
 
-                if (blackenddate && blackenddate != '0000-00-00') {
-                    if (blackenddate.split(' ')[0] != dateFormat(period.dateTo)) {
-                        $(agreement).find('.fa.fa-exclamation-triangle').show();
-                        anyWarning = true;
+            $('.agreements-list').each(function (idx, list) {
+
+                var anyWarning = false;
+                $(list).find('.agreement-nb').each(function (index, agreement) {
+                    var blackenddate = $(agreement).attr('blackenddate');
+                    var colorenddate = $(agreement).attr('colorenddate');
+
+                    var blackEnd = $(agreement).attr('blackend');
+                    var colorEnd = $(agreement).attr('colorend');
+
+                    if (blackenddate && blackenddate != '0000-00-00' && parseInt(blackEnd) > 0) {
+                        if (blackenddate.split(' ')[0] != dateFormat(period.dateTo)) {
+                            $(agreement).find('.fa.fa-exclamation-triangle').show();
+                            anyWarning = true;
+                        }
                     }
-                }
 
-                if (colorenddate && colorenddate != '0000-00-00') {
-                    if (colorenddate.split(' ')[0] != dateFormat(period.dateTo)) {
-                        $(agreement).find('.fa.fa-exclamation-triangle').show();
-                        anyWarning = true;
+                    if (colorenddate && colorenddate != '0000-00-00' && parseInt(colorEnd) > 0) {
+                        if (colorenddate.split(' ')[0] != dateFormat(period.dateTo)) {
+                            $(agreement).find('.fa.fa-exclamation-triangle').show();
+                            anyWarning = true;
+                        }
                     }
-                }
 
+                });
+
+                if (anyWarning) {
+                    $('.' + $(list).attr('id')).find('.fa.fa-exclamation-triangle').show();
+                }
             });
-
-            if (anyWarning) {
-                $('.' + $(list).attr('id')).find('.fa.fa-exclamation-triangle').show();
-            }
-        });
+        }
     };
 
     var createInvoiceListView = function(key, group) {
@@ -341,7 +357,7 @@ InvoiceManager = function(api_token, endpoint, company_name) {
         request_params = [request_params, api_token_param].join('&');
 
         var url = [invoicesUrl, request_params].join('?');
-        $.get(url, callback);
+        return $.get(url, callback);
     };
 
     var del = function(url, callback) {

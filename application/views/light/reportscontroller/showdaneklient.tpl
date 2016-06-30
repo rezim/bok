@@ -61,7 +61,7 @@
                                {if isset($item.wartosc)} {$item.wartosc|number_format:2:",":" "|escape:'htmlall'}{/if}     
                     </td>
                     <td align="center">
-                        <input type="image" src="{$smarty.const.SCIEZKA}/{$smarty.const.SMARTVERSION}/img/add.png" onClick='invMgr.add({$item|json_encode nofilter}, invMgr.getSelectedAgreementIds("#tr_{$key}", ".to_invoice_agreement:checked"))'/>
+                        <input type="image" src="{$smarty.const.SCIEZKA}/{$smarty.const.SMARTVERSION}/img/add.png" onClick='invMgr.add({($item)|json_encode nofilter}, invMgr.getSelectedAgreementIds("#tr_{$key}", ".to_invoice_agreement:checked"))'/>
                         <span class="invoice-count {$item.nip}">0</span>
                         <span style="display: none;" class="invoice-details {$item.nip}"></span>
                     </td>
@@ -143,6 +143,10 @@
                                                     blackEndDate="{$item2.data_wiadomosci_black_koniec}"
                                                     colorStartDate="{$item2.data_wiadomosci_kolor_start}"
                                                     colorEndDate="{$item2.data_wiadomosci_kolor_koniec}"
+                                                        blackStart="{$item2.strony_black_start|number_format:0:",":" "|escape:'htmlall'}"
+                                                        blackEnd="{$item2.strony_black_koniec|number_format:0:",":" "|escape:'htmlall'}"
+                                                        colorStart="{$item2.strony_kolor_start|number_format:0:",":" "|escape:'htmlall'}"
+                                                        colorEnd="{$item2.strony_kolor_koniec|number_format:0:",":" "|escape:'htmlall'}"
                                                     title="
 Strony czarne start - Licznik: {$item2.strony_black_start|number_format:0:",":" "|escape:'htmlall'}, Data: {$item2.data_wiadomosci_black_start}
 Strony czarne koniec - Licznik: {$item2.strony_black_koniec|number_format:0:",":" "|escape:'htmlall'}, Data: {$item2.data_wiadomosci_black_koniec}                                                    
