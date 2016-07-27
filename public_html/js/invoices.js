@@ -1,8 +1,11 @@
 
+
 InvoiceManager = function(api_token, endpoint, company_name) {
 
     var invoicesUrl = [endpoint, 'invoices.json'].join('/');
     var invoiceViewUrl = [endpoint, 'invoice'].join('/');
+
+    var clientsUrl = [endpoint, 'clients.json'].join('/');
 
     var self = this;
 
@@ -28,9 +31,66 @@ InvoiceManager = function(api_token, endpoint, company_name) {
         return result;
     };
 
+    /**
+     * tmp function to synch clients, need to be refactored
+     * @deprecated
+     */
+    var updateClients = function() {
+        $.when(getClients(['page=1']), getClients(['page=2'])).done(function(client1, client2) {
+            var clients = client1[0].concat(client2[0]);
+
+            var text = "START TRANSACTION;\n";
+            $.each(clients, function (idx, client) {
+                var updateCmd = "update clients set nazwapelna='" + client.name.split('"').join('') + "', nazwakrotka='" + client.shortcut.split('"').join('') + "', ulica = '" + client.street + "', kodpocztowy='" + client.post_code + "', mailfaktury = '" + client.email + "', miasto = '" + client.city + "' where nip='" + client.tax_no + "';";
+
+                text += updateCmd + "\n";
+            });
+
+            text += "Commit;";
+            $("textarea#clients").val(text);
+        });
+    };
+
+    this.getInvoices = function() {
+        return currentPeriodInvoices.invoices;
+    };
+
     this.showInvoice = function(token, title) {
         var url = [invoiceViewUrl, token].join('/');
         window.open(url, title);
+    };
+
+    this.getLastInvoice = function() {
+        var invoices = this.getInvoices();
+        var last;
+        invoices.forEach(function(invoice) {
+            if (!last) {
+                last = invoice;
+            } else {
+                if (parseInt(invoice.number.split('/')[0]) > parseInt(last.number.split('/')[0])) {
+                    last = invoice;
+                }
+            }
+        });
+
+        return last;
+    };
+
+    this.updateInvoiceNumber = function(id, number, callback) {
+        var url = [endpoint, 'invoices', id + '.json'].join('/');
+
+        var data = {"invoice": {
+            "number": number}};
+
+        put(url, data, callback);
+    };
+
+    this.getInvoiceById = function(id) {
+        var invoices = this.getInvoices();
+
+        return invoices.find(function(val) {
+            return val.id == id
+        })
     };
 
     this.removeInvoice = function(id, rowSelector, status) {
@@ -40,10 +100,22 @@ InvoiceManager = function(api_token, endpoint, company_name) {
             var url = [endpoint, 'invoices', [id, 'json'].join('.')].join('/');
 
             if (confirm('Czy na pewno chcesz usunąć fakturę?')) {
+                var lastInvoice = self.getLastInvoice();
+                var removedInvoice = self.getInvoiceById(id);
                 del(url, function (inv) {
-                    alert('Faktura została usunięta!');
-                    self.refreshInvoices();
-                    $(rowSelector).remove();
+
+                    if (lastInvoice.number != removedInvoice.number) {
+                        self.updateInvoiceNumber(lastInvoice.id, removedInvoice.number, function() {
+                            alert('Faktura została usunięta!');
+                            self.refreshInvoices();
+                            $(rowSelector).remove();
+                        });
+                    } else {
+                        alert('Faktura została usunięta!');
+                        self.refreshInvoices();
+                        $(rowSelector).remove();
+                    }
+
                 });
             }
         } else {
@@ -207,7 +279,7 @@ InvoiceManager = function(api_token, endpoint, company_name) {
 
         var head$ = $('<thead />');
 
-        [{'name': 'Lp', 'width': '15px'}, {'name': 'Nazwa klienta', 'width': '220px'}, {'name': 'Umowy', 'width': '220px'}, {'name': 'Cena netto', 'width': '100px'}, {'name': 'Wartość VAT', 'width': '100px'}, {'name': 'Wartość brutto', 'width': '100px'}, {'name':'Status', 'width': '100px'}, {'name':'', 'width': '100px'}].forEach(function(th) {
+        [{'name': 'Lp', 'width': '20px'}, {'name': 'Numer', 'width': '35px'}, {'name': 'Nazwa klienta', 'width': '220px'}, {'name': 'Umowy', 'width': '150px'}, {'name': 'Cena netto', 'width': '100px'}, {'name': 'Wartość VAT', 'width': '100px'}, {'name': 'Wartość brutto', 'width': '100px'}, {'name':'Status', 'width': '100px'}, {'name':'', 'width': '100px'}].forEach(function(th) {
             head$.append($('<th>').attr('style', ['width', th['width']].join(':')).html(th['name']));
         });
 
@@ -219,6 +291,7 @@ InvoiceManager = function(api_token, endpoint, company_name) {
             row$ = $('<tr/>').attr('id', ['row', group[i].id].join('-'));
 
             row$.append($('<td/>').html(i + 1));
+            row$.append($('<td/>').html(group[i].number));
             row$.append($('<td/>').html(group[i].buyer_name));
             if (group[i].internal_note) {
                 row$.append($('<td/>').html(group[i].internal_note.split(',').join(', ')));
@@ -351,13 +424,13 @@ InvoiceManager = function(api_token, endpoint, company_name) {
         });
     };
 
-    var get = function(params, callback) {
-        var api_token_param = ["api_token", api_token].join('=');
-        var request_params = params.join('&');
-        request_params = [request_params, api_token_param].join('&');
-
-        var url = [invoicesUrl, request_params].join('?');
-        return $.get(url, callback);
+    var put = function(url, data, callback) {
+        $.ajax({
+            url:url,
+            type: 'post',
+            data: $.extend({_method: 'put', api_token :api_token}, data),
+            success: callback
+        });
     };
 
     var del = function(url, callback) {
@@ -367,6 +440,24 @@ InvoiceManager = function(api_token, endpoint, company_name) {
             data: {_method: 'delete', api_token :api_token},
             success: callback
         });
+    };
+
+    var get = function(params, callback) {
+        var api_token_param = ["api_token", api_token].join('=');
+        var request_params = params.join('&');
+        request_params = [request_params, api_token_param].join('&');
+
+        var url = [invoicesUrl, request_params].join('?');
+        return $.get(url, callback);
+    };
+
+    var getClients = function(params, callback) {
+        var api_token_param = ["api_token", api_token].join('=');
+        var request_params = params.join('&');
+        request_params = [request_params, api_token_param].join('&');
+
+        var url = [clientsUrl, request_params].join('?');
+        return $.get(url, callback);
     };
 
     var getFormattedDate = function(strDate) {
