@@ -1,3 +1,10 @@
+
+<table width="100%" class="errorMessageWrapper">
+    <tr>
+        <td id="errorMessage" class="fa fa-exclamation-triangle">
+        </td>
+    </tr>
+</table>
 <table class='tablesorter displaytable' id='tableReport' cellspacing=0 cellpadding=0>
     <thead>
                       <tr>
@@ -28,7 +35,7 @@
             <th style='min-width: 75px;width:75px;text-align: center;'>
                 netto
             </th>
-            <th style='min-width: 75px;width:75px;text-align: center;' onclick="invMgr.showInvoice()">
+            <th style='min-width: 75px;width:75px;text-align: center;'>
                 faktura
             </th>
         </tr>
@@ -61,7 +68,8 @@
                                {if isset($item.wartosc)} {$item.wartosc|number_format:2:",":" "|escape:'htmlall'}{/if}     
                     </td>
                     <td align="center">
-                        <input type="image" src="{$smarty.const.SCIEZKA}/{$smarty.const.SMARTVERSION}/img/add.png" onClick='invMgr.add({($item)|json_encode nofilter}, invMgr.getSelectedAgreementIds("#tr_{$key}", ".to_invoice_agreement:checked"))'/>
+                        <input type="image" class="invoice-add" src="{$smarty.const.SCIEZKA}/{$smarty.const.SMARTVERSION}/img/add.png" onClick='invMgr.add({($item)|json_encode nofilter}, invMgr.getSelectedAgreementIds("#tr_{$key}", ".to_invoice_agreement:checked"))'/>
+                        <i class='fa fa-spinner fa-spin invoice-loading'></i>
                         <span class="invoice-count {$item.nip}">0</span>
                         <span style="display: none;" class="invoice-details {$item.nip}"></span>
                     </td>

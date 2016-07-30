@@ -1,4 +1,3 @@
-
 <table class='tablesorter displaytable' id='tableReport' cellspacing=0 cellpadding=0>
     <thead>
         <tr>

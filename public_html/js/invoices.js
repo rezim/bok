@@ -11,7 +11,8 @@ InvoiceManager = function(api_token, endpoint, company_name) {
 
     var currentPeriodInvoices = {
         period: null,
-        invoices: []
+        invoices: [],
+        orderedInvoices: []
     };
 
     var status = {
@@ -53,6 +54,10 @@ InvoiceManager = function(api_token, endpoint, company_name) {
 
     this.getInvoices = function() {
         return currentPeriodInvoices.invoices;
+    };
+
+    this.getMissingInvoices = function() {
+        return currentPeriodInvoices.missingInvoices;
     };
 
     this.showInvoice = function(token, title) {
@@ -100,21 +105,12 @@ InvoiceManager = function(api_token, endpoint, company_name) {
             var url = [endpoint, 'invoices', [id, 'json'].join('.')].join('/');
 
             if (confirm('Czy na pewno chcesz usunąć fakturę?')) {
-                var lastInvoice = self.getLastInvoice();
-                var removedInvoice = self.getInvoiceById(id);
+                // var lastInvoice = self.getLastInvoice();
+                // var removedInvoice = self.getInvoiceById(id);
                 del(url, function (inv) {
 
-                    if (lastInvoice.number != removedInvoice.number) {
-                        self.updateInvoiceNumber(lastInvoice.id, removedInvoice.number, function() {
-                            alert('Faktura została usunięta!');
-                            self.refreshInvoices();
-                            $(rowSelector).remove();
-                        });
-                    } else {
-                        alert('Faktura została usunięta!');
-                        self.refreshInvoices();
-                        $(rowSelector).remove();
-                    }
+                    self.refreshInvoices();
+                    $(rowSelector).remove();
 
                 });
             }
@@ -125,16 +121,13 @@ InvoiceManager = function(api_token, endpoint, company_name) {
 
     this.add = function (invoice, agreementIds) {
         if (agreementIds && agreementIds.length > 0) {
-            var message = (Object.keys(invoice['umowy']).length == agreementIds.length) ?
-                "Tworzysz fakturę dla wszystkich umów. Potwierdzasz ?" :
-                "Tworzysz fakturę dla " + agreementIds.length + " z " + Object.keys(invoice['umowy']).length + " umów. Powierdzasz ?";
-            if (confirm(message)) {
-                var params = getInvoiceParams(invoice, agreementIds);
 
-                post(params, function (data) {
-                    self.refreshInvoices();
-                });
-            }
+            var params = getInvoiceParams(invoice, agreementIds);
+
+            post(params, function (data) {
+                self.refreshInvoices();
+            });
+
         } else {
             alert("Wybierz przynajmniej jedną umowę!");
         }
@@ -172,21 +165,51 @@ InvoiceManager = function(api_token, endpoint, company_name) {
             var params1 = params.concat([["page", 1].join('=')]);
             var params2 = params.concat([["page", 2].join('=')]);
 
+            $('.invoice-add').hide();
+            $('.invoice-loading').show();
+
             $.when(get(params1), get(params2)).done(function(inv1, inv2) {
+
+                $('.invoice-add').show();
+                $('.invoice-loading').hide();
 
                 var invoices = inv1[0].concat(inv2[0]);
 
                 currentPeriodInvoices.invoices = invoices;
 
+                var orderedInvoices = Array.apply(null, Array(invoices.length)).map(function () {});
+
                 // groupByClient
                 var groupedInvoices = {};
+
+                var invNbPattern = null;
+
                 $.each(invoices, function (index, invoice) {
                     if (!groupedInvoices[invoice['buyer_tax_no']]) {
                         groupedInvoices[invoice['buyer_tax_no']] = [];
                     }
 
                     groupedInvoices[invoice['buyer_tax_no']].push(invoice);
+
+                    var invoiceIdx = parseInt(invoice.number.split('/')[0])-1;
+                    orderedInvoices[invoiceIdx] = invoice;
+
+                    if (!invNbPattern) {
+                        invNbPattern = invoice.number.split('/');
+                        invNbPattern.shift();
+                        invNbPattern = invNbPattern.join('/');
+                    }
                 });
+
+                var missingInvoices = [];
+
+                $.each(orderedInvoices, function (index, invoice) {
+                    if (invoice === undefined) {
+                        missingInvoices.push([(index+1),'/',invNbPattern].join(''));
+                    }
+                });
+
+                currentPeriodInvoices.missingInvoices = missingInvoices;
 
                 // reset all invoice counts
                 $('.invoice-count').text('0').css({'color':'red'});
@@ -223,8 +246,26 @@ InvoiceManager = function(api_token, endpoint, company_name) {
                     } else {
                         $('.invoice-count.' + key).css({'color':'green', 'font-weight': 'bold'});
                     }
-                })
+                });
+
+
+                if (self.getMissingInvoices().length > 0) {
+
+                    $('.errorMessageWrapper').show();
+                    $('#errorMessage').html('Uwaga: występuje brak ciągłości numeracji faktur. Brakujące numery to: ' + self.getMissingInvoices().join(', '));
+
+                } else {
+
+                    $('#errorMessage').html('');
+                    $('.errorMessageWrapper').hide();
+
+                }
+
             });
+
+
+
+
         } else {
             console.log('could not get invoices, no period defined');
         }
@@ -392,11 +433,17 @@ InvoiceManager = function(api_token, endpoint, company_name) {
             }
         });
 
+        var invNumber = null;
+
+        if (self.getMissingInvoices().length > 0) {
+            invNumber = self.getMissingInvoices()[0];
+        }
+
         return {
             "api_token": api_token,
             "invoice": {
                 "kind":"vat",
-                "number": null,
+                "number": invNumber,
                 // "seller_name": company_name,
                 "sell_date": dateFormat(getLastDayInMonth(currentPeriodInvoices.period.dateFrom)),
                 "issue_date": dateFormat(getLastDayInMonth(currentPeriodInvoices.period.dateFrom)),
@@ -495,6 +542,18 @@ InvoiceManager = function(api_token, endpoint, company_name) {
         d.setDate(d.getDate() + days);
         
         return d;
-    }
-    
+    };
+
+    $(window).scroll(function(e){
+        var $el = $('.errorMessageWrapper');
+        var isPositionFixed = ($el.css('position') == 'fixed');
+        if ($(this).scrollTop() > 69 && !isPositionFixed){
+            $('.errorMessageWrapper').css({'position': 'fixed', 'top': '0px'});
+        }
+        if ($(this).scrollTop() <= 69 && isPositionFixed)
+        {
+            $('.errorMessageWrapper').css({'position': 'static', 'top': '0px'});
+        }
+    });
+
 };

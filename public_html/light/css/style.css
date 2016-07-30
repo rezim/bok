@@ -858,3 +858,20 @@ body
 	margin-right: 3px;
 	display: none
 }
+
+.errorMessageWrapper {
+	border: solid 2px #FF0000;
+	margin-bottom: 5px;
+	color: red;
+	display: none;
+	width: 1015px;
+	background-color: #FFFFFF;
+}
+
+.errorMessageWrapper #errorMessage {
+	font-weight: bold;
+}
+
+.invoice-loading {
+	width: 16px;
+}
