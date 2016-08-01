@@ -291,7 +291,7 @@ InvoiceManager = function(api_token, endpoint, company_name) {
                     var blackEnd = $(agreement).attr('blackend');
                     var colorEnd = $(agreement).attr('colorend');
 
-                    if (blackenddate && blackenddate != '0000-00-00' && parseInt(blackEnd) > 0) {
+                    if (blackenddate && blackenddate != '0000-00-00') {
                         if (blackenddate.split(' ')[0] != dateFormat(period.dateTo)) {
                             $(agreement).find('.fa.fa-exclamation-triangle').show();
                             anyWarning = true;
