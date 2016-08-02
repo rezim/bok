@@ -173,7 +173,14 @@ InvoiceManager = function(api_token, endpoint, company_name) {
                 $('.invoice-add').show();
                 $('.invoice-loading').hide();
 
-                var invoices = inv1[0].concat(inv2[0]);
+                var invoices = [] ;
+
+                // remove all invoice corrects (from_invoice_id != null)
+                $.each(inv1[0].concat(inv2[0]), function (index, inv) {
+                    if (!inv['from_invoice_id']) {
+                        invoices.push(inv);
+                    }
+                });
 
                 currentPeriodInvoices.invoices = invoices;
 
