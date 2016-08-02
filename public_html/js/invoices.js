@@ -1,7 +1,6 @@
 
 
-InvoiceManager = function(api_token, endpoint, company_name) {
-
+InvoiceManager = function(api_token, endpoint, company_name, invoice_number_length) {
     var invoicesUrl = [endpoint, 'invoices.json'].join('/');
     var invoiceViewUrl = [endpoint, 'invoice'].join('/');
 
@@ -443,7 +442,7 @@ InvoiceManager = function(api_token, endpoint, company_name) {
         var invNumber = null;
 
         if (self.getMissingInvoices().length > 0) {
-            invNumber = self.getMissingInvoices()[0];
+            invNumber = normalizeInvNb(self.getMissingInvoices()[0]);
         }
 
         return {
@@ -468,6 +467,16 @@ InvoiceManager = function(api_token, endpoint, company_name) {
             }};
     };
 
+    var normalizeInvNb = function(nb) {
+        var nbLength = nb.split('/')[0].toString().length;
+
+        for(var i = nbLength; i < invoice_number_length; i++) {
+            nb = '0' + nb;
+        }
+
+        return nb;
+    };
+    
     var post = function(data, callback) {
         $.ajax({
             type: "POST",

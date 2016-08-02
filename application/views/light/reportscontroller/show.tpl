@@ -1,7 +1,7 @@
 {config_load file="$fakturownia_conf_file_path"}
 <script type="text/javascript">
     // initialize invoice manager
-    var invMgr = new InvoiceManager('{#api_token#}', '{#endpoint#}', '{#company_name#}');
+    var invMgr = new InvoiceManager('{#api_token#}', '{#endpoint#}', '{#company_name#}', '{#invoice_number_length#}');
 </script>
 <div class='divFilter'>
      <label for="txtdataod" class="labelNormal" >data od</label>
