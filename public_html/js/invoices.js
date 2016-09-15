@@ -462,7 +462,8 @@ InvoiceManager = function(api_token, endpoint, company_name, invoice_number_leng
                 "buyer_street": invoice["ulica"],
                 "positions":positions,
                 "show_discount": "1",
-                "internal_note": agreementIds.join(',')
+                "internal_note": agreementIds.join(','),
+                "seller_name": company_name
                 // "description": "some test description" // uwagi
             }};
     };
