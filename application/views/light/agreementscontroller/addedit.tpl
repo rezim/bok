@@ -227,10 +227,92 @@
                                </td>
                            </tr>
                            <tr><td style='height:3px;min-height: 3px;' colspan=2></td></tr>
-                
-                           
-                           
-                           
+
+<!-- device localisation -->
+                            <tr>
+                                <td class='tdOpis' colspan="4" >
+                                    Lokalizacja Urządzenia
+                                </td>
+                            </tr>
+                            <tr><td style='height:3px;min-height: 3px;' colspan=2></td></tr>
+    <!-- street -->
+                            <tr>
+                                <td class='tdOpis' style="width:170px;min-width:170px;max-width:170px;" >
+                                    ulica
+                                </td>
+                                <td class='tdWartosc' colspan="3">
+                                    <input type="text" id='txtulica'
+                                           class='textBoxForm' maxlength="100" style='min-width:130px;'
+                                           {if $rowid!=0}value="{$dataUmowa[0].ulica|escape:'htmlall'}"{/if}>
+                                </td>
+                            </tr>
+                            <tr><td style='height:3px;min-height: 3px;' colspan=2></td></tr>
+
+    <!-- city -->
+                            <tr>
+                                <td class='tdOpis' style="width:170px;min-width:170px;max-width:170px;" >
+                                    miasto
+                                </td>
+                                <td class='tdWartosc' colspan="3">
+                                    <input type="text" id='txtmiasto'
+                                           class='textBoxForm' maxlength="70" style='min-width:130px;'
+                                           {if $rowid!=0}value="{$dataUmowa[0].miasto|escape:'htmlall'}"{/if}>
+                                </td>
+                            </tr>
+                            <tr><td style='height:3px;min-height: 3px;' colspan=2></td></tr>
+
+    <!-- postal code -->
+                            <tr>
+                                <td class='tdOpis' style="width:170px;min-width:170px;max-width:170px;" >
+                                    kod pocztowy
+                                </td>
+                                <td class='tdWartosc' colspan="3">
+                                    <input type="text" id='txtkodpocztowy'
+                                           class='textBoxForm' maxlength="10" style='min-width:130px;'
+                                           {if $rowid!=0}value="{$dataUmowa[0].kodpocztowy|escape:'htmlall'}"{/if}>
+                                </td>
+                            </tr>
+                            <tr><td style='height:3px;min-height: 3px;' colspan=2></td></tr>
+
+    <!-- phone -->
+                            <tr>
+                                <td class='tdOpis' style="width:170px;min-width:170px;max-width:170px;" >
+                                    telefon
+                                </td>
+                                <td class='tdWartosc' colspan="3">
+                                    <input type="text" id='txttelefon'
+                                           class='textBoxForm' maxlength="50" style='min-width:130px;'
+                                           {if $rowid!=0}value="{$dataUmowa[0].telefon|escape:'htmlall'}"{/if}>
+                                </td>
+                            </tr>
+                            <tr><td style='height:3px;min-height: 3px;' colspan=2></td></tr>
+
+    <!-- mail -->
+                            <tr>
+                                <td class='tdOpis' style="width:170px;min-width:170px;max-width:170px;" >
+                                    adres email
+                                </td>
+                                <td class='tdWartosc' colspan="3">
+                                    <input type="text" id='txtmail'
+                                           class='textBoxForm' maxlength="50" style='min-width:130px;'
+                                           {if $rowid!=0}value="{$dataUmowa[0].mail|escape:'htmlall'}"{/if}>
+                                </td>
+                            </tr>
+                            <tr><td style='height:3px;min-height: 3px;' colspan=2></td></tr>
+
+    <!-- name -->
+                            <tr>
+                                <td class='tdOpis' style="width:170px;min-width:170px;max-width:170px;" >
+                                    nazwa
+                                </td>
+                                <td class='tdWartosc' colspan="3">
+                                    <input type="text" id='txtnazwa'
+                                           class='textBoxForm' maxlength="100" style='min-width:130px;'
+                                           {if $rowid!=0}value="{$dataUmowa[0].nazwa|escape:'htmlall'}"{/if}>
+                                </td>
+                            </tr>
+                            <tr><td style='height:3px;min-height: 3px;' colspan=2></td></tr>
+
                             <tr>
                                 <td style='text-align: right;' colspan="4">
                                     <div class='divSave' id="divSaveUmowa">

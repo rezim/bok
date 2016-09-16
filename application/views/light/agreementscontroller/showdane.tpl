@@ -37,6 +37,12 @@
              <th style='min-width: 30px;width:30px;text-align: center;' titla="1-tak; 0-nie">
                 aktywna
             </th>
+            <th style="text-align: center; width:100px; min-width: 100px;">
+                nazwa
+            </th>
+            <th style="text-align: center; width:150px; min-width: 150px;">
+                lokalizacja
+            </th>
             {if $czycolorbox==''}  
             <th style='min-width: 75px;width:75px;'>
             </th>
@@ -77,6 +83,13 @@
                     <td wymaganylevel='w' wymaganyzrobiony='0'  class='tdNumber'>{if !empty($item.abonament)}{$item.abonament|number_format:2:",":" "|replace:',00':''|escape:'htmlall'}{/if}
                     </td>  
                     <td class='tdNumber'>{$item.activity}</td>
+                    <td style="text-align: center;">{$item.lokalizacja_nazwa}</td>
+                    <td>{if !empty($item.lokalizacja_ulica)} {$item.lokalizacja_ulica} ,<br />{/if}
+                        {if !empty($item.lokalizacja_kodpocztowy)} {$item.lokalizacja_kodpocztowy} {/if}
+                        {if !empty($item.lokalizacja_miasto)} {$item.lokalizacja_miasto} ,<br />{/if}
+                        {if !empty($item.lokalizacja_telefon)} {$item.lokalizacja_telefon} ,<br />{/if}
+                        {if !empty($item.lokalizacja_mail)} {$item.lokalizacja_mail} <br />{/if}
+                    </td>
                     {if $czycolorbox==''}  
                     <td style='text-align: right;'>
                          
