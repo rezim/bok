@@ -76,6 +76,7 @@ class agreement extends Model
                 a.telefon as 'lokalizacja_telefon',
                 a.mail as 'lokalizacja_mail', 
                 a.nazwa as 'lokalizacja_nazwa',
+                a.osobakontaktowa as 'lokalizacja_osobakontaktowa',
                 (select d.rowid from logs d where d.serial=a.serial and d.przeczytany=0 limit 1) as `blad`,a.abonament
                 from
                 (agreements a left outer join printers b on a.`serial`=b.`serial`)
@@ -119,9 +120,10 @@ class agreement extends Model
                                     `kodpocztowy`=?,
                                     `telefon`=?,
                                     `mail`=?,
-                                    `nazwa`=?                                    
+                                    `nazwa`=?,                                    
+                                    `osobakontaktowa`=?                                                                
                                      where `rowid`=?"
-                                ,'sssiddssissidddddidissssssi',
+                                ,'sssiddssissidddddidisssssssi',
                                  array
                                  (
                                     $this->nrumowy==''?"NULL":$this->nrumowy,
@@ -150,7 +152,8 @@ class agreement extends Model
                                      $this->telefon==''?"NULL":$this->telefon,
                                      $this->mail==''?"NULL":$this->mail,
                                      $this->nazwa==''?"NULL":$this->nazwa,
-                                    $this->rowid
+                                     $this->osobakontaktowa==''?"NULL":$this->osobakontaktowa,
+                                     $this->rowid
                                  )
                              );     
             
@@ -180,9 +183,10 @@ class agreement extends Model
                                     `kodpocztowy`,
                                     `telefon`,
                                     `mail`,
-                                    `nazwa`                                       
+                                    `nazwa`,                                       
+                                    `osobakontaktowa`
                             ";
-              return $this->insert($columnList,'sssiddsisssidddddidissssss',
+              return $this->insert($columnList,'sssiddsisssidddddidisssssss',
                       array(
                                     $this->nrumowy==''?"NULL":$this->nrumowy,
                                     ($this->dataod=='' || $this->dataod=='0000-00-00')?"NULL":$this->dataod,
@@ -208,6 +212,7 @@ class agreement extends Model
                                    $this->telefon==''?"NULL":$this->telefon,
                                    $this->mail==''?"NULL":$this->mail,
                                    $this->nazwa==''?"NULL":$this->nazwa,
+                                   $this->osobakontaktowa==''?"NULL":$this->osobakontaktowa
                       ));
               
             

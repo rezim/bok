@@ -136,8 +136,39 @@
                                </td>
                            </tr>
                            <tr><td style='height:3px;min-height: 3px;' colspan=2></td></tr>
-                           
-                           
+
+                            <!-- contact information -->
+                            <tr>
+                                <td class='tdOpis' colspan="4" >
+                                    Opcje Faktury
+                                </td>
+                            </tr>
+                            <tr><td style='height:3px;min-height: 3px;' colspan=2></td></tr>
+                            <!-- show serial number -->
+                            <tr>
+                                <td class='tdOpis' style="width:170px;min-width:170px;max-width:170px;" >
+                                    pokaż numer seryjny
+                                </td>
+                                <td class='tdWartosc' colspan="3">
+                                    <input type="checkbox" id='checkPokazNumerSeryjny' class='checkBoxNormal'
+                                           {if $rowid!=0 && !empty($dataClient[0].pokaznumerseryjny) &&  $dataClient[0].pokaznumerseryjny==1}checked{/if}
+                                    />
+                                </td>
+                            </tr>
+                            <tr><td style='height:3px;min-height: 3px;' colspan=2></td></tr>
+                            <!-- show device counter state -->
+                            <tr>
+                                <td class='tdOpis' style="width:170px;min-width:170px;max-width:170px;" >
+                                    pokaż stan licznika
+                                </td>
+                                <td class='tdWartosc' colspan="3">
+                                    <input type="checkbox" id='checkPokazStanLicznika' class='checkBoxNormal'
+                                           {if $rowid!=0 && !empty($dataClient[0].pokazstanlicznika) &&  $dataClient[0].pokazstanlicznika==1}checked{/if}
+                                    />
+                                </td>
+                            </tr>
+                            <tr><td style='height:3px;min-height: 3px;' colspan=2></td></tr>
+                            <!-- end -->
                            
                             <tr>
                                 <td style='text-align: right;' colspan="2">

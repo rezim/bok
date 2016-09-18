@@ -45,6 +45,8 @@ class reportsController extends Controller
             $dataReports[$item['rowidclient']]['ulica']=$item['ulica'];
             $dataReports[$item['rowidclient']]['miasto']=$item['miasto'];
             $dataReports[$item['rowidclient']]['kodpocztowy']=$item['kodpocztowy'];
+            $dataReports[$item['rowidclient']]['pokaznumerseryjny']=$item['pokaznumerseryjny'];
+            $dataReports[$item['rowidclient']]['pokazstanlicznika']=$item['pokazstanlicznika'];
 
             if(($item['strony_black_koniec']-$item['strony_black_start'])<0)
             {
@@ -160,12 +162,12 @@ class reportsController extends Controller
                                     $wartoscblack+
                                             $wartosckolor+
                                                     $oplatainstalacyjna;
-            
-            
+
+
             $dataReports[$item['rowidclient']]['umowy'][$item['rowidumowa']]['nrumowy'] = $item['nrumowy'];
             $dataReports[$item['rowidclient']]['umowy'][$item['rowidumowa']]['rowidumowa'] = $item['rowidumowa'];
 
-          $dataReports[$item['rowidclient']]['umowy'][$item['rowidumowa']]['model'] = $item['model'];
+            $dataReports[$item['rowidclient']]['umowy'][$item['rowidumowa']]['model'] = $item['model'];
             $dataReports[$item['rowidclient']]['umowy'][$item['rowidumowa']]['stronwabonamencie'] = $item['stronwabonamencie'];
             $dataReports[$item['rowidclient']]['umowy'][$item['rowidumowa']]['cenazastrone'] = $item['cenazastrone'];
             
@@ -182,22 +184,26 @@ class reportsController extends Controller
             $dataReports[$item['rowidclient']]['umowy'][$item['rowidumowa']]['stronkolorpowyzej'] = $stronkolorpowyzej;
             $dataReports[$item['rowidclient']]['umowy'][$item['rowidumowa']]['wartosc'] = $wartosc;
             
-            
             $dataReports[$item['rowidclient']]['umowy'][$item['rowidumowa']]['strony_black_start'] = $item['strony_black_start'];
             $dataReports[$item['rowidclient']]['umowy'][$item['rowidumowa']]['data_wiadomosci_black_start'] = $item['data_wiadomosci_black_start'];
             $dataReports[$item['rowidclient']]['umowy'][$item['rowidumowa']]['strony_black_koniec'] = $item['strony_black_koniec'];
             $dataReports[$item['rowidclient']]['umowy'][$item['rowidumowa']]['data_wiadomosci_black_koniec'] = $item['data_wiadomosci_black_koniec'];
             
-             $dataReports[$item['rowidclient']]['umowy'][$item['rowidumowa']]['strony_kolor_start'] = $item['strony_kolor_start'];
+            $dataReports[$item['rowidclient']]['umowy'][$item['rowidumowa']]['strony_kolor_start'] = $item['strony_kolor_start'];
             $dataReports[$item['rowidclient']]['umowy'][$item['rowidumowa']]['data_wiadomosci_kolor_start'] = $item['data_wiadomosci_kolor_start'];
             $dataReports[$item['rowidclient']]['umowy'][$item['rowidumowa']]['strony_kolor_koniec'] = $item['strony_kolor_koniec'];
             $dataReports[$item['rowidclient']]['umowy'][$item['rowidumowa']]['data_wiadomosci_kolor_koniec'] = $item['data_wiadomosci_kolor_koniec'];
-            
-            
-            
-        }
-       
-        
+
+            // device localization
+            $dataReports[$item['rowidclient']]['umowy'][$item['rowidumowa']]['lokalizacja_ulica'] = $item['lokalizacja_ulica'];
+            $dataReports[$item['rowidclient']]['umowy'][$item['rowidumowa']]['lokalizacja_miasto'] = $item['lokalizacja_miasto'];
+            $dataReports[$item['rowidclient']]['umowy'][$item['rowidumowa']]['lokalizacja_kodpocztowy'] = $item['lokalizacja_kodpocztowy'];
+            $dataReports[$item['rowidclient']]['umowy'][$item['rowidumowa']]['lokalizacja_telefon'] = $item['lokalizacja_telefon'];
+            $dataReports[$item['rowidclient']]['umowy'][$item['rowidumowa']]['lokalizacja_mail'] = $item['lokalizacja_mail'];
+            $dataReports[$item['rowidclient']]['umowy'][$item['rowidumowa']]['lokalizacja_nazwa'] = $item['lokalizacja_nazwa'];
+
+       }
+
         foreach($dataReportsRoczne as $key=>$item)
         {
          

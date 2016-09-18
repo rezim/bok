@@ -87,6 +87,7 @@
                     <td>{if !empty($item.lokalizacja_ulica)} {$item.lokalizacja_ulica} ,<br />{/if}
                         {if !empty($item.lokalizacja_kodpocztowy)} {$item.lokalizacja_kodpocztowy} {/if}
                         {if !empty($item.lokalizacja_miasto)} {$item.lokalizacja_miasto} ,<br />{/if}
+                        {if !empty($item.lokalizacja_osobakontaktowa)} {$item.lokalizacja_osobakontaktowa} ,<br />{/if}
                         {if !empty($item.lokalizacja_telefon)} {$item.lokalizacja_telefon} ,<br />{/if}
                         {if !empty($item.lokalizacja_mail)} {$item.lokalizacja_mail} <br />{/if}
                     </td>

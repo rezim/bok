@@ -377,6 +377,45 @@ InvoiceManager = function(api_token, endpoint, company_name, invoice_number_leng
         });
     };
 
+    var getLocalization = function(agreement) {
+        var localization = [];
+        if (agreement["lokalizacja_ulica"]) {
+            localization.push( agreement["lokalizacja_ulica"].split(' ').join('') );
+        }
+
+        if (agreement["lokalizacja_miasto"]) {
+            localization.push( agreement["lokalizacja_miasto"] );
+        }
+
+        return localization.join(' ');
+    };
+
+    var getPositionDesc = function (str, agreement, showSerialNumber, showCounterState) {
+        var desc = [
+            str,
+            agreement["model"]
+        ];
+
+        if (showSerialNumber) {
+            desc.push(" (S/N:" + agreement["serial"] + ")");
+        }
+
+        if (showCounterState) {
+            desc.push(getCounterState(agreement));
+        }
+
+        return desc.join(' ');
+    };
+
+    var getCounterState = function(agreement) {
+        var counterState = "licznik:" + agreement["strony_black_koniec"];
+        if (agreement["wartosckolor"] > 0) {
+            counterState += "/" + agreement["strony_kolor_koniec"];
+        }
+
+        return counterState;
+    };
+
     /**
      *
      * @param invoice
@@ -390,24 +429,23 @@ InvoiceManager = function(api_token, endpoint, company_name, invoice_number_leng
         $.each(invoice["umowy"], function(key, agreement) {
 
             if (agreementIds.indexOf(agreement["nrumowy"]) != -1) {
-
                 positions.push({
-                    "name": "Wynajem drukarki " + agreement["model"],
+                    "name": getPositionDesc("Wynajem drukarki", agreement, invoice['pokaznumerseryjny'], invoice['pokazstanlicznika']),
+                    "additional_info": getLocalization(agreement),
                     "tax": 23,
                     "quantity": 1,
                     "quantity_unit" : "szt",
-                    // "price_net": agreement["wartoscabonament"],
                     "total_price_gross": agreement["wartoscabonament"] * 1.23,
                     "discount_percent": 0
                 });
 
                 if (agreement["oplatainstalacyjna"] > 0) {
                     positions.push({
-                        "name": "Opłata instalacyjna " + agreement["model"],
+                        "name": getPositionDesc("Opłata instalacyjna", agreement, invoice['pokaznumerseryjny'], false),
+                        "additional_info": getLocalization(agreement),
                         "tax": 23,
                         "quantity": 1,
                         "quantity_unit" : "szt",
-                        // "price_net": agreement["oplatainstalacyjna"],
                         "total_price_gross": agreement["oplatainstalacyjna"] * 1.23,
                         "discount_percent": 0
                     });
@@ -415,11 +453,11 @@ InvoiceManager = function(api_token, endpoint, company_name, invoice_number_leng
 
                 if (agreement["wartoscblack"] > 0) {
                     positions.push({
-                        "name": "Wydruki powyżej abonamentu " + agreement["model"],
+                        "name": getPositionDesc("Wydruki powyżej abonamentu", agreement, invoice['pokaznumerseryjny'], false),
+                        "additional_info": getLocalization(agreement),
                         "tax": 23,
                         "quantity": agreement["stronblackpowyzej"],
                         "quantity_unit" : "szt",
-                        //"price_net": agreement["cenazastrone"],
                         "total_price_gross": agreement["stronblackpowyzej"] * agreement["cenazastrone"] * 1.23,
                         "discount_percent": 0
                     });
@@ -427,11 +465,11 @@ InvoiceManager = function(api_token, endpoint, company_name, invoice_number_leng
 
                 if (agreement["wartosckolor"] > 0) {
                     positions.push({
-                        "name": "Wydruki powyżej abonamentu " + agreement["model"],
+                        "name":getPositionDesc("Wydruki powyżej abonamentu", agreement, invoice['pokaznumerseryjny'], false),
+                        "additional_info": getLocalization(agreement),
                         "tax": 23,
                         "quantity": agreement["stronkolorpowyzej"],
                         "quantity_unit" : "szt",
-                        // "price_net": agreement["cenazastrone_kolor"],
                         "total_price_gross": agreement["stronkolorpowyzej"] * agreement["cenazastrone_kolor"] * 1.23,
                         "discount_percent": 0
                     });
@@ -461,9 +499,11 @@ InvoiceManager = function(api_token, endpoint, company_name, invoice_number_leng
                 "buyer_city": invoice["miasto"],
                 "buyer_street": invoice["ulica"],
                 "positions":positions,
-                "show_discount": "1",
+                "show_discount": "0",
                 "internal_note": agreementIds.join(','),
-                "seller_name": company_name
+                "seller_name": company_name,
+                "additional_info": "1",
+                "additional_info_desc": "Lokalizacja Urządzenia"
                 // "description": "some test description" // uwagi
             }};
     };

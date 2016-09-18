@@ -55,7 +55,7 @@ function showNewClientAdd(rowid)
     
         $.colorbox
         ({
-            height:650+'px',
+            height:780+'px',
             width: 600+'px',
             title:"Dodawanie/Edycja klienta",
             data:
@@ -250,7 +250,7 @@ function showOk(objOk,objLoad,info,objClick,czyreload,showtime,adtrestoredirect)
                                                         }
                                                         if(document.getElementById("tableUmowy")!==null)
                                                         {
-                                                          pokazUmowy();
+                                                          pokazUmowy('divRightCenter','divLoader');
                                                         }
                                                         if(document.getElementById("tableToner")!==null)
                                                         {
@@ -266,6 +266,11 @@ function showOk(objOk,objLoad,info,objClick,czyreload,showtime,adtrestoredirect)
                                     
                             return false;
                         },showtime);
+    // we dont want to wait for table report to be reloaded, it takes some time, so start operation ASAP
+    if(document.getElementById("tableReport")!==null)
+    {
+        generujRaport(function(data, params){invMgr.refreshInvoices(params);invMgr.showAgreementWarnings(params);});
+    }
 }
 function zapiszKlienta(rowid)
 {
@@ -299,7 +304,9 @@ function zapiszKlienta(rowid)
                 mail:doc.getElementById('txtmail').value,
                 mailfaktury:doc.getElementById('txtmailfaktury').value,
                 terminplatnosci:doc.getElementById('txtterminplatnosci').value,
-                opis:doc.getElementById('txtopis').value
+                opis:doc.getElementById('txtopis').value,
+                pokaznumerseryjny:doc.getElementById("checkPokazNumerSeryjny").checked?1:0,
+                pokazstanlicznika:doc.getElementById("checkPokazStanLicznika").checked?1:0
             },
             success: function(dane) 
             {
@@ -405,7 +412,8 @@ function zapiszUmowe(rowid)
                 kodpocztowy:doc.getElementById('txtkodpocztowy').value,
                 telefon:doc.getElementById('txttelefon').value,
                 mail:doc.getElementById('txtmail').value,
-                nazwa:doc.getElementById('txtnazwa').value
+                nazwa:doc.getElementById('txtnazwa').value,
+                osobakontaktowa:doc.getElementById('txtosobakontaktowa').value
             },
             success: function(dane) 
             {
@@ -623,7 +631,7 @@ function usunUmowe(rowid)
                 {
                     alert('Umowa usunięta poprawnie');
                     $.colorbox.close();
-                    pokazUmowy();
+                    pokazUmowy('divRightCenter','divLoader');
                    return false;
                 }   
                return false;
@@ -807,8 +815,8 @@ function showColorTonerInfo(id)
 }
 function pokazUmowy(objtoshow,objtoload,czycolorbox)
 {
-   
-     var doc=document,objCenter = doc.getElementById(objtoshow),objLoad = doc.getElementById(objtoload);
+    czycolorbox = (czycolorbox!== undefined) ? czycolorbox : '';
+    var doc=document,objCenter = doc.getElementById(objtoshow),objLoad = doc.getElementById(objtoload);
     objCenter.innerHTML='';
     objLoad.innerHTML = '<p><img src="light/img/loader.gif" alt="Loading" /></p>';
                  
@@ -823,7 +831,6 @@ function pokazUmowy(objtoshow,objtoload,czycolorbox)
                                   czycolorbox:czycolorbox
                                 },
                           success: function(data) {
-                          
                                     objCenter.innerHTML = data;
                                     $(objCenter).animate({opacity: 1}, 1500 );
                           },
