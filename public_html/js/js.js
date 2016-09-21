@@ -306,7 +306,8 @@ function zapiszKlienta(rowid)
                 terminplatnosci:doc.getElementById('txtterminplatnosci').value,
                 opis:doc.getElementById('txtopis').value,
                 pokaznumerseryjny:doc.getElementById("checkPokazNumerSeryjny").checked?1:0,
-                pokazstanlicznika:doc.getElementById("checkPokazStanLicznika").checked?1:0
+                pokazstanlicznika:doc.getElementById("checkPokazStanLicznika").checked?1:0,
+                fakturadlakazdejumowy:doc.getElementById("checkFakturaDlaKazdejUmowy").checked?1:0
             },
             success: function(dane) 
             {

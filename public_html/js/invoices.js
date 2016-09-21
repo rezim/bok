@@ -121,12 +121,24 @@ InvoiceManager = function(api_token, endpoint, company_name, invoice_number_leng
     this.add = function (invoice, agreementIds) {
         if (agreementIds && agreementIds.length > 0) {
 
-            var params = getInvoiceParams(invoice, agreementIds);
+            if (invoice['fakturadlakazdejumowy'] && agreementIds.length > 1) {
+                var calls = [];
 
-            post(params, function (data) {
-                self.refreshInvoices();
-            });
+                var id = agreementIds.splice(0,1);
+                var params = getInvoiceParams(invoice, id);
 
+                post(params, function () {
+                    self.refreshInvoices(null, function() {
+                        self.add(invoice, agreementIds);
+                    });
+                });
+            } else {
+                var params = getInvoiceParams(invoice, agreementIds);
+
+                post(params, function (data) {
+                    self.refreshInvoices();
+                });
+            }
         } else {
             alert("Wybierz przynajmniej jedną umowę!");
         }
@@ -150,7 +162,7 @@ InvoiceManager = function(api_token, endpoint, company_name, invoice_number_leng
     /**
      * @type {{dateFrom: *, dateTo: *}} period
      */
-    this.refreshInvoices = function (period) {
+    this.refreshInvoices = function (period, callback) {
         if (period) {
             currentPeriodInvoices.period = period;
         }
@@ -226,7 +238,10 @@ InvoiceManager = function(api_token, endpoint, company_name, invoice_number_leng
 
                 // set new invoice counts
                 $.each(groupedInvoices, function (key, group) {
-                    $('.invoice-count.' + key).text(group.length).click(function() {
+
+                    $('.invoice-count.' + key).text(group.length).unbind('click');
+
+                    $('.invoice-count.' + key).text(group.length).bind('click', function() {
                         createInvoiceListView(key, group);
                     });
 
@@ -266,7 +281,9 @@ InvoiceManager = function(api_token, endpoint, company_name, invoice_number_leng
                     $('.errorMessageWrapper').hide();
 
                 }
-
+                if (callback) {
+                    callback();
+                }
             });
 
 

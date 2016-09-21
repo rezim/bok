@@ -1,0 +1,1 @@
+ALTER TABLE `clients` ADD `fakturadlakazdejumowy` BOOLEAN NOT NULL DEFAULT FALSE AFTER `pokazstanlicznika`;

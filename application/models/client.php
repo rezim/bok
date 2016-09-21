@@ -2,7 +2,7 @@
 class client extends Model 
 {
     protected $rowid=0,$nazwakrotka='',$nazwapelna='',$ulica='',$miasto='',$kodpocztowy='',$nip='',$regon='',$telefon='',$mail='',$opis='',$mailfaktury='',$terminplatnosci='';
-    protected $filternazwa='',$filternip='',$filtermiasto='',$filterserial='', $pokaznumerseryjny=false, $pokazstanlicznika=false;
+    protected $filternazwa='',$filternip='',$filtermiasto='',$filterserial='', $pokaznumerseryjny=false, $pokazstanlicznika=false, $fakturadlakazdejumowy=false;
     
     function delete($rowid)
     {
@@ -23,8 +23,8 @@ class client extends Model
     {
         if($this->rowid==0)
         {
-              $columnList = "`nazwakrotka`,`nazwapelna`,`ulica`,`miasto`,`kodpocztowy`,`nip`,`regon`,`telefon`,`mail`,`opis`,`mailfaktury`,`terminplatnosci`";
-              return $this->insert($columnList,'sssssssssssdii',array($this->nazwakrotka,$this->nazwapelna,$this->ulica==''?"NULL":$this->ulica,
+              $columnList = "`nazwakrotka`,`nazwapelna`,`ulica`,`miasto`,`kodpocztowy`,`nip`,`regon`,`telefon`,`mail`,`opis`,`mailfaktury`,`terminplatnosci`,`pokaznumerseryjny`,`pokazstanlicznika`,`fakturadlakazdejumowy`";
+              return $this->insert($columnList,'sssssssssssdiii',array($this->nazwakrotka,$this->nazwapelna,$this->ulica==''?"NULL":$this->ulica,
                   $this->miasto==''?"NULL":$this->miasto,
                   $this->kodpocztowy==''?"NULL":$this->kodpocztowy,
                   $this->nip==''?"NULL":$this->nip,
@@ -35,7 +35,8 @@ class client extends Model
                   $this->mailfaktury==''?"NULL":$this->mailfaktury,
                   $this->terminplatnosci==''?"NULL":$this->terminplatnosci,
                   $this->pokaznumerseryjny,
-                  $this->pokazstanlicznika
+                  $this->pokazstanlicznika,
+                  $this->fakturadlakazdejumowy
                       ));
         }
         else
@@ -57,9 +58,10 @@ class client extends Model
                                      mailfaktury=?,
                                      terminplatnosci=?,
                                      pokaznumerseryjny=?,
-                                     pokazstanlicznika=?                                     
+                                     pokazstanlicznika=?,
+                                     fakturadlakazdejumowy=?
                                      where `rowid`=?"
-                                ,'sssssssssssdiii',
+                                ,'sssssssssssdiiii',
                                  array
                                  (
                                      $this->nazwakrotka==''?"NULL":$this->nazwakrotka,
@@ -76,6 +78,7 @@ class client extends Model
                                      $this->terminplatnosci==''?"NULL":$this->terminplatnosci,
                                      $this->pokaznumerseryjny,
                                      $this->pokazstanlicznika,
+                                     $this->fakturadlakazdejumowy,
                                      $this->rowid
                                  )
                              );           

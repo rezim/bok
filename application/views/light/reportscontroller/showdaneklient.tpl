@@ -55,7 +55,7 @@
                     <td class='tdLink' style='text-align:center;' onClick='showUmowyDoKlienta("{$item.rowidclient}")'>{$item.drukumowy|escape:'htmlall'}</td>
                     <td class='tdLink' style='text-align:center;' onClick='showDrukarkiDoKlienta("{$item.rowidclient}")'>{$item.drukumowy|escape:'htmlall'}</td>
                     <td class='tdNumber' style='padding-right:20px;' >
-                               {if !empty($item.wartoscabonament)} {$item.wartoscabonament|number_format:2:",":" "|escape:'htmlall'}{/if}     
+                               {if !empty($item.wartoscabonament)} {$item.wartoscabonament|number_format:2:",":" "|escape:'htmlall'}{/if}
                     </td>
                     <td class='tdNumber' style='padding-right:20px;' >
                                {if isset($item.wartoscblack)} {$item.wartoscblack|number_format:2:",":" "|escape:'htmlall'}{/if}     
@@ -68,7 +68,8 @@
                                {if isset($item.wartosc)} {$item.wartosc|number_format:2:",":" "|escape:'htmlall'}{/if}     
                     </td>
                     <td align="center">
-                        <input type="image" class="invoice-add" src="{$smarty.const.SCIEZKA}/{$smarty.const.SMARTVERSION}/img/add.png" onClick='invMgr.add({($item)|json_encode nofilter}, invMgr.getSelectedAgreementIds("#tr_{$key}", ".to_invoice_agreement:checked"))'/>
+                        <i class="fa fa-plus invoice-add" onClick='invMgr.add({($item)|json_encode nofilter}, invMgr.getSelectedAgreementIds("#tr_{$key}", ".to_invoice_agreement:checked"))'></i>
+                        <i class="fa fa-file{if $item.fakturadlakazdejumowy}s{/if}-o invoice-add" onClick='invMgr.add({($item)|json_encode nofilter}, invMgr.getSelectedAgreementIds("#tr_{$key}", ".to_invoice_agreement:checked"))'></i>
                         <i class='fa fa-spinner fa-spin invoice-loading'></i>
                         <span class="invoice-count {$item.nip}">0</span>
                         <span style="display: none;" class="invoice-details {$item.nip}"></span>

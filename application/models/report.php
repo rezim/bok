@@ -62,6 +62,7 @@ class report extends Model
                 c.kodpocztowy as 'kodpocztowy',
                 c.pokaznumerseryjny as 'pokaznumerseryjny',
                 c.pokazstanlicznika as 'pokazstanlicznika',                
+                c.fakturadlakazdejumowy as 'fakturadlakazdejumowy',                
                 b.iloscstron as 'currentiloscstron', 
                 a.abonament as 'abonament', 
                 a.rozliczenie as 'rozliczenie', 

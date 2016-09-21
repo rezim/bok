@@ -853,6 +853,11 @@ body
 	cursor: pointer;
 }
 
+.invoice-add {
+	cursor: pointer;
+	color: green;
+}
+
 #tableReport .fa-exclamation-triangle {
 	color: red;
 	margin-right: 3px;

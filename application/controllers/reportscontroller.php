@@ -47,6 +47,7 @@ class reportsController extends Controller
             $dataReports[$item['rowidclient']]['kodpocztowy']=$item['kodpocztowy'];
             $dataReports[$item['rowidclient']]['pokaznumerseryjny']=$item['pokaznumerseryjny'];
             $dataReports[$item['rowidclient']]['pokazstanlicznika']=$item['pokazstanlicznika'];
+            $dataReports[$item['rowidclient']]['fakturadlakazdejumowy']=$item['fakturadlakazdejumowy'];
 
             if(($item['strony_black_koniec']-$item['strony_black_start'])<0)
             {
