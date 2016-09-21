@@ -55,7 +55,7 @@ function showNewClientAdd(rowid)
     
         $.colorbox
         ({
-            height:780+'px',
+            height:800+'px',
             width: 600+'px',
             title:"Dodawanie/Edycja klienta",
             data:
