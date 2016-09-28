@@ -505,7 +505,6 @@ InvoiceManager = function(api_token, endpoint, company_name, invoice_number_leng
             "invoice": {
                 "kind":"vat",
                 "number": invNumber,
-                // "seller_name": company_name,
                 "sell_date": dateFormat(getLastDayInMonth(currentPeriodInvoices.period.dateFrom)),
                 "issue_date": dateFormat(getLastDayInMonth(currentPeriodInvoices.period.dateFrom)),
                 "payment_to": dateFormat(addDaysToDate(getLastDayInMonth(currentPeriodInvoices.period.dateFrom),invoice['terminplatnosci'])),
@@ -518,7 +517,6 @@ InvoiceManager = function(api_token, endpoint, company_name, invoice_number_leng
                 "positions":positions,
                 "show_discount": "0",
                 "internal_note": agreementIds.join(','),
-                "seller_name": company_name,
                 "additional_info": "1",
                 "additional_info_desc": "Lokalizacja Urządzenia"
                 // "description": "some test description" // uwagi
