@@ -216,7 +216,15 @@ class reportsController extends Controller
             $dataReports[$item['rowidclient']]['rowidclient']=$item['rowidclient'];
             $dataReports[$item['rowidclient']]['nazwapelna']=$item['nazwapelna'];
             $dataReports[$item['rowidclient']]['nazwakrotka']=$item['nazwakrotka'];
-            
+            $dataReports[$item['rowidclient']]['nip']=$item['nip'];
+            $dataReports[$item['rowidclient']]['mailfaktury']=$item['mailfaktury'];
+            $dataReports[$item['rowidclient']]['ulica']=$item['ulica'];
+            $dataReports[$item['rowidclient']]['miasto']=$item['miasto'];
+            $dataReports[$item['rowidclient']]['kodpocztowy']=$item['kodpocztowy'];
+            $dataReports[$item['rowidclient']]['pokaznumerseryjny']=$item['pokaznumerseryjny'];
+            $dataReports[$item['rowidclient']]['pokazstanlicznika']=$item['pokazstanlicznika'];
+            $dataReports[$item['rowidclient']]['fakturadlakazdejumowy']=$item['fakturadlakazdejumowy'];
+
             $oplatainstalacyjna = 0;
          
         
@@ -317,6 +325,14 @@ class reportsController extends Controller
             $dataReports[$item['rowidclient']]['umowy'][$item['rowidumowa']]['data_wiadomosci_kolor_start'] = $item['data_wiadomosci_kolor_start'];
             $dataReports[$item['rowidclient']]['umowy'][$item['rowidumowa']]['strony_kolor_koniec'] = $item['strony_kolor_koniec'];
             $dataReports[$item['rowidclient']]['umowy'][$item['rowidumowa']]['data_wiadomosci_kolor_koniec'] = $item['data_wiadomosci_kolor_koniec'];
+
+            // device localization
+            $dataReports[$item['rowidclient']]['umowy'][$item['rowidumowa']]['lokalizacja_ulica'] = $item['lokalizacja_ulica'];
+            $dataReports[$item['rowidclient']]['umowy'][$item['rowidumowa']]['lokalizacja_miasto'] = $item['lokalizacja_miasto'];
+            $dataReports[$item['rowidclient']]['umowy'][$item['rowidumowa']]['lokalizacja_kodpocztowy'] = $item['lokalizacja_kodpocztowy'];
+            $dataReports[$item['rowidclient']]['umowy'][$item['rowidumowa']]['lokalizacja_telefon'] = $item['lokalizacja_telefon'];
+            $dataReports[$item['rowidclient']]['umowy'][$item['rowidumowa']]['lokalizacja_mail'] = $item['lokalizacja_mail'];
+            $dataReports[$item['rowidclient']]['umowy'][$item['rowidumowa']]['lokalizacja_nazwa'] = $item['lokalizacja_nazwa'];
         }
         
          global $smarty;
