@@ -216,6 +216,7 @@ class reportsController extends Controller
             $dataReports[$item['rowidclient']]['rowidclient']=$item['rowidclient'];
             $dataReports[$item['rowidclient']]['nazwapelna']=$item['nazwapelna'];
             $dataReports[$item['rowidclient']]['nazwakrotka']=$item['nazwakrotka'];
+            $dataReports[$item['rowidclient']]['terminplatnosci']=$item['terminplatnosci'];
             $dataReports[$item['rowidclient']]['nip']=$item['nip'];
             $dataReports[$item['rowidclient']]['mailfaktury']=$item['mailfaktury'];
             $dataReports[$item['rowidclient']]['ulica']=$item['ulica'];
