@@ -396,9 +396,9 @@ InvoiceManager = function(api_token, endpoint, company_name, invoice_number_leng
 
     var getLocalization = function(agreement) {
         var localization = [];
-        if (agreement["lokalizacja_ulica"]) {
-            localization.push( agreement["lokalizacja_ulica"].split(' ').join('') );
-        }
+        // if (agreement["lokalizacja_ulica"]) {
+        //     localization.push( agreement["lokalizacja_ulica"].split(' ').join(' ') );
+        // }
 
         if (agreement["lokalizacja_miasto"]) {
             localization.push( agreement["lokalizacja_miasto"] );

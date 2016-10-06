@@ -168,7 +168,7 @@
                                <td class='tdWartosc'>
                                    <input type="text" id='txtcenazastrone_kolor' 
                                           class='textBoxForm' maxlength="10" style='width:70px;min-width:70px;text-align: right;padding-right: 10px;'
-                                          {if $rowid!=0 && !empty($dataUmowa[0].cenazastrone_kolor)}value="{$dataUmowa[0].cenazastrone_kolor|number_format:2:",":" "|escape:'htmlall'}"{/if}>  
+                                          {if $rowid!=0 && !empty($dataUmowa[0].cenazastrone_kolor)}value="{$dataUmowa[0].cenazastrone_kolor|number_format:3:",":" "|escape:'htmlall'}"{/if}>
                                </td>
                                 <td class='tdOpis' >
                                    wartość urządz.
