@@ -11,7 +11,11 @@
             <th style='min-width: 195px;width:195px;'>
                 model
             </th>
-          
+
+            <th style='min-width: 85px;width:85px;'>
+                nazwa
+            </th>
+
             <th style='min-width: 85px;width:85px;'>
                 lokalizacja
             </th>
@@ -69,9 +73,16 @@
                     <td>{$smarty.foreach.loopek.index+1}</td>
                     <td>{$item.serial|escape:'htmlall'}</td>
                     <td>{$item.model|escape:'htmlall'} </td>
-                    
-                    <td>{$item.lokalizacja|escape:'htmlall'}</td>
-                   
+
+                    <td style="text-align: center;">{$item.nazwa}</td>
+                    <td>{if !empty($item.ulica)} {$item.ulica} ,<br />{/if}
+                        {if !empty($item.kodpocztowy)} {$item.kodpocztowy} {/if}
+                        {if !empty($item.miasto)} {$item.miasto} ,<br />{/if}
+                        {if !empty($item.osobakontaktowa)} {$item.osobakontaktowa} ,<br />{/if}
+                        {if !empty($item.telefon)} {$item.telefon} ,<br />{/if}
+                        {if !empty($item.mail)} {$item.mail} <br />{/if}
+                    </td>
+
                     <td >
                         {if !empty($item.black_toner)}
                             {$item.black_toner|number_format:2:",":" "|replace:',00':''|escape:'htmlall'} %

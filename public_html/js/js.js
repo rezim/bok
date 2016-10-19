@@ -160,7 +160,7 @@ function showNewPrinterAdd(serial)
     
         $.colorbox
         ({
-            height:800+'px',
+            height:850+'px',
             width: 600+'px',
             title:"Dodawanie/Edycja drukarki",
             data:
@@ -462,7 +462,14 @@ function zapiszDrukarke(serial)
                 iloscstron_kolor:doc.getElementById('txtiloscstronkolor').value,
                 iloscstron_total:doc.getElementById('txtiloscstrontotal').value,
                 opis:doc.getElementById('txtopis').value,
-                lokalizacja:doc.getElementById('txtlokalizacja').value
+                lokalizacja:doc.getElementById('txtlokalizacja').value,
+                ulica:doc.getElementById('txtulica').value,
+                miasto:doc.getElementById('txtmiasto').value,
+                kodpocztowy:doc.getElementById('txtkodpocztowy').value,
+                telefon:doc.getElementById('txttelefon').value,
+                mail:doc.getElementById('txtmail').value,
+                nazwa:doc.getElementById('txtnazwa').value,
+                osobakontaktowa:doc.getElementById('txtosobakontaktowa').value
             },
             success: function(dane) 
             {

@@ -4,7 +4,9 @@ class printer extends Model
     protected $filterserial='',$filtermodel='',$filternumber='',$filternip='',$clientrowid,$filterklient='';
     protected $serial='', $model='', $product_number='', $nr_firmware='', $date_firmware='', $ip='', $stan_fuser='', $stan_adf='', 
             $black_toner='', $date_insert='', $cyan_toner='', $magenta_toner='', $yellow_toner='', $blackdrum_toner='', $cyandrum_toner='', 
-            $magentadrum_toner='', $yellowdrum_toner='', $dateupdate='',$iloscstron='',$opis='',$lokalizacja='',$iloscstron_kolor='',$iloscstron_total='',$stanna='';
+            $magentadrum_toner='', $yellowdrum_toner='', $dateupdate='',$iloscstron='',$opis='',$lokalizacja='',$iloscstron_kolor='',$iloscstron_total='',$stanna='',
+            // device localization
+            $ulica='', $miasto='', $kodpocztowy='', $telefon='', $mail='', $nazwa='', $osobakontaktowa='';
     
     
       function delete($serial)
@@ -122,9 +124,16 @@ class printer extends Model
                                     `iloscstron_kolor`=?,
                                     `iloscstron_total`=?,
                                     `opis`=?,
-                                    `lokalizacja`=?
+                                    `lokalizacja`=?,
+                                    `ulica`=?,
+                                    `miasto`=?,
+                                    `kodpocztowy`=?,
+                                    `telefon`=?,
+                                    `mail`=?,
+                                    `nazwa`=?,                                    
+                                    `osobakontaktowa`=?                                    
                                      where `serial`=?"
-                                ,'sssssdddsdddsss',
+                                ,'sssssdddsdddssssssssss',
                                  array
                                  (
                                       $this->model==''?"NULL":$this->model,
@@ -139,8 +148,15 @@ class printer extends Model
                                     $this->iloscstron==''?"NULL":str_replace(' ','',str_replace(',','.', $this->iloscstron)),
                                      $this->iloscstron_kolor==''?"NULL":str_replace(' ','',str_replace(',','.', $this->iloscstron_kolor)),
                                      $this->iloscstron_total==''?"NULL":str_replace(' ','',str_replace(',','.', $this->iloscstron_total)),
-                                        $this->opis==''?"NULL":$this->opis,
+                                     $this->opis==''?"NULL":$this->opis,
                                      $this->lokalizacja==''?"NULL":$this->lokalizacja,
+                                     $this->ulica==''?"NULL":$this->ulica,
+                                     $this->miasto==''?"NULL":$this->miasto,
+                                     $this->kodpocztowy==''?"NULL":$this->kodpocztowy,
+                                     $this->telefon==''?"NULL":$this->telefon,
+                                     $this->mail==''?"NULL":$this->mail,
+                                     $this->nazwa==''?"NULL":$this->nazwa,
+                                     $this->osobakontaktowa==''?"NULL":$this->osobakontaktowa,
                                      $this->serial
                                  )
                              );     
@@ -182,8 +198,15 @@ class printer extends Model
                             `stan_adf`,
                             `black_toner`,
                             `date_insert`,
-                            `iloscstron`,`iloscstron_kolor`,`iloscstron_total`,`opis`,`lokalizacja`";
-              $wynik = $this->insert($columnList,'ssssssdddsdddss',
+                            `iloscstron`,`iloscstron_kolor`,`iloscstron_total`,`opis`,`lokalizacja`,
+                            `ulica`,
+                            `miasto`,
+                            `kodpocztowy`,
+                            `telefon`,
+                            `mail`,
+                            `nazwa`,                                       
+                            `osobakontaktowa`";
+              $wynik = $this->insert($columnList,'ssssssdddsdddsssssssss',
                       array(
                   $this->serial,
                   $this->model==''?"NULL":$this->model,
@@ -198,7 +221,14 @@ class printer extends Model
                   $this->iloscstron==''?"NULL":str_replace(' ','',str_replace(',','.', $this->iloscstron)),
                           $this->iloscstron_kolor==''?"NULL":str_replace(' ','',str_replace(',','.', $this->iloscstron_kolor)),
                           $this->iloscstron_total==''?"NULL":str_replace(' ','',str_replace(',','.', $this->iloscstron_total)),
-                      $this->opis==''?"NULL":$this->opis,$this->lokalizacja==''?"NULL":$this->lokalizacja
+                      $this->opis==''?"NULL":$this->opis,$this->lokalizacja==''?"NULL":$this->lokalizacja,
+                  $this->ulica==''?"NULL":$this->ulica,
+                  $this->miasto==''?"NULL":$this->miasto,
+                  $this->kodpocztowy==''?"NULL":$this->kodpocztowy,
+                  $this->telefon==''?"NULL":$this->telefon,
+                  $this->mail==''?"NULL":$this->mail,
+                  $this->nazwa==''?"NULL":$this->nazwa,
+                  $this->osobakontaktowa==''?"NULL":$this->osobakontaktowa
                       ));
               
               if($wynik['status']==1 && $this->iloscstron!='')
