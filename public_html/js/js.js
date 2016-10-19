@@ -246,7 +246,7 @@ function showOk(objOk,objLoad,info,objClick,czyreload,showtime,adtrestoredirect)
                                                         }
                                                         if(document.getElementById("tablePrinter")!==null)
                                                         {
-                                                          pokazDrukarki();
+                                                          pokazDrukarki('divRightCenter','divLoader');
                                                         }
                                                         if(document.getElementById("tableUmowy")!==null)
                                                         {
@@ -706,7 +706,7 @@ function usunDrukarke(serial)
 }
 function pokazDrukarki(objtoshow,objtoload,czycolorbox)
 {
-   
+    czycolorbox = (czycolorbox!== undefined) ? czycolorbox : '';
     var doc=document,objCenter = doc.getElementById(objtoshow),objLoad = doc.getElementById(objtoload);
      
     objCenter.innerHTML='';

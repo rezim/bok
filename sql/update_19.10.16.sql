@@ -14,3 +14,5 @@ ALTER TABLE `agreements`
   DROP `mail`,
   DROP `nazwa`,
   DROP `osobakontaktowa`;
+
+UPDATE `roles_shares` SET `permission` = 'rw' WHERE `roles_shares`.`rowid_role` = 2 AND `roles_shares`.`rowid_share` = 14
