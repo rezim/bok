@@ -2,7 +2,7 @@
 <table class='tablesorter displaytable' id='tablePrinter' cellspacing=0 cellpadding=0>
     <thead>
         <tr>
-             <th style='min-width: 50px;width:50px;'>
+             <th style='min-width: 15px;width:15px;'>
                 Lp
             </th >
             <th style='min-width: 115px;width:115px;'>
@@ -10,10 +10,6 @@
             </th >
             <th style='min-width: 195px;width:195px;'>
                 model
-            </th>
-
-            <th style='min-width: 85px;width:85px;'>
-                nazwa
             </th>
 
             <th style='min-width: 85px;width:85px;'>
@@ -26,10 +22,10 @@
             <!-- <th style='min-width: 70px;width:70px;'>
                 fuser
             </th>-->
-            <th style='min-width: 85px;width:85px;text-align: center;'>
+            <th style='min-width: 75px;width:75px;text-align: center;'>
                 black
             </th>
-            <th style='min-width: 85px;width:85px;text-align: center;'>
+            <th style='min-width: 70px;width:70px;text-align: center;'>
                 color
             </th>
              {if $czycolorbox==''}    
@@ -43,7 +39,7 @@
             <th style='min-width: 85px;width:85px;'>
                 data mail
             </th>
-            <th style='min-width: 110px;width:110px;'>
+            <th style='min-width: 80px;width:80px;'>
                 
             </th>
         </tr>
@@ -74,13 +70,8 @@
                     <td>{$item.serial|escape:'htmlall'}</td>
                     <td>{$item.model|escape:'htmlall'} </td>
 
-                    <td style="text-align: center;">{$item.nazwa}</td>
-                    <td>{if !empty($item.ulica)} {$item.ulica} ,<br />{/if}
-                        {if !empty($item.kodpocztowy)} {$item.kodpocztowy} {/if}
-                        {if !empty($item.miasto)} {$item.miasto} ,<br />{/if}
-                        {if !empty($item.osobakontaktowa)} {$item.osobakontaktowa} ,<br />{/if}
-                        {if !empty($item.telefon)} {$item.telefon} ,<br />{/if}
-                        {if !empty($item.mail)} {$item.mail} <br />{/if}
+                    <td align="center">
+                        {if !empty($item.miasto)} {$item.miasto}{/if}
                     </td>
 
                     <td >

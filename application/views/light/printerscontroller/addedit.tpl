@@ -1,6 +1,7 @@
+<div wymaganylevel='w' wymaganyzrobiony='0'>
 <table id='tableform' class='tableform' cellspacing=0 cellpadding=0>
                           <tr>
-                               <td class='tdOpis' >
+                               <td class='tdOpis'>
                                    Serial
                                </td>
                                <td class='tdWartosc'>
@@ -161,7 +162,7 @@
                            
                           <tr>
                                <td class='tdOpis' style='height:50px;min-height: 50px;max-height: 50px;'>
-                                   Lokalizacja
+                                   Uwagi
                                </td>
                                <td class='tdWartosc'>
                                    <textarea id="txtlokalizacja" class="textareaForm" style='height:80px;min-height: 80px;'  
@@ -169,7 +170,9 @@
                                </td>
                            </tr>
                            <tr><td style='height:3px;min-height: 3px;' colspan=2></td></tr>
-
+    </table>
+    </div>
+    <table class='tableform' cellspacing=0 cellpadding=0>
     <!-- device localization -->
     <tr>
         <td class='tdOpis' colspan="4" >
@@ -277,14 +280,14 @@
                             <tr>
                                 <td style='text-align: right;' colspan="2">
                                      
-                                    <div class='divSave' wymaganylevel='w' wymaganyzrobiony='0' >
+                                    <div class='divSave' >
                                         <div id='actionerror' class='actionerror'><span>Błąd zapisu danych.</span></div>
                                         <div id='actionok' class='actionok' ><span style='margin-top:6px;'>Dane zapisane poprawnie</span></div>
-                                        <div id='actionbuttonclick2' class="buttonDeclin" onmousedown='usunDrukarke("{$serial}");return false;'>
+                                        <div wymaganylevel='w' wymaganyzrobiony='0' id='actionbuttonclick2' class="buttonDeclin" onmousedown='usunDrukarke("{$serial}");return false;'>
 
                                             <span >X Usuń</span>
                                         </div>
-                                            <div id='actionbuttonclick' class="actionbuttonZapisz" onmousedown='zapiszDrukarke("{$serial}");return false;'>
+                                            <div wymaganylevel='r' wymaganyzrobiony='0' id='actionbuttonclick' class="actionbuttonZapisz" onmousedown='zapiszDrukarke("{$serial}");return false;'>
                                             <span >Zapisz >></span>
                                         </div>
                                         <div id='actionloader' class="actionloader">
