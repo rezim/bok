@@ -774,9 +774,9 @@ function generujCustom(successCallback, errorCallback)
     objCenter.innerHTML='';
     objLoad.innerHTML = '<p><img src="light/img/loader.gif" alt="Loading" /></p>';
 
-
     var dateFrom = new Date();
-    dateFrom.setDate(1, 1);
+    dateFrom.setDate(1);
+    dateFrom.setMonth(dateFrom.getMonth()-1);
 
     var dateTo = new Date(dateFrom);
     dateTo.setMonth(dateFrom.getMonth()+1, 1);
