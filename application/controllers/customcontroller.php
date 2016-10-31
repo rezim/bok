@@ -16,8 +16,8 @@ class customController extends Controller
 
        $this->custom->populateWithPost();
        $dataReportsMiesieczne = $this->custom->getReportsMiesieczne();
-        $dataReportsRoczne = $this->custom->getReportsRoczne();
-      
+
+       $dataReports = null;
         foreach($dataReportsMiesieczne as $key=>$item) {
 
             if ($item['data_wiadomosci_black_koniec'] != '0000-00-00'
