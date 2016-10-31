@@ -256,6 +256,10 @@ function showOk(objOk,objLoad,info,objClick,czyreload,showtime,adtrestoredirect)
                                                         {
                                                           pokazTonery();
                                                         }
+                                                        if(document.getElementById("tableCounters")!==null)
+                                                        {
+                                                          generujCustom();
+                                                        }
                                                 }
                                             else
                                             {
@@ -761,6 +765,66 @@ function pokazTonery()
                                 });
                delete objCenter;delete objLoad;
                return false;
+}
+
+
+function generujCustom(successCallback, errorCallback)
+{
+    var doc=document,objCenter = doc.getElementById('divRightCenter'),objLoad = doc.getElementById('divLoader');
+    objCenter.innerHTML='';
+    objLoad.innerHTML = '<p><img src="light/img/loader.gif" alt="Loading" /></p>';
+
+
+    var dateFrom = new Date();
+    dateFrom.setDate(1, 1);
+
+    var dateTo = new Date(dateFrom);
+    dateTo.setMonth(dateFrom.getMonth()+1, 1);
+    dateTo.setDate(1, 1);
+
+    var params = {
+        dateFrom: $.datepicker.formatDate('yy-mm-dd', dateFrom),
+        dateTo: $.datepicker.formatDate('yy-mm-dd', dateTo)
+    };
+    $.ajax({
+        url:sciezka+"/custom/showdaneklient/todiv",
+        type: 'POST',
+        data: {
+            dataod:params.dateFrom,
+            datado:params.dateTo
+        },
+        success: function(data) {
+
+            objCenter.innerHTML = data;
+            $(objCenter).animate({opacity: 1}, 1500 );
+
+            $('.printerCounterDateTo').datepicker($.datepicker.regional['pl'],{ dateFormat: "yy-mm-dd",
+                changeMonth: true,
+                changeYear: true,
+                showOtherMonths: true,
+                selectOtherMonths: true });
+
+            $('.printerCounterDateTo').val($.datepicker.formatDate('yy-mm-dd', new Date(params.dateTo)));
+
+            if (successCallback) {
+                successCallback(data, params);
+            }
+
+        },
+        error: function(err){
+            objCenter.innerHTML = 'Problem z wygenerowaniem raportu';
+
+            if (errorCallback) {
+                errorCallback(err);
+            }
+        }
+    }).done(function ()
+    {
+        objLoad.innerHTML = '';
+        $("#tableReport").tablesorter();     uprawnienia();
+    });
+    delete objCenter;delete objLoad;
+    return false;
 }
 function generujRaport(successCallback, errorCallback)
 {
@@ -1548,5 +1612,44 @@ function uprawnienia()
 
 
             });       
+    }
+}
+
+function savePrinterCounters(serial)
+{
+    var
+        doc=document,
+        objLoad=doc.getElementById('actionloader'),
+        objOk = doc.getElementById('actionok'),
+        objError = doc.getElementById('actionerror'),
+        objClick = doc.getElementById('actionbuttonclick');
+
+
+
+    $(objClick).hide();
+    $(objLoad).show();
+
+    if (confirm('Czarne: ' + doc.getElementById('blackCount_' + serial).value + ', Kolor: ' + doc.getElementById('colorCount_' + serial).value + '. Potwierdzasz ?'))
+    {
+        $.ajax({
+            type: 'POST',
+            url: sciezka + "/printers/savestanna/notemplate",
+            async: true,
+            data: {
+                serial: serial,
+                iloscstron: doc.getElementById('blackCount_' + serial).value,
+                iloscstron_kolor: doc.getElementById('colorCount_' + serial).value,
+                stanna: doc.getElementById('dateToSave_' + serial).value,
+            },
+            success: function (dane) {
+                checkReplay(objError, objLoad, null, objClick, dane, objOk, 1, 3000, null);
+                return false;
+            },
+            error: function () {
+
+                showError(objError, objLoad, null, objClick, 3000);
+                return false;
+            }
+        });
     }
 }
