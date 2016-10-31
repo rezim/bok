@@ -79,6 +79,10 @@
                          {/foreach}
                     {/if}
                     {/foreach}
+
+                    {if $turns == 1}
+                        <tr><td colspan="8">Aktualnie wszystkie liczniki drukarek są poprawne.</td></tr>
+                    {/if}
                     </tbody>
             </table>
 
