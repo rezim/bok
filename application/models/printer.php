@@ -160,27 +160,27 @@ class printer extends Model
                                      $this->serial
                                  )
                              );     
-             
-             if($wynik['status']==1 && $this->iloscstron!='')
-             {
-               
-                 $this->_table = 'pages';
-                     
-                            $columnList = "`serial`,
-                                       `ilosc`,`ilosckolor`,`ilosctotal`,
-                                       `dateinsert`,
-                                       `datawiadomosci`";
-                         return $this->insert($columnList,'sdddss',
-                                 array(
-                                        $this->serial,
-                                        $this->iloscstron==''?"NULL":str_replace(' ','',str_replace(',','.', $this->iloscstron)),
-                                          $this->iloscstron_kolor==''?"NULL":str_replace(' ','',str_replace(',','.', $this->iloscstron_kolor)),
-                                     $this->iloscstron_total==''?"NULL":str_replace(' ','',str_replace(',','.', $this->iloscstron_total)),
-                                     date('Y-m-d H:i:s'),date('Y-m-d H:i:s')
-                                 ));
-                 
-             }
-            else 
+             // NOTE TR: do not insert to pages, it will broke some functionality
+//             if($wynik['status']==1 && $this->iloscstron!='')
+//             {
+//
+//                 $this->_table = 'pages';
+//
+//                            $columnList = "`serial`,
+//                                       `ilosc`,`ilosckolor`,`ilosctotal`,
+//                                       `dateinsert`,
+//                                       `datawiadomosci`";
+//                         return $this->insert($columnList,'sdddss',
+//                                 array(
+//                                        $this->serial,
+//                                        $this->iloscstron==''?"NULL":str_replace(' ','',str_replace(',','.', $this->iloscstron)),
+//                                          $this->iloscstron_kolor==''?"NULL":str_replace(' ','',str_replace(',','.', $this->iloscstron_kolor)),
+//                                     $this->iloscstron_total==''?"NULL":str_replace(' ','',str_replace(',','.', $this->iloscstron_total)),
+//                                     date('Y-m-d H:i:s'),date('Y-m-d H:i:s')
+//                                 ));
+//
+//             }
+//            else
                 return $wynik;
              
              
@@ -233,8 +233,8 @@ class printer extends Model
               
               if($wynik['status']==1 && $this->iloscstron!='')
              {
-               
-                 
+
+
                      $this->_table = 'pages';
                             $columnList = "`serial`,
                                        `ilosc`,`ilosckolor`,`ilosctotal`,
@@ -248,9 +248,9 @@ class printer extends Model
                           $this->iloscstron_total==''?"NULL":str_replace(' ','',str_replace(',','.', $this->iloscstron_total)),
                                      date('Y-m-d H:i:s'),date('Y-m-d H:i:s')
                                  ));
-                 
+
              }
-            else 
+            else
                 return $wynik;
             
         }

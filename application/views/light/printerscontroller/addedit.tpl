@@ -283,7 +283,7 @@
                                     <div class='divSave' >
                                         <div id='actionerror' class='actionerror'><span>Błąd zapisu danych.</span></div>
                                         <div id='actionok' class='actionok' ><span style='margin-top:6px;'>Dane zapisane poprawnie</span></div>
-                                        <div wymaganylevel='w' wymaganyzrobiony='0' id='actionbuttonclick2' class="buttonDeclin" onmousedown='usunDrukarke("{$serial}");return false;'>
+                                        <div wymaganylevel='w' wymaganyzrobiony='0' id='actionbuttonclick2' style="float: left" class="buttonDeclin" onmousedown='usunDrukarke("{$serial}");return false;'>
 
                                             <span >X Usuń</span>
                                         </div>
