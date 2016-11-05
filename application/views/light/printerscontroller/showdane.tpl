@@ -79,7 +79,7 @@
                             {$item.black_toner|number_format:2:",":" "|replace:',00':''|escape:'htmlall'} %
                         {/if}
                         
-                            <img class='imgColor' onClick='showTonersInfo("{$item.serial}");' 
+                            <img class='{if $item.type_color}imgColor{else}imgBlack{/if}' onClick='showTonersInfo("{$item.serial}");'
                                  src='{$smarty.const.SCIEZKA}/{$smarty.const.SMARTVERSION}/img/fake.png' />
                         
                     </td>

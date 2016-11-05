@@ -6,7 +6,7 @@ class printer extends Model
             $black_toner='', $date_insert='', $cyan_toner='', $magenta_toner='', $yellow_toner='', $blackdrum_toner='', $cyandrum_toner='', 
             $magentadrum_toner='', $yellowdrum_toner='', $dateupdate='',$iloscstron='',$opis='',$lokalizacja='',$iloscstron_kolor='',$iloscstron_total='',$stanna='',
             // device localization
-            $ulica='', $miasto='', $kodpocztowy='', $telefon='', $mail='', $nazwa='', $osobakontaktowa='';
+            $ulica='', $miasto='', $kodpocztowy='', $telefon='', $mail='', $nazwa='', $osobakontaktowa='', $type_color;
     
     
       function delete($serial)
@@ -131,9 +131,10 @@ class printer extends Model
                                     `telefon`=?,
                                     `mail`=?,
                                     `nazwa`=?,                                    
-                                    `osobakontaktowa`=?                                    
+                                    `osobakontaktowa`=?,                                    
+                                    `type_color`=?                             
                                      where `serial`=?"
-                                ,'sssssdddsdddssssssssss',
+                                ,'sssssdddsdddsssssssssis',
                                  array
                                  (
                                       $this->model==''?"NULL":$this->model,
@@ -157,6 +158,7 @@ class printer extends Model
                                      $this->mail==''?"NULL":$this->mail,
                                      $this->nazwa==''?"NULL":$this->nazwa,
                                      $this->osobakontaktowa==''?"NULL":$this->osobakontaktowa,
+                                     $this->type_color==''?"NULL":$this->type_color,
                                      $this->serial
                                  )
                              );     
@@ -205,8 +207,9 @@ class printer extends Model
                             `telefon`,
                             `mail`,
                             `nazwa`,                                       
-                            `osobakontaktowa`";
-              $wynik = $this->insert($columnList,'ssssssdddsdddsssssssss',
+                            `osobakontaktowa`,
+                            `type_color`";
+              $wynik = $this->insert($columnList,'ssssssdddsdddsssssssssi',
                       array(
                   $this->serial,
                   $this->model==''?"NULL":$this->model,
@@ -228,7 +231,7 @@ class printer extends Model
                   $this->telefon==''?"NULL":$this->telefon,
                   $this->mail==''?"NULL":$this->mail,
                   $this->nazwa==''?"NULL":$this->nazwa,
-                  $this->osobakontaktowa==''?"NULL":$this->osobakontaktowa
+                  $this->osobakontaktowa==''?"NULL":$this->osobakontaktowa, $this->type_color
                       ));
               
               if($wynik['status']==1 && $this->iloscstron!='')

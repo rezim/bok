@@ -46,11 +46,11 @@
         <script type="text/javascript" src="{$smarty.const.SCIEZKA}/js/jquery-1.11.0.min.js"></script>
         <script type="text/javascript" src="{$smarty.const.SCIEZKA}/js/jquery-ui-1.10.4.custom.min.js"></script>
         <script type="text/javascript" src="{$smarty.const.SCIEZKA}/js/jquery-ui-timepicker-addon.js"></script>
-        <script type="text/javascript" src="{$smarty.const.SCIEZKA}/js/js.js"></script>
+        <script type="text/javascript" src="{$smarty.const.SCIEZKA}/js/js.js?{$smarty.now}"></script>
         <script type="text/javascript" src="{$smarty.const.SCIEZKA}/js/acl.js"></script>
         <script type="text/javascript" src="{$smarty.const.SCIEZKA}/js/jquery.tablesorter.min.js"></script>
         <script type="text/javascript" src="{$smarty.const.SCIEZKA}/js/dropzone.js"></script>
-        <script type="text/javascript" src="{$smarty.const.SCIEZKA}/js/invoices.js"></script>
+        <script type="text/javascript" src="{$smarty.const.SCIEZKA}/js/invoices.js?{$smarty.now}"></script>
 </head>
  <?php flush(); ?>
 <body>

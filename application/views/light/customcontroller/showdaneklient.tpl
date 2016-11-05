@@ -63,12 +63,14 @@
                                         </td>
 
                                         <td>
+                                            {if $item2.type_color}
                                             <input id="colorCount_{$item2.serial}"
                                                    type="text"
                                                    class="textBoxForm"
                                                    maxlength="100"
                                                    style="width:55px;min-width:55px;text-align: right;padding-right: 5px;"
                                                    value="{$item2.strony_kolor_koniec|number_format:0:",":" "|escape:'htmlall'}">
+                                            {/if}
                                         </td>
                                         <td>
                                             <input  type="hidden" id='dateToSave_{$item2.serial}' class='textBoxNormal printerCounterDateTo' style='width:80px;min-width: 80px;'>

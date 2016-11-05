@@ -458,6 +458,7 @@ function zapiszDrukarke(serial)
                 iloscstron:doc.getElementById('txtiloscstron').value,
                 iloscstron_kolor:doc.getElementById('txtiloscstronkolor').value,
                 iloscstron_total:doc.getElementById('txtiloscstrontotal').value,
+                type_color:doc.getElementById('checkKolorowa').checked?1:0,
                 opis:doc.getElementById('txtopis').value,
                 lokalizacja:doc.getElementById('txtlokalizacja').value,
                 ulica:doc.getElementById('txtulica').value,
@@ -1629,18 +1630,29 @@ function savePrinterCounters(serial)
     $(objClick).hide();
     $(objLoad).show();
 
-    if (confirm('Czarne: ' + doc.getElementById('blackCount_' + serial).value + ', Kolor: ' + doc.getElementById('colorCount_' + serial).value + '. Potwierdzasz ?'))
+    var message = 'Czarne: ' + doc.getElementById('blackCount_' + serial).value;
+    if (doc.getElementById('colorCount_' + serial)) {
+        message += ', Kolor: ' + doc.getElementById('colorCount_' + serial).value + '.';
+    }
+    message += '. Potwierdzasz ?';
+
+    if (confirm(message))
     {
+
+        var d =  {
+            serial: serial,
+            iloscstron: doc.getElementById('blackCount_' + serial).value,
+            stanna: doc.getElementById('dateToSave_' + serial).value
+        };
+        if (doc.getElementById('colorCount_' + serial)) {
+            d['iloscstron_kolor'] = doc.getElementById('colorCount_' + serial).value;
+        }
+
         $.ajax({
             type: 'POST',
             url: sciezka + "/printers/savestanna/notemplate",
             async: true,
-            data: {
-                serial: serial,
-                iloscstron: doc.getElementById('blackCount_' + serial).value,
-                iloscstron_kolor: doc.getElementById('colorCount_' + serial).value,
-                stanna: doc.getElementById('dateToSave_' + serial).value,
-            },
+            data: d,
             success: function (dane) {
                 checkReplay(objError, objLoad, null, objClick, dane, objOk, 1, 3000, null);
                 return false;

@@ -703,6 +703,17 @@ body
     border:none;
    
 }
+.imgBlack
+{
+	height:13px;min-height: 13px;max-height: 13px;
+	width:15px;min-width: 15px;max-width: 15px;
+	position:relative;
+	background:url("../img/img.png");
+	background-position: -175px 0px;
+	cursor:hand;cursor:pointer;
+	border:none;
+
+}
 .tdLink:hover
 {
     color:red;

@@ -42,6 +42,7 @@ class custom extends Model
                 a.nrumowy as 'nrumowy', 
                 a.dataod as 'dataod', 
                 a.datado as 'datado', 
+                b.type_color as 'type_color',
                 b.ulica as 'lokalizacja_ulica',
                 b.miasto as 'lokalizacja_miasto',
                 b.kodpocztowy as 'lokalizacja_kodpocztowy',

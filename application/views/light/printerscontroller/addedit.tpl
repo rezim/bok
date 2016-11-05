@@ -169,6 +169,17 @@
                                              maxlength="500" >{if $serial!=''}{$dataPrinter[0].lokalizacja|escape:'htmlall'}{/if}</textarea>
                                </td>
                            </tr>
+
+                            <tr>
+                                <td class='tdOpis' >
+                                    Kolorowa
+                                </td>
+                                <td class='tdWartosc'>
+                                    <input type="checkbox" id='checkKolorowa' class='checkBoxNormal'
+                                           {if $dataPrinter[0].type_color}checked{/if}
+                                    />
+                                </td>
+                            </tr>
                            <tr><td style='height:3px;min-height: 3px;' colspan=2></td></tr>
     </table>
     </div>
