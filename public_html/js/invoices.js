@@ -175,11 +175,19 @@ InvoiceManager = function(api_token, endpoint, company_name, invoice_number_leng
 
             var params1 = params.concat([["page", 1].join('=')]);
             var params2 = params.concat([["page", 2].join('=')]);
+            var params3 = params.concat([["page", 3].join('=')]);
+            var params4 = params.concat([["page", 4].join('=')]);
+            var params5 = params.concat([["page", 5].join('=')]);
+            var params6 = params.concat([["page", 6].join('=')]);
+            var params7 = params.concat([["page", 7].join('=')]);
+            var params8 = params.concat([["page", 8].join('=')]);
+            var params9 = params.concat([["page", 9].join('=')]);
+            var params10 = params.concat([["page", 10].join('=')]);
 
             $('.invoice-add').hide();
             $('.invoice-loading').show();
 
-            $.when(get(params1), get(params2)).done(function(inv1, inv2) {
+            $.when(get(params1), get(params2), get(params3), get(params4), get(params5), get(params6), get(params7), get(params8), get(params9), get(params10)).done(function(inv1, inv2, inv3, inv4, inv5, inv6, inv7, inv8, inv9, inv10) {
 
                 $('.invoice-add').show();
                 $('.invoice-loading').hide();
@@ -187,7 +195,7 @@ InvoiceManager = function(api_token, endpoint, company_name, invoice_number_leng
                 var invoices = [] ;
 
                 // remove all invoice corrects (from_invoice_id != null)
-                $.each(inv1[0].concat(inv2[0]), function (index, inv) {
+                $.each(inv1[0].concat(inv2[0]).concat(inv3[0]).concat(inv4[0]).concat(inv5[0]).concat(inv6[0]).concat(inv7[0]).concat(inv8[0]).concat(inv9[0]).concat(inv10[0]), function (index, inv) {
                     if (!inv['from_invoice_id']) {
                         invoices.push(inv);
                     }
@@ -242,6 +250,16 @@ InvoiceManager = function(api_token, endpoint, company_name, invoice_number_leng
                     $('.invoice-count.' + key).text(group.length).unbind('click');
 
                     $('.invoice-count.' + key).text(group.length).bind('click', function() {
+                        createInvoiceListView(key, group);
+                    });
+
+                    //TODO: move it to separate function
+                    var sum = 0;
+                    for (var i=0; i < group.length; i++) {
+                        sum += parseFloat(group[i].price_net);
+                    }
+                    $('.invoice-sum.' + key).text(sum.toFixed(2)).unbind('click');
+                    $('.invoice-sum.' + key).text(sum.toFixed(2)).bind('click', function() {
                         createInvoiceListView(key, group);
                     });
 

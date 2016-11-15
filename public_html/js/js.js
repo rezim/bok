@@ -1665,3 +1665,43 @@ function savePrinterCounters(serial)
         });
     }
 }
+
+function generateProfitsReport(successCallback, errorCallback)
+{
+    var doc=document,objCenter = doc.getElementById('divRightCenter'),objLoad = doc.getElementById('divLoader');
+    objCenter.innerHTML='';
+    objLoad.innerHTML = '<p><img src="light/img/loader.gif" alt="Loading" /></p>';
+
+    var params = {
+        dateFrom: doc.getElementById('txtdataod').value,
+        dateTo: doc.getElementById('txtdatado').value
+    };
+    $.ajax({
+        url:sciezka+"/profitability/showdaneklient/todiv",
+        type: 'POST',
+        data: {
+            dataod:params.dateFrom,
+            datado:params.dateTo,
+            filterklient:doc.getElementById('txtklient').value,
+            filterdrukarka:doc.getElementById('txtdrukarka').value
+        },
+        success: function(data) {
+
+            objCenter.innerHTML = data;
+            $(objCenter).animate({opacity: 1}, 1500 );
+
+            successCallback(data, params);
+        },
+        error: function(err){
+            objCenter.innerHTML = 'Problem z wygenerowaniem raportu';
+
+            errorCallback(err);
+        }
+    }).done(function ()
+    {
+        objLoad.innerHTML = '';
+        $("#tableReport").tablesorter();     uprawnienia();
+    });
+    delete objCenter;delete objLoad;
+    return false;
+}

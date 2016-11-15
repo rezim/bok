@@ -111,7 +111,11 @@
                     {if isset($smarty.session.przypisanemenu['li_countersshow'])}
                         <li id='li_caseshow' class='last'><a href='{$smarty.const.SCIEZKA}/custom/show' ><span>Liczniki Drukarek</span></a></li>
                     {/if}
-                 
+
+                    {if isset($smarty.session.przypisanemenu['li_profitabilityshow'])}
+                        <li id='li_caseshow' class='last'><a href='{$smarty.const.SCIEZKA}/profitability/show' ><span>Rentowność Umów</span></a></li>
+                    {/if}
+
                  {*  <li class='active'><a href='/logs/show' ><span>Historia</span></a></li>*}
                 </ul>
          </div>
