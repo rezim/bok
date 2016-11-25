@@ -15,6 +15,9 @@
         <link rel="stylesheet" type="text/css" href="{$smarty.const.SCIEZKA}/{$smarty.const.SMARTVERSION}/css/sort.css" title="default" />
         <link rel="stylesheet" type="text/css" href="{$smarty.const.SCIEZKA}/{$smarty.const.SMARTVERSION}/css/dropzone.css" title="default" />
 
+        <!-- bootstrap -->
+        <link rel="stylesheet" type="text/css" href="{$smarty.const.SCIEZKA}/css/bootstrap.min.css" title="default"/>
+
     <script type="text/javascript">
         function loadScript(src, callback) 
             {
@@ -51,6 +54,12 @@
         <script type="text/javascript" src="{$smarty.const.SCIEZKA}/js/jquery.tablesorter.min.js"></script>
         <script type="text/javascript" src="{$smarty.const.SCIEZKA}/js/dropzone.js"></script>
         <script type="text/javascript" src="{$smarty.const.SCIEZKA}/js/invoices.js?{$smarty.now}"></script>
+        <!-- angular libs -->
+        <script type="text/javascript" src="{$smarty.const.SCIEZKA}/js/lib/angular.min.js"></script>
+
+        <script type="text/javascript" src="{$smarty.const.SCIEZKA}/js/angular/app.js"></script>
+        <script type="text/javascript" src="{$smarty.const.SCIEZKA}/js/angular/service/rest.js"></script>
+        <script type="text/javascript" src="{$smarty.const.SCIEZKA}/js/angular/ctrl/profitabilityCtrl.js"></script>
 </head>
  <?php flush(); ?>
 <body>
