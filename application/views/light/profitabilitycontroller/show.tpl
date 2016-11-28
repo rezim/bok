@@ -41,7 +41,7 @@
             </thead>
             <tbody ng-repeat="profit in ctrl.getProfits() | filter:search | orderBy: 'name'">
 
-                <tr ng-click="ctrl.getInvoiceDetails(profit.invoice.list, profit.nip); show_row=!show_row">
+                <tr ng-click="show_row=!show_row">
                     <td class='tdLink'>[[profit.name]]</td>
                     <td align="right">[[profit.sum.wartoscUrzadzen | currency: '']]</td>
                     <td align="right" class="profit">[[profit.invoice.sum | currency: '']]</td>
@@ -49,7 +49,7 @@
                     <td align="right" ng-class="((profit.invoice.sum - profit.sum.total) >= 0) ? 'profit' : 'cost'">[[(profit.invoice.sum - profit.sum.total) | currency: '']]</td>
                 </tr>
                 <tr ng-if="show_row">
-                    <td colspan="5">
+                    <td colspan="5" class="inner-table">
 
                     <table class='tablesorter displaytable' id='tableReport' cellspacing=0 cellpadding=0>
                         <thead>
@@ -79,9 +79,14 @@
                             <td align="left">[[agreement.agreementRowId]]</td>
                             <td align="left">[[(agreement.agreementIsActive) ? 'tak' : 'nie']]</td>
                             <td align="right">[[agreement.agreementValueUnit | currency: '']]</td>
-                            <td align="right">-</td>
-                            <td align="right">[[agreement.sum.total | currency: '']]</td>
-                            <td align="right">-</td>
+                            <td align="right" class="profit">
+                                <i ng-if="ctrl.getInvoiceDetails(profit.invoice.list, profit.nip).isPending" class="fa fa-spinner fa-spin" aria-hidden="true"></i>
+                                [[(ctrl.getInvoiceDetails(profit.invoice.list, profit.nip)[agreement.agreementRowId].netPrice) | currency: '']]
+                            </td>
+                            <td align="right" class="cost">[[agreement.sum.total | currency: '']]</td>
+                            <td align="right" ng-class="((ctrl.getInvoiceDetails(profit.invoice.list, profit.nip)[agreement.agreementRowId].netPrice) - agreement.sum.total) >= 0 ? 'profit' : 'cost' ">
+                                [[((ctrl.getInvoiceDetails(profit.invoice.list, profit.nip)[agreement.agreementRowId].netPrice) - agreement.sum.total) | currency: '']]
+                            </td>
                         </tr>
                         </tbody>
                         </table>

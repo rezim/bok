@@ -13,3 +13,8 @@
 .inactive-agreement {
 	text-decoration: line-through;
 }
+
+.inner-table {
+	background-color: #EDEDED;
+	padding: 20px;
+}

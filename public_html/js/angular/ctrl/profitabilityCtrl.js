@@ -149,21 +149,106 @@ ProfitabilityCtrl = function($scope, rest, $q, $interpolate) {
                 invIds.push(inv.id);
             });
 
-            getInvoicesByIds(invIds);
+            invoiceDetails[clientId] = {isPending: true};
+
+            getInvoicesByIds(invIds, clientId);
         }
+
+        return invoiceDetails[clientId];
     };
 
-    var getInvoicesByIds = function (ids) {
+    var getInvoicesByIds = function (ids, clientId) {
         // TODO: move it to configuration
-        var url = 'https://otus.fakturownia.pl/invoices/{{id}}.json?api_token=kVWaYhlLHXhWQNKDTSk/OTUS';
+        var url = 'https://otus.fakturownia.pl/invoices/{id}.json?api_token=kVWaYhlLHXhWQNKDTSk/OTUS';
         var requests = [];
         angular.forEach(ids, function (invId) {
-            requests.push(rest.get($interpolate(url, {id: invId})));
+            requests.push(rest.get(url.replace('{id}',invId)));
         });
 
 
-        $q.all(requests, function(responses) {
-            console.log(responses);
+        $q.all(requests).then(function(responses) {
+            var result = {};
+            angular.forEach(responses, function(response) {
+                result = mergeParsedInvoices(result, parseInvoice(response));
+            });
+            invoiceDetails[clientId] = result;
+
+            console.log(result);
+        });
+    };
+
+
+    var mergeParsedInvoices = function(inv1, inv2) {
+        var result = inv1;
+        angular.forEach(inv2, function(value, key) {
+            if (result[key]) {
+                result[key].netPrice += value.netPrice;
+            } else {
+                result[key] = inv2[key];
+            }
+        });
+
+        return result;
+    };
+
+    var parseInvoice = function(invoice) {
+        var agreements, positions;
+        var parsedInvoice = {};
+        if (invoice.internal_note) {
+            agreements = getOrderedAgreements(invoice.internal_note);
+            positions = parseInvoicePositions(invoice.positions);
+
+            if (!(agreements.length == positions.length)) {
+                console.log("Error for invoice: " + invoice);
+            } else {
+                for(var i=0; i<agreements.length; i++) {
+                    var agreement = agreements[i];
+                    var position = positions[i];
+                    parsedInvoice[agreement] = {
+                        device: position.name,
+                        netPrice: position.sum,
+                        agreementNb: agreement
+                    };
+                }
+            }
+        } else {
+            console.log("Warning! no agreements for invoice: " + invoice);
+        }
+
+        return parsedInvoice;
+    };
+
+    var parseInvoicePositions = function(positions) {
+        var devices = [];
+        var currentElement;
+        angular.forEach(positions, function(position) {
+            if (position.name.startsWith('Wynajem drukarki')) {
+                var newDeviceName = position.name.split('Wynajem drukarki ')[1];
+                currentElement = {name: newDeviceName, sum: parseFloat(position.total_price_net)};
+                devices.push(currentElement);
+            } else {
+                currentElement.sum += parseFloat(position.total_price_net);
+            }
+        });
+
+        return devices;
+    };
+
+    var getOrderedAgreements = function(strAgreements) {
+        var agrNbs = strAgreements.split(',');
+
+        return agrNbs.sort(function(a, b) {
+            var aa = a.split('/');
+            var bb = b.split('/');
+
+            var result = 0, i = 2;
+
+            do {
+                result = parseInt(aa[i]) - parseInt(bb[i]);
+                i--;
+            } while(result == 0 && i >= 0);
+
+            return result;
         });
     };
 
