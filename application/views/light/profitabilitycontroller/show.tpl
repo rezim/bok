@@ -10,19 +10,12 @@
      <input type="text" id='txtdataod' class='textBoxNormal' style='width:90px;min-width: 90px;' ng-model="date_from">
      <label for="txtdatado" class="labelNormal" >data do</label>
      <input type="text" id='txtdatado' class='textBoxNormal' style='width:90px;min-width: 90px;' ng-model="date_to">
-     {*<label for="txtmiesiac" class="labelNormal">miesiąc</label>*}
-     {*<select id='txtmiesiac' class="comboboxNormal" style='width:110px;min-width:110px;'>*}
-                {*<option value="" selected></option>*}
-                {*{foreach from=$months item=item key=key}*}
-                    {*<option value="{$rok}-{$key}-01" >{$item}</option>*}
-                {*{/foreach}*}
-     {*</select>*}
-     {*<label for="txtklient" class="labelNormal">klient</label>*}
-     {*<input type="text" id='txtklient' class='textBoxNormal' style='width:90px;min-width: 90px;'>  *}
-     {*<label for="txtdrukarka" class="labelNormal">drukarka</label>*}
-     {*<input type="text" id='txtdrukarka' class='textBoxNormal' style='width:90px;min-width: 90px;'>*}
-
      <a href="#" class="buttonpokaz" ng-click='ctrl.loadData(date_from, date_to)'>Pokaż</a>
+</div>
+<div class="divFilter" ng-if="ctrl.getProfits().length">
+    <label class="labelNormal">
+        klient <input type="text" class='textBoxNormal' ng-model="search.name">
+    </label>
 </div>
 <div>
     <div>
@@ -35,15 +28,6 @@
                 <th width="200px" style="text-align: right">
                     wartosc urzadzen
                 </th>
-                {*<th width="200px" style="text-align: right">*}
-                    {*ilosc km*}
-                {*</th>*}
-                {*<th width="200px" style="text-align: right">*}
-                    {*czas pracy*}
-                {*</th>*}
-                {*<th width="200px" style="text-align: right">*}
-                    {*wartosc materialow*}
-                {*</th>*}
                 <th width="200px" style="text-align: right">
                     wartość faktur
                 </th>
@@ -55,18 +39,54 @@
                 </th>
             </tr>
             </thead>
-            <tbody>
+            <tbody ng-repeat="profit in ctrl.getProfits() | filter:search | orderBy: 'name'">
 
-            <tr ng-repeat="profit in ctrl.getProfits() | orderBy: 'costs.nazwakrotka'">
-                <td class='tdLink'>[[profit.costs.nazwakrotka]]</td>
-                <td class='tdLink' align="right">[[profit.costs.wartosc_urzadzen]]</td>
-                {*<td class='tdLink' align="right">[[profit.costs.ilosc_km | currency: '']]</td>*}
-                {*<td class='tdLink' align="right">[[profit.costs.czas_pracy | currency: '']]</td>*}
-                {*<td class='tdLink' align="right">[[profit.costs.wartosc_materialow | currency: '']]</td>*}
-                <td class='tdLink' align="right">[[profit.invoice.sum | currency: '']]</td>
-                <td class='tdLink' align="right">[[profit.costs.total | currency: '']]</td>
-                <td class='tdLink' align="right">[[(profit.invoice.sum - profit.costs.total) | currency: '']]</td>
-            </tr>
+                <tr ng-click="ctrl.getInvoiceDetails(profit.invoice.list, profit.nip); show_row=!show_row">
+                    <td class='tdLink'>[[profit.name]]</td>
+                    <td align="right">[[profit.sum.wartoscUrzadzen | currency: '']]</td>
+                    <td align="right" class="profit">[[profit.invoice.sum | currency: '']]</td>
+                    <td align="right" class="cost">[[profit.sum.total | currency: '']]</td>
+                    <td align="right" ng-class="((profit.invoice.sum - profit.sum.total) >= 0) ? 'profit' : 'cost'">[[(profit.invoice.sum - profit.sum.total) | currency: '']]</td>
+                </tr>
+                <tr ng-if="show_row">
+                    <td colspan="5">
+
+                    <table class='tablesorter displaytable' id='tableReport' cellspacing=0 cellpadding=0>
+                        <thead>
+                        <tr>
+                            <th width="200px">
+                                numer umowy
+                            </th>
+                            <th width="200px">
+                                aktywna
+                            </th>
+                            <th width="200px" style="text-align: right">
+                                wartosc urzadzenia
+                            </th>
+                            <th width="200px" style="text-align: right">
+                                wartość faktur
+                            </th>
+                            <th width="200px" style="text-align: right">
+                                suma kosztów
+                            </th>
+                            <th width="200px" style="text-align: right">
+                                dochód
+                            </th>
+                        </tr>
+                        </thead>
+                        <tbody>
+                        <tr ng-repeat="agreement in profit.agreements" ng-class="(agreement.agreementIsActive) ? '' : 'inactive-agreement'">
+                            <td align="left">[[agreement.agreementRowId]]</td>
+                            <td align="left">[[(agreement.agreementIsActive) ? 'tak' : 'nie']]</td>
+                            <td align="right">[[agreement.agreementValueUnit | currency: '']]</td>
+                            <td align="right">-</td>
+                            <td align="right">[[agreement.sum.total | currency: '']]</td>
+                            <td align="right">-</td>
+                        </tr>
+                        </tbody>
+                        </table>
+                    </>
+                </tr>
             </tbody>
         </table>
         <i ng-if="isPending" class="fa fa-spinner fa-spin fa-5x" aria-hidden="true" style="margin-top: 50px;"></i>

@@ -1,0 +1,15 @@
+.profit {
+	color: green;
+}
+
+.profit:hover, .cost:hover {
+	font-weight: bold;
+}
+
+.cost {
+	color: red;
+}
+
+.inactive-agreement {
+	text-decoration: line-through;
+}
