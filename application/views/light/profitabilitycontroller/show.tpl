@@ -5,7 +5,8 @@
 </script>
 <div ng-app="app" ng-controller="ProfitabilityCtrl as ctrl">
 <div class='divFilter'>
-    <a href="javascript:void(0)" ng-click="date_from='2016-06-01'; date_to=ctrl.getToday(); ctrl.loadData(date_from, date_to)">od początku</a>
+    <a href="javascript:void(0)" ng-click="date_from='2013-08-01'; date_to=ctrl.getToday(); ctrl.loadData(date_from, date_to)" style="padding: 20px">od początku</a>|
+    <a href="javascript:void(0)" ng-click="date_from='2016-06-01'; date_to=ctrl.getToday(); ctrl.loadData(date_from, date_to)" style="padding: 20px">wszystkie faktury</a>
      <label for="txtdataod" class="labelNormal" >data od</label>
      <input type="text" id='txtdataod' class='textBoxNormal' style='width:90px;min-width: 90px;' ng-model="date_from">
      <label for="txtdatado" class="labelNormal" >data do</label>
