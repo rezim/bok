@@ -5,7 +5,7 @@
 </script>
 <div ng-app="app" ng-controller="ProfitabilityCtrl as ctrl">
 <div class='divFilter'>
-
+    <a href="javascript:void(0)" ng-click="date_from='2016-06-01'; date_to=ctrl.getToday(); ctrl.loadData(date_from, date_to)">od początku</a>
      <label for="txtdataod" class="labelNormal" >data od</label>
      <input type="text" id='txtdataod' class='textBoxNormal' style='width:90px;min-width: 90px;' ng-model="date_from">
      <label for="txtdatado" class="labelNormal" >data do</label>
@@ -13,6 +13,7 @@
      <a href="#" class="buttonpokaz" ng-click='ctrl.loadData(date_from, date_to)'>Pokaż</a>
 </div>
 <div class="divFilter" ng-if="ctrl.getProfits().length">
+
     <label class="labelNormal">
         klient <input type="text" class='textBoxNormal' ng-model="search.name">
     </label>
@@ -74,20 +75,62 @@
                             </th>
                         </tr>
                         </thead>
-                        <tbody>
-                        <tr ng-repeat="agreement in profit.agreements" ng-class="(agreement.agreementIsActive) ? '' : 'inactive-agreement'">
-                            <td align="left">[[agreement.agreementRowId]]</td>
-                            <td align="left">[[(agreement.agreementIsActive) ? 'tak' : 'nie']]</td>
-                            <td align="right">[[agreement.agreementValueUnit | currency: '']]</td>
-                            <td align="right" class="profit">
-                                <i ng-if="ctrl.getInvoiceDetails(profit.invoice.list, profit.nip).isPending" class="fa fa-spinner fa-spin" aria-hidden="true"></i>
-                                [[(ctrl.getInvoiceDetails(profit.invoice.list, profit.nip)[agreement.agreementRowId].netPrice) | currency: '']]
-                            </td>
-                            <td align="right" class="cost">[[agreement.sum.total | currency: '']]</td>
-                            <td align="right" ng-class="((ctrl.getInvoiceDetails(profit.invoice.list, profit.nip)[agreement.agreementRowId].netPrice) - agreement.sum.total) >= 0 ? 'profit' : 'cost' ">
-                                [[((ctrl.getInvoiceDetails(profit.invoice.list, profit.nip)[agreement.agreementRowId].netPrice) - agreement.sum.total) | currency: '']]
-                            </td>
-                        </tr>
+                        <tbody ng-repeat="agreement in profit.agreements" ng-class="(agreement.agreementIsActive) ? '' : 'inactive-agreement'">
+                            <tr ng-click="show_notifications=!show_notifications">
+                                <td align="left">[[agreement.agreementRowId]]</td>
+                                <td align="left">[[(agreement.agreementIsActive) ? 'tak' : 'nie']]</td>
+                                <td align="right">[[agreement.agreementValueUnit | currency: '']]</td>
+                                <td align="right" class="profit">
+                                    <i ng-if="ctrl.getInvoiceDetails(profit.invoice.list, profit.nip).isPending" class="fa fa-spinner fa-spin" aria-hidden="true"></i>
+                                    [[(ctrl.getInvoiceDetails(profit.invoice.list, profit.nip)[agreement.agreementRowId].netPrice) | currency: '']]
+                                </td>
+                                <td align="right" class="cost">[[agreement.sum.total | currency: '']]</td>
+                                <td align="right" ng-class="((ctrl.getInvoiceDetails(profit.invoice.list, profit.nip)[agreement.agreementRowId].netPrice) - agreement.sum.total) >= 0 ? 'profit' : 'cost' ">
+                                    [[((ctrl.getInvoiceDetails(profit.invoice.list, profit.nip)[agreement.agreementRowId].netPrice) - agreement.sum.total) | currency: '']]
+                                </td>
+                            </tr>
+                            <tr ng-if="show_notifications">
+                                <td colspan="6" class="inner-table" style="background-color: #f9fbbb">
+                                <table>
+                                    <thead>
+                                    <tr>
+                                    <th width="200px">serial</th>
+                                    <th width="200px">zgłaszający</th>
+                                    <th width="200px">temat</th>
+                                    <th width="200px">data zakończenia</th>
+                                    <th width="200px" style="text-align: right">koszt kilometrów</th>
+                                    <th width="200px" style="text-align: right">koszt pracy</th>
+                                    <th width="200px" style="text-align: right">koszt materiałów</th>
+                                    </tr>
+                                    </thead>
+                                    <tbody>
+                                    <tr ng-repeat="notification in ctrl.getAgreementNotifications(date_from, date_to, agreement.agreementId)">
+                                        <td>
+                                            [[notification.serial]]
+                                        </td>
+                                        <td>
+                                            [[notification.osobazglaszajaca]]
+                                        </td>
+                                        <td>
+                                            [[notification.temat]]
+                                        </td>
+                                        <td align="center">
+                                            [[ctrl.getDate(notification.date_zakonczenia)]]
+                                        </td>
+                                        <td align="right" class="cost">
+                                            [[notification.koszt_ilosc_km | currency: '']]
+                                        </td>
+                                        <td align="right" class="cost">
+                                            [[notification.koszt_czas_pracy | currency: '']]
+                                        </td>
+                                        <td align="right" class="cost">
+                                            [[notification.koszt_wartosc_materialow | currency: '']]
+                                        </td>
+                                    </tr>
+                                    </tbody>
+                                </table>
+                                </td>
+                            </tr>
                         </tbody>
                         </table>
                     </>

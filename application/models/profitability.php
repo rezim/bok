@@ -3,17 +3,32 @@ class profitability extends Model
 {
     protected $dataod='',$datado='',$filterklient='',$filterdrukarka='',$nazwakrotka='';
 
+    function getAgreementNotifications($dateFrom, $dateTo, $rowagreement_id) {
+        $query =
+            "
+            SELECT n.*, (IFNULL(ilosc_km, 0)*(SELECT stawka_kilometrowa from config)) as 'koszt_ilosc_km', 
+                            (IFNULL(czas_pracy, 0)*(SELECT stawka_godzinowa from config)) as 'koszt_czas_pracy', 
+                            IFNULL(wartosc_materialow, 0) as 'koszt_wartosc_materialow'
+            FROM `notifications` n
+            WHERE n.rowid_agreements = {$rowagreement_id} and 
+                DATE(n.date_zakonczenia) >= '{$dateFrom}' and 
+                DATE(n.date_zakonczenia) <= '{$dateTo}'
+            ORDER BY date_zakonczenia DESC
+           ";
+        return json_encode($this->query($query,null,false));
+    }
+
+
     function getOveralCosts($dateFrom, $dateTo) {
         $query =
             "
-            SELECT c.nazwakrotka as 'client_name', c.nip as 'client_nip', a.rowid as 'client_agreement_id', a.nrumowy as 'client_agreement_rowid', a.wartoscurzadzenia as 'client_agreement_value_unit', costs.* 
+            SELECT c.nazwakrotka as 'client_name', c.nip as 'client_nip', a.activity as 'agreement_isActive', a.rowid as 'client_agreement_id', a.nrumowy as 'client_agreement_rowid', a.wartoscurzadzenia as 'client_agreement_value_unit', costs.* 
             FROM clients c LEFT OUTER JOIN agreements a on c.rowid = a.rowidclient
             LEFT OUTER JOIN (
                         SELECT
                             c.nip as 'nip', 
                             a.nrumowy as 'agreement_id', 
-                            n.rowid_agreements as 'agreement_rowid',
-                            a.activity as 'agreement_isActive',
+                            n.rowid_agreements as 'agreement_rowid',                            
                             a.dataod as 'agreement_startDate',
                             a.datado as 'agreement_endDate',
                             n.serial as 'device_sn',
@@ -32,7 +47,7 @@ class profitability extends Model
                             DATE(date_zakonczenia) <= '{$dateTo}'
                         GROUP BY n.serial, n.rowid_agreements  
                 ) AS costs ON c.nip = costs.nip and a.rowid = costs.agreement_rowid
-            WHERE a.activity = 1    
+            WHERE a.activity = 1 || a.activity = 0    
             ORDER BY client_name, costs.agreement_rowid
            ";
         return json_encode($this->query($query,null,false));

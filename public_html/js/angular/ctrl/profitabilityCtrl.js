@@ -1,4 +1,6 @@
-ProfitabilityCtrl = function($scope, rest, $q, $interpolate) {
+ProfitabilityCtrl = function($scope, rest, $q, $filter) {
+
+    $scope.date = new Date();
 
     $scope.isPending = false;
 
@@ -10,13 +12,36 @@ ProfitabilityCtrl = function($scope, rest, $q, $interpolate) {
 
     var invoiceDetails = {};
 
+    var agreementNotifications = {};
+
+    this.getToday = function() {
+        return $filter('date')(new Date(), 'yyyy-MM-dd');
+    };
+
     this.getProfits = function() {
         return profits;
     };
 
     this.invalidate = function() {
         profits = [];
-        clientInvoices = {};
+        invoiceDetails = {};
+        agreementNotifications = {};
+    };
+
+
+    this.getAgreementNotifications = function (date_from, date_to, rowagreement_id) {
+        if (!agreementNotifications[rowagreement_id]) {
+            agreementNotifications[rowagreement_id] = {isPending: true};
+            rest.post('getagreementnotifications', {
+                date_from: date_from,
+                date_to: date_to,
+                rowagreement_id: rowagreement_id
+            }).then(function (notifications) {
+                agreementNotifications[rowagreement_id] = notifications;
+            });
+        }
+
+        return agreementNotifications[rowagreement_id];
     };
 
     this.loadData = function(date_from, date_to) {
@@ -36,6 +61,7 @@ ProfitabilityCtrl = function($scope, rest, $q, $interpolate) {
                     var objProfits = {};
 
                     angular.forEach(overalCosts, function (costs) {
+
                         // if client not exists, initialize object with new client
                         if (!objProfits[costs['client_nip']]) {
                             objProfits[costs['client_nip']] = {
@@ -100,6 +126,18 @@ ProfitabilityCtrl = function($scope, rest, $q, $interpolate) {
                     });
 
                     angular.forEach(invoices, function (invoice) {
+
+                        if (invoice.buyer_name.indexOf('FINANSOWE') != -1) {
+                            console.log(invoice.buyer_tax_no);
+                        }
+
+                        if (invoice.buyer_tax_no == '8992755868') {
+                            console.log(invoice);
+                        }
+
+                        // 8992755868 <- 9141528038 ->
+                        invoice.buyer_tax_no = mapTaxNo(invoice.buyer_tax_no);
+
                         if (!objProfits[invoice.buyer_tax_no]) {
                             objProfits[invoice.buyer_tax_no] = {
                             };
@@ -155,6 +193,35 @@ ProfitabilityCtrl = function($scope, rest, $q, $interpolate) {
         }
 
         return invoiceDetails[clientId];
+    };
+
+
+    /**
+     * Currently we need to map NIP for only one client,
+     * in case there will be another client, we would need
+     * to extend this solution.
+     *
+     * 8992755868 <- 9141528038
+     *
+     * @param taxNo
+     * @returns {*}
+     */
+    var mapTaxNo = function(taxNo) {
+        var result = taxNo;
+        if (result == "8992755868") {
+            result = "9141528038";
+        }
+
+        return result;
+    };
+
+    this.getDate = function (strDate) {
+        var result = strDate;
+        if (strDate && strDate.split(' ').length > 1) {
+            result = strDate.split(' ')[0];
+        }
+
+        return result;
     };
 
     var getInvoicesByIds = function (ids, clientId) {

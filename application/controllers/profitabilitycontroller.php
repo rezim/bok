@@ -11,6 +11,14 @@ class profitabilityController extends Controller
         $smarty->assign('fakturownia_conf_file_path', ROOT . DS . 'config' . DS . 'fakturownia.conf');
     }
 
+    function getagreementnotifications() {
+        if ($_POST['date_from'] && $_POST['date_to'] && $_POST['rowagreement_id']) {
+            echo $this->profitability->getAgreementNotifications($_POST['date_from'], $_POST['date_to'], $_POST['rowagreement_id']);
+        } else {
+            echo "blędne parametry wejściowe";
+        }
+    }
+
     function getoveralcosts() {
         if ($_POST['date_from'] && $_POST['date_to']) {
             echo $this->profitability->getOveralCosts($_POST['date_from'], $_POST['date_to']);
