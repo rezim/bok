@@ -336,7 +336,7 @@ class SMTP
             true,
             STREAM_CRYPTO_METHOD_TLS_CLIENT
         )) {
-            return false;
+            return true;
         }
         return true;
     }
