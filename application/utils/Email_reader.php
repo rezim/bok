@@ -167,10 +167,10 @@ function email_pull() {
                 
 	  $datawiadomosc = date("Y-m-d H:i:s", $email['header']->udate);
 	        // for My Slow Low, check if I found an image attachment
-          
-          
-          
-                if($email['header']->subject==TEMATMINOLTA)
+
+                // TR NOTE: check if subject contains the search text,
+                //          this is because is could contains 'Fw:' 'Re:', others
+                if(strpos($email['header']->subject, TEMATMINOLTA) !== false)
                 {
                         if(!_readMinolta( $email['body'],$datawiadomosc))
                         {
