@@ -133,7 +133,7 @@ class notification extends Model
                     'wart_domyslna'=>'1',
                        'value'=>'',
                     ),
-                'rowid_type'=>array(
+/*                'rowid_type'=>array(
                     'baza'=>'rowid_type',
                     'sql' => '`rowid_type` as `rowid_type`',
                     'datatype'=>'i',
@@ -147,6 +147,7 @@ class notification extends Model
                     'wart_domyslna'=>'1',
                     'value'=>'',
                 ),
+*/
                  'temat'=>array(
                         'baza'=>'temat',
                         'sql' => '`temat` as `temat`',
