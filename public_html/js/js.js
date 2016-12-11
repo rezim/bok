@@ -1264,6 +1264,35 @@ function pokazNotiFi()
                delete objCenter;delete objLoad;
                return false;
 }
+
+
+function showNotification(rowid)
+{
+
+    $.colorbox
+    ({
+        height:650+'px',
+        width: 600+'px',
+        title:"Zgłoszenie",
+        data:
+        {
+            rowid:rowid
+        },
+
+        href:sciezka+"/notifications/addedit/todiv",
+        onClosed:function()
+        {
+
+        },
+        onComplete:function()
+        {
+            uprawnienia();
+        }
+    });
+}
+
+
+
 function showNewNotiAdd(rowid)
 {
     
@@ -1539,8 +1568,9 @@ function sendMail(noti_rowid,replyrowid,uniqueid)
             success: function(dane) 
             {
             
-                   checkReplay(objError,objLoad,null,objClick,dane,objOk,0,3000,null,1); 
-                   $.colorbox.close();
+                   checkReplay(objError,objLoad,null,objClick,dane,objOk,0,3000,null,1);
+                   // TR: commented to only check if send email is working fine
+                   // $.colorbox.close();
                    showMaile();
                    
                    return false;

@@ -133,6 +133,20 @@ class notification extends Model
                     'wart_domyslna'=>'1',
                        'value'=>'',
                     ),
+                'rowid_type'=>array(
+                    'baza'=>'rowid_type',
+                    'sql' => '`rowid_type` as `rowid_type`',
+                    'datatype'=>'i',
+                    'activity'=>'1',
+                    'type'=>'combobox',
+                    'label'=>'Typ zgłoszenia',
+                    'class'=>'comboboxForm',
+                    'style'=>'width:250px;min-width:250px;max-width:250px;',
+                    'arr' => 'daneType',
+                    'divek'=>'divNotiWykonanie',
+                    'wart_domyslna'=>'1',
+                    'value'=>'',
+                ),
                  'temat'=>array(
                         'baza'=>'temat',
                         'sql' => '`temat` as `temat`',
@@ -496,6 +510,13 @@ class notification extends Model
         $query = "select * from notifications_status ";
         return $this->query($query,null,false); 
     }
+
+    function getType()
+    {
+        $query = "select * from notifications_type ";
+        return $this->query($query,null,false);
+    }
+
     function getNotiKonczace()
     {
          $query = "select 
@@ -580,6 +601,7 @@ a.SLA-(( unix_timestamp(now())
                 a.rowid_client as 'rowid_client',
                 b.nazwakrotka as 'nazwakrotka',
                 a.serial as 'serial',
+                a.rowid_type as 'rowid_type',
                 a.date_insert as 'date_insert',
                 a.date_zakonczenia as 'date_zakonczenia',
                 c.sla as 'sla',

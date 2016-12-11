@@ -1,0 +1,20 @@
+table.notification-popup
+{
+    margin: 10px;
+}
+table.notification-popup > tbody > tr > td:first-child
+{
+    background-color: #8d8f8f;
+    color:white;
+    padding: 5px;
+    text-align: right;
+    vertical-align: top;
+}
+table.notification-popup > tbody > tr > td:nth-child(2)
+{
+    padding: 5px;
+}
+
+table.notification-popup td.text-field {
+    width: 600px;
+}

@@ -29,11 +29,12 @@ class notificationsController extends Controller
                 
                 $daneWykonuje = $this->notification->getOsoby();
                 $daneStatus = $this->notification->getStatusy();
-               
+                $daneType = $this->notification->getType();
                 global $smarty;
                 $smarty->assign('daneWykonuje',$daneWykonuje);
                 $smarty->assign('daneStatus',$daneStatus);
-                
+                $smarty->assign('daneType',$daneType);
+
                 parent::addedit();
           }
           else

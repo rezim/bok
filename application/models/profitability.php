@@ -47,7 +47,7 @@ class profitability extends Model
                             DATE(date_zakonczenia) <= '{$dateTo}'
                         GROUP BY n.serial, n.rowid_agreements  
                 ) AS costs ON c.nip = costs.nip and a.rowid = costs.agreement_rowid
-            WHERE a.activity = 1 || a.activity = 0    
+            WHERE a.activity = 1 || a.activity = 0
             ORDER BY client_name, costs.agreement_rowid
            ";
         return json_encode($this->query($query,null,false));
@@ -59,7 +59,7 @@ class profitability extends Model
         $ch = curl_init();
         $pageNb = 1;
         do {
-          $url = 'http://otus.fakturownia.pl/invoices.json?period=' . $period . '&page='. $pageNb .'&date_from=' . $dateFrom . '&date_to=' . $dateTo . '&api_token=kVWaYhlLHXhWQNKDTSk/OTUS';
+          $url = FAKTUROWNIA_ENDPOINT . '/invoices.json?period=' . $period . '&page='. $pageNb .'&date_from=' . $dateFrom . '&date_to=' . $dateTo . '&api_token=' . FAKTUROWNIA_APITOKEN;
           curl_setopt($ch, CURLOPT_URL, $url);
           curl_setopt($ch, CURLOPT_RETURNTRANSFER, TRUE);
           $data = json_decode(curl_exec($ch), true);
