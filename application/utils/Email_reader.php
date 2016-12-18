@@ -249,27 +249,32 @@ function email_pull() {
 	    // close the connection to the IMAP server
 	    $emailReader->close();
 	}
-        
-        
-        
-        
+
+
+
+
         function _process_xml($atach,$b)
         {
-            file_put_contents(SCIEZKAPLIKU,$atach); 
-            
+            file_put_contents(SCIEZKAPLIKU,$atach);
+
         }
         function _readOnlyfileXML()
         {
-            
-            
-      
+
                $dom = new DOMDocument();
             
                $dom->load(SCIEZKAPLIKU);
-            
-               
-                    $dataDevice = getDataDevice($dom); 
-                    print_r($dataDevice);die();
+               // check if this is new HP format
+               if ($dom->firstChild->tagName == 'dev:DeviceService') {
+                   $dataDevice = getHPDataDevice($dom);
+               } else {
+                   $dataDevice = getOldHPDataDevice($dom);
+               }
+
+
+            print_r($dataDevice['system']);
+
+               die();
            unset($dom);
            unset($dataDevice);
             return true;
@@ -292,28 +297,129 @@ function email_pull() {
         }
         function _readfileXML($dataWiadomosci)
         {
-            
-            
       
-               $dom = new DOMDocument();
-            
-               $dom->load(SCIEZKAPLIKU);
-            
-               
-                    $dataDevice = getDataDevice($dom); 
-                    
-                    if(count($dataDevice)==0) 
-                    {
-                        return false;
-                    }
-                   if($dataDevice['system']['dd:SerialNumber']!='')
-                       saveDataDevice($dataDevice,$dataWiadomosci);
-                    
-           unset($dom);
-           unset($dataDevice);
+            $dom = new DOMDocument();
+
+            $dom->load(SCIEZKAPLIKU);
+
+            // check if this is new HP format
+            if ($dom->firstChild->tagName == 'dev:DeviceService') {
+                $dataDevice = getHPDataDevice($dom);
+            } else {
+                $dataDevice = getOldHPDataDevice($dom);
+            }
+
+            if(count($dataDevice)==0)
+            {
+            return false;
+            }
+            if($dataDevice['system']['dd:SerialNumber']!='')
+            saveDataDevice($dataDevice,$dataWiadomosci);
+
+            unset($dom);
+            unset($dataDevice);
             return true;
         }
-        function getDataDevice($dom) 
+
+        function debug_print($val) {
+            print('<pre>');
+            print_r($val);
+            print('<pre>');
+        }
+
+        function getCounterValue($counter) {
+            $counterValue = 0;
+            $fixedPointNumber = $counter->getElementsByTagName('FixedPointNumber');
+            if ($fixedPointNumber->length > 0 &&
+                $fixedPointNumber[0]->getElementsByTagName('Significand')->length > 0) {
+                $significand = $fixedPointNumber[0]->getElementsByTagName('Significand')[0];
+                $counterValue = $significand->nodeValue;
+            }
+
+            return $counterValue;
+        }
+
+        // <dev:DeviceService>
+        //  <dev:TicketMetaData></>
+        //  <config:SystemConfigurationService></>
+        //  <print:PrintService></>
+        //  <dusi:DeviceUsageService></>
+        // </dev:DeviceService>
+        function getHPDataDevice($dom)
+        {
+            $assoc=array();
+
+            $printService = $dom->getElementsByTagName('PrintService');
+
+            // get system configuration
+            $systemConfigurationService = $dom->getElementsByTagName('SystemConfigurationService');
+
+            if ($systemConfigurationService->length > 0) {
+                if ($systemConfigurationService[0]->getElementsByTagName('DeviceIdentification')->length > 0) {
+                    foreach ($systemConfigurationService[0]->getElementsByTagName('DeviceIdentification')[0]->childNodes as $deviceIdent) {
+                        if ($deviceIdent->nodeName != '#text') {
+                            $assoc['system'][$deviceIdent->nodeName] = $deviceIdent->nodeValue;
+                        }
+                    }
+                }
+                if ($systemConfigurationService[0]->getElementsByTagName('DeviceInformation')->length > 0 &&
+                    $systemConfigurationService[0]->getElementsByTagName('DeviceInformation')[0]->getElementsByTagName('ServiceID')->length > 0) {
+                    $serviceID = $systemConfigurationService[0]->getElementsByTagName('DeviceInformation')[0]->getElementsByTagName('ServiceID')[0];
+                    $assoc['system'][$serviceID->nodeName] = $serviceID->nodeValue;
+                }
+            }
+            // end get system configuration
+
+            // this means that we are not able to read device information,
+            // there is no sens to continue
+            if(empty($assoc)) return $assoc;
+
+            // get device usage information
+            $deviceUsageService = $dom->getElementsByTagName('DeviceUsageService');
+
+            if ($deviceUsageService->length > 0) {
+                $printerSubunit = $deviceUsageService[0]->getElementsByTagName('PrinterSubunit');
+                if ($printerSubunit->length > 0) {
+                    $counterGroups = $printerSubunit[0]->getElementsByTagName('CounterGroup');
+
+                    foreach ($counterGroups as $counterGroup) {
+                        $groupName = $counterGroup->getElementsByTagName('CounterGroupName');
+
+                        if ($groupName->length > 0 && $groupName->item(0)->nodeValue == 'ImpressionsByMediaSizeID') {
+
+                            $monochromeImpressions = $colorImpressions = $totalImpressions = 0;
+                            $mediaGroups = $counterGroup->getElementsByTagName('CounterGroup');
+                            foreach ($mediaGroups as $mediaGroup) {
+                                $counters = $mediaGroup->getElementsByTagName('Counter');
+
+                                foreach($counters as $counter) {
+                                    $counterType = $counter->getElementsByTagName('CounterName')->item(0);
+                                    if ($counterType->nodeValue == 'MonochromeImpressions') {
+                                        $monochromeImpressions += getCounterValue($counter);
+                                    }
+                                    if ($counterType->nodeValue == 'ColorImpressions') {
+                                        $colorImpressions += getCounterValue($counter);
+                                    }
+                                    if ($counterType->nodeValue == 'TotalImpressions') {
+                                        $totalImpressions += getCounterValue($counter);
+                                    }
+                                }
+                            }
+
+                            $assoc['system']['wydruk'] = $monochromeImpressions;
+                            $assoc['system']['wydrukkolor'] = $colorImpressions;
+                            $assoc['system']['wydruktotal'] = $totalImpressions;
+                        }
+                    }
+                }
+            }
+
+            // end device information
+
+            return $assoc;
+        }
+
+        function getOldHPDataDevice($dom)
         {
             $assoc=array();
                
