@@ -57,13 +57,13 @@
                     <td class='tdNumber' style='padding-right:20px;' >
                                {if !empty($item.wartoscabonament)} {$item.wartoscabonament|number_format:2:",":" "|escape:'htmlall'}{/if}
                     </td>
-                    <td class='tdNumber' style='padding-right:20px;' >
+                    <td class='tdNumber' style='padding-right:20px;white-space: nowrap' >
                                {if isset($item.wartoscblack)} {$item.wartoscblack|number_format:2:",":" "|escape:'htmlall'}{/if}     
                     </td>
-                      <td class='tdNumber' style='padding-right:20px;' >
+                      <td class='tdNumber' style='padding-right:20px;white-space: nowrap' >
                                {if isset($item.wartosckolor)} {$item.wartosckolor|number_format:2:",":" "|escape:'htmlall'}{/if}     
                     </td>
-                    <td class='tdNumber tdLink' title='Pokaż szczegóły' style='padding-right:20px;font-weight: bold;color:blue;' 
+                    <td class='tdNumber tdLink' title='Pokaż szczegóły' style='padding-right:20px;font-weight: bold;color:blue;white-space: nowrap'
                         onClick="showSzczegolyRaportRozwin('tr_{$key}')">
                                {if isset($item.wartosc)} {$item.wartosc|number_format:2:",":" "|escape:'htmlall'}{/if}     
                     </td>
@@ -239,7 +239,7 @@ Strony kolorowe koniec - Licznik: {$item2.strony_kolor_koniec|number_format:0:",
                       <td class='tdNumber tdLink' title='Pokaż szczegóły' style='padding-right:20px;font-weight: bold;color:brown;' >
                      Suma:
                     </td>
-                    <td class='tdNumber tdLink' title='Pokaż szczegóły' style='padding-right:20px;font-weight: bold;color:brown;' >
+                    <td class='tdNumber tdLink' title='Pokaż szczegóły' style='padding-right:20px;font-weight: bold;color:brown;white-space: nowrap' >
                                {if isset($dataReports.suma)} {$dataReports.suma|number_format:2:",":" "|escape:'htmlall'}{/if}     
                     </td>
                 </tr>
