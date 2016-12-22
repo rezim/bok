@@ -133,7 +133,7 @@ class notification extends Model
                     'wart_domyslna'=>'1',
                        'value'=>'',
                     ),
-/*                'rowid_type'=>array(
+                'rowid_type'=>array(
                     'baza'=>'rowid_type',
                     'sql' => '`rowid_type` as `rowid_type`',
                     'datatype'=>'i',
@@ -147,7 +147,6 @@ class notification extends Model
                     'wart_domyslna'=>'1',
                     'value'=>'',
                 ),
-*/
                  'temat'=>array(
                         'baza'=>'temat',
                         'sql' => '`temat` as `temat`',
@@ -495,6 +494,13 @@ class notification extends Model
         $query = "select * from notifications where rowid={$rowid}";
         return $this->query($query,null,false);     
     }
+
+    function getTypy()
+    {
+        $query = "select rowid as id,nazwa as dane from notifications_type";
+        return $this->query($query,'id',false);
+    }
+
     function getOsoby()
     {
         $query = "select rowid as id,id as dane from users where activity=1";

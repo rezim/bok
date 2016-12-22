@@ -29,7 +29,7 @@ class notificationsController extends Controller
                 
                 $daneWykonuje = $this->notification->getOsoby();
                 $daneStatus = $this->notification->getStatusy();
-                $daneType = $this->notification->getType();
+                $daneType = $this->notification->getTypy();
                 global $smarty;
                 $smarty->assign('daneWykonuje',$daneWykonuje);
                 $smarty->assign('daneStatus',$daneStatus);
