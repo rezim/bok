@@ -76,7 +76,7 @@
                     </td>
                 </tr>
                   <tr id='tr_{$key}' class="agreements-list {$item.nip}" stan='0' style='display:none'>
-                    <td colspan="9" >
+                    <td colspan="10">
                         
                         <div class="divRep">
                              <table class='tablesorter displaytable'  cellspacing=0 cellpadding=0>
@@ -144,7 +144,7 @@
                                                         <tr class="{$item2.nrumowy|replace:'/':'-'}">
                                                 {/if}
                                                 
-                                                    <td>{$smarty.foreach.loopek.index+1}</td>
+                                                    <td style="text-align: center">{$smarty.foreach.loopek.index+1}</td>
                                                     <td class='tdWartosc'  style='display: none;'>{$key2}</td>
 
                                                     <td class='tdWartosc agreement-nb' onClick="showNewAgreementAdd('{$item2.rowidumowa}')"
@@ -190,19 +190,19 @@ Strony kolorowe koniec - Licznik: {$item2.strony_kolor_koniec|number_format:0:",
                                                        <td class='tdNumber' style='padding-right:20px;' >
                                                                 {if isset($item2.stronblackpowyzej)} {$item2.stronblackpowyzej|number_format:0:",":" "|escape:'htmlall'}{/if}     
                                                      </td>
-                                                       <td class='tdNumber' style='padding-right:20px;' >
+                                                       <td class='tdNumber' style='padding-right:20px;white-space: nowrap' >
                                                                 {if isset($item2.wartoscblack)} {$item2.wartoscblack|number_format:3:",":" "|escape:'htmlall'}{/if}
                                                      </td>
                                                        <td class='tdNumber' style='padding-right:20px;' >
                                                                 {if isset($item2.stronkolorpowyzej)} {$item2.stronkolorpowyzej|number_format:0:",":" "|escape:'htmlall'}{/if}     
                                                      </td>
-                                                       <td class='tdNumber' style='padding-right:20px;' >
+                                                       <td class='tdNumber' style='padding-right:20px;white-space: nowrap' >
                                                                 {if isset($item2.wartosckolor)} {$item2.wartosckolor|number_format:3:",":" "|escape:'htmlall'}{/if}
                                                      </td>
                                                        <td class='tdNumber' style='padding-right:20px;' >
                                                                 {if isset($item2.oplatainstalacyjna)} {$item2.oplatainstalacyjna|number_format:2:",":" "|escape:'htmlall'}{/if}     
                                                      </td>
-                                                      <td class='tdNumber' style='padding-right:20px;color:blue;' >
+                                                     <td class='tdNumber' style='padding-right:20px;color:blue;white-space: nowrap' >
                                                                 {if isset($item2.wartosc)} {$item2.wartosc|number_format:2:",":" "|escape:'htmlall'}{/if}     
                                                      </td>
                                                      <td>
