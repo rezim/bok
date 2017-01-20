@@ -314,8 +314,35 @@ function checkUprawnienia($controller,$action,$queryString)
                 continue;
         }
 
-          global $smarty;
-                    $smarty->assign('uprawnienia',$prawaDostepu);
+        // fix for security gap, in case the access is not defined, do not allow
+        if ($prawaDostepu == '' && $controller != 'starts' && $controller != 'acls' && $action != 'brakuprawnien') {
+            echo('Controller: ' . $controller . 'Action: ' . $action);
+            if($queryString!=null && $queryString!='')
+            {
+                switch($queryString[sizeof($queryString)-1])
+                {
+                    case 'todiv':
+                        header("Location: ".SCIEZKA."/acls/brakuprawnien/todiv");
+                        break;
+                    case 'notemplate':
+                        echo('Brak uprawnień');
+                        break;
+                    default :
+                        header("Location: ".SCIEZKA."/acls/brakuprawnien");
+                        break;
+                }
+
+            }
+            else
+            {
+                header("Location: ".SCIEZKA."/acls/brakuprawnien");
+            }
+            die();
+        }
+        else {
+            global $smarty;
+            $smarty->assign('uprawnienia', $prawaDostepu);
+        }
     }
 }
 setReporting();

@@ -1,3 +1,9 @@
+<script type="text/javascript">
+    app.constant('appConf', {
+        API_TOKEN: '{$smarty.const.FAKTUROWNIA_APITOKEN}',
+        ENDPOINT: '{$smarty.const.FAKTUROWNIA_ENDPOINT}'
+    });
+</script>
 <div ng-app="app" ng-controller="ProfitabilityCtrl as ctrl">
 <div class='divFilter'>
     <a href="javascript:void(0)" ng-click="date_from='2013-08-01'; date_to=ctrl.getToday(); ctrl.loadData(date_from, date_to)" style="padding: 20px">od 2013</a>|

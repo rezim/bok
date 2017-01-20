@@ -62,17 +62,6 @@
         <script type="text/javascript" src="{$smarty.const.SCIEZKA}/js/angular/app.js"></script>
         <script type="text/javascript" src="{$smarty.const.SCIEZKA}/js/angular/service/rest.js"></script>
         <script type="text/javascript" src="{$smarty.const.SCIEZKA}/js/angular/ctrl/profitabilityCtrl.js"></script>
-        <script type="text/javascript">
-            app.constant('appConf', {
-                API_TOKEN: '{$smarty.const.FAKTUROWNIA_APITOKEN}',
-                ENDPOINT: '{$smarty.const.FAKTUROWNIA_ENDPOINT}'
-            });
-            // initialize invoice manager
-            var invMgr = new InvoiceManager('{$smarty.const.FAKTUROWNIA_APITOKEN}',
-                    '{$smarty.const.FAKTUROWNIA_ENDPOINT}',
-                    '{$smarty.const.FAKTUROWNIA_COMPANYNAME}',
-                    '{$smarty.const.FAKTUROWNIA_INVOICE_NUMBER_LENGTH}');
-        </script>
 </head>
  <?php flush(); ?>
 <body>

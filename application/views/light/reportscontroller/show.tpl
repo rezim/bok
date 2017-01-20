@@ -1,3 +1,10 @@
+<script type="text/javascript">
+     // initialize invoice manager
+     var invMgr = new InvoiceManager('{$smarty.const.FAKTUROWNIA_APITOKEN}',
+             '{$smarty.const.FAKTUROWNIA_ENDPOINT}',
+             '{$smarty.const.FAKTUROWNIA_COMPANYNAME}',
+             '{$smarty.const.FAKTUROWNIA_INVOICE_NUMBER_LENGTH}');
+</script>
 <div class='divFilter'>
      <label for="txtdataod" class="labelNormal" >data od</label>
      <input type="text" id='txtdataod' class='textBoxNormal' style='width:90px;min-width: 90px;'>  
