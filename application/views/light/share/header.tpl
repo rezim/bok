@@ -62,6 +62,7 @@
         <script type="text/javascript" src="{$smarty.const.SCIEZKA}/js/angular/app.js"></script>
         <script type="text/javascript" src="{$smarty.const.SCIEZKA}/js/angular/service/rest.js"></script>
         <script type="text/javascript" src="{$smarty.const.SCIEZKA}/js/angular/ctrl/profitabilityCtrl.js"></script>
+        <script type="text/javascript" src="{$smarty.const.SCIEZKA}/js/angular/ctrl/userSharesCtrl.js"></script>
 </head>
  <?php flush(); ?>
 <body>
@@ -127,6 +128,9 @@
                         <li id='li_caseshow' class='last'><a href='{$smarty.const.SCIEZKA}/profitability/show' ><span>Rentowność Umów</span></a></li>
                     {/if}
 
+                    {if isset($smarty.session.przypisanemenu['li_sharesshow'])}
+                        <li id='li_caseshow' class='last'><a href='{$smarty.const.SCIEZKA}/shares/show' ><span>Uprawnienia</span></a></li>
+                    {/if}
                  {*  <li class='active'><a href='/logs/show' ><span>Historia</span></a></li>*}
                 </ul>
          </div>

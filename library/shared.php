@@ -315,7 +315,7 @@ function checkUprawnienia($controller,$action,$queryString)
         }
 
         // fix for security gap, in case the access is not defined, do not allow
-        if ($prawaDostepu == '' && $controller != 'starts' && $controller != 'acls' && $action != 'brakuprawnien') {
+        if ($prawaDostepu == '' && $controller != 'starts' && $controller != 'acls' && $action != 'brakuprawnien' && $action != 'light') {
             echo('Controller: ' . $controller . 'Action: ' . $action);
             if($queryString!=null && $queryString!='')
             {
