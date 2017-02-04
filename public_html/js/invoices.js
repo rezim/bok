@@ -196,14 +196,14 @@ InvoiceManager = function(api_token, endpoint, company_name, invoice_number_leng
 
                 // remove all invoice corrects (from_invoice_id != null)
                 $.each(inv1[0].concat(inv2[0]).concat(inv3[0]).concat(inv4[0]).concat(inv5[0]).concat(inv6[0]).concat(inv7[0]).concat(inv8[0]).concat(inv9[0]).concat(inv10[0]), function (index, inv) {
-                    if (!inv['from_invoice_id']) {
+                    if (inv['kind'] == 'vat') {
                         invoices.push(inv);
                     }
                 });
 
                 currentPeriodInvoices.invoices = invoices;
 
-                var orderedInvoices = Array.apply(null, Array(invoices.length)).map(function () {});
+                var orderedInvoices = Array.apply(null, Array(invoices.length)).map(function () {return 0});
 
                 // groupByClient
                 var groupedInvoices = {};
@@ -218,7 +218,8 @@ InvoiceManager = function(api_token, endpoint, company_name, invoice_number_leng
                     groupedInvoices[invoice['buyer_tax_no']].push(invoice);
 
                     var invoiceIdx = parseInt(invoice.number.split('/')[0])-1;
-                    orderedInvoices[invoiceIdx] = invoice;
+
+                    orderedInvoices[invoiceIdx]++;
 
                     if (!invNbPattern) {
                         invNbPattern = invoice.number.split('/');
@@ -229,9 +230,12 @@ InvoiceManager = function(api_token, endpoint, company_name, invoice_number_leng
 
                 var missingInvoices = [];
 
-                $.each(orderedInvoices, function (index, invoice) {
-                    if (invoice === undefined) {
-                        missingInvoices.push([(index+1),'/',invNbPattern].join(''));
+                $.each(orderedInvoices, function (index, invoiceCount) {
+                    // invoice contains
+                    if (invoiceCount != 1) {
+
+                        missingInvoices.push([[(index + 1), '/', invNbPattern].join(''), invoiceCount].join('-'));
+
                     }
                 });
 
@@ -291,7 +295,7 @@ InvoiceManager = function(api_token, endpoint, company_name, invoice_number_leng
                 if (self.getMissingInvoices().length > 0) {
 
                     $('.errorMessageWrapper').show();
-                    $('#errorMessage').html('Uwaga: występuje brak ciągłości numeracji faktur. Brakujące numery to: ' + self.getMissingInvoices().join(', '));
+                    $('#errorMessage').html('Uwaga: występuje brak ciągłości numeracji faktur. Faktury powodujące problem [numer]-[ilosc]: ' + self.getMissingInvoices().join(', '));
 
                 } else {
 
