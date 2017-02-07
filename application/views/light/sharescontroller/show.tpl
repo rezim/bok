@@ -32,7 +32,7 @@
             <tr style="background-color: lightgoldenrodyellow; border-bottom: solid 1px #000;">
                 <td>
                     <select ng-model="newShare.roleRowId" ng-change="search.roleName = ctrl.getSelectedRoleName(newShare.roleRowId)">
-                        <option ng-repeat="role in ctrl.getAvailableRoles()" value="[[role.rowid]]">[[role.nazwa]]</option>
+                        <option ng-repeat="role in ctrl.getAvailableRoles() track by $index" value="[[role.rowid]]">[[role.nazwa]]</option>
                     </select>
                 </td>
                 <td>
