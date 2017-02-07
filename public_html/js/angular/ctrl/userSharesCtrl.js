@@ -2,11 +2,20 @@ UserSharesCtrl = function($scope, rest, $q) {
 
     $scope.isPending = false;
 
+    $scope.search = {};
+
+    $scope.order = 'roleName';
+
+    $scope.newShare = {};
+
+    $scope.lastActionResult = "";
+
     var userShares = null;
 
     this.getUserShares = function() {
         if (!userShares) {
-            userShares = {isPending: true};
+            userShares = [];
+            userShares.isPending = true;
             rest.post('getusershares').then(function (shares) {
                 console.log(shares);
                 userShares = shares;
@@ -16,17 +25,58 @@ UserSharesCtrl = function($scope, rest, $q) {
         return userShares;
     };
 
+    var availableRoles = null;
+
+    this.getAvailableRoles = function() {
+        if (!availableRoles) {
+            availableRoles = [];
+            availableRoles.isPending = true;
+            rest.post('getroles').then(function(roles) {
+                availableRoles = roles;
+            })
+        }
+
+        return availableRoles;
+    };
+
     this.updatePermission = function(permission, rowid) {
         if (permission != '' && permission != 'r' && permission != 'w' && permission != 'rw') {
             alert("Podałeś błędną wartość, dozwolone to: '', 'r', 'w', 'rw'");
         } else {
             rest.post('updatepermission', {permission: permission, rowid: rowid}).then(function (result) {
-                alert(result);
+                $scope.lastActionResult = result;
             })
         }
     };
 
+    this.addPermission = function() {
+        var newPermission = angular.copy($scope.newShare);
+        newPermission.activity = (newPermission.activity) ? 1 : 0;
+        rest.post('addpermission', newPermission).then(function(result) {
+            $scope.lastActionResult = result;
+            invalidate();
+        });
+    };
+
+    var invalidate = function() {
+        userShares = null;
+    };
+
+    this.getSelectedRoleName = function(roleRowId) {
+        var name = '';
+        if (availableRoles && availableRoles.length) {
+            var found = availableRoles.find(function(role) {return role.rowid == roleRowId} );
+            if (found) {
+                name = found.nazwa;
+            }
+        }
+
+        return name;
+    };
+
     this.getUserShares();
+
+    this.getAvailableRoles();
 };
 
 app.controller('UserSharesCtrl', UserSharesCtrl);

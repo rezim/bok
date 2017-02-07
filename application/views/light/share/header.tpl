@@ -131,6 +131,10 @@
                     {if isset($smarty.session.przypisanemenu['li_sharesshow'])}
                         <li id='li_caseshow' class='last'><a href='{$smarty.const.SCIEZKA}/shares/show' ><span>Uprawnienia</span></a></li>
                     {/if}
+
+                    {if isset($smarty.session.przypisanemenu['li_serviceshow'])}
+                        <li id='li_caseshow' class='last'><a href='{$smarty.const.SCIEZKA}/service/show' ><span>Serwis</span></a></li>
+                    {/if}
                  {*  <li class='active'><a href='/logs/show' ><span>Historia</span></a></li>*}
                 </ul>
          </div>
