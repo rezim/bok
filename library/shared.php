@@ -315,7 +315,7 @@ function checkUprawnienia($controller,$action,$queryString)
         }
 
         // fix for security gap, in case the access is not defined, do not allow
-        if (!defined('DISABLE_HTTPS') &&
+        if (!defined('DISABLE_SECURITY_MODE') &&
             ($prawaDostepu == '' && $controller != 'starts' && $controller != 'acls' && $action != 'brakuprawnien' && $action != 'light')) {
 
             echo('Controller: ' . $controller . 'Action: ' . $action);
