@@ -6,7 +6,9 @@ UserSharesCtrl = function($scope, rest, $q) {
 
     $scope.order = 'roleName';
 
-    $scope.newShare = {};
+    $scope.newShare = {
+        activity: true
+    };
 
     $scope.lastActionResult = "";
 
