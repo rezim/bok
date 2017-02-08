@@ -21,13 +21,22 @@ class sharesController extends Controller
     }
 
     function updatepermission() {
-        if ($_POST['permission'] && $_POST['rowid']) {
-            $result = $this->share->updatePermission($_POST['permission'], $_POST['rowid']);
+        if ($_POST['rowid'] && $_POST['roleid']) {
+            $result = $this->share->updatePermission($_POST['permission'], $_POST['rowid'], $_POST['roleid']);
             echo $result['info'];
         } else {
             echo "blędne parametry wejściowe";
         }
 
+    }
+
+    function removepermission() {
+        if (isset($_POST['rowid']) && isset($_POST['roleid']) && $_POST['rowid'] && $_POST['roleid']) {
+            $result = $this->share->removePermission($_POST['rowid'], $_POST['roleid']);
+            echo $result['info'];
+        } else {
+            echo "blędne parametry wejściowe";
+        }
     }
 }
 

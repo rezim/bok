@@ -13,15 +13,16 @@ class share extends Model
         return json_encode($this->query($query,null,false));
     }
 
-    function updatePermission($permission, $rowid) {
+    function updatePermission($permission, $rowid, $roleid) {
         return $this->update
         (
-            "UPDATE roles_shares SET `permission` = ? WHERE `rowid_share` = ?"
-            ,'si',
+            "UPDATE roles_shares SET `permission` = ?  WHERE `rowid_share` = ? AND `rowid_role` = ?"
+            ,'sii',
             array
             (
                 $permission,
-                (int)$rowid
+                (int)$rowid,
+                (int)$roleid
             )
         );
     }
@@ -41,20 +42,47 @@ class share extends Model
                                   `rowid_share`,
                                   `permission`";
 
-        $this->_table = 'shares';
-        $result = $this->insert($sharesColumnList, 'ssssi', array($id, $controller, $action, $description, $activity));
 
-        if ($result['status']) {
+        $shareExists = $this->query("SELECT rowid FROM `shares` WHERE id = '{$id}'", null, false);
+        $rowid = null;
+        if (count($shareExists) > 0) {
+            $rowid = $shareExists[0]['rowid'];
+        } else {
+            $this->_table = 'shares';
+            $result = $this->insert($sharesColumnList, 'ssssi', array($id, $controller, $action, $description, $activity));
+            $rowid = $result['status'] ? $result['keyval'] : null;
+        }
+        if ($rowid) {
             $this->_table = 'roles_shares';
 
-            $result = $this->insert($rolesSharesColumnList, 'iis', array($rolerowid, $result['keyval'], $permission));
+            $roleExists = $this->query("SELECT $rolerowid, $rowid FROM `roles_shares` WHERE rowid_role = '{$rolerowid}' AND rowid_share = '{$rowid}'", null, false);
+
+            if (count($roleExists) == 0) {
+                $result = $this->insert($rolesSharesColumnList, 'iis', array($rolerowid, $rowid, $permission));
+            } else {
+                $result = Array('info' => 'Rola już istnieje');
+            }
         }
 
         return $result;
     }
 
 
-    function removeShare($rowid) {
+    function removePermission($rowid, $role) {
+        $result = $this->update("DELETE FROM `roles_shares` WHERE rowid_share = ? AND rowid_role = ?", 'ss', array($rowid, $role));
+        if ($result['status']) {
 
+            $remainingRoleShares = $this->query("SELECT * FROM `roles_shares` WHERE rowid_share = '{$rowid}'", null, false);
+
+            if (count($remainingRoleShares) == 0) {
+                $result = $this->update("DELETE FROM `shares` WHERE rowid = ?", 's', array($rowid));
+            }
+        }
+
+        if ($result['status']) {
+            $result['info'] = 'Dane usunięte poprawnie';
+        }
+
+        return $result;
     }
 }

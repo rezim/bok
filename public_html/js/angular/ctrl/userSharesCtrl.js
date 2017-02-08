@@ -1,4 +1,4 @@
-UserSharesCtrl = function($scope, rest, $q) {
+UserSharesCtrl = function($scope, rest, $q, $sce) {
 
     $scope.isPending = false;
 
@@ -41,12 +41,13 @@ UserSharesCtrl = function($scope, rest, $q) {
         return availableRoles;
     };
 
-    this.updatePermission = function(permission, rowid) {
+    this.updatePermission = function(permission, rowid, roleid) {
         if (permission != '' && permission != 'r' && permission != 'w' && permission != 'rw') {
             alert("Podałeś błędną wartość, dozwolone to: '', 'r', 'w', 'rw'");
         } else {
-            rest.post('updatepermission', {permission: permission, rowid: rowid}).then(function (result) {
+            rest.post('updatepermission', {permission: permission, rowid: rowid, roleid: roleid}).then(function (result) {
                 $scope.lastActionResult = result;
+                invalidate();
             })
         }
     };
@@ -58,6 +59,17 @@ UserSharesCtrl = function($scope, rest, $q) {
             $scope.lastActionResult = result;
             invalidate();
         });
+    };
+
+    this.removePermission = function(rowid, roleid) {
+        rest.post('removepermission', {rowid: rowid, roleid: roleid}).then(function (result) {
+            $scope.lastActionResult = result;
+            invalidate();
+        })
+    };
+
+    this.toTrusted = function(text) {
+        return $sce.trustAsHtml(text);
     };
 
     var invalidate = function() {
