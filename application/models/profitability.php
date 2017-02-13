@@ -6,10 +6,10 @@ class profitability extends Model
     function getAgreementNotifications($dateFrom, $dateTo, $rowagreement_id) {
         $query =
             "
-            SELECT n.*, (IFNULL(ilosc_km, 0)*(SELECT stawka_kilometrowa from config)) as 'koszt_ilosc_km', 
+            SELECT n.*, p.model, (IFNULL(ilosc_km, 0)*(SELECT stawka_kilometrowa from config)) as 'koszt_ilosc_km', 
                             (IFNULL(czas_pracy, 0)*(SELECT stawka_godzinowa from config)) as 'koszt_czas_pracy', 
                             IFNULL(wartosc_materialow, 0) as 'koszt_wartosc_materialow'
-            FROM `notifications` n
+            FROM `notifications` n LEFT OUTER JOIN `printers` p on n.serial = p.serial
             WHERE n.rowid_agreements = {$rowagreement_id} and 
                 DATE(n.date_zakonczenia) >= '{$dateFrom}' and 
                 DATE(n.date_zakonczenia) <= '{$dateTo}'
@@ -22,8 +22,8 @@ class profitability extends Model
     function getOveralCosts($dateFrom, $dateTo) {
         $query =
             "
-            SELECT c.nazwakrotka as 'client_name', c.nip as 'client_nip', a.activity as 'agreement_isActive', a.rowid as 'client_agreement_id', a.nrumowy as 'client_agreement_rowid', a.wartoscurzadzenia as 'client_agreement_value_unit', costs.* 
-            FROM clients c LEFT OUTER JOIN agreements a on c.rowid = a.rowidclient
+            SELECT c.nazwakrotka as 'client_name', c.nip as 'client_nip', a.activity as 'agreement_isActive', a.rowid as 'client_agreement_id', a.nrumowy as 'client_agreement_rowid', p.model as 'printer_model', a.wartoscurzadzenia as 'client_agreement_value_unit', costs.* 
+            FROM clients c LEFT OUTER JOIN agreements a on c.rowid = a.rowidclient LEFT OUTER JOIN printers p on a.serial = p.serial
             LEFT OUTER JOIN (
                         SELECT
                             c.nip as 'nip', 
@@ -41,13 +41,13 @@ class profitability extends Model
                             LEFT OUTER JOIN 
                             agreements a on a.rowid = n.rowid_agreements
                             LEFT OUTER JOIN 
-                            clients c on c.rowid = a.rowidclient
+                            clients c on c.rowid = a.rowidclient         
                         WHERE 
                             DATE(date_zakonczenia) >= '{$dateFrom}' and 
                             DATE(date_zakonczenia) <= '{$dateTo}'
                         GROUP BY n.serial, n.rowid_agreements  
                 ) AS costs ON c.nip = costs.nip and a.rowid = costs.agreement_rowid
-            WHERE a.activity = 1 || a.activity = 0
+            WHERE (a.activity = 1 || a.activity = 0)
             ORDER BY client_name, costs.agreement_rowid
            ";
         return json_encode($this->query($query,null,false));

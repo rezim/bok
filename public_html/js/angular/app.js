@@ -66,11 +66,15 @@ app.filter('showWithCosts', function() {
 
 app.filter('sumOfValue', function () {
     return function (data, key1, key2) {
-        if (angular.isUndefined(data) && angular.isUndefined(key1) && angular.isUndefined(key2))
+        if (angular.isUndefined(data) && angular.isUndefined(key1))
             return 0;
         var sum = 0;
         angular.forEach(data,function(value){
-            sum += (value[key1]) ? parseFloat(value[key1][key2]) : 0;
+            if (key2) {
+                sum += (value[key1]) ? parseFloat(value[key1][key2]) : 0;
+            } else {
+                sum += isNaN(parseFloat(value[key1])) ? 0 : parseFloat(value[key1]);
+            }
         });
         return sum;
     };
@@ -82,8 +86,20 @@ app.filter('sumOfDifferences', function () {
             return 0;
         var sum = 0;
         angular.forEach(data,function(value){
-            var v1 = (value[key1]) ? parseFloat(value[key1][key2]) : 0;
-            var v2 = (value[key3]) ? parseFloat(value[key3][key4]) : 0;
+            var v1 = 0;
+            var v2 = 0;
+
+            if (key2) {
+                v1 = (value[key1]) ? parseFloat(value[key1][key2]) : 0;
+            } else {
+                v1 = isNaN(parseFloat(value[key1])) ? 0 : parseFloat(value[key1]);
+            }
+
+            if (key4) {
+                v2 = (value[key3]) ? parseFloat(value[key3][key4]) : 0;
+            } else {
+                v2 = isNaN(parseFloat(value[key3])) ? 0 : parseFloat(value[key3]);
+            }
             sum += v1-v2;
         });
         return sum;

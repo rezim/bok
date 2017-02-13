@@ -17,10 +17,10 @@ UserSharesCtrl = function($scope, rest, $q, $sce) {
     this.getUserShares = function() {
         if (!userShares) {
             userShares = [];
-            userShares.isPending = true;
+            $scope.isPending = true;
             rest.post('getusershares').then(function (shares) {
-                console.log(shares);
                 userShares = shares;
+                $scope.isPending = false;
             });
         }
 
@@ -45,9 +45,11 @@ UserSharesCtrl = function($scope, rest, $q, $sce) {
         if (permission != '' && permission != 'r' && permission != 'w' && permission != 'rw') {
             alert("Podałeś błędną wartość, dozwolone to: '', 'r', 'w', 'rw'");
         } else {
+            $scope.isPending = true;
             rest.post('updatepermission', {permission: permission, rowid: rowid, roleid: roleid}).then(function (result) {
                 $scope.lastActionResult = result;
                 invalidate();
+                $scope.isPending = false;
             })
         }
     };
@@ -55,16 +57,20 @@ UserSharesCtrl = function($scope, rest, $q, $sce) {
     this.addPermission = function() {
         var newPermission = angular.copy($scope.newShare);
         newPermission.activity = (newPermission.activity) ? 1 : 0;
+        $scope.isPending = true;
         rest.post('addpermission', newPermission).then(function(result) {
             $scope.lastActionResult = result;
             invalidate();
+            $scope.isPending = false;
         });
     };
 
     this.removePermission = function(rowid, roleid) {
+        $scope.isPending = true;
         rest.post('removepermission', {rowid: rowid, roleid: roleid}).then(function (result) {
             $scope.lastActionResult = result;
             invalidate();
+            $scope.isPending = false;
         })
     };
 

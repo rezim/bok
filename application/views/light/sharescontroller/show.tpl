@@ -1,4 +1,4 @@
-<div ng-app="app" ng-controller="UserSharesCtrl as ctrl">
+<div ng-app="app" ng-controller="UserSharesCtrl as ctrl" ng-cloak>
     <div class="divFilter">
         <label class="labelNormal" style="padding-right: 10px">
             rola <input type="text" class='textBoxNormal' ng-model="search.roleName">
@@ -64,6 +64,7 @@
                 </td>
             </tr>
         </tbody>
+    </table>
 
-
+    <i ng-if="isPending" class="fa fa-spinner fa-spin fa-5x" aria-hidden="true" style="margin-top: 50px;"></i>
 </div>

@@ -8,6 +8,14 @@ ProfitabilityCtrl = function($scope, rest, $q, $filter, $interpolate, appConf) {
         name: ""
     };
 
+    this.device = {
+        agreementPrinterModel: ""
+    };
+
+    $scope.show_details = {};
+
+    this.show_devices_view = false;
+
     var date_to = new Date();
 
     $scope.date_to = $filter('date')(date_to, 'yyyy-MM-01');
@@ -167,6 +175,7 @@ ProfitabilityCtrl = function($scope, rest, $q, $filter, $interpolate, appConf) {
                         agreementId: costs['client_agreement_id'],
                         agreementRowId: costs['client_agreement_rowid'],
                         agreementIsActive: costs['agreement_isActive'],
+                        agreementPrinterModel: costs['printer_model'],
                         agreementStartDate: costs['agreement_startDate'],
                         agreementEndDate: costs['agreement_endDate'],
                         agreementValueUnit: costs['client_agreement_value_unit'],
@@ -191,6 +200,7 @@ ProfitabilityCtrl = function($scope, rest, $q, $filter, $interpolate, appConf) {
                     if (!agreement.devices[costs['device_sn']]) {
                         agreement.devices[costs['device_sn']] = {
                             deviceSN: costs['device_sn'],
+                            deviceModel: costs['device_model'],
                             iloscKm: parseNb(costs['ilosc_km']),
                             czasPracy: parseNb(costs['czas_pracy']),
                             wartoscMaterialow: parseNb(costs['wartosc_materialow']),
@@ -202,31 +212,31 @@ ProfitabilityCtrl = function($scope, rest, $q, $filter, $interpolate, appConf) {
         });
 
         angular.forEach(invoices, function (invoice) {
+            if (invoice.kind == 'vat') {
+                // you can use it in case of need to see a list of
+                // results for particular client
 
-            // you can use it in case of need to see a list of
-            // results for particular client
+                // if (invoice.buyer_tax_no == '5272718493') {
+                //     console.log(invoice);
+                // }
 
-            // if (invoice.buyer_tax_no == '5272718493') {
-            //     console.log(invoice);
-            // }
+                // 8992755868 <- 9141528038 ->
+                invoice.buyer_tax_no = mapTaxNo(invoice.buyer_tax_no);
 
-            // 8992755868 <- 9141528038 ->
-            invoice.buyer_tax_no = mapTaxNo(invoice.buyer_tax_no);
-
-            if (!objProfits[invoice.buyer_tax_no]) {
-                objProfits[invoice.buyer_tax_no] = {
-                };
-            }
-
-            if (!objProfits[invoice.buyer_tax_no]['invoice']) {
-                objProfits[invoice.buyer_tax_no]['invoice'] = {
-                    sum: 0,
-                    nip: invoice.buyer_tax_no,
-                    list: []
+                if (!objProfits[invoice.buyer_tax_no]) {
+                    objProfits[invoice.buyer_tax_no] = {};
                 }
+
+                if (!objProfits[invoice.buyer_tax_no]['invoice']) {
+                    objProfits[invoice.buyer_tax_no]['invoice'] = {
+                        sum: 0,
+                        nip: invoice.buyer_tax_no,
+                        list: []
+                    }
+                }
+                objProfits[invoice.buyer_tax_no]['invoice']['sum'] += parseNb(invoice['price_net']);
+                objProfits[invoice.buyer_tax_no]['invoice'].list.push(invoice);
             }
-            objProfits[invoice.buyer_tax_no]['invoice']['sum'] += parseNb(invoice['price_net']);
-            objProfits[invoice.buyer_tax_no]['invoice'].list.push(invoice);
         });
 
 
@@ -245,12 +255,35 @@ ProfitabilityCtrl = function($scope, rest, $q, $filter, $interpolate, appConf) {
             });
             profit.agreements = tmpAgreements;
 
+            if (profit.invoice) {
+                self.getInvoiceDetails(profit.invoice.list, profit.nip, function(invoiceDetails) {
+
+                    profit.agreements.forEach(function(agreement) {
+                        if (invoiceDetails[agreement.agreementRowId]) {
+                            agreement['netPrice'] = invoiceDetails[agreement.agreementRowId].netPrice;
+
+                            console.log(agreement);
+                        }
+                    });
+
+
+                });
+            }
+
             profits.push(profit);
         });
     };
 
+    this.getAgreements = function (modelFilter) {
+        var agreements = [];
+        profits.forEach(function(profit) {
+            agreements = agreements.concat($filter('filter')(profit.agreements, modelFilter));
+        });
 
-    this.getInvoiceDetails = function(invList, clientId) {
+        return agreements;
+    };
+
+    this.getInvoiceDetails = function(invList, clientId, callback) {
         if (!invoiceDetails[clientId]) {
             var invIds = [];
             angular.forEach(invList, function(inv) {
@@ -259,7 +292,7 @@ ProfitabilityCtrl = function($scope, rest, $q, $filter, $interpolate, appConf) {
 
             invoiceDetails[clientId] = {isPending: true};
 
-            getInvoicesByIds(invIds, clientId);
+            getInvoicesByIds(invIds, clientId, callback);
         }
 
         return invoiceDetails[clientId];
@@ -294,7 +327,7 @@ ProfitabilityCtrl = function($scope, rest, $q, $filter, $interpolate, appConf) {
         return result;
     };
 
-    var getInvoicesByIds = function (ids, clientId) {
+    var getInvoicesByIds = function (ids, clientId, callback) {
         // TODO: move it to configuration
         var url = appConf.ENDPOINT + '/invoices/{id}.json?api_token=' + appConf.API_TOKEN;
         var requests = [];
@@ -310,6 +343,9 @@ ProfitabilityCtrl = function($scope, rest, $q, $filter, $interpolate, appConf) {
             });
             invoiceDetails[clientId] = result;
 
+            if (callback) {
+                callback(invoiceDetails[clientId]);
+            }
         });
     };
 
@@ -348,7 +384,7 @@ ProfitabilityCtrl = function($scope, rest, $q, $filter, $interpolate, appConf) {
                 }
             }
         } else {
-            console.log("Warning! no agreements for invoice: " + invoice);
+            console.log("Warning! no agreements for invoice: " + [invoice.buyer_name, invoice.id, invoice.token].join('-'));
         }
 
         return parsedInvoice;
