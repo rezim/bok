@@ -63,6 +63,7 @@
         <script type="text/javascript" src="{$smarty.const.SCIEZKA}/js/angular/service/rest.js"></script>
         <script type="text/javascript" src="{$smarty.const.SCIEZKA}/js/angular/ctrl/profitabilityCtrl.js?{$smarty.now}"></script>
         <script type="text/javascript" src="{$smarty.const.SCIEZKA}/js/angular/ctrl/userSharesCtrl.js?{$smarty.now}"></script>
+        <script type="text/javascript" src="{$smarty.const.SCIEZKA}/js/angular/ctrl/serviceCtrl.js?{$smarty.now}"></script>
 </head>
  <?php flush(); ?>
 <body>
@@ -88,7 +89,9 @@
          {if isset($smarty.session.przypisanemenu['but_addcase'])}
         <a id='but_addcase' href="javascript:void(0);" onclick='showNewNotiAdd("0");return false;' class="butaddcase">Nowe zgłoszenie</a>
         {/if}
-        
+        {if isset($smarty.session.przypisanemenu['but_addcase'])}
+            <a id='but_addservice' href="{$smarty.const.SCIEZKA}/service/show#add" class="butaddservice">Nowy serwis</a>
+        {/if}
     </div>
     <div class='liniaRozdzielajaca'></div>
     <div id='leftMenu'>
@@ -113,27 +116,27 @@
                    {/if}
                    
                    {if isset($smarty.session.przypisanemenu['li_passwordshow'])}
-                   <li id='li_passwordshow' class='last'><a href='{$smarty.const.SCIEZKA}/acls/passshow' ><span>Hasło</span></a></li>
+                   <li id='li_passwordshow'><a href='{$smarty.const.SCIEZKA}/acls/passshow' ><span>Hasło</span></a></li>
                    {/if}
                   
                      {if isset($smarty.session.przypisanemenu['li_casesshow'])}
-                        <li id='li_caseshow' class='last'><a href='{$smarty.const.SCIEZKA}/notifications/show' ><span>Zgłoszenia</span></a></li>
+                        <li id='li_caseshow'><a href='{$smarty.const.SCIEZKA}/notifications/show' ><span>Zgłoszenia</span></a></li>
                    {/if}
 
                     {if isset($smarty.session.przypisanemenu['li_countersshow'])}
-                        <li id='li_caseshow' class='last'><a href='{$smarty.const.SCIEZKA}/custom/show' ><span>Liczniki Drukarek</span></a></li>
+                        <li id='li_caseshow'><a href='{$smarty.const.SCIEZKA}/custom/show' ><span>Liczniki Drukarek</span></a></li>
                     {/if}
 
                     {if isset($smarty.session.przypisanemenu['li_profitabilityshow'])}
-                        <li id='li_caseshow' class='last'><a href='{$smarty.const.SCIEZKA}/profitability/show' ><span>Rentowność Umów</span></a></li>
+                        <li id='li_caseshow'><a href='{$smarty.const.SCIEZKA}/profitability/show' ><span>Rentowność Umów</span></a></li>
                     {/if}
 
                     {if isset($smarty.session.przypisanemenu['li_sharesshow'])}
-                        <li id='li_caseshow' class='last'><a href='{$smarty.const.SCIEZKA}/shares/show' ><span>Uprawnienia</span></a></li>
+                        <li id='li_caseshow'><a href='{$smarty.const.SCIEZKA}/shares/show' ><span>Uprawnienia</span></a></li>
                     {/if}
 
                     {if isset($smarty.session.przypisanemenu['li_serviceshow'])}
-                        <li id='li_caseshow' class='last'><a href='{$smarty.const.SCIEZKA}/service/show' ><span>Serwis</span></a></li>
+                        <li id='li_serviceshow' class='last'><a href='{$smarty.const.SCIEZKA}/service/show'><span>Serwis</span></a></li>
                     {/if}
                  {*  <li class='active'><a href='/logs/show' ><span>Historia</span></a></li>*}
                 </ul>

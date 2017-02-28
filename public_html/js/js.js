@@ -1291,8 +1291,6 @@ function showNotification(rowid)
     });
 }
 
-
-
 function showNewNotiAdd(rowid)
 {
     
@@ -1734,4 +1732,8 @@ function generateProfitsReport(successCallback, errorCallback)
     });
     delete objCenter;delete objLoad;
     return false;
+}
+
+function show(path) {
+    window.location=sciezka+path;
 }

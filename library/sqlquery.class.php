@@ -62,6 +62,34 @@ class SQLQuery {
                     return $dane;
                 }
     }
+
+    function insertFromPostParams($postParams, $tableName) {
+        $arrFields = array();
+        $arrValues = array();
+        $arrTypes = array();
+        forEach($postParams as $key => $value) {
+
+            $arrKeyWithType = explode(":", $key, 2);
+
+            array_push($arrFields, $arrKeyWithType[0]);
+            if (count($arrKeyWithType) > 1) {
+                array_push($arrTypes, $arrKeyWithType[1]);
+            } else {
+                // if type is not provided, default is string
+                array_push($arrTypes, "s");
+            }
+
+            array_push($arrValues, $value);
+        }
+
+        $strFields = "`" . implode("`,`", $arrFields) . "`";
+        $strTypes = implode($arrTypes);
+
+        $this->_table = $tableName;
+
+        return $this->insert($strFields, $strTypes, $arrValues);
+    }
+
      function insert($columnList,$types,$params=array())
     {
         
