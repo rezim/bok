@@ -83,7 +83,8 @@ class Email_reader {
 	            $in[] = array(
 	                'index'     => $i,
 	                'header'    => imap_headerinfo($this->conn, $i),
-                        'body'    => imap_fetchbody($this->conn, $i,1),
+	                'detailed_header'    => explode("\n", imap_fetchheader($this->conn, $i)),
+                    'body'    => imap_fetchbody($this->conn, $i,1),
 	                'structure' => imap_fetchstructure($this->conn, $i)
 	            );
 	        }
@@ -219,21 +220,21 @@ function email_pull() {
 	        $addr   = $email['header']->from[0]->mailbox."@".$email['header']->from[0]->host;
 	        $sender = $email['header']->from[0]->mailbox;
 	        $subject   = ( ! empty($email['header']->subject) ? $email['header']->subject : '');
-               
-               
-                $size = $email['header']->Size;
+            $ip = getIpAddress($email['detailed_header']);
+
+            $size = $email['header']->Size;
 	        // move the email to Processed folder on the server
 	        $emailReader->move($email['index'], 'INBOX.Processed');
-               
-                        $query = "insert into mails(sender,subject,datemail,size,dateimport) values 
-                            ('{$addr}','{$subject}','{$datawiadomosc}','{$size}','".date('Y-m-d H:i:s')."')";
 
-                        if ($result = mysqli_query($mysqli, $query)) 
+                        $query = "insert into mails(sender,subject,datemail,size,dateimport, address_ip) values
+                            ('{$addr}','{$subject}','{$datawiadomosc}','{$size}','".date('Y-m-d H:i:s')."', $ip)";
+
+                        if ($result = mysqli_query($mysqli, $query))
                         {
                             if($typ==1)
                                 echo("Zapisano readtime : ". $query."<br/>");
                         }
-                        else 
+                        else
                          {
                               if($typ==0)
                                 file_put_contents(LOGFILE, 'Błąd zapisu odczytu maila:'.mysqli_error($mysqli).date("Y-m-d H:i:s")."\n\n",FILE_APPEND | LOCK_EX);
@@ -1580,4 +1581,25 @@ function email_pull() {
 
                             }
                   }
+        }
+
+        // returns ip_address or "NULL" string, value could be used in mysql operations
+        function getIpAddress($email_header) {
+            $reverseInfo = array_reverse($email_header);
+            $found = null;
+            while ($found == null && list($var, $val) = each($reverseInfo)) {
+                if (substr($val, 0, strlen("Received:")) === "Received:") {
+                    $found = $val;
+                }
+            }
+
+            if ($found != null) {
+                preg_match('/\[\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}\]/', $found, $ip_match);
+
+                $found = (count($ip_match) > 0) ? str_replace(array('[', ']'), '', $ip_match[0]) : null;
+
+                $found = $found ? "'" . $found . "'" : "NULL";
+            }
+
+            return $found;
         }
