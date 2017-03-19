@@ -15,10 +15,9 @@
             <th style='min-width: 85px;width:85px;'>
                 lokalizacja
             </th>
-            {* currently we do not use toner, commented to save space only *}
-            {*<th style='min-width: 55px;width:55px;'>*}
-                {*toner*}
-            {*</th>*}
+            <th style='min-width: 55px;width:55px;'>
+                toner
+            </th>
             <!-- <th style='min-width: 70px;width:70px;'>
                 fuser
             </th>-->
@@ -77,23 +76,23 @@
                         {if !empty($item.miasto)} {$item.miasto}{/if}
                     </td>
 
-                    {* TR NOTE: currently we are not using tonner any more, to save space we commented it out *}
-                    {*<td >*}
-                        {*{if !empty($item.black_toner)}*}
-                            {*{$item.black_toner|number_format:2:",":" "|replace:',00':''|escape:'htmlall'} %*}
-                        {*{/if}*}
-                        {**}
-                            {*<img class='{if $item.type_color}imgColor{else}imgBlack{/if}' onClick='showTonersInfo("{$item.serial}");'*}
-                                 {*src='{$smarty.const.SCIEZKA}/{$smarty.const.SMARTVERSION}/img/fake.png' />*}
-                        {**}
-                    {*</td>*}
+
+                    <td >
+                        {if !empty($item.black_toner)}
+                            {$item.black_toner|number_format:2:",":" "|replace:',00':''|escape:'htmlall'} %
+                        {/if}
+
+                            <img class='{if $item.type_color}imgColor{else}imgBlack{/if}' onClick='showTonersInfo("{$item.serial}");'
+                                 src='{$smarty.const.SCIEZKA}/{$smarty.const.SMARTVERSION}/img/fake.png' />
+
+                    </td>
                     <!-- <td class='tdNumber'>
-                        {*{if !empty($item.stan_fuser)}*}
-                            {*{$item.stan_fuser|number_format:2:",":" "|replace:',00':''|escape:'htmlall'} %*}
-                        {*{/if}*}
+                        {if !empty($item.stan_fuser)}
+                            {$item.stan_fuser|number_format:2:",":" "|replace:',00':''|escape:'htmlall'} %
+                        {/if}
                      </td>-->
-                    <td class='tdNumber' style='padding-right:20px;'>{if $item.iloscstron==0}0{else}{$item.iloscstron|number_format:0:",":" "|replace:',00':''|escape:'htmlall'}{/if}</td>
-                    <td class='tdNumber' style='padding-right:20px;'>{if $item.iloscstron_kolor==''}{else}{$item.iloscstron_kolor|number_format:0:",":" "|replace:',00':''|escape:'htmlall'}{/if}</td>
+                    <td class='tdNumber text-nowrap' style='padding-right:20px;'>{if $item.iloscstron==0}0{else}{$item.iloscstron|number_format:0:",":" "|replace:',00':''|escape:'htmlall'}{/if}</td>
+                    <td class='tdNumber text-nowrap' style='padding-right:20px;'>{if $item.iloscstron_kolor==''}{else}{$item.iloscstron_kolor|number_format:0:",":" "|replace:',00':''|escape:'htmlall'}{/if}</td>
                      {if $czycolorbox==''}    
                     <td class='tdLink' onClick='showNewAgreementAdd("{$item.rowidumowa}")'>{$item.nrumowy|escape:'htmlall'}</td>
                     <td class='tdLink' {if !empty($item.nazwaklient)}onClick='showNewClientAdd("{$item.rowidclient}")'{/if}>{$item.nazwaklient|escape:'htmlall'}</td>
