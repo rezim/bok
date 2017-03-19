@@ -1644,53 +1644,67 @@ function uprawnienia()
     }
 }
 
-function savePrinterCounters(serial)
+function savePrinterCounters(previousBlack, previousColor, serial)
 {
     var
         doc=document,
         objLoad=doc.getElementById('actionloader'),
         objOk = doc.getElementById('actionok'),
         objError = doc.getElementById('actionerror'),
+        objErrorWrongValue = doc.getElementById('actionerrorwrongvalue'),
         objClick = doc.getElementById('actionbuttonclick');
 
 
 
     $(objClick).hide();
+    $(objErrorWrongValue).hide();
     $(objLoad).show();
 
-    var message = 'Czarne: ' + doc.getElementById('blackCount_' + serial).value;
-    if (doc.getElementById('colorCount_' + serial)) {
-        message += ', Kolor: ' + doc.getElementById('colorCount_' + serial).value + '.';
-    }
-    message += '. Potwierdzasz ?';
 
-    if (confirm(message))
-    {
+    // check if value is not smaller then the original one
+    var blackCount = doc.getElementById('blackCount_' + serial) ? parseInt(doc.getElementById('blackCount_' + serial).value.replace(/\s+/g, '')) : 0;
+    var colorCount = doc.getElementById('colorCount_' + serial) ? parseInt(doc.getElementById('colorCount_' + serial).value.replace(/\s+/g, '')) : 0;
+    previousBlack = parseInt(previousBlack.replace(/\s+/g, ''));
+    previousColor = parseInt(previousColor.replace(/\s+/g, ''));
 
-        var d =  {
-            serial: serial,
-            iloscstron: doc.getElementById('blackCount_' + serial).value,
-            stanna: doc.getElementById('dateToSave_' + serial).value
-        };
+    if (blackCount < previousBlack || colorCount < previousColor) {
+        $(objErrorWrongValue).show();
+        $(objLoad).hide();
+    } else {
+
+        var message = 'Czarne: ' + blackCount;
         if (doc.getElementById('colorCount_' + serial)) {
-            d['iloscstron_kolor'] = doc.getElementById('colorCount_' + serial).value;
+            message += ', Kolor: ' + colorCount + '.';
         }
+        message += '. Potwierdzasz ?';
 
-        $.ajax({
-            type: 'POST',
-            url: sciezka + "/printers/savestanna/notemplate",
-            async: true,
-            data: d,
-            success: function (dane) {
-                checkReplay(objError, objLoad, null, objClick, dane, objOk, 1, 3000, null);
-                return false;
-            },
-            error: function () {
+        if (confirm(message)) {
 
-                showError(objError, objLoad, null, objClick, 3000);
-                return false;
+            var d = {
+                serial: serial,
+                iloscstron: doc.getElementById('blackCount_' + serial).value,
+                stanna: doc.getElementById('dateToSave_' + serial).value
+            };
+            if (doc.getElementById('colorCount_' + serial)) {
+                d['iloscstron_kolor'] = doc.getElementById('colorCount_' + serial).value;
             }
-        });
+
+            $.ajax({
+                type: 'POST',
+                url: sciezka + "/printers/savestanna/notemplate",
+                async: true,
+                data: d,
+                success: function (dane) {
+                    checkReplay(objError, objLoad, null, objClick, dane, objOk, 1, 3000, null);
+                    return false;
+                },
+                error: function () {
+
+                    showError(objError, objLoad, null, objClick, 3000);
+                    return false;
+                }
+            });
+        }
     }
 }
 

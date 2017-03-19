@@ -6,6 +6,18 @@
     </tr>
 </table>
 
+<div class='divSave'>
+    <div id='actionerror' class='actionerror'><span>Błąd zapisu danych.</span></div>
+    <div id='actionok' class='actionok' ><span style='margin-top:6px;'>Dane zapisane poprawnie</span></div>
+
+    <div id='actionerrorwrongvalue' class='actionerror'><span>Wartość nie może być mniejsza niż wartość poprzednia.</span></div>
+
+    <div id='actionloader' class="actionloader">
+        <img src="{$smarty.const.SCIEZKA}/{$smarty.const.SMARTVERSION}/img/smallLoader.GIF" style='display:inline;'/>przetwarzanie
+    </div>
+    <div style='clear:both'></div>
+</div>
+
 {$turns = 1}
 
     <table class='tablesorter displaytable'  id="tableCounters" cellspacing=0 cellpadding=0>
@@ -74,7 +86,9 @@
                                         </td>
                                         <td>
                                             <input  type="hidden" id='dateToSave_{$item2.serial}' class='textBoxNormal printerCounterDateTo' style='width:80px;min-width: 80px;'>
-                                            <button type="button" onclick="savePrinterCounters('{$item2.serial}')">zapisz</button>
+                                            <button type="button" onclick="savePrinterCounters('{$item2.strony_black_koniec|number_format:0:",":" "|escape:'htmlall'}',
+                                                    {if $item2.type_color}'{$item2.strony_kolor_koniec|number_format:0:",":" "|escape:'htmlall'}'{else}'0'{/if},
+                                                    '{$item2.serial}')">zapisz</button>
                                         </td>
                                 </tr>
                              {$turns = $turns+1}
@@ -87,4 +101,5 @@
                     {/if}
                     </tbody>
             </table>
+
 

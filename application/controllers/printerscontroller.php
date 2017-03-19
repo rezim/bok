@@ -75,7 +75,7 @@ class printersController extends Controller
                 die('Wybierz datę na którą ma być wpisane');
             if($_POST['iloscstron']!='' && !validatesAsInt(str_replace(' ','',$_POST['iloscstron'])))
                 die('Wpisz poprawną ilość toner czarny');
-            if($_POST['iloscstron_kolor']!='' && !validatesAsInt(str_replace(' ','',$_POST['iloscstron_kolor'])))
+            if(array_key_exists('iloscstron_kolor', $_POST) && $_POST['iloscstron_kolor']!='' && !validatesAsInt(str_replace(' ','',$_POST['iloscstron_kolor'])))
                 die('Wpisz poprawną ilość toner kolorowy');
             
             
