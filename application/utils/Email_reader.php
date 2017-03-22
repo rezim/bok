@@ -172,9 +172,17 @@ function email_pull()
 
         // for My Slow Low, check if I found an image attachment
 
+        // TR NOTE: check if body contains informations indicates minolta service data
+        if (($minoltaMessage = isMinoltaServiceMessage($email['body'])) != null) {
+
+            if (!saveMinoltaDataDevice($minoltaMessage)) {
+                $emailReader->move($email['index'], 'INBOX.Rejected');
+                continue;
+            }
+
         // TR NOTE: check if subject contains the search text,
         //          this is because is could contains 'Fw:' 'Re:', others
-        if (strpos($email['header']->subject, TEMATMINOLTA) !== false) {
+        } else if (strpos($email['header']->subject, TEMATMINOLTA) !== false) {
             if (!_readMinolta($email['body'], $datawiadomosc, $ip)) {
                 $emailReader->move($email['index'], 'INBOX.Rejected');
                 continue;
@@ -869,6 +877,20 @@ function getDataDeviceMinolta($message)
     return $dataDevice;
 }
 
+
+function saveMinoltaDataDevice($minoltaMessage) {
+    global $mysqli;
+    $statement = $mysqli->prepare("INSERT INTO logs (sequencenumber, eventcode, description,timestamp,valuefloat,revision,dateinsert,serial)
+                                    VALUES (?,?,?,?,?,?,?,?)");
+
+    $d = new DateTime($minoltaMessage['timestamp']);
+
+    $statement->bind_param("isssdsss", $minoltaMessage['sequencenumber'], $minoltaMessage['eventcode'], $minoltaMessage['description'],
+        $d->format('Y-m-d H:i:s'), $minoltaMessage['valuefloat'], $minoltaMessage['revision'], date('Y-m-d H:i:s'), $minoltaMessage['serial']);
+
+    return $statement->execute();
+}
+
 function saveDataDevice($dataDevice, $dataWiadomosci, $ip)
 {
 
@@ -1409,4 +1431,44 @@ function getIpAddress($email_header)
     }
 
     return $found;
+}
+
+
+
+function isMinoltaServiceMessage($email_body) {
+    $result = array();
+    $result['sequencenumber'] = -1;
+    $result['valuefloat'] = -1;
+    $result['description'] = "";
+    $arrRows = explode("\n", $email_body);
+    foreach($arrRows as $row) {
+        $value = strRight(":", $row);
+        if (startWith($row, "Miejsce instalacji") && $value != "") {
+            $result['serial'] = $value;
+        }
+        if (startWith($row, "Adres IP")) {
+            $result['revision'] = $value;
+        }
+        if (startWith($row, "Czas zdarzenia")) {
+            $result['timestamp'] = $value;
+        }
+        if (startWith(preg_replace('/[^A-Za-z0-9:]/','',$row), "BBd")) {
+            $result['eventcode'] = $value;
+        }
+    }
+
+
+    if (!array_key_exists('serial', $result)) {
+        $result = null;
+    }
+
+    return $result;
+}
+
+function strRight($delimiter, $str) {
+    return strpos($str, $delimiter) !== false ? trim(explode($delimiter, $str, 2)[1]) : "";
+}
+
+function startWith($str, $subStr) {
+    return (substr($str, 0, strlen($subStr)) === $subStr);
 }
