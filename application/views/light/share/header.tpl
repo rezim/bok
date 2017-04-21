@@ -16,9 +16,13 @@
         <link rel="stylesheet" type="text/css" href="{$smarty.const.SCIEZKA}/{$smarty.const.SMARTVERSION}/css/sort.css" title="default" />
         <link rel="stylesheet" type="text/css" href="{$smarty.const.SCIEZKA}/{$smarty.const.SMARTVERSION}/css/dropzone.css" title="default" />
 
+
         <!-- bootstrap -->
         <link rel="stylesheet" type="text/css" href="{$smarty.const.SCIEZKA}/css/bootstrap.min.css" title="default"/>
         <link rel="stylesheet" type="text/css" href="{$smarty.const.SCIEZKA}/css/bok.css" title="default"/>
+
+        <!-- modules -->
+        <link rel="stylesheet" type="text/css" href="{$smarty.const.SCIEZKA}/css/service.css" />
 
     <script type="text/javascript">
         function loadScript(src, callback) 
@@ -58,6 +62,7 @@
         <script type="text/javascript" src="{$smarty.const.SCIEZKA}/js/invoices.js?{$smarty.now}"></script>
         <!-- angular libs -->
         <script type="text/javascript" src="{$smarty.const.SCIEZKA}/js/lib/angular.min.js"></script>
+        <script type="text/javascript" src="{$smarty.const.SCIEZKA}/js/lib/angular-locale_pl.min.js"></script>
 
         <script type="text/javascript" src="{$smarty.const.SCIEZKA}/js/angular/app.js"></script>
         <script type="text/javascript" src="{$smarty.const.SCIEZKA}/js/angular/service/rest.js"></script>
@@ -137,6 +142,10 @@
 
                     {if isset($smarty.session.przypisanemenu['li_serviceshow'])}
                         <li id='li_serviceshow' class='last'><a href='{$smarty.const.SCIEZKA}/service/show'><span>Serwis</span></a></li>
+                    {/if}
+
+                    {if isset($smarty.session.przypisanemenu['li_serviceoperating'])}
+                        <li id='li_serviceoperating' class='last'><a href='{$smarty.const.SCIEZKA}/service/operating'><span>Serwis Drukarek</span></a></li>
                     {/if}
                  {*  <li class='active'><a href='/logs/show' ><span>Historia</span></a></li>*}
                 </ul>

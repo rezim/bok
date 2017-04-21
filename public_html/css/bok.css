@@ -18,3 +18,69 @@ table.notification-popup > tbody > tr > td:nth-child(2)
 table.notification-popup td.text-field {
     width: 600px;
 }
+
+.fa {
+    cursor: pointer;
+}
+
+@media print {
+    body {-webkit-print-color-adjust: exact;}
+
+    .printTable {
+        vertical-align: top;
+        min-height: 100%;
+        width: 100%;
+    }
+
+    table.requestDetails {
+        width: 100%;
+    }
+
+    table.requestDetails {
+        border-spacing: 0;
+        border-collapse: separate;
+    }
+
+    table.requestDetails th {
+        background-color: #DCDCDC;
+        border: solid 1px #000;
+    }
+
+    table.requestDetails td {
+        border: solid 1px #000;
+    }
+
+    td {
+        vertical-align: top;
+    }
+
+    .printSubHeader {
+        border-top: solid 2px #000;
+        background-color: #DCDCDC;
+    }
+
+    .positionRight {
+        padding-left: 5%;
+    }
+
+    .positionLeft {
+        padding-right: 5%;
+    }
+
+    .topBorder {
+        border-top: solid 2px #000;
+    }
+
+    .requestDescription {
+        border: solid 1px #000;
+    }
+
+    .printSign {
+        border-top: dashed 1px #000;
+    }
+
+    .printSign div {
+        margin-top: 50px;
+    }
+}
+

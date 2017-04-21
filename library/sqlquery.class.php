@@ -22,6 +22,47 @@ class SQLQuery {
     {
          return $this->_dbHandle->insert_id;
     }
+
+    function updateFromPostParams($postParams, $tableName, $keyColName) {
+        $arrFields = array();
+        $arrValues = array();
+        $keyColValue = null;
+        $arrTypes = array();
+        forEach($postParams as $key => $value) {
+            if ($key != $keyColName) {
+                $arrKeyWithType = explode(":", $key, 2);
+
+                array_push($arrFields, $arrKeyWithType[0]);
+                if (count($arrKeyWithType) > 1) {
+                    array_push($arrTypes, $arrKeyWithType[1]);
+                } else {
+                    // if type is not provided, default is string
+                    array_push($arrTypes, "s");
+                }
+
+                array_push($arrValues, $value);
+            } else {
+                $keyColValue = $value;
+            }
+        }
+
+        array_push($arrValues, $keyColValue);
+
+        $querySet = "`" . implode("`=?,`", $arrFields) . "`=?";
+
+        $strTypes = implode($arrTypes);
+
+        $arrKeyWithType = explode(":", $keyColName, 2);
+
+        $queryWhere = "`" . $arrKeyWithType[0] . "`=?";
+
+        $strTypes = (count($arrKeyWithType) > 1) ? $strTypes . $arrKeyWithType[1] : $strTypes . 's';
+
+        $queryUpdate = "update " . $tableName . " set " . $querySet . " where " . $queryWhere;
+
+        return $this->update($queryUpdate, $strTypes, $arrValues);
+    }
+
     function update($query,$types,$params=array())
     {
                         
@@ -288,5 +329,9 @@ class SQLQuery {
     }
     function getError() {
         return $this->_dbHandle->error;
+    }
+
+    function strWrap($str, $wrap) {
+        return $wrap . $str . $wrap;
     }
 }

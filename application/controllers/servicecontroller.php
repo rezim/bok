@@ -9,6 +9,14 @@ class serviceController extends Controller
         echo $this->service->add($_POST, 'service_clients');
     }
 
+    function updateClient() {
+        echo json_encode($this->service->updateFromPostParams($_POST, 'service_clients', 'rowid_clients:i'));
+    }
+
+    function updateRequest() {
+        echo json_encode($this->service->updateFromPostParams($_POST, 'service_requests', 'rowid:i'));
+    }
+
     function addRequest() {
         echo $this->service->add($_POST, 'service_requests');
     }
@@ -19,6 +27,11 @@ class serviceController extends Controller
 
     function getRequests() {
         echo $this->service->getRequests();
+    }
+
+    function getServiceAvailableStatuses()
+    {
+        echo $this->service->getServiceAvailableStatuses();
     }
 
     function getStatuses() {
@@ -41,6 +54,10 @@ class serviceController extends Controller
                 null
             );
         }
+    }
+
+    function getCurrentUserRequests() {
+        echo $this->service->getCurrentUserRequests();
     }
 }
 

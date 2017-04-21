@@ -1,61 +1,5 @@
-ServiceCtrl = function ($scope, rest, $location, $q, $filter, $timeout) {
+OperatingServiceCtrl = function ($scope, rest, $location, $q, $filter, $timeout) {
     var self = this;
-
-    $scope.clientData = [
-        {
-            title: "Nazwa",
-            type: "text",
-            key: "nazwa:s",
-            value: "Regimosoft"
-        },
-        {
-            title: "Ulica",
-            type: "text",
-            key: "ulica:s",
-            value: "Tenisowa 20"
-        },
-        {
-            title: "Miasto",
-            type: "text",
-            key: "miasto:s",
-            value: "Wrocław"
-        },
-        {
-            title: "Kod pocztowy",
-            type: "text",
-            key: "kodpocztowy:s",
-            value: "53-013"
-        },
-        {
-            title: "Nip",
-            type: "text",
-            key: "nip:s",
-            value: "7551678747"
-        },
-        {
-            title: "Osoba kontaktowa",
-            type: "text",
-            key: "imienazwisko:s",
-            value: "Tomasz Regimowicz"
-        },
-        {
-            title: "Telefon",
-            type: "text",
-            key: "telefon:s",
-            value: "602448139"
-        },
-        {
-            title: "Mail",
-            type: "text",
-            key: "mail:s",
-            value: "tregimowicz@gmail.com"
-        },
-        {
-            type: "key",
-            key: "rowid_clients:i",
-            value: ""
-        }
-    ];
 
     $scope.deviceData = [
         {
@@ -90,13 +34,6 @@ ServiceCtrl = function ($scope, rest, $location, $q, $filter, $timeout) {
             value: 1
         },
         {
-            title: "Wykonuje",
-            type: "select",
-            availableOptions: function() {return self.getUsers()},
-            key: "rowid_user:i",
-            value: 9
-        },
-        {
             title: "Wartość Materiałów",
             type: "text",
             key: "wartosc_materialow:d",
@@ -107,10 +44,6 @@ ServiceCtrl = function ($scope, rest, $location, $q, $filter, $timeout) {
             type: "text",
             key: "czas_pracy:d",
             value: "0.01"
-        },
-        {
-            key: "rowid_clients:i",
-            value: ""
         },
         {
             type: "key",
@@ -154,35 +87,6 @@ ServiceCtrl = function ($scope, rest, $location, $q, $filter, $timeout) {
         }, 0);
     };
 
-    this.addNew = function () {
-        rest.post('addClient', arrToJson($scope.clientData)).then(function(result) {
-
-            var deviceData = arrToJson($scope.deviceData);
-            deviceData['rowid_clients:i'] = result.rowid;
-            rest.post('addRequest', deviceData).then(function(result) {
-
-                if (deviceData['rowid_user:i']) {
-
-                    var notifyUser = $filter('filter')(users, {id: deviceData['rowid_user:i']});
-                    if (notifyUser.length == 1) {
-                        notifyEmployee(notifyUser[0]['mail'], deviceData['modeldrukarki:s'], deviceData['numerseryjny:s'], deviceData['opisusterki:s']);
-                    }
-                }
-                invalidate();
-                $location.path('/view');
-            });
-        });
-    };
-
-    this.updateClient = function() {
-        rest.post('updateClient', arrToJson($scope.clientData)).then(function(result) {
-
-            console.log(result);
-            invalidate();
-            $location.path('/view');
-        });
-    };
-
     this.updateRequest = function() {
         rest.post('updateRequest', arrToJson($scope.deviceData)).then(function(result) {
 
@@ -193,7 +97,7 @@ ServiceCtrl = function ($scope, rest, $location, $q, $filter, $timeout) {
     };
 
     this.edit = function(request) {
-        setData(request, 'rowid_clients');
+        setData(request, 'rowid');
 
         $location.path('/edit');
     };
@@ -205,15 +109,6 @@ ServiceCtrl = function ($scope, rest, $location, $q, $filter, $timeout) {
     };
 
     var setData = function(request) {
-        angular.forEach($scope.clientData, function(data) {
-            var key = data.key.split(':')[0];
-            var type = data.key.split(':')[1];
-            data.value = (request && request[key]) ? request[key] : "";
-            if (type == 'i') {
-                data.value = parseInt(data.value);
-            }
-        });
-
         angular.forEach($scope.deviceData, function(data) {
             var key = data.key.split(':')[0];
             data.value = (request && request[key]) ? request[key] : "";
@@ -272,7 +167,7 @@ ServiceCtrl = function ($scope, rest, $location, $q, $filter, $timeout) {
     this.getStatuses = function() {
         if (!statuses) {
             statuses = [];
-            rest.post('getStatuses').then(function (allStatuses) {
+            rest.post('getServiceAvailableStatuses').then(function (allStatuses) {
                 statuses.push.apply(statuses, allStatuses);
             });
         }
@@ -299,4 +194,4 @@ ServiceCtrl = function ($scope, rest, $location, $q, $filter, $timeout) {
     };
 };
 
-app.controller('ServiceCtrl', ServiceCtrl);
+app.controller('OperatingServiceCtrl', OperatingServiceCtrl);
