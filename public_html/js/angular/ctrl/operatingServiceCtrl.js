@@ -6,13 +6,13 @@ OperatingServiceCtrl = function ($scope, rest, $location, $q, $filter, $timeout)
             title: "Model drukarki",
             type: "text",
             key: "modeldrukarki:s",
-            value: "Minolta"
+            value: ""
         },
         {
             title: "Numer seryjny",
             type: "text",
             key: "numerseryjny:s",
-            value: "ASD1234567"
+            value: ""
         },
         {
             title: "Opis usterki",
@@ -24,7 +24,7 @@ OperatingServiceCtrl = function ($scope, rest, $location, $q, $filter, $timeout)
             title: "Uwagi klienta",
             type: "textarea",
             key: "uwagiklienta:s",
-            value: "Bez Uwag"
+            value: ""
         },
         {
             title: "Status",
@@ -37,13 +37,13 @@ OperatingServiceCtrl = function ($scope, rest, $location, $q, $filter, $timeout)
             title: "Wartość Materiałów",
             type: "text",
             key: "wartosc_materialow:d",
-            value: "0.01"
+            value: ""
         },
         {
             title: "Czas Pracy",
             type: "text",
             key: "czas_pracy:d",
-            value: "0.01"
+            value: ""
         },
         {
             type: "key",

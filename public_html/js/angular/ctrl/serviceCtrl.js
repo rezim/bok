@@ -6,49 +6,49 @@ ServiceCtrl = function ($scope, rest, $location, $q, $filter, $timeout) {
             title: "Nazwa",
             type: "text",
             key: "nazwa:s",
-            value: "Regimosoft"
+            value: ""
         },
         {
             title: "Ulica",
             type: "text",
             key: "ulica:s",
-            value: "Tenisowa 20"
+            value: ""
         },
         {
             title: "Miasto",
             type: "text",
             key: "miasto:s",
-            value: "Wrocław"
+            value: ""
         },
         {
             title: "Kod pocztowy",
             type: "text",
             key: "kodpocztowy:s",
-            value: "53-013"
+            value: ""
         },
         {
             title: "Nip",
             type: "text",
             key: "nip:s",
-            value: "7551678747"
+            value: ""
         },
         {
             title: "Osoba kontaktowa",
             type: "text",
             key: "imienazwisko:s",
-            value: "Tomasz Regimowicz"
+            value: ""
         },
         {
             title: "Telefon",
             type: "text",
             key: "telefon:s",
-            value: "602448139"
+            value: ""
         },
         {
             title: "Mail",
             type: "text",
             key: "mail:s",
-            value: "tregimowicz@gmail.com"
+            value: ""
         },
         {
             type: "key",
@@ -62,13 +62,13 @@ ServiceCtrl = function ($scope, rest, $location, $q, $filter, $timeout) {
             title: "Model drukarki",
             type: "text",
             key: "modeldrukarki:s",
-            value: "Minolta"
+            value: ""
         },
         {
             title: "Numer seryjny",
             type: "text",
             key: "numerseryjny:s",
-            value: "ASD1234567"
+            value: ""
         },
         {
             title: "Opis usterki",
@@ -80,7 +80,7 @@ ServiceCtrl = function ($scope, rest, $location, $q, $filter, $timeout) {
             title: "Uwagi klienta",
             type: "textarea",
             key: "uwagiklienta:s",
-            value: "Bez Uwag"
+            value: ""
         },
         {
             title: "Status",
@@ -94,19 +94,19 @@ ServiceCtrl = function ($scope, rest, $location, $q, $filter, $timeout) {
             type: "select",
             availableOptions: function() {return self.getUsers()},
             key: "rowid_user:i",
-            value: 9
+            value: 1
         },
         {
             title: "Wartość Materiałów",
             type: "text",
             key: "wartosc_materialow:d",
-            value: "0.01"
+            value: ""
         },
         {
             title: "Czas Pracy",
             type: "text",
             key: "czas_pracy:d",
-            value: "0.01"
+            value: ""
         },
         {
             key: "rowid_clients:i",
