@@ -1,11 +1,202 @@
 <div ng-app="app" ng-controller="ServiceCtrl as ctrl" ng-cloak class="service">
 
+    <!-- Add/Edit Client Template -->
+    <script type="text/ng-template" id="addEditClient">
+        <table class='tableform' cellpadding='0' cellspacing='0'>
+            <tbody>
+            <tr id='tr' ng-repeat="data in client">
+                <td  class='tdOpis'><span>[[data.title]]</span></td>
+                <td class='tdWartosc' ng-switch="data.type">
+                    <input ng-switch-when="text" type="text" name='editobj' class="textBoxForm" ng-model="data.value" />
+                    <textarea ng-switch-when="textarea" type="text" name='editobj' class="textareaForm" ng-model="data.value"></textarea>
+                </td>
+            </tr>
+            <tr>
+                <td colspan="2" style="text-align: right">
+                    <div ng-if="mode=='add'" class="actionbuttonZapisz" ng-click="ctrl.addClient(client, true)">Dodaj i Wybierz</div>
+                    <div ng-if="mode=='add'" class="actionbuttonZapisz" ng-click="ctrl.addClient(client)">Dodaj</div>
+                    <div ng-if="mode=='edit'" class="actionbuttonZapisz" ng-click="ctrl.updateClient(client, true)">Zapisz i Wybierz</div>
+                    <div ng-if="mode=='edit'" class="actionbuttonZapisz" ng-click="ctrl.updateClient(client)">Zapisz</div>
+                    <div class="buttonDeclin" ng-click="ctrl.cancelAction()" ng-if="ctrl.isCancelAvailable()">Anuluj</div>
+                </td>
+            </tr>
+            </tbody>
+        </table>
+    </script>
+
+    <!-- Add/Edit Request Template -->
+    <script type="text/ng-template" id="addEditRequest">
+        <table width="100%">
+            <tr>
+                <td valign="top">
+                    <table class='tableform' cellpadding='0' cellspacing='0'>
+                        <tbody>
+                        <tr>
+                            <td colspan="2" class='tdSection'><span>Dane klienta</span></td>
+                        </tr>
+                        <tr id='tr' ng-repeat="data in client" ng-if="$index == 0">
+                            <td  class='tdOpis'><span>[[data.title]]</span></td>
+                            <td class='tdWartosc' ng-switch="data.type">
+                                <input disabled="true" ng-switch-when="text" type="text" name='editobj' class="textBoxForm" ng-model="data.value" />
+                                <textarea disabled="true" ng-switch-when="textarea" type="text" name='editobj' class="textareaForm" ng-model="data.value"></textarea>
+                                <img ng-if="$index == 0" src="/bok/light/img/find.png" style="display:inline;margin-left: 5px;cursor:hand;cursor:pointer;" title="Wybierz" ng-click="mode=='add' ? ctrl.goTo('clients', 'addRequest') : ctrl.goTo('clients', 'editRequest')">
+                            </td>
+                        </tr>
+                        <tr id='tr' ng-repeat="data in request" ng-if="data.title && $index < (breakIdx || 1000)">
+                        <td  class='tdOpis' ng-if="data.type != 'section'"><span>[[data.title]]</span></td>
+                        <td class='tdWartosc' ng-if="data.type != 'section'" ng-switch="data.type">
+                            <input ng-disabled="data.readonly" ng-switch-when="text" type="text" name='editobj' class="textBoxForm" ng-model="data.value"/>
+                            <textarea ng-disabled="data.readonly" ng-switch-when="textarea" type="text" class="textareaForm" ng-model="data.value"></textarea>
+                            <select ng-disabled="data.readonly" ng-switch-when="select" ng-model="data.value" class="comboboxForm" ng-options="option.id as option.name for option in data.availableOptions()">
+                            </select>
+                        </td>
+                        <td ng-if="data.type == 'section'" colspan="2" class='tdSection'>
+                            <span>[[data.title]]</span>
+                        </td>
+                        </tr>
+                        </tbody>
+                    </table>
+                </td>
+                <td valign="top">
+                    <table class='tableform' cellpadding='0' cellspacing='0'>
+                        <tbody>
+                        <tr id='tr' ng-repeat="data in request" ng-if="data.title && $index >= (breakIdx || 1000)">
+                            <td  class='tdOpis' ng-if="data.type != 'section'"><span>[[data.title]]</span></td>
+                            <td class='tdWartosc' ng-if="data.type != 'section'" ng-switch="data.type">
+                                <input ng-disabled="data.readonly" ng-switch-when="text" type="text" name='editobj' class="textBoxForm" ng-model="data.value"/>
+                                <textarea ng-disabled="data.readonly" ng-switch-when="textarea" type="text" class="textareaForm" ng-model="data.value"></textarea>
+                                <select ng-disabled="data.readonly" ng-switch-when="select" ng-model="data.value" class="comboboxForm" ng-options="option.id as option.name for option in data.availableOptions()">
+                                </select>
+                            </td>
+                            <td ng-if="data.type == 'section'" colspan="2" class='tdSection'>
+                                <div>[[data.title]]</div>
+                                <div ng-if="data.title == 'Dane kontaktowe'" style="float: right;">
+                                    takie same jak klienta
+                                    <input type="checkbox" ng-model="contactSameAsClient" ng-disabled="!client[0].value" ng-change="ctrl.sameAsClientContact(contactSameAsClient, request)">
+                                </div>
+                                <div ng-if="data.title == 'Adres dostawy'" style="float: right;">
+                                    taki sam jak adres klienta
+                                    <input type="checkbox" ng-model="addressSameAsClient" ng-disabled="!client[0].value" ng-change="ctrl.sameAsClientAddress(addressSameAsClient, request)">
+                                </div>
+                            </td>
+                        </tr>
+                        </tbody>
+                    </table>
+                </td>
+            </tr>
+            <tr>
+                <td colspan="2" style="text-align: right">
+                    <div ng-if="mode=='add'" class="actionbuttonZapisz" ng-click="ctrl.addNewRequest(request, client)">Dodaj</div>
+                    <div ng-if="mode=='edit'" class="actionbuttonZapisz" ng-click="ctrl.updateRequest(request, client)">Zapisz</div>
+                    <div class="buttonDeclin" ng-click="ctrl.goTo('view', '')">Anuluj</div>
+                </td>
+            </tr>
+        </table>
+    </script>
+
+    <!-- Add new client -->
+    <div ng-if="ctrl.mode == 'addClient'">
+        <div ng-include src="'addEditClient'" ng-init="client=ctrl.getCleanData(clientData); mode='add'">
+        </div>
+    </div>
+
+    <!-- Edit Client -->
+    <div ng-if="ctrl.mode == 'editClient'">
+        <div ng-include src="'addEditClient'" ng-init="client=selectedClient; mode='edit'">
+        </div>
+    </div>
+
+    <!-- List of clients -->
+    <div ng-if="ctrl.mode == 'clients'">
+        <div class="divFilter">
+            <label class="labelNormal">
+                nazwa
+                <input type="text" ng-model="clientsFilter.nazwa"></label>
+            <label class="labelNormal">
+                miasto
+                <input type="text" ng-model="clientsFilter.miasto"></label>
+            <label class="labelNormal">
+                ulica
+                <input type="text" ng-model="clientsFilter.ulica"></label>
+            <label class="labelNormal">
+                nip
+                <input type="text" ng-model="clientsFilter.nip"></label>
+
+        </div>
+
+        <table class='tablesorter displaytable' cellspacing=0 cellpadding=0>
+            <thead>
+            <tr>
+                <th style='min-width: 50px;width:50px;'>
+                    Lp
+                </th >
+                <th style='cursor:pointer; min-width: 165px;width:165px;' ng-click="clientsSortBy = 'nazwa'">
+                    nazwa <i class="fa fa-sort-desc" ng-if="clientsSortBy == 'nazwa'"></i>
+                </th >
+                <th style='cursor:pointer; min-width: 115px;width:115px;' ng-click="clientsSortBy = 'miasto'">
+                    kod/miasto <i class="fa fa-sort-desc" ng-if="clientsSortBy == 'miasto'"></i>
+                </th>
+                <th style='cursor:pointer; min-width: 115px;width:115px;' ng-click="clientsSortBy = 'ulica'">
+                    adres <i class="fa fa-sort-desc" ng-if="clientsSortBy == 'ulica'"></i>
+                </th>
+                <th style='cursor:pointer; min-width: 115px;width:115px;' ng-click="clientsSortBy = 'nip'">
+                    nip <i class="fa fa-sort-desc" ng-if="clientsSortBy == 'nip'"></i>
+                </th>
+
+                <th style='cursor:pointer; min-width: 115px;width:115px;' ng-click="clientsSortBy = 'telefon'">
+                    telefon <i class="fa fa-sort-desc" ng-if="clientsSortBy == 'telefon'"></i>
+                </th>
+                <th style='cursor:pointer; min-width: 115px;width:115px;' ng-click="clientsSortBy = 'mail'">
+                    mail <i class="fa fa-sort-desc" ng-if="clientsSortBy == 'mail'"></i>
+                </th>
+                <th style='min-width: 75px;width:75px;' align="center">
+                    <a ng-click="ctrl.goTo('addClient')"><i class="fa fa-plus fa-2x" style="color: green"></i></a>
+                </th>
+            </tr>
+            </thead>
+            <tbody>
+
+            <tr ng-repeat="client in ctrl.getClients() | filter: clientsFilter | orderBy: clientsSortBy" ng-click="ctrl.setData(clientData, client); ctrl.goToRefUrl()" style="cursor: pointer">
+                <td>[[$index+1]]</td>
+                <td>[[client.nazwa]]</td>
+                <td>[[client.kodpocztowy]] [[client.miasto]]</td>
+                <td>[[client.ulica]]</td>
+                <td>[[client.nip]]</td>
+                <td>[[client.telefon]]</td>
+                <td>[[client.mail]]</td>
+                <td align="center">&nbsp;
+                    <i class="fa fa-edit fa-2x" ng-click="ctrl.setSelectedClient(client); ctrl.goTo('editClient')" style="color: darkgreen"></i>
+                </td>
+            </tr>
+            </tbody>
+
+        </table>
+
+        <i ng-if="isPending" class="fa fa-spinner fa-spin fa-5x" aria-hidden="true" style="margin-top: 50px;"></i>
+    </div>
+
+    <!-- Add new request -->
+    <div ng-if="ctrl.mode == 'addRequest'">
+        <div ng-include src="'addEditRequest'" ng-init="breakIdx=8; client=clientData; request=ctrl.getCleanData(deviceData); mode='add'">
+        </div>
+    </div>
+
+    <!-- Edit request -->
+    <div ng-if="ctrl.mode == 'editRequest'">
+        <div ng-include src="'addEditRequest'" ng-init="breakIdx=8; client=clientData; request=deviceData; mode='edit'">
+        </div>
+    </div>
+
+    <!-- List of requests -->
     <div ng-if="ctrl.mode == 'view'">
         <table class='tablesorter displaytable' cellspacing=0 cellpadding=0>
             <thead>
             <tr>
                 <th style='min-width: 50px;width:50px;'>
                     Lp
+                </th >
+                <th style='min-width: 75px;width:75px;'>
+                    Revers
                 </th >
                 <th style='min-width: 165px;width:165px;'>
                     Klient
@@ -34,20 +225,21 @@
             </thead>
             <tbody>
 
-                <tr ng-repeat="request in ctrl.getRequests()">
-                    <td>[[$index+1]]</td>
-                    <td>[[request.nazwa]]</td>
-                    <td>[[request.modeldrukarki]]</td>
-                    <td>[[request.numerseryjny]]</td>
-                    <td>[[request.opisusterki]]</td>
-                    <td>[[request.status]]</td>
-                    <td>[[request.date_insert]]</td>
-                    <td></td>
-                    <td>
-                        <i class="fa fa-print" ng-click="ctrl.print('print-template', request)"></i>
-                        <i class="fa fa-edit" ng-click="ctrl.edit(request)"></i>
-                    </td>
-                </tr>
+            <tr ng-repeat="request in ctrl.getRequests()">
+                <td>[[$index+1]]</td>
+                <td>[[request.revers_number]]</td>
+                <td>[[request.nazwa]]</td>
+                <td>[[request.modeldrukarki]]</td>
+                <td>[[request.numerseryjny]]</td>
+                <td>[[request.opisusterki]]</td>
+                <td>[[request.status]]</td>
+                <td>[[request.date_insert]]</td>
+                <td></td>
+                <td>
+                    <i class="fa fa-print fa-2x" ng-click="ctrl.print('print-template', request)"></i>
+                    <i class="fa fa-edit fa-2x" ng-click="ctrl.setData(deviceData, request); ctrl.setData(clientData, request); ctrl.goTo('editRequest')""></i>
+                </td>
+            </tr>
 
 
             </tbody>
@@ -57,96 +249,12 @@
         <i ng-if="isPending" class="fa fa-spinner fa-spin fa-5x" aria-hidden="true" style="margin-top: 50px;"></i>
     </div>
 
-    <div ng-if="ctrl.mode == 'add'">
-        <table class='tableform' cellpadding='0' cellspacing='0'>
-            <tr>
-                <td style="vertical-align: top">
-                    <table class='tableform' cellpadding='0' cellspacing='0'>
-                        <tbody>
-                        <tr id='tr' ng-repeat="data in clientData">
-                            <td  class='tdOpis'><span>[[data.title]]</span></td>
-                            <td class='tdWartosc' ng-switch="data.type">
-                                <input ng-switch-when="text" type="text" name='editobj' class="textBoxForm" ng-model="data.value" />
-                                <textarea ng-switch-when="textarea" type="text" name='editobj' class="textareaForm" ng-model="data.value"></textarea>
-                                <img ng-if="$index == 0" src="/bok/light/img/find.png" style="display:inline;margin-left: 5px;cursor:hand;cursor:pointer;" title="Wybierz">
-                            </td>
-                        </tr>
-                        </tbody>
-                    </table>
-
-                </td>
-                <td style="vertical-align: top">
-                    <table class='tableform' cellpadding='0' cellspacing='0'>
-                        <tbody>
-                        <tr id='tr' ng-repeat="data in deviceData" ng-if="data.title">
-                            <td  class='tdOpis'><span>[[data.title]]</span></td>
-                            <td class='tdWartosc' ng-switch="data.type">
-                                <input ng-switch-when="text" type="text" name='editobj' class="textBoxForm" ng-model="data.value"/>
-                                <textarea ng-switch-when="textarea" type="text" class="textareaForm" ng-model="data.value"></textarea>
-                                <select ng-switch-when="select" ng-model="data.value" class="comboboxForm" ng-options="option.id as option.name for option in data.availableOptions()">
-                                </select>
-                            </td>
-                        </tr>
-                        </tbody>
-                    </table>
-
-                </td>
-            </tr>
-            <tr>
-                <td colspan="2" style="text-align: right">
-                    <div class="actionbuttonZapisz" ng-click="ctrl.addNew()">Zapisz</div>
-                </td>
-            </tr>
-        </table>
-    </div>
-
-    <div ng-if="ctrl.mode == 'edit'">
-        <table class='tableform' cellpadding='0' cellspacing='0'>
-            <tr>
-                <td style="vertical-align: top">
-                    <table class='tableform' cellpadding='0' cellspacing='0'>
-                        <tbody>
-                        <tr id='tr' ng-repeat="data in clientData" ng-if="data.title">
-                            <td  class='tdOpis'><span>[[data.title]]</span></td>
-                            <td class='tdWartosc' ng-switch="data.type">
-                                <input ng-switch-when="text" type="text" name='editobj' class="textBoxForm" ng-model="data.value" />
-                                <textarea ng-switch-when="textarea" type="text" name='editobj' class="textareaForm" ng-model="data.value"></textarea>
-                                <img ng-if="$index == 0" src="/bok/light/img/find.png" style="display:inline;margin-left: 5px;cursor:hand;cursor:pointer;" title="Wybierz">
-                            </td>
-                        </tr>
-                        </tbody>
-                    </table>
-
-                </td>
-                <td style="vertical-align: top">
-                    <table class='tableform' cellpadding='0' cellspacing='0'>
-                        <tbody>
-                        <tr id='tr' ng-repeat="data in deviceData" ng-if="data.title">
-                            <td  class='tdOpis'><span>[[data.title]]</span></td>
-                            <td class='tdWartosc' ng-switch="data.type">
-                                <input ng-switch-when="text" type="text" name='editobj' class="textBoxForm" ng-model="data.value"/>
-                                <textarea ng-switch-when="textarea" type="text" class="textareaForm" ng-model="data.value"></textarea>
-                                <select ng-switch-when="select" ng-model="data.value" class="comboboxForm" ng-options="option.id as option.name for option in data.availableOptions()">
-                                </select>
-                            </td>
-                        </tr>
-                        </tbody>
-                    </table>
-
-                </td>
-            </tr>
-            <tr>
-                <td colspan="2" style="text-align: right">
-                    <div class="actionbuttonZapisz" ng-click="ctrl.updateRequest()">Aktualizuj</div>
-                </td>
-            </tr>
-        </table>
-    </div>
+    <!-- Print -->
     <div ng-show="false">
         <div id="print-template">
-        <table class="printTable">
+            <table class="printTable">
             <tr>
-                <td colspan="2" align="left">
+                <td align="left">
                     <div>
                         <img src="http://www.otus.pl/templates/otus/images/obraz/logo.png" alt="Otus" title="Otus" border="0" height="82" width="150">
                     </div>
@@ -160,17 +268,16 @@
                         {$smarty.const.BOK_OTUS_KONTO_BANKOWE}
                     </div>
                 </td>
-            </tr>
-            <tr>
-                <td width="60%"></td>
-                <td width="40%" align="center" class="positionRight">
-                    <div class="printSubHeader">Data sporządzenia wydruku</div>
-                    <div>[[toPrint.date | date:'dd.MM.yyyy']]</div>
+                <td width="50%" class="positionRight">
+                    <div align="center" class="printSubHeader">Rewers przyjęcia do serwisu </div>
+                    <div align="right" class="text-uppercase">[[toPrint.revers_number]]</div>
+                    <div align="center" class="printSubHeader">Data sporządzenia wydruku</div>
+                    <div align="right">[[toPrint.date | date:'dd.MM.yyyy']]</div>
                 </td>
             </tr>
             <tr>
                 <td width="50%" class="positionLeft">
-                    <div class="printSubHeader">Sprzedawca:</div>
+                    <div class="printSubHeader" style="margin-top: 20px">Sprzedawca:</div>
                     <div>{$smarty.const.BOK_OTUS}</div>
                     <div>{$smarty.const.BOK_OTUS_ADRES}</div>
                     <div>{$smarty.const.BOK_OTUS_ADRES2}</div>
@@ -191,17 +298,13 @@
                 </td>
                 <td width="50%" align="center" class="positionRight">
                     <div class="printSubHeader">Adres dostawy:</div>
+                    <div>[[toPrint.imieinazwisko]]</div>
+                    <div>[[toPrint.dostawa_ulica]]</div>
+                    <div>[[toPrint.dostawa_kodpocztowy]] [[toPrint.miasto]]</div>
+                    <div>Tel. [[toPrint.kontakt_telefon]]</div>
+                    <div>E-mail: [[toPrint.kontakt_mail]]</div>
                 </td>
             </tr>
-            <tr>
-                <td width="50%" class="positionLeft">
-                    <div class="printSubHeader"></div>
-                </td>
-                <td width="50%" class="positionRight">
-                    <div class="printSubHeader"></div>
-                </td>
-            </tr>
-            <tr><td colspan="2"><span>Rewers przyjęcia do serwisu </span> <span class="text-uppercase">[[toPrint.rowid]][[toPrint.date | date:'/MMM/yyyy']]</span></td></tr>
             <tr>
                 <td colspan="2">
                     <div class="requestDescription">
@@ -210,65 +313,6 @@
                         <div><div><strong>Opis Usterki:</strong></div><div>[[toPrint.opisusterki]]</div></div>
                         <div><div><strong>Uwagi Klienta:</strong></div><div>[[toPrint.uwagiklienta]]</div></div>
                     </div>
-                </td>
-            </tr>
-            <tr>
-                <td colspan="2">
-                    <table class="requestDetails">
-                        <tr>
-                            <th>Lp</th>
-                            <th>Nazwa</th>
-                            <th>PKWiU</th>
-                            <th>Ilość</th>
-                            <th>j.m.</th>
-                            <th>Rabat <br/>[%]</th>
-                            <th>Cenaa brutton</th>
-                            <th>VAT <br/>[%]</th>
-                            <th>Wartość netto</th>
-                            <th>VAT</th>
-                            <th>Wartość brutto</th>
-                        </tr>
-                        <tr>
-                            <td class="text-center">1</td>
-                            <td class="text-left">Naprawa Drukarki</td>
-                            <td></td>
-                            <td class="text-right">1,000</td>
-                            <td class="text-center">szt.</td>
-                            <td class="text-right">0,00</td>
-                            <td class="text-right">0,00</td>
-                            <td class="text-center">23</td>
-                            <td class="text-right">0,00</td>
-                            <td class="text-right">0,00</td>
-                            <td class="text-right">0,00</td>
-                        </tr>
-                    </table>
-                </td>
-            </tr>
-            <tr>
-                <td align="left" valign="bottom">Ciąg dalszy na nstępnej stronie</td>
-                <td align="right" valign="bottom">1</td>
-            </tr>
-        </table>
-
-        <table class="printTable">
-            <tr>
-                <td colspan="2" align="left">
-                    <div>
-                        {$smarty.const.BOK_OTUS_ADRES}, {$smarty.const.BOK_OTUS_ADRES2}
-                    </div>
-                    <div>
-                        Tel.: {$smarty.const.BOK_OTUS_TELEFON}, {$smarty.const.BOK_OTUS_WWW}
-                    </div>
-                    <div>
-                        {$smarty.const.BOK_OTUS_KONTO_BANKOWE}
-                    </div>
-                </td>
-            </tr>
-            <tr>
-                <td width="50%"></td>
-                <td width="50%">
-                    <div class="printSubHeader"><strong>Razem</strong><strong>0,00 PLN</strong></div>
-                    <div><strong>Słownie:</strong> zero PLN 0/100</div>
                 </td>
             </tr>
             <tr>
@@ -285,25 +329,14 @@
                     </ol>
                 </td></tr>
             <tr>
-                <td colspan="2">Zapozanalem sie i akceptuje warunki naprawy:</td></tr>
-            <tr>
-                <td width="50%" class="printSign"><div>Czytelny podpis klienta</div></td>
-                <td width="50%"></td>
-            </tr>
-
-            <tr>
-                <td width="50%"></td>
-                <td width="50%">Potwierdzenie odbioru drukarki z serwisu:</td>
+                <td width="50%" align="center">Zapoznałem się i akceptuje warunki naprawy:</td>
+                <td width="50%" align="center">Potwierdzenie odbioru drukarki z serwisu:</td>
             </tr>
             <tr>
-                <td width="50%"></td>
-                <td width="50%" class="printSign"><div>data i czytelny podpis klienta</div></td>
-            </tr>
-            <tr>
-                <td align="left" valign="bottom"></td>
-                <td align="right" valign="bottom">2</td>
+                <td width="50%" align="center" class="printSign"><div>czytelny podpis klienta</div></td>
+                <td width="50%" align="center" class="printSign"><div>data i czytelny podpis klienta</div></td>
             </tr>
         </table>
-    </div>
+        </div>
     </div>
 </div>

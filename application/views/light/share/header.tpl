@@ -95,7 +95,7 @@
         <a id='but_addcase' href="javascript:void(0);" onclick='showNewNotiAdd("0");return false;' class="butaddcase">Nowe zgłoszenie</a>
         {/if}
         {if isset($smarty.session.przypisanemenu['but_addcase'])}
-            <a id='but_addservice' href="{$smarty.const.SCIEZKA}/service/show#add" class="butaddservice">Nowy serwis</a>
+            <a id='but_addservice' href="{$smarty.const.SCIEZKA}/service/show#addNewRequest" class="butaddservice">Nowy serwis</a>
         {/if}
     </div>
     <div class='liniaRozdzielajaca'></div>

@@ -6,44 +6,63 @@ OperatingServiceCtrl = function ($scope, rest, $location, $q, $filter, $timeout)
             title: "Model drukarki",
             type: "text",
             key: "modeldrukarki:s",
-            value: ""
+            value: "",
+            readonly: true
         },
         {
             title: "Numer seryjny",
             type: "text",
             key: "numerseryjny:s",
-            value: ""
+            value: "",
+            readonly: true
         },
         {
             title: "Opis usterki",
             type: "textarea",
             key: "opisusterki:s",
+            value: "",
+            readonly: true
+        },
+        {
+            title: "Potrzebne części",
+            type: "textarea",
+            key: "potrzebneczesci:s",
             value: ""
         },
         {
-            title: "Uwagi klienta",
+            title: "Uwagi serwisu",
             type: "textarea",
-            key: "uwagiklienta:s",
+            key: "uwagiserwisu:s",
             value: ""
         },
         {
             title: "Status",
             type: "select",
-            availableOptions: function() {return self.getStatuses()},
+            availableOptions: function() {
+                return self.getStatuses(this.value);
+            },
             key: "rowid_status:i",
             value: 1
         },
         {
-            title: "Wartość Materiałów",
+            title: "Przewidywany czas pracy",
             type: "text",
-            key: "wartosc_materialow:d",
-            value: ""
+            key: "przewidywany_czas_pracy:d",
+            value: "",
+            hide: function() {
+                var dData = arrToJson($scope.deviceData);
+                return (dData['rowid_status:i'] > 3);
+            }
         },
         {
             title: "Czas Pracy",
             type: "text",
             key: "czas_pracy:d",
-            value: ""
+            value: "",
+            hide: function() {
+                var dData = arrToJson($scope.deviceData);
+                return (dData['rowid_status:i'] < 4);
+            }
         },
         {
             type: "key",
@@ -74,6 +93,17 @@ OperatingServiceCtrl = function ($scope, rest, $location, $q, $filter, $timeout)
 
     $scope.toPrint = null;
 
+    this.goTo = function(path, refUrl) {
+        if (refUrl === undefined && $location.search().refUrl) {
+            refUrl = $location.search().refUrl;
+        }
+        if (refUrl) {
+            $location.path('/' + path).search('refUrl', refUrl);
+        } else {
+            $location.path('/' + path).search('');
+        }
+    };
+
     this.print = function(divName, request) {
         $scope.toPrint = request;
         $scope.toPrint.date = new Date();
@@ -99,12 +129,22 @@ OperatingServiceCtrl = function ($scope, rest, $location, $q, $filter, $timeout)
     this.edit = function(request) {
         setData(request, 'rowid');
 
+        // invalidate statuses before getting new set of available
+        statuses = null;
+        this.getStatuses(request.rowid_status);
+
         $location.path('/edit');
     };
 
     var onModeChanged = function(current, previous) {
         if (current == 'add') {
             // setData();
+        }
+
+        if (current == 'edit') {
+            if (!previous) {
+                self.goTo('view');
+            }
         }
     };
 
@@ -164,12 +204,24 @@ OperatingServiceCtrl = function ($scope, rest, $location, $q, $filter, $timeout)
     };
 
     var statuses = null;
-    this.getStatuses = function() {
+    this.getStatuses = function(currentStatus) {
         if (!statuses) {
             statuses = [];
+
+            var availableStatuses = [];
+
             rest.post('getServiceAvailableStatuses').then(function (allStatuses) {
-                statuses.push.apply(statuses, allStatuses);
+                allStatuses.forEach(function(status) {
+                    if (currentStatus === undefined) {
+                        statuses.push(status);
+                    } else {
+                        if (status.id >= currentStatus -1 && status.id <= currentStatus + 1) {
+                            statuses.push(status);
+                        }
+                    }
+                });
             });
+
         }
 
         return statuses;

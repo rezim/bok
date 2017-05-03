@@ -42,7 +42,7 @@
                     <td>[[request.date_insert]]</td>
                     <td></td>
                     <td>
-                        <i class="fa fa-edit" ng-click="ctrl.edit(request)"></i>
+                        <i class="fa fa-edit fa-2x" ng-click="ctrl.edit(request)" style="color: darkgreen"></i>
                     </td>
                 </tr>
 
@@ -60,12 +60,12 @@
                 <td style="vertical-align: top">
                     <table class='tableform' cellpadding='0' cellspacing='0'>
                         <tbody>
-                        <tr id='tr' ng-repeat="data in deviceData" ng-if="data.title">
+                        <tr id='tr' ng-repeat="data in deviceData" ng-if="data.title && (!data.hide || !data.hide())">
                             <td  class='tdOpis'><span>[[data.title]]</span></td>
                             <td class='tdWartosc' ng-switch="data.type">
-                                <input ng-switch-when="text" type="text" name='editobj' class="textBoxForm" ng-model="data.value"/>
-                                <textarea ng-switch-when="textarea" type="text" class="textareaForm" ng-model="data.value"></textarea>
-                                <select ng-switch-when="select" ng-model="data.value" class="comboboxForm" ng-options="option.id as option.name for option in data.availableOptions()">
+                                <input ng-disabled="data.readonly" ng-switch-when="text" type="text" name='editobj' class="textBoxForm" ng-model="data.value"/>
+                                <textarea ng-disabled="data.readonly" ng-switch-when="textarea" type="text" class="textareaForm" ng-model="data.value"></textarea>
+                                <select ng-disabled="data.readonly" ng-switch-when="select" ng-model="data.value" class="comboboxForm" ng-options="option.id as option.name for option in data.availableOptions()">
                                 </select>
                             </td>
                         </tr>
@@ -76,7 +76,8 @@
             </tr>
             <tr>
                 <td colspan="2" style="text-align: right">
-                    <div class="actionbuttonZapisz" ng-click="ctrl.updateRequest()">Aktualizuj</div>
+                    <div class="actionbuttonZapisz" ng-click="ctrl.updateRequest()">Zapisz</div>
+                    <div class="buttonDeclin" ng-click="ctrl.goTo('view', '')">Anuluj</div>
                 </td>
             </tr>
         </table>

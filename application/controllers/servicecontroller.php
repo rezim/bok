@@ -18,7 +18,30 @@ class serviceController extends Controller
     }
 
     function addRequest() {
-        echo $this->service->add($_POST, 'service_requests');
+        $result = $this->service->add($_POST, 'service_requests');
+
+        $insertedServiceId = $this->service->getLastId();
+
+        if ($result['status']) {
+            $revers = $this->service->query("SELECT * FROM `service_revers` ORDER BY rowid DESC LIMIT 1");
+            if (count($revers) == 0) {
+                $res = $this->service->query("INSERT INTO service_revers(`number`, `year`) values(1,YEAR(CURDATE()))");
+            } else {
+                $currentNumber = $revers[0]['number'] + 1;
+                if ($revers[0]['year'] < intval(date('Y'))) {
+                    $currentNumber = 1;
+                }
+                $res = $this->service->update("UPDATE `service_revers` SET `number` = ?, `year` = YEAR(CURDATE())", 'i', array($currentNumber));
+                // $this->service->query("UPDATE service_revers SET `number` = " . $currentNumber . ", `year` = YEAR(CURDATE()) WHERE rowid = " . $revers[0]['rowid'], 'rowid');
+            }
+            if ($res['status']) {
+                $revers = $this->service->query("SELECT * FROM `service_revers` ORDER BY rowid DESC LIMIT 1");
+                $newRevers = $revers[0]['number'] . "/" . $revers[0]['year'];
+                $this->service->update("UPDATE `service_requests` SET `revers_number` =  ? WHERE rowid = ?", 'si', array($newRevers, $insertedServiceId));
+            }
+        }
+
+        echo json_encode($result);
     }
 
     function getClients() {

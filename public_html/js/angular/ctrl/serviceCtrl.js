@@ -1,6 +1,10 @@
 ServiceCtrl = function ($scope, rest, $location, $q, $filter, $timeout) {
     var self = this;
 
+    $scope.clientsSortBy = 'nazwa';
+
+    $scope.clientsFilter = {};
+
     $scope.clientData = [
         {
             title: "Nazwa",
@@ -33,12 +37,6 @@ ServiceCtrl = function ($scope, rest, $location, $q, $filter, $timeout) {
             value: ""
         },
         {
-            title: "Osoba kontaktowa",
-            type: "text",
-            key: "imienazwisko:s",
-            value: ""
-        },
-        {
             title: "Telefon",
             type: "text",
             key: "telefon:s",
@@ -59,6 +57,21 @@ ServiceCtrl = function ($scope, rest, $location, $q, $filter, $timeout) {
 
     $scope.deviceData = [
         {
+            title: "Dane zgłoszenia",
+            type: "section"
+        },
+        {
+            title: "Numer rewersu",
+            type: "text",
+            key: "revers_number:s",
+            value: "",
+            readonly: true
+        },
+        {
+            title: "Dane urządzenia",
+            type: "section"
+        },
+        {
             title: "Model drukarki",
             type: "text",
             key: "modeldrukarki:s",
@@ -77,10 +90,66 @@ ServiceCtrl = function ($scope, rest, $location, $q, $filter, $timeout) {
             value: ""
         },
         {
-            title: "Uwagi klienta",
+            title: "Potrzebne części",
             type: "textarea",
-            key: "uwagiklienta:s",
+            key: "potrzebneczesci:s",
+            value: "",
+            readonly: true
+        },
+        {
+            title: "Uwagi serwisu",
+            type: "textarea",
+            key: "uwagiserwisu:s",
+            value: "",
+            readonly: true
+        },
+        {
+            title: "Dane kontaktowe",
+            type: "section"
+        },
+        {
+            title: "Osoba kontaktowa",
+            type: "text",
+            key: "imienazwisko:s",
             value: ""
+        },
+        {
+            title: "Telefon",
+            type: "text",
+            key: "kontakt_telefon:s",
+            value: ""
+        },
+        {
+            title: "Mail",
+            type: "text",
+            key: "kontakt_mail:s",
+            value: ""
+        },
+        {
+            title: "Adres dostawy",
+            type: "section"
+        },
+        {
+            title: "Ulica",
+            type: "text",
+            key: "dostawa_ulica:s",
+            value: ""
+        },
+        {
+            title: "Miasto",
+            type: "text",
+            key: "dostawa_miasto:s",
+            value: ""
+        },
+        {
+            title: "Kod pocztowy",
+            type: "text",
+            key: "dostawa_kodpocztowy:s",
+            value: ""
+        },
+        {
+            title: "Szczegóły zlecenia",
+            type: "section"
         },
         {
             title: "Status",
@@ -103,9 +172,29 @@ ServiceCtrl = function ($scope, rest, $location, $q, $filter, $timeout) {
             value: ""
         },
         {
+            title: "Przewidywany czas pracy",
+            type: "text",
+            key: "przewidywany_czas_pracy:d",
+            value: "",
+            readonly: true
+        },
+        {
             title: "Czas Pracy",
             type: "text",
             key: "czas_pracy:d",
+            value: "",
+            readonly: true
+        },
+        {
+            title: "Szacowany koszt naprawy",
+            type: "text",
+            key: "estymowany_koszt_naprawy:d",
+            value: ""
+        },
+        {
+            title: "Koszt naprawy",
+            type: "text",
+            key: "koszt_naprawy:d",
             value: ""
         },
         {
@@ -119,18 +208,79 @@ ServiceCtrl = function ($scope, rest, $location, $q, $filter, $timeout) {
         }
     ];
 
+    this.sameAsClientAddress = function(checked, requestData) {
+        var client = arrToJson($scope.clientData);
+
+        var request = $filter('filter')(requestData, {key: 'dostawa_ulica:s'});
+
+        if (request && request.length == 1) {
+            request[0].value = (checked) ? client['ulica:s'] : "";
+        }
+
+        request = $filter('filter')(requestData, {key: 'dostawa_miasto:s'});
+
+        if (request && request.length == 1) {
+            request[0].value = (checked) ? client['miasto:s'] : "";
+        }
+
+        request = $filter('filter')(requestData, {key: 'dostawa_kodpocztowy:s'});
+
+        if (request && request.length == 1) {
+            request[0].value = (checked) ? client['kodpocztowy:s'] : "";
+        }
+
+    };
+
+    this.sameAsClientContact = function(checked, requestData) {
+        var client = arrToJson($scope.clientData);
+
+        var request = $filter('filter')(requestData, {key: 'imienazwisko:s'});
+
+        if (request && request.length == 1) {
+            request[0].value = (checked) ? client['nazwa:s'] : "";
+        }
+
+        request = $filter('filter')(requestData, {key: 'kontakt_telefon:s'});
+        if (request && request.length == 1) {
+            request[0].value = (checked) ? client['telefon:s'] : "";
+        }
+
+        request = $filter('filter')(requestData, {key: 'kontakt_mail:s'});
+        if (request && request.length == 1) {
+            request[0].value = (checked) ? client['mail:s'] : "";
+        }
+    };
+
+    $scope.selectedClient = null;
+
+    this.setSelectedClient = function(client) {
+        var data = this.getCleanData($scope.clientData);
+        $scope.selectedClient = this.setData(data, client);
+    };
+
+    this.getCleanData = function(data) {
+        var copy = angular.copy(data);
+
+        angular.forEach(copy, function(d) {
+            d.value = "";
+        });
+
+        return copy;
+    };
+
+    var previousMode = null;
 
     $scope.$watch(function () {
         return $location.path();
     }, function (path) {
-
-        var previousMode = self.mode;
+        previousMode = self.mode;
 
         if (path.indexOf('/') == 0) {
             self.mode = path.split('/')[1];
         } else {
             // default value
             self.mode = 'view';
+            self.queryString = null;
         }
 
         onModeChanged(self.mode, previousMode);
@@ -140,6 +290,21 @@ ServiceCtrl = function ($scope, rest, $location, $q, $filter, $timeout) {
 
 
     $scope.toPrint = null;
+
+    this.goTo = function(path, refUrl) {
+        if (refUrl === undefined && $location.search().refUrl) {
+            refUrl = $location.search().refUrl;
+        }
+        if (refUrl) {
+            $location.path('/' + path).search('refUrl', refUrl);
+        } else {
+            $location.path('/' + path).search('');
+        }
+    };
+
+    this.goToRefUrl = function() {
+        this.goTo($location.search()['refUrl']);
+    };
 
     this.print = function(divName, request) {
         $scope.toPrint = request;
@@ -154,6 +319,9 @@ ServiceCtrl = function ($scope, rest, $location, $q, $filter, $timeout) {
         }, 0);
     };
 
+    /**
+     * deprecated
+     */
     this.addNew = function () {
         rest.post('addClient', arrToJson($scope.clientData)).then(function(result) {
 
@@ -174,50 +342,110 @@ ServiceCtrl = function ($scope, rest, $location, $q, $filter, $timeout) {
         });
     };
 
-    this.updateClient = function() {
-        rest.post('updateClient', arrToJson($scope.clientData)).then(function(result) {
+    this.addNewRequest = function(request, client) {
+        var clientData = arrToJson(client);
+        var deviceData = arrToJson(request);
+        deviceData['rowid_clients:i'] = clientData['rowid_clients:i'];
+        rest.post('addRequest', deviceData).then(function(result) {
 
-            console.log(result);
-            invalidate();
-            $location.path('/view');
+            if (deviceData['rowid_user:i']) {
+
+                var notifyUser = $filter('filter')(users, {id: deviceData['rowid_user:i']});
+                if (notifyUser.length == 1) {
+                    notifyEmployee(notifyUser[0]['mail'], deviceData['modeldrukarki:s'], deviceData['numerseryjny:s'], deviceData['opisusterki:s']);
+                }
+            }
+            self.setData($scope.clientData);
+            self.setData($scope.deviceData);
+            requests = null;
+            self.goTo('view', '');
+        });
+
+    };
+
+    this.updateRequest = function(request, client) {
+        var clientData = arrToJson(client);
+        var deviceData = arrToJson(request);
+        deviceData['rowid_clients:i'] = clientData['rowid_clients:i'];
+
+        rest.post('updateRequest', deviceData).then(function(result) {
+            self.setData($scope.clientData);
+            self.setData($scope.deviceData);
+            requests = null;
+            self.goTo('view', '');
         });
     };
 
-    this.updateRequest = function() {
-        rest.post('updateRequest', arrToJson($scope.deviceData)).then(function(result) {
-
-            console.log(result);
-            invalidate();
-            $location.path('/view');
+    this.addClient = function (clientData, select) {
+        rest.post('addClient', arrToJson(clientData)).then(function(result) {
+            // invalidate client data
+            clients = null;
+            if(!select) {
+                $location.path('clients');
+            } else {
+                self.setData($scope.clientData, arrToJson(clientData)); self.goToRefUrl();
+            }
         });
+    };
+
+    this.showClients = function () {
+        $location.path('/clients');
+    };
+
+    this.updateClient = function(clientData, select) {
+        rest.post('updateClient', arrToJson(clientData)).then(function(result) {
+            // invalidate client data
+            clients = null;
+            if (!select) {
+                $location.path('clients');
+            } else {
+                self.setData($scope.clientData, arrToJson(clientData)); self.goToRefUrl();
+            }
+        });
+        // invalidate selected client data
+        this.selectedClient = null;
     };
 
     this.edit = function(request) {
-        setData(request, 'rowid_clients');
-
         $location.path('/edit');
     };
 
-    var onModeChanged = function(current, previous) {
-        if (current == 'add') {
-            // setData();
+    this.editClient = function(client) {
+        $location.path('/editClient');
+    };
+
+    this.cancelAction = function() {
+        if (previousMode) {
+            $location.path('/' + previousMode);
         }
     };
 
-    var setData = function(request) {
-        angular.forEach($scope.clientData, function(data) {
-            var key = data.key.split(':')[0];
-            var type = data.key.split(':')[1];
-            data.value = (request && request[key]) ? request[key] : "";
-            if (type == 'i') {
-                data.value = parseInt(data.value);
+    this.isCancelAvailable = function() {
+        return !!previousMode;
+    };
+
+    var onModeChanged = function(current, previous) {
+        if (current == 'addNewRequest') {
+            self.setData($scope.clientData);
+            self.setData($scope.deviceData);
+            requests = null;
+            $location.path('/addRequest');
+        }
+    };
+
+    this.setData = function(srcData, values) {
+        angular.forEach(srcData, function(data) {
+            if(data.key) {
+                var key = data.key.split(':')[0];
+                var type = data.key.split(':')[1];
+                data.value = (values && values[key]) ? values[key] : (values && values[data.key]) ? values[data.key] : "";
+                if (type == 'i') {
+                    data.value = parseInt(data.value);
+                }
             }
         });
 
-        angular.forEach($scope.deviceData, function(data) {
-            var key = data.key.split(':')[0];
-            data.value = (request && request[key]) ? request[key] : "";
-        });
+        return srcData;
     };
 
     var clients = null;
@@ -287,7 +515,9 @@ ServiceCtrl = function ($scope, rest, $location, $q, $filter, $timeout) {
     var arrToJson = function(arr) {
         var json = {};
         angular.forEach(arr, function(elm) {
-            json[elm.key] = elm.value;
+            if (elm.key) {
+                json[elm.key] = elm.value;
+            }
         });
         return json;
     };
@@ -296,6 +526,7 @@ ServiceCtrl = function ($scope, rest, $location, $q, $filter, $timeout) {
         requests = null;
         currentUserRequests = null;
         clients = null;
+        self.setData();
     };
 };
 

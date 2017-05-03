@@ -382,7 +382,7 @@ body
 .tableform .tdOpis
 {
     
-    width:120px;min-width: 120px;max-width: 120px;
+    width:150px;min-width: 150px;max-width: 150px;
     height:35px;min-height: 25px;max-height: 35px;
     background-color: #8d8f8f;
     color:white;    
@@ -390,6 +390,11 @@ body
     padding-left: 10px;
     text-align: left;
 }
+
+.tableform .tdSection {
+	padding: 10px;
+}
+
 .tableform .tdWartosc
 {
     

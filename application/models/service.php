@@ -2,7 +2,7 @@
 class service extends Model
 {
     function add($postParams, $tableName) {
-        return json_encode($this->insertFromPostParams($postParams, $tableName));
+        return $this->insertFromPostParams($postParams, $tableName);
     }
 
     function getClients() {
@@ -18,7 +18,7 @@ class service extends Model
             " SELECT sc.*, sr.*, sr.rowid as srRowId, ss.nazwa as status
               FROM `service_requests` as sr
                 inner join `service_clients` as sc on sc.rowid_clients = sr.rowid_clients 
-                inner join `service_status` as ss on sr.rowid_status = ss.rowid
+                left outer join `service_status` as ss on sr.rowid_status = ss.rowid
            ";
         return json_encode($this->query($query,null,false));
     }
