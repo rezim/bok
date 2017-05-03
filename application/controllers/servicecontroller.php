@@ -6,7 +6,7 @@ class serviceController extends Controller
     }
 
     function addClient() {
-        echo $this->service->add($_POST, 'service_clients');
+        echo json_encode($this->service->add($_POST, 'service_clients'));
     }
 
     function updateClient() {
@@ -25,7 +25,8 @@ class serviceController extends Controller
         if ($result['status']) {
             $revers = $this->service->query("SELECT * FROM `service_revers` ORDER BY rowid DESC LIMIT 1");
             if (count($revers) == 0) {
-                $res = $this->service->query("INSERT INTO service_revers(`number`, `year`) values(1,YEAR(CURDATE()))");
+                $res = $this->service->update("INSERT INTO service_revers(`number`, `year`) values(?,YEAR(CURDATE()))", 'i', array(1));
+                // $res = $this->service->query("INSERT INTO service_revers(`number`, `year`) values(1,YEAR(CURDATE()))");
             } else {
                 $currentNumber = $revers[0]['number'] + 1;
                 if ($revers[0]['year'] < intval(date('Y'))) {

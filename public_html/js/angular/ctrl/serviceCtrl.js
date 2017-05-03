@@ -383,7 +383,9 @@ ServiceCtrl = function ($scope, rest, $location, $q, $filter, $timeout) {
             if(!select) {
                 $location.path('clients');
             } else {
-                self.setData($scope.clientData, arrToJson(clientData)); self.goToRefUrl();
+                var values = arrToJson(clientData);
+                values['rowid_clients:i'] = result['rowid'];
+                self.setData($scope.clientData, values); self.goToRefUrl();
             }
         });
     };
