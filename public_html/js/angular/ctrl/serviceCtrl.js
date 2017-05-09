@@ -1,4 +1,4 @@
-ServiceCtrl = function ($scope, rest, $location, $q, $filter, $timeout) {
+ServiceCtrl = function ($scope, rest, $location, $q, $filter, $timeout, $uibModal, $document) {
     var self = this;
 
     $scope.clientsSortBy = 'nazwa';
@@ -46,6 +46,12 @@ ServiceCtrl = function ($scope, rest, $location, $q, $filter, $timeout) {
             title: "Mail",
             type: "text",
             key: "mail:s",
+            value: ""
+        },
+        {
+            title: "Uwagi",
+            type: "textarea",
+            key: "uwagi:s",
             value: ""
         },
         {
@@ -448,6 +454,38 @@ ServiceCtrl = function ($scope, rest, $location, $q, $filter, $timeout) {
         });
 
         return srcData;
+    };
+
+    this.openPopup = function(size) {
+
+        var modalInstance = $uibModal.open({
+            ariaLabelledBy: 'modal-title',
+            ariaDescribedBy: 'modal-body',
+            templateUrl: 'myModalContent.html',
+            size: size,
+            controller: function () {
+                this.ok = function() {
+                    console.log('open');
+                    modalInstance.close();
+                };
+                this.cancel = function () {
+                    modalInstance.dismiss('cancel');
+                }
+            },
+            controllerAs: '$ctrl',
+            resolve: {
+                items: function () {
+                    return [];
+                }
+            }
+        });
+
+        modalInstance.result.then(function (result) {
+
+        }, function () {
+
+        });
+
     };
 
     var clients = null;

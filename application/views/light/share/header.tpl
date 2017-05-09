@@ -69,6 +69,10 @@
         <script type="text/javascript" src="{$smarty.const.SCIEZKA}/js/angular/ctrl/profitabilityCtrl.js?{$smarty.now}"></script>
         <script type="text/javascript" src="{$smarty.const.SCIEZKA}/js/angular/ctrl/userSharesCtrl.js?{$smarty.now}"></script>
         <script type="text/javascript" src="{$smarty.const.SCIEZKA}/js/angular/ctrl/serviceCtrl.js?{$smarty.now}"></script>
+
+        <!-- Angular UI bootstrap  -->
+        <script type="text/javascript" src="{$smarty.const.SCIEZKA}/js/lib/ui-bootstrap-2.5.0.min.js"></script>
+        <script type="text/javascript" src="{$smarty.const.SCIEZKA}/js/lib/ui-bootstrap-tpls-2.5.0.min.js"></script>
 </head>
  <?php flush(); ?>
 <body>

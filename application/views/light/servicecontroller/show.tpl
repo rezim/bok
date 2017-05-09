@@ -262,7 +262,7 @@
                         {$smarty.const.BOK_OTUS_ADRES}, {$smarty.const.BOK_OTUS_ADRES2}
                     </div>
                     <div>
-                        Tel.: {$smarty.const.BOK_OTUS_TELEFON}, {$smarty.const.BOK_OTUS_WWW}
+                        tel.: {$smarty.const.BOK_OTUS_TELEFON}, {$smarty.const.BOK_OTUS_WWW}
                     </div>
                     <div>
                         {$smarty.const.BOK_OTUS_KONTO_BANKOWE}
@@ -318,7 +318,7 @@
             <tr>
                 <td colspan="2">
                     <ol>
-                        <li>Sprzęt przyjęty do serwisu jest diagnozowany tylko pod kątem usterki zgłoszonej przez klienta. Koszt diagnozy wynosi 30 zł  netto + 23 % VAT. Kwota ta nie jest pobierana w przypadku naprawy sprzętu w naszym serwisie.</li>
+                        <li>Sprzęt przyjęty do serwisu jest diagnozowany tylko pod kątem usterki zgłoszonej przez klienta. Koszt diagnozy wynosi 35 zł  netto + 23 % VAT. Kwota ta nie jest pobierana w przypadku naprawy sprzętu w naszym serwisie.</li>
                         <li>Maksymalny czas naprawy wynosi 14 dni roboczych od daty dostarczenia sprzętu. W przypadku naprawy o szczególnym stopniu trudności lub wymagającej sprowadzenia części, termin naprawy może się przedłużyć po uzgodnieniu z klientem.</li>
                         <li>Serwis nie ponosi odpowiedzialności za dane pozostawione na nośnikach w urządzeniu (np. dyskach twardych) oraz dokumenty pozostawione w urządzeniu.</li>
                         <li>W przypadku gdy koszt naprawy nie przekracza kwoty 100 zł netto , klient zgadza się na naprawę urządzenia bez konsultacji kosztów z klientem.</li>
@@ -326,6 +326,7 @@
                         <li>Sprzęt nieodebrany w ciągu 90 dni od daty pozostawienia go do naprawy zostaje przekazany przez serwis do utylizacji na co klient wyraża zgodę.</li>
                         <li>Niniejszy dokument stanowi jedyną podstawę do odbioru sprzętu z serwisu.</li>
                         <li>Serwis zastrzega sobie prawo do odmowy naprawy. W takim przypadku serwis nie pobiera opłat.</li>
+                        <li>Rewers jest jedyną podstawą do odbioru sprzętu z serwisu.</li>
                     </ol>
                 </td></tr>
             <tr>
@@ -339,4 +340,22 @@
         </table>
         </div>
     </div>
+
+
+    {*<script type="text/ng-template" id="myModalContent.html">*}
+        {*<div class="modal-header">*}
+            {*<h3 class="modal-title" id="modal-title">I'm a modal!</h3>*}
+        {*</div>*}
+        {*<div class="modal-body" id="modal-body">*}
+            {*This is my modal body, nothing else*}
+        {*</div>*}
+        {*<div class="modal-footer">*}
+            {*<button class="btn btn-primary" type="button" ng-click="$ctrl.ok()">OK</button>*}
+            {*<button class="btn btn-warning" type="button" ng-click="$ctrl.cancel()">Cancel</button>*}
+        {*</div>*}
+    {*</script>*}
+
+
+    {*<button type="button" class="btn btn-default" ng-click="ctrl.openPopup()">Open me!</button>*}
+
 </div>
