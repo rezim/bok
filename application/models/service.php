@@ -34,6 +34,17 @@ class service extends Model
     }
 
 
+    function getEmails($reversNumber) {
+        $query =
+            " SELECT *
+              FROM `service_mails`
+              WHERE `revers_number` = '" . $reversNumber . "'
+              ORDER BY date_email DESC";
+
+        return json_encode($this->query($query,null,false));
+
+    }
+
     function getStatuses() {
         $query =
             " SELECT rowid as id, nazwa as name

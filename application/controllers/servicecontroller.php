@@ -2,7 +2,6 @@
 class serviceController extends Controller
 {
     function show() {
-
     }
 
     function addClient() {
@@ -66,10 +65,14 @@ class serviceController extends Controller
         echo $this->service->getUsers();
     }
 
+    function getEmails() {
+        echo $this->service->getEmails($_POST['revers_number']);
+    }
+
     function notifyEmployee() {
         if ($_POST['mail']) {
             $mailing = new mailing();
-            $mailing->sendNewMail(null,
+            $mailing->sendNewMail(
                 $_POST['mail'],
                 "Model:" . $_POST['model'] . "<br/>" .
                 "Serial:" . $_POST['numer'] . "<br/>" .
@@ -78,6 +81,30 @@ class serviceController extends Controller
                 null
             );
         }
+    }
+
+    function sendMail() {
+        if ($_POST['email'] && $_POST['temat'] && $_POST['tresc_wiadomosci'] && $_POST['revers_number']) {
+            $mailing = new mailing();
+            $_POST['wassent:i'] = 1;
+            $_POST['wasread:i'] = 1;
+            if($mailing->sendNewMail(
+                $_POST['email'],
+                $_POST['tresc_wiadomosci'],
+                $_POST['temat'],
+                $_POST['revers_number'],
+                $_POST['wassent:i'],
+                $_POST['wasread:i']
+            )) {
+                echo json_encode($this->service->add($_POST, 'service_mails'));
+            }
+        } else {
+            echo 'Nie można wysłać emaila';
+        }
+    }
+
+    function setEmailRead() {
+        echo json_encode($this->service->updateFromPostParams($_POST, 'service_mails', 'rowid:i'));
     }
 
     function getCurrentUserRequests() {

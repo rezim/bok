@@ -294,55 +294,80 @@ function read_ceses() {
                 $size = $email['header']->Size;
 	        // move the email to Processed folder on the server
 	        $emailReader->move($email['index'], 'INBOX.Processed');
-               
-              
+
+            if (strpos($subject,"[ZlecenieSerwisowe#") !== false) {
                 $ticketarray = "";
                 $start = "\[";
-                $end="\]";
+                $end = "\]";
                 preg_match("/\[[^\]]*\]/", $subject, $ticketarray);
-                $rowidCase="";
-                
-                
-                foreach($ticketarray as $key=>$item)
-                {
-                    if (strpos($item,"[Ticket#") !== false) {
-                        $rowidCase = str_replace("]","",str_replace("[Ticket#", "", $item));
+                $reversNumber = "";
+
+
+                foreach ($ticketarray as $key => $item) {
+                    if (strpos($item, "[ZlecenieSerwisowe#") !== false) {
+                        $reversNumber = str_replace("]", "", str_replace("[ZlecenieSerwisowe#", "", $item));
                         break;
                     }
                 }
-                
-                    $_POST['fields'] = array(
-                        'rowid'=>$rowidCase,
-                        'email'=>$addr,
-                        'status'=>'1',
-                        'temat'=>$subject,
-                        'date_email'=>$datawiadomosc,
-                        'tresc_wiadomosci'=>$tresc,
-                        'user_insert'=>'0',
-                        'date_insert'=>date('Y-m-d H:i:s'),
-                        'activity'=>'1'
-                      );
-                    
-                    
-                      $_POST['notimailfields'] = array(
-                        'email'=>$addr,
-                        'temat'=>$subject,
-                        'tresc_wiadomosci'=>$tresc,
-                        'date_email'=>$datawiadomosc,  
-                        'size'=>$size,    
-                        'user_insert'=>'0',
-                        'date_insert'=>date('Y-m-d H:i:s'),
-                        'activity'=>'1',
-                        'rowid'=>'',
-                        'replyrowid'=>'0',
-                        'czywyslany'=>'0'
-                      );
-                    
-              
-                        saveSprawa();
-                
+
+                if ($reversNumber !== "") {
+                    $_POST['email'] = $addr;
+                    $_POST['tresc_wiadomosci'] = $tresc;
+                    $_POST['temat'] = $subject;
+                    $_POST['revers_number'] = $reversNumber;
+
+                    $service = new service();
+
+                    $service->add($_POST, 'service_mails');
+                }
+            } else {
+
+                $ticketarray = "";
+                $start = "\[";
+                $end = "\]";
+                preg_match("/\[[^\]]*\]/", $subject, $ticketarray);
+                $rowidCase = "";
+
+
+                foreach ($ticketarray as $key => $item) {
+                    if (strpos($item, "[Ticket#") !== false) {
+                        $rowidCase = str_replace("]", "", str_replace("[Ticket#", "", $item));
+                        break;
+                    }
+                }
+
+                $_POST['fields'] = array(
+                    'rowid' => $rowidCase,
+                    'email' => $addr,
+                    'status' => '1',
+                    'temat' => $subject,
+                    'date_email' => $datawiadomosc,
+                    'tresc_wiadomosci' => $tresc,
+                    'user_insert' => '0',
+                    'date_insert' => date('Y-m-d H:i:s'),
+                    'activity' => '1'
+                );
+
+
+                $_POST['notimailfields'] = array(
+                    'email' => $addr,
+                    'temat' => $subject,
+                    'tresc_wiadomosci' => $tresc,
+                    'date_email' => $datawiadomosc,
+                    'size' => $size,
+                    'user_insert' => '0',
+                    'date_insert' => date('Y-m-d H:i:s'),
+                    'activity' => '1',
+                    'rowid' => '',
+                    'replyrowid' => '0',
+                    'czywyslany' => '0'
+                );
+
+
+                saveSprawa();
+
                 saveMail($attachments);
-           
+            }
 	        // don't slam the server
                 
 	        sleep(2);

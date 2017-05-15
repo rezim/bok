@@ -25,8 +25,8 @@ class Template {
         {
             global $smarty;
                 $smarty->assign('controller',$this->_controller); 
-                $smarty->assign('action',$this->_action); 
-                
+                $smarty->assign('action',$this->_action);
+                $smarty->assign('templates', ROOT . DS . 'application' . DS . 'templates' . DS);
                 
                 
                     if($this->_czyToDiv!=1)

@@ -429,7 +429,7 @@
                       
                     }                  
             }
-            function sendNewMail($rowid,$mailto,$tresc,$temat,$zalaczniki)
+            function sendNewMail($mailto,$tresc,$temat,$zalaczniki)
             {
                
                  
@@ -483,12 +483,15 @@
                                 www.otus.pl
                             ";
 
-                    if(!$mailek->send()) {
+                    $result = $mailek->send();
+                    if(!$result) {
                         echo 'Błąd wysłania wiadomości.';
                         echo 'Mailer Error: ' .$mailek->ErrorInfo;
                     } else {
                         
-                    }                  
+                    }
+
+                return $result;
             }
     }
   ?>

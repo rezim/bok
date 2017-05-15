@@ -119,7 +119,7 @@ Otus Sp. z o.o.
             
             
             $mailing = new mailing();
-                 $mailing->sendNewMail((string)$_POST['noti_rowid'],
+                 $mailing->sendNewMail(
                          $_POST['mail'],
                          nl2br($_POST['tresc']),
                         $_POST['temat'],

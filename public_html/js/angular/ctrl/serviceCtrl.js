@@ -1,4 +1,4 @@
-ServiceCtrl = function ($scope, rest, $location, $q, $filter, $timeout, $uibModal, $document) {
+ServiceCtrl = function ($scope, rest, $location, $q, $filter, $timeout, $uibModal, $interpolate, appConf) {
     var self = this;
 
     $scope.clientsSortBy = 'nazwa';
@@ -456,21 +456,109 @@ ServiceCtrl = function ($scope, rest, $location, $q, $filter, $timeout, $uibModa
         return srcData;
     };
 
-    this.openPopup = function(size) {
+
+    this.openEmailList = function(requestData) {
+        var modalEmailList = $uibModal.open({
+            ariaLabelledBy: 'modal-title',
+            ariaDescribedBy: 'modal-body',
+            templateUrl: 'emailList.html',
+            size: 'lg',
+            controller: function () {
+                this.requestData = requestData;
+
+                this.openSendEmail = function (request) {
+                    self.openSendEmail(request);
+                };
+
+                this.openEmail = function (email) {
+                    self.openEmail(email, true);
+                };
+
+                this.replyEmail = function (email, request) {
+                    var mail = angular.copy(email);
+                    mail.temat = 'Re: ' + email.temat;
+                    self.openEmail(mail, false);
+                };
+
+                var emails = null;
+                this.getEmails = function (reversNumber) {
+                    if (!emails) {
+                        emails = [];
+                        rest.post('getEmails', {revers_number: reversNumber}).then(function (allEmails) {
+                            emails.push.apply(emails, allEmails);
+                        });
+                    }
+                    return emails;
+                };
+
+                this.cancel = function () {
+                    modalEmailList.dismiss('cancel');
+                };
+            },
+            controllerAs: '$ctrl'
+        });
+
+        modalEmailList.result.then(function (data) {
+        }, function () {
+        });
+    };
+
+    this.openEmail = function (mail, readonly) {
+        var modalInstance = $uibModal.open({
+            ariaLabelledBy: 'modal-title',
+            ariaDescribedBy: 'modal-body',
+            templateUrl: 'myModalContent.html',
+            controller: function () {
+
+                this.data =
+                    {
+                        email: mail.email,
+                        temat: mail.temat,
+                        tresc_wiadomosci: mail.tresc_wiadomosci
+                    };
+
+                this.readonly = readonly;
+
+                this.cancel = function () {
+                    modalInstance.dismiss('cancel');
+                };
+            },
+            controllerAs: '$ctrl'
+        });
+
+        rest.post('setEmailRead', {'rowid:i': mail['rowid'], 'wasread:i': 1}).then(function() {
+            mail.wasread = 1;
+        });
+
+        modalInstance.result.then(function (data) {
+            rest.post('sendMail', data);
+        }, function () {
+            console.log('dissmissed');
+        });
+    };
+
+    this.openSendEmail = function(requestData) {
 
         var modalInstance = $uibModal.open({
             ariaLabelledBy: 'modal-title',
             ariaDescribedBy: 'modal-body',
             templateUrl: 'myModalContent.html',
-            size: size,
             controller: function () {
-                this.ok = function() {
-                    console.log('open');
-                    modalInstance.close();
+
+                this.data =
+                    {
+                        email: requestData.mail,
+                        temat: $interpolate(appConf.EMAIL.SERWIS.POTWIERDZENIE_KOSZTORYSU.TEMAT)({numer_rewersu: requestData.revers_number}),
+                        tresc_wiadomosci: $interpolate(appConf.EMAIL.SERWIS.POTWIERDZENIE_KOSZTORYSU.TRESC)({koszt_naprawy: requestData.estymowany_koszt_naprawy}),
+                        revers_number: requestData.revers_number
+                    };
+
+                this.send = function() {
+                    modalInstance.close(this.data);
                 };
                 this.cancel = function () {
                     modalInstance.dismiss('cancel');
-                }
+                };
             },
             controllerAs: '$ctrl',
             resolve: {
@@ -480,12 +568,11 @@ ServiceCtrl = function ($scope, rest, $location, $q, $filter, $timeout, $uibModa
             }
         });
 
-        modalInstance.result.then(function (result) {
-
+        modalInstance.result.then(function (data) {
+            rest.post('sendMail', data);
         }, function () {
-
+            console.log('dissmissed');
         });
-
     };
 
     var clients = null;
