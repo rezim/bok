@@ -2,7 +2,9 @@
   color: green;
 }
 
-
-.fa.fa-print {
-
+.fa-envelope-o .badge {
+  position: absolute;
+  margin-top: -30px;
+  margin-left: 20px;
+  background-color: red;
 }

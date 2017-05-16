@@ -15,10 +15,12 @@ class service extends Model
 
     function getRequests() {
         $query =
-            " SELECT sc.*, sr.*, sr.rowid as srRowId, ss.nazwa as status
+            " SELECT sc.*, sr.*, sr.rowid as srRowId, ss.nazwa as status,
+              (SELECT count(revers_number) FROM `service_mails` WHERE revers_number = sr.revers_number GROUP BY revers_number) as emailsCount, 
+              (SELECT count(revers_number) FROM `service_mails` WHERE revers_number = sr.revers_number AND wasread = 0 GROUP BY revers_number) as unreadEmailsCount 
               FROM `service_requests` as sr
                 inner join `service_clients` as sc on sc.rowid_clients = sr.rowid_clients 
-                left outer join `service_status` as ss on sr.rowid_status = ss.rowid
+                left outer join `service_status` as ss on sr.rowid_status = ss.rowid                
            ";
         return json_encode($this->query($query,null,false));
     }

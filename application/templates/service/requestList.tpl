@@ -48,7 +48,9 @@
         <td>
             <i class="fa fa-print fa-2x" ng-click="ctrl.print('print-template', request)"></i>
             <i class="fa fa-edit fa-2x" ng-click="ctrl.setData(deviceData, request); ctrl.setData(clientData, request); ctrl.goTo('editRequest')""></i>
-            <i class="fa fa-envelope-o fa-2x" ng-click="ctrl.openEmailList(request);""></i>
+            <i class="fa fa-envelope-o fa-2x" ng-click="ctrl.openEmailList(request);">
+                <span class="badge">[[request.unreadEmailsCount]]</span>
+            </i>
         </td>
     </tr>
 

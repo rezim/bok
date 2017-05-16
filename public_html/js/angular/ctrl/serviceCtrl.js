@@ -526,9 +526,12 @@ ServiceCtrl = function ($scope, rest, $location, $q, $filter, $timeout, $uibModa
             controllerAs: '$ctrl'
         });
 
-        rest.post('setEmailRead', {'rowid:i': mail['rowid'], 'wasread:i': 1}).then(function() {
-            mail.wasread = 1;
-        });
+        if (!mail.wasread) {
+            rest.post('setEmailRead', {'rowid:i': mail['rowid'], 'wasread:i': 1}).then(function () {
+                mail.wasread = 1;
+                requests = null;
+            });
+        }
 
         modalInstance.result.then(function (data) {
             rest.post('sendMail', data);
@@ -600,15 +603,18 @@ ServiceCtrl = function ($scope, rest, $location, $q, $filter, $timeout, $uibModa
     };
 
     var requests = null;
+    var requestCache = [];
     this.getRequests = function() {
         if (!requests) {
             requests = [];
             rest.post('getRequests').then(function (allRequests) {
                 requests.push.apply(requests, allRequests);
+                requestCache = [];
+                requestCache.push.apply(requestCache, allRequests);
             });
         }
 
-        return requests;
+        return requestCache;
     };
 
     var currentUserRequests = null;
