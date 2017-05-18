@@ -61,6 +61,10 @@ ServiceCtrl = function ($scope, rest, $location, $q, $filter, $timeout, $uibModa
         }
     ];
 
+    $scope.clientData.getValue = function(key) {
+        return getValueFromArray($scope.clientData, key);
+    };
+
     $scope.deviceData = [
         {
             title: "Dane zgłoszenia",
@@ -213,6 +217,10 @@ ServiceCtrl = function ($scope, rest, $location, $q, $filter, $timeout, $uibModa
             value: ""
         }
     ];
+
+    $scope.deviceData.getValue = function(key) {
+        return getValueFromArray($scope.deviceData, key);
+    };
 
     this.sameAsClientAddress = function(checked, requestData) {
         var client = arrToJson($scope.clientData);
@@ -448,7 +456,7 @@ ServiceCtrl = function ($scope, rest, $location, $q, $filter, $timeout, $uibModa
                 var type = data.key.split(':')[1];
                 data.value = (values && values[key]) ? values[key] : (values && values[data.key]) ? values[data.key] : "";
                 if (type == 'i') {
-                    data.value = parseInt(data.value);
+                    data.value = data.value ? parseInt(data.value) : "";
                 }
             }
         });
@@ -456,6 +464,7 @@ ServiceCtrl = function ($scope, rest, $location, $q, $filter, $timeout, $uibModa
         return srcData;
     };
 
+    // Popups
 
     this.openEmailList = function(requestData) {
         var modalEmailList = $uibModal.open({
@@ -540,6 +549,43 @@ ServiceCtrl = function ($scope, rest, $location, $q, $filter, $timeout, $uibModa
         });
     };
 
+    this.openAddEditClient = function(client) {
+
+        var modalInstance = $uibModal.open({
+            ariaLabelledBy: 'modal-title',
+            ariaDescribedBy: 'modal-body',
+            templateUrl: 'addEditClient.html',
+            controller: function () {
+
+                this.client = self.setData(angular.copy($scope.clientData), client);
+
+                this.addMode = (!client);
+
+                this.save = function(select) {
+                    modalInstance.close({client: this.client, addMode: this.addMode, select: select});
+                };
+
+                this.cancel = function () {
+                    modalInstance.dismiss('cancel');
+                };
+            },
+            controllerAs: '$ctrl'
+        });
+
+        modalInstance.result.then(function (data) {
+            if (data.addMode) {
+                self.addClient(data.client, data.select);
+            } else {
+                self.updateClient(data.client, data.select);
+            }
+            if (!data.select) {
+                clients = null;
+            }
+        }, function () {
+            // nop
+        });
+    };
+
     this.openSendEmail = function(requestData) {
 
         var modalInstance = $uibModal.open({
@@ -579,15 +625,18 @@ ServiceCtrl = function ($scope, rest, $location, $q, $filter, $timeout, $uibModa
     };
 
     var clients = null;
+    var clientsCache = [];
     this.getClients = function() {
         if (!clients) {
             clients = [];
             rest.post('getClients').then(function (allClients) {
                 clients.push.apply(clients, allClients);
+                clientsCache = [];
+                clientsCache.push.apply(clientsCache, allClients);
             });
         }
 
-        return clients;
+        return clientsCache;
     };
 
     var users = null;
@@ -653,6 +702,11 @@ ServiceCtrl = function ($scope, rest, $location, $q, $filter, $timeout, $uibModa
             }
         });
         return json;
+    };
+
+    var getValueFromArray = function (dataObj, key) {
+        var data = $filter('filter')(dataObj, {key: key});
+        return data.length > 0 ? data[0].value : null;
     };
 
     var invalidate = function() {

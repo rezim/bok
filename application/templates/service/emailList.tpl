@@ -28,4 +28,4 @@
     <div class="modal-footer">
         <button class="btn btn-warning" type="button" ng-click="$ctrl.cancel()">Zamknij</button>
     </div>
-</div>
+</script>

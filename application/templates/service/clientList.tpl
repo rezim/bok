@@ -41,7 +41,7 @@
             mail <i class="fa fa-sort-desc" ng-if="clientsSortBy == 'mail'"></i>
         </th>
         <th style='min-width: 75px;width:75px;' align="center">
-            <a ng-click="ctrl.goTo('addClient')"><i class="fa fa-plus fa-2x" style="color: green"></i></a>
+            <a ng-click="ctrl.openAddEditClient()"><i class="fa fa-plus fa-2x" style="color: green"></i></a>
         </th>
     </tr>
     </thead>
@@ -56,7 +56,7 @@
         <td>[[client.telefon]]</td>
         <td>[[client.mail]]</td>
         <td align="center">&nbsp;
-            <i class="fa fa-edit fa-2x" ng-click="ctrl.setSelectedClient(client); ctrl.goTo('editClient')" style="color: darkgreen"></i>
+            <i class="fa fa-edit fa-2x" ng-click="ctrl.openAddEditClient(client)" style="color: darkgreen"></i>
         </td>
     </tr>
     </tbody>
