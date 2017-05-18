@@ -570,23 +570,28 @@ a.SLA-(( unix_timestamp(now())
                     foreach ($this->filterstatusy as $key => $value) 
                     {
 
-                        if($stat=='')
-                            $stat.=" status=".str_replace ("txtstatus", "",$key);
-                        else
-                            $stat.=" or status=".str_replace ("txtstatus", "",$key);
-                        
+                        if (!isset($_SESSION['przypisanemenu']['widok_przypisane']) || str_replace ("txtstatus", "",$key) != 3) {
+                            if ($stat == '')
+                                $stat .= " status=" . str_replace("txtstatus", "", $key);
+                            else
+                                $stat .= " or status=" . str_replace("txtstatus", "", $key);
+                        }
                     }
-             
-            $this->_filter.="and ( {$stat} ) ";
+
+            if ($stat != "") {
+                $this->_filter .= "and ( {$stat} ) ";
+            }
             
             
             if(isset($_SESSION['przypisanemenu']['widok_przypisane']))
             {
-                $this->_filter.="and (wykonuje= {$_SESSION['user']['rowid']} ) ";
+                $this->_filter.="and status <> 3 and (wykonuje= {$_SESSION['user']['rowid']} ) ";
             }
             
             
             
+        } else if (isset($_SESSION['przypisanemenu']['widok_przypisane'])) {
+            $this->_filter.=" and status <> 3 and (wykonuje= {$_SESSION['user']['rowid']} ) ";
         }
         if($this->filterdataod!='')
         {
