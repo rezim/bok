@@ -13,12 +13,20 @@
      
      <br/>
      {foreach from=$statusZgloszenie item=item key=key}
+         {*
+            TR NOTE: this is kind of work arround to not show closed option for 'service' group
+                     see also nottification->createFilter where we use the same condition,
+                     it should be changed to something more readable ...
+          *}
+         {if !array_key_exists('widok_przypisane', $smarty.session.przypisanemenu) || $item.nazwa != 'Zamknięte' }
+
             <input name='txtstatus' type="checkbox" id='txtstatus{$item.rowid}'   class='checkBoxNormal' 
                    {if $item.czydefault=='1'}checked{/if}/>
             <label  class='labelNormal' for='txtstatus{$item.rowid}' >
                   {$item.nazwa}
             </label>
-          
+
+         {/if}
      {/foreach}
        <a href="#" class="buttonpokaz" onClick='pokazNotiFi();return false;'>Filtruj</a>
      
