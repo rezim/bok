@@ -173,7 +173,7 @@ ServiceCtrl = function ($scope, rest, $location, $q, $filter, $timeout, $uibModa
             type: "select",
             availableOptions: function() {return self.getUsers()},
             key: "rowid_user:i",
-            value: 1
+            value: -1
         },
         {
             title: "Wartość Materiałów",
@@ -476,28 +476,35 @@ ServiceCtrl = function ($scope, rest, $location, $q, $filter, $timeout, $uibModa
                 this.requestData = requestData;
 
                 this.openSendEmail = function (request) {
-                    self.openSendEmail(request);
+                    self.openSendEmail(request, invalidateEmails);
                 };
 
                 this.openEmail = function (email) {
                     self.openEmail(email, true);
                 };
 
-                this.replyEmail = function (email, request) {
+                this.replyEmail = function (email) {
                     var mail = angular.copy(email);
                     mail.temat = 'Re: ' + email.temat;
-                    self.openEmail(mail, false);
+                    self.openEmail(mail, false, invalidateEmails);
+                };
+
+                var invalidateEmails = function() {
+                    emails = null;
                 };
 
                 var emails = null;
+                var emailsCache = [];
                 this.getEmails = function (reversNumber) {
                     if (!emails) {
                         emails = [];
                         rest.post('getEmails', {revers_number: reversNumber}).then(function (allEmails) {
                             emails.push.apply(emails, allEmails);
+                            emailsCache = [];
+                            emailsCache.push.apply(emailsCache, allEmails);
                         });
                     }
-                    return emails;
+                    return emailsCache;
                 };
 
                 this.cancel = function () {
@@ -512,7 +519,7 @@ ServiceCtrl = function ($scope, rest, $location, $q, $filter, $timeout, $uibModa
         });
     };
 
-    this.openEmail = function (mail, readonly) {
+    this.openEmail = function (mail, readonly, callback) {
         var modalInstance = $uibModal.open({
             ariaLabelledBy: 'modal-title',
             ariaDescribedBy: 'modal-body',
@@ -523,10 +530,16 @@ ServiceCtrl = function ($scope, rest, $location, $q, $filter, $timeout, $uibModa
                     {
                         email: mail.email,
                         temat: mail.temat,
-                        tresc_wiadomosci: mail.tresc_wiadomosci
+                        tresc_wiadomosci: mail.tresc_wiadomosci,
+                        revers_number: mail.revers_number
                     };
 
                 this.readonly = readonly;
+
+                this.send = function() {
+                    modalInstance.close(this.data);
+                };
+
 
                 this.cancel = function () {
                     modalInstance.dismiss('cancel');
@@ -543,7 +556,12 @@ ServiceCtrl = function ($scope, rest, $location, $q, $filter, $timeout, $uibModa
         }
 
         modalInstance.result.then(function (data) {
-            rest.post('sendMail', data);
+            rest.post('sendMail', data).then(function () {
+                emails = null;
+                if (callback) {
+                    callback();
+                }
+            });
         }, function () {
             console.log('dissmissed');
         });
@@ -586,7 +604,7 @@ ServiceCtrl = function ($scope, rest, $location, $q, $filter, $timeout, $uibModa
         });
     };
 
-    this.openSendEmail = function(requestData) {
+    this.openSendEmail = function(requestData, callback) {
 
         var modalInstance = $uibModal.open({
             ariaLabelledBy: 'modal-title',
@@ -618,10 +636,19 @@ ServiceCtrl = function ($scope, rest, $location, $q, $filter, $timeout, $uibModa
         });
 
         modalInstance.result.then(function (data) {
-            rest.post('sendMail', data);
+            rest.post('sendMail', data).then(function () {
+                if (callback) {
+                    callback();
+                }
+            });
         }, function () {
             console.log('dissmissed');
         });
+    };
+
+    this.updateList = function(showClosed) {
+        requests = null;
+        this.getRequests(showClosed);
     };
 
     var clients = null;
@@ -653,10 +680,10 @@ ServiceCtrl = function ($scope, rest, $location, $q, $filter, $timeout, $uibModa
 
     var requests = null;
     var requestCache = [];
-    this.getRequests = function() {
+    this.getRequests = function(showClosed) {
         if (!requests) {
             requests = [];
-            rest.post('getRequests').then(function (allRequests) {
+            rest.post('getRequests', {showClosed: !!showClosed}).then(function (allRequests) {
                 requests.push.apply(requests, allRequests);
                 requestCache = [];
                 requestCache.push.apply(requestCache, allRequests);

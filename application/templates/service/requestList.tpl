@@ -1,4 +1,10 @@
 <div>
+    <div class="divFilter">
+        <label class="labelNormal">
+            pokaż zamknięte
+            <input type="checkbox" ng-model="showClosed" ng-click="ctrl.updateList(showClosed)">
+        </label>
+    </div>
 <table class='tablesorter displaytable' cellspacing=0 cellpadding=0>
     <thead>
     <tr>

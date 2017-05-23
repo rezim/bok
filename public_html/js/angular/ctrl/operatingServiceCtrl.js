@@ -118,7 +118,7 @@ OperatingServiceCtrl = function ($scope, rest, $location, $q, $filter, $timeout)
     };
 
     this.updateRequest = function() {
-        rest.post('updateRequest', arrToJson($scope.deviceData)).then(function(result) {
+        rest.post('serviceUpdateStatus', arrToJson($scope.deviceData)).then(function(result) {
 
             console.log(result);
             invalidate();

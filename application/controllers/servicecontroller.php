@@ -1,6 +1,8 @@
 <?php
 class serviceController extends Controller
 {
+
+
     function show() {
     }
 
@@ -14,6 +16,23 @@ class serviceController extends Controller
 
     function updateRequest() {
         echo json_encode($this->service->updateFromPostParams($_POST, 'service_requests', 'rowid:i'));
+    }
+
+    function serviceUpdateStatus() {
+
+        $currentState = $this->service->query("SELECT * FROM `service_requests` WHERE rowid = " . $_POST['rowid:i']);
+
+        if (count($currentState) > 0 && $currentState[0]['rowid_user'] == -1 || $currentState[0]['rowid_user'] == $_SESSION['user']['rowid']) {
+            // add request back to the pool
+            if ($_POST['rowid_status:i'] == 3 || $_POST['rowid_status:i'] == 9) {
+                $_POST['rowid_user:i'] = -1;
+            } else {
+                $_POST['rowid_user:i'] = $_SESSION['user']['rowid'];
+            }
+            $result = json_encode($this->service->updateFromPostParams($_POST, 'service_requests', 'rowid:i'));
+        }
+
+        echo $result;
     }
 
     function addRequest() {
@@ -49,7 +68,8 @@ class serviceController extends Controller
     }
 
     function getRequests() {
-        echo $this->service->getRequests();
+        $showClosed = $_POST['showClosed'] === "true" ? true : false;
+        echo $this->service->getRequests($showClosed);
     }
 
     function getServiceAvailableStatuses()
