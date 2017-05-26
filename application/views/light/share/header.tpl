@@ -81,7 +81,7 @@
 </head>
  <?php flush(); ?>
 <body>
-<div id='divContainer' >
+<div id='divContainer' class="container-fluid row">
      
     {if isset($smarty.session.login) && $smarty.session.login==1}
         <img src='http://www.otus.pl/templates/otus/images/obraz/logo.png' alt='Otus' title='Otus' border='0' height='82' width='150'
@@ -108,7 +108,7 @@
         {/if}
     </div>
     <div class='liniaRozdzielajaca'></div>
-    <div id='leftMenu'>
+    <div id='leftMenu' class="col-xs-3">
         
         <div id='cssmenu'>
                 <ul>
@@ -162,5 +162,5 @@
    
         
     </div>{/if} 
-    <div id='rightCenter'>
+    <div id='rightCenter' class="col-xs-9">
    

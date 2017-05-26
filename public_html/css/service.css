@@ -8,3 +8,19 @@
   margin-left: 20px;
   background-color: red;
 }
+
+.table-requests .group-1 .fa-user {
+  color: #000;
+}
+
+.table-requests .group-2 .fa-user {
+  color: darkorange;
+}
+
+.table-requests .group-3 .fa-user {
+  color: forestgreen;
+}
+
+.table-requests .group-0 .fa-users {
+  color: #999;
+}

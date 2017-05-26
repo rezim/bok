@@ -15,7 +15,16 @@ class serviceController extends Controller
     }
 
     function updateRequest() {
-        echo json_encode($this->service->updateFromPostParams($_POST, 'service_requests', 'rowid:i'));
+        $currentState = $this->service->query("SELECT * FROM `service_requests` WHERE rowid = " . $_POST['rowid:i']);
+        $result = json_encode($this->service->updateFromPostParams($_POST, 'service_requests', 'rowid:i'));
+
+        if (count($currentState) > 0) {
+            if ($_POST['rowid_status:i'] != $currentState[0]['rowid_status']) {
+                $this->service->update("INSERT INTO service_history(`rowid_status`, `rowid_user`, `revers_number`) values(?,?,?)", 'iis', array($_POST['rowid_status:i'], $_SESSION['user']['rowid'], $currentState[0]['revers_number']));
+            }
+        }
+
+        return $result;
     }
 
     function serviceUpdateStatus() {
@@ -30,6 +39,11 @@ class serviceController extends Controller
                 $_POST['rowid_user:i'] = $_SESSION['user']['rowid'];
             }
             $result = json_encode($this->service->updateFromPostParams($_POST, 'service_requests', 'rowid:i'));
+
+            if ($_POST['rowid_status:i'] != $currentState[0]['rowid_status']) {
+                $this->service->update("INSERT INTO service_history(`rowid_status`, `rowid_user`, `revers_number`) values(?,?,?)", 'iis', array($_POST['rowid_status:i'], $_SESSION['user']['rowid'], $currentState[0]['revers_number']));
+            }
+
         }
 
         echo $result;
@@ -57,6 +71,9 @@ class serviceController extends Controller
                 $revers = $this->service->query("SELECT * FROM `service_revers` ORDER BY rowid DESC LIMIT 1");
                 $newRevers = $revers[0]['number'] . "/" . $revers[0]['year'];
                 $this->service->update("UPDATE `service_requests` SET `revers_number` =  ? WHERE rowid = ?", 'si', array($newRevers, $insertedServiceId));
+
+
+                $this->service->update("INSERT INTO service_history(`rowid_status`, `rowid_user`, `revers_number`) values(?,?,?)", 'iis', array($_POST['rowid_status:i'], $_SESSION['user']['rowid'], $newRevers));
             }
         }
 
@@ -70,6 +87,11 @@ class serviceController extends Controller
     function getRequests() {
         $showClosed = $_POST['showClosed'] === "true" ? true : false;
         echo $this->service->getRequests($showClosed);
+    }
+
+    function getStatusHistory() {
+        $reversNumber = $_POST['revers_number'];
+        echo $this->service->getHistory($reversNumber);
     }
 
     function getServiceAvailableStatuses()

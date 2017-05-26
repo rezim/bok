@@ -2,6 +2,7 @@
 
     {include file="$templates/service/modalEmail.tpl"}
     {include file="$templates/service/emailList.tpl"}
+    {include file="$templates/service/statusHistory.tpl"}
     {include file="$templates/service/addEditClient.tpl"}
     {include file="$templates/service/addEditRequest.tpl"}
 

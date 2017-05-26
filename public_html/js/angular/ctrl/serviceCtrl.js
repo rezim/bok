@@ -386,6 +386,7 @@ ServiceCtrl = function ($scope, rest, $location, $q, $filter, $timeout, $uibModa
             self.setData($scope.clientData);
             self.setData($scope.deviceData);
             requests = null;
+            statusesHistory = {};
             self.goTo('view', '');
         });
     };
@@ -465,6 +466,31 @@ ServiceCtrl = function ($scope, rest, $location, $q, $filter, $timeout, $uibModa
     };
 
     // Popups
+
+
+    this.openStatusHistory = function(requestData) {
+        var modalInstance = $uibModal.open({
+            ariaLabelledBy: 'modal-title',
+            ariaDescribedBy: 'modal-body',
+            templateUrl: 'statusHistory.html',
+            controller: function () {
+                var that = this;
+                this.isPending = true;
+
+                this.data = requestData;
+
+                this.getStatusHistory = function() {
+                    return self.getStatusHistory(this.data.revers_number, function() {that.isPending = false});
+                };
+
+                this.cancel = function () {
+                    modalInstance.dismiss('cancel');
+                };
+            },
+            controllerAs: '$ctrl'
+        });
+    };
+
 
     this.openEmailList = function(requestData) {
         var modalEmailList = $uibModal.open({
@@ -691,6 +717,25 @@ ServiceCtrl = function ($scope, rest, $location, $q, $filter, $timeout, $uibModa
         }
 
         return requestCache;
+    };
+
+    var statusesHistory = {};
+    this.getStatusHistory = function(revers_number, callback) {
+        if (!statusesHistory[revers_number]) {
+            statusesHistory[revers_number] = [];
+            rest.post('getStatusHistory', {revers_number: revers_number}).then(function (statuses) {
+                statusesHistory[revers_number].push.apply(statusesHistory[revers_number], statuses);
+                if (callback) {
+                    callback();
+                }
+            });
+        } else {
+            if (callback) {
+                callback();
+            }
+        }
+
+        return statusesHistory[revers_number];
     };
 
     var currentUserRequests = null;

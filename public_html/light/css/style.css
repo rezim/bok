@@ -63,13 +63,13 @@ body
 #rightCenter
 {
     
-    width:1000px;min-width: 1000px;max-width: 1000px;
+    /*width:1000px;min-width: 1000px;max-width: 1000px;*/
     height:auto;
     min-height: 600px;
     margin-top:20px;
     float:left;
-    text-align: center;
-   
+
+	/*text-align: center;*/
 }
 .divFilter
 {

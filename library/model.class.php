@@ -37,7 +37,7 @@ class Model extends SQLQuery {
                 $filedsToEdit = $_POST[$fname];
             
            
-            foreach ($filedsToEdit as $key => $value) 
+            foreach ($filedsToEdit as $key => $value)
             {
                 
                 $this->_filedsToEdit[$key]['value'] = $value;

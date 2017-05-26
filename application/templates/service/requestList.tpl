@@ -1,48 +1,45 @@
-<div>
+<div class="container table-responsive">
     <div class="divFilter">
         <label class="labelNormal">
             pokaż zamknięte
             <input type="checkbox" ng-model="showClosed" ng-click="ctrl.updateList(showClosed)">
         </label>
     </div>
-<table class='tablesorter displaytable' cellspacing=0 cellpadding=0>
+
+    <table class="table table-condensed table-requests">
     <thead>
     <tr>
-        <th style='min-width: 50px;width:50px;'>
-            Lp
+        <th>
+            revers
         </th >
-        <th style='min-width: 75px;width:75px;'>
-            Revers
+        <th>
+            klient
         </th >
-        <th style='min-width: 165px;width:165px;'>
-            Klient
-        </th >
-        <th style='min-width: 115px;width:115px;'>
-            model drukarki
+        <th>
+            model
         </th>
-        <th style='min-width: 115px;width:115px;'>
+        <th>
             numer seryjny
         </th>
-        <th style='min-width: 115px;width:115px;'>
+        <th>
             opis usterki
         </th>
-        <th style='min-width: 115px;width:115px;'>
+        <th>
             status
         </th>
-        <th style='min-width: 160px;width:160px;'>
+        <th>
             czas zgłoszenia
         </th>
-        <th style='min-width: 160px;width:160px;'>
-            czas zakończenia
+        <th>
+            wykonuje
         </th>
-        <th style='min-width: 95px;width:95px;'>
+        <th>
         </th>
     </tr>
     </thead>
     <tbody>
 
-    <tr ng-repeat="request in ctrl.getRequests()">
-        <td>[[$index+1]]</td>
+    <tr ng-repeat="request in ctrl.getRequests()" ng-class="{literal}{'warning': request.rowid_status == 3, 'success': request.rowid_status == 10}{/literal}">
         <td>[[request.revers_number]]</td>
         <td>[[request.nazwa]]</td>
         <td>[[request.modeldrukarki]]</td>
@@ -50,13 +47,17 @@
         <td>[[request.opisusterki]]</td>
         <td>[[request.status]]</td>
         <td>[[request.date_insert]]</td>
-        <td></td>
+        <td align="center" ng-class="'group-' + (request.groupId || 0)">
+            <i uib-popover="[[request.userName || 'W PULI']] [[request.userEmail || '']]"
+               popover-trigger="'mouseenter'" class="fa fa-2x" ng-class="request.rowid_user == -1 ? 'fa-users' : 'fa-user'">
+            </i>
         <td>
             <i class="fa fa-print fa-2x" ng-click="ctrl.print('print-template', request)"></i>
             <i class="fa fa-edit fa-2x" ng-click="ctrl.setData(deviceData, request); ctrl.setData(clientData, request); ctrl.goTo('editRequest')"></i>
             <i class="fa fa-envelope-o fa-2x" ng-click="ctrl.openEmailList(request);">
                 <span class="badge">[[request.unreadEmailsCount]]</span>
             </i>
+            <i class="fa fa-list-ul fa-2x" ng-click="ctrl.openStatusHistory(request);">
         </td>
     </tr>
 
