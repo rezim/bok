@@ -16,11 +16,19 @@ class serviceController extends Controller
 
     function updateRequest() {
         $currentState = $this->service->query("SELECT * FROM `service_requests` WHERE rowid = " . $_POST['rowid:i']);
+
+        if ($_POST['rowid_status:i'] == 11) {
+            $_POST['date_closed:s'] = date('Y-m-d H:i:s');
+        } else {
+            $_POST['date_closed:s'] = null;
+        }
+
         $result = json_encode($this->service->updateFromPostParams($_POST, 'service_requests', 'rowid:i'));
 
         if (count($currentState) > 0) {
             if ($_POST['rowid_status:i'] != $currentState[0]['rowid_status']) {
-                $this->service->update("INSERT INTO service_history(`rowid_status`, `rowid_user`, `revers_number`) values(?,?,?)", 'iis', array($_POST['rowid_status:i'], $_SESSION['user']['rowid'], $currentState[0]['revers_number']));
+                $this->service->update("INSERT INTO service_history(`rowid_status`, `rowid_user`, `revers_number`) values(?,?,?)",
+                    'iis', array($_POST['rowid_status:i'], $_SESSION['user']['rowid'], $currentState[0]['revers_number']));
             }
         }
 
@@ -87,6 +95,10 @@ class serviceController extends Controller
     function getRequests() {
         $showClosed = $_POST['showClosed'] === "true" ? true : false;
         echo $this->service->getRequests($showClosed);
+    }
+
+    function getClosedRequests() {
+        echo $this->service->getClosedRequests();
     }
 
     function getStatusHistory() {

@@ -24,3 +24,34 @@
 .table-requests .group-0 .fa-users {
   color: #999;
 }
+
+.table {
+  overflow:hidden;
+  border-radius: 4px;
+  border: solid 1px #428bca;
+}
+
+.table .text {
+  position: relative;
+}
+.table .text span {
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+  position: absolute;
+  left: 0;
+  right: 0;
+}
+.text:before {
+  content: '';
+  display: inline-block;
+}
+
+.sortable {
+  cursor: pointer;
+}
+
+.form-control {
+  height: 28px;
+  padding-left: 3px;
+}

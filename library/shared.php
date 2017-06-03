@@ -347,6 +347,10 @@ function checkUprawnienia($controller,$action,$queryString)
         }
     }
 }
+
+
+date_default_timezone_set('Europe/Warsaw');
+
 setReporting();
 removeMagicQuotes();
 unregisterGlobals();

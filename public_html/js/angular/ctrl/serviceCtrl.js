@@ -1,6 +1,20 @@
 ServiceCtrl = function ($scope, rest, $location, $q, $filter, $timeout, $uibModal, $interpolate, appConf) {
     var self = this;
 
+    $scope.requestShowFilters = false;
+
+    $scope.closedRequestShowFilters = false;
+
+    $scope.requestAgreementsType = 'open';
+
+    $scope.requestsSortBy = '-date_insert';
+
+    $scope.requestsFilter = {};
+
+    $scope.closedRequestsSortBy = '-date_insert';
+
+    $scope.closedRequestsFilter = {};
+
     $scope.clientsSortBy = 'nazwa';
 
     $scope.clientsFilter = {};
@@ -10,42 +24,49 @@ ServiceCtrl = function ($scope, rest, $location, $q, $filter, $timeout, $uibModa
             title: "Nazwa",
             type: "text",
             key: "nazwa:s",
+            required: true,
             value: ""
         },
         {
             title: "Ulica",
             type: "text",
             key: "ulica:s",
+            required: true,
             value: ""
         },
         {
             title: "Miasto",
             type: "text",
             key: "miasto:s",
+            required: true,
             value: ""
         },
         {
             title: "Kod pocztowy",
             type: "text",
             key: "kodpocztowy:s",
+            required: true,
             value: ""
         },
         {
             title: "Nip",
             type: "text",
             key: "nip:s",
+            required: true,
             value: ""
         },
         {
             title: "Telefon",
             type: "text",
             key: "telefon:s",
+            required: true,
             value: ""
         },
         {
             title: "Mail",
             type: "text",
             key: "mail:s",
+            required: true,
             value: ""
         },
         {
@@ -222,6 +243,25 @@ ServiceCtrl = function ($scope, rest, $location, $q, $filter, $timeout, $uibModa
         return getValueFromArray($scope.deviceData, key);
     };
 
+    this.changeSortOrder = function(columnName, sortBy) {
+        var newOrder;
+        if (sortBy == ('-' + columnName)) {
+            newOrder = '+' + columnName;
+        } else {
+            newOrder = '-' + columnName;
+        }
+
+        return newOrder;
+    };
+
+    this.normalizeRequestsSortBy = function (sortBy) {
+        if (sortBy == '+revers' || sortBy == '-revers') {
+            sortBy = (sortBy == '+revers') ? '+date_insert' : '-date_insert';
+        }
+
+        return sortBy;
+    };
+
     this.sameAsClientAddress = function(checked, requestData) {
         var client = arrToJson($scope.clientData);
 
@@ -386,6 +426,7 @@ ServiceCtrl = function ($scope, rest, $location, $q, $filter, $timeout, $uibModa
             self.setData($scope.clientData);
             self.setData($scope.deviceData);
             requests = null;
+            closedRequests = null;
             statusesHistory = {};
             self.goTo('view', '');
         });
@@ -599,20 +640,28 @@ ServiceCtrl = function ($scope, rest, $location, $q, $filter, $timeout, $uibModa
             ariaLabelledBy: 'modal-title',
             ariaDescribedBy: 'modal-body',
             templateUrl: 'addEditClient.html',
+
             controller: function () {
+
+                this.form = {};
 
                 this.client = self.setData(angular.copy($scope.clientData), client);
 
                 this.addMode = (!client);
 
                 this.save = function(select) {
-                    modalInstance.close({client: this.client, addMode: this.addMode, select: select});
+                    if (this.form.addEdit.$valid) {
+                        modalInstance.close({client: this.client, addMode: this.addMode, select: select});
+                    } else {
+                        console.log('User form is not valid' + this.form.addEdit.$valid);
+                    }
                 };
 
                 this.cancel = function () {
                     modalInstance.dismiss('cancel');
                 };
             },
+            bindToController: true,
             controllerAs: '$ctrl'
         });
 
@@ -672,11 +721,6 @@ ServiceCtrl = function ($scope, rest, $location, $q, $filter, $timeout, $uibModa
         });
     };
 
-    this.updateList = function(showClosed) {
-        requests = null;
-        this.getRequests(showClosed);
-    };
-
     var clients = null;
     var clientsCache = [];
     this.getClients = function() {
@@ -706,10 +750,10 @@ ServiceCtrl = function ($scope, rest, $location, $q, $filter, $timeout, $uibModa
 
     var requests = null;
     var requestCache = [];
-    this.getRequests = function(showClosed) {
+    this.getRequests = function() {
         if (!requests) {
             requests = [];
-            rest.post('getRequests', {showClosed: !!showClosed}).then(function (allRequests) {
+            rest.post('getRequests', {showClosed: false}).then(function (allRequests) {
                 requests.push.apply(requests, allRequests);
                 requestCache = [];
                 requestCache.push.apply(requestCache, allRequests);
@@ -717,6 +761,21 @@ ServiceCtrl = function ($scope, rest, $location, $q, $filter, $timeout, $uibModa
         }
 
         return requestCache;
+    };
+
+    var closedRequests = null;
+    var closedRequestCache = [];
+    this.getClosedRequests = function() {
+        if (!closedRequests) {
+            closedRequests = [];
+            rest.post('getClosedRequests').then(function (allRequests) {
+                closedRequests.push.apply(closedRequests, allRequests);
+                closedRequestCache = [];
+                closedRequestCache.push.apply(closedRequestCache, allRequests);
+            });
+        }
+
+        return closedRequestCache;
     };
 
     var statusesHistory = {};
