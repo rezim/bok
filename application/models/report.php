@@ -27,7 +27,9 @@ class report extends Model
             {
                 $where.=" and (a.serial ='{$this->filterdrukarka}')";
             }
-           
+
+        $previousMonth = date('Y-m-d', strtotime($this->dataod . ' -1 month'));
+
         $query = "
                 select 
      
@@ -70,20 +72,20 @@ class report extends Model
                 a.activity,
                 a.jakczarne,
                
-                IFNULL((SELECT min(ilosc)
+                IFNULL((SELECT max(ilosc)
                 FROM `pages` as d
                 where d.serial = a.serial and
-                DATE(datawiadomosci) >= '{$this->dataod}'
-                and DATE(datawiadomosci) <= '{$this->datado}'
+                DATE(datawiadomosci) >= '{$previousMonth}'
+                and DATE(datawiadomosci) <= '{$this->dataod}'
                 and DATE(datawiadomosci) >= DATE(a.dataod)
                 and ilosc is not null
                 group by serial),0) as 'strony_black_start',                              
                 
-                IFNULL((SELECT min(datawiadomosci)
+                IFNULL((SELECT max(datawiadomosci)
                 FROM `pages` as d
                 where d.serial = a.serial and
-                DATE(datawiadomosci) >= '{$this->dataod}'
-                and DATE(datawiadomosci) <= '{$this->datado}'
+                DATE(datawiadomosci) >= '{$previousMonth}'
+                and DATE(datawiadomosci) <= '{$this->dataod}'
                 and DATE(datawiadomosci) >= DATE(a.dataod)
                 and ilosc is not null
                 group by serial),'0000-00-00') as 'data_wiadomosci_black_start',
@@ -106,20 +108,20 @@ class report extends Model
                 and ilosc is not null
                 group by serial),'0000-00-00') as 'data_wiadomosci_black_koniec',                
                 
-                IFNULL((SELECT min(ilosckolor)
+                IFNULL((SELECT max(ilosckolor)
                 FROM `pages` as d
                 where d.serial = a.serial and
-                DATE(datawiadomosci) >= '{$this->dataod}'
-                and DATE(datawiadomosci) <= '{$this->datado}'
+                DATE(datawiadomosci) >= '{$previousMonth}'
+                and DATE(datawiadomosci) <= '{$this->dataod}'
                 and DATE(datawiadomosci) >= DATE(a.dataod)
                 and ilosckolor is not null
                 group by serial),0) as 'strony_kolor_start',                
                                 
-                IFNULL((SELECT min(datawiadomosci)
+                IFNULL((SELECT max(datawiadomosci)
                 FROM `pages` as d
                 where d.serial = a.serial and
-                DATE(datawiadomosci) >= '{$this->dataod}'
-                and DATE(datawiadomosci) <= '{$this->datado}'
+                DATE(datawiadomosci) >= '{$previousMonth}'
+                and DATE(datawiadomosci) <= '{$this->dataod}'
                 and DATE(datawiadomosci) >= DATE(a.dataod)
                 and ilosckolor is not null
                 group by serial),'0000-00-00') as 'data_wiadomosci_kolor_start',                
@@ -148,7 +150,7 @@ class report extends Model
             {$where}
                 order by c.nazwakrotka
             ";
-           
+
         return $this->query($query,null,false); 
         
     }
