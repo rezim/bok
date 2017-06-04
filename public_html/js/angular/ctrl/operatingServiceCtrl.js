@@ -1,4 +1,4 @@
-OperatingServiceCtrl = function ($scope, rest, $location, $q, $filter, $timeout) {
+OperatingServiceCtrl = function ($scope, rest, $location, $q, $filter, $timeout, $uibModal) {
     var self = this;
 
     $scope.deviceData = [
@@ -46,9 +46,9 @@ OperatingServiceCtrl = function ($scope, rest, $location, $q, $filter, $timeout)
         },
         {
             title: "Przewidywany czas pracy",
-            type: "text",
+            type: "time",
             key: "przewidywany_czas_pracy:d",
-            value: "",
+            value: 0.00,
             hide: function() {
                 var dData = arrToJson($scope.deviceData);
                 return (dData['rowid_status:i'] > 3);
@@ -56,9 +56,9 @@ OperatingServiceCtrl = function ($scope, rest, $location, $q, $filter, $timeout)
         },
         {
             title: "Czas Pracy",
-            type: "text",
+            type: "time",
             key: "czas_pracy:d",
-            value: "",
+            value: 0.00,
             hide: function() {
                 var dData = arrToJson($scope.deviceData);
                 return (dData['rowid_status:i'] < 4);
@@ -71,6 +71,12 @@ OperatingServiceCtrl = function ($scope, rest, $location, $q, $filter, $timeout)
         }
     ];
 
+
+    this.errorMessage = "";
+
+    $scope.deviceData.getValue = function(key) {
+        return getValueFromArray($scope.deviceData, key);
+    };
 
     $scope.$watch(function () {
         return $location.path();
@@ -117,12 +123,9 @@ OperatingServiceCtrl = function ($scope, rest, $location, $q, $filter, $timeout)
         }, 0);
     };
 
-    this.updateRequest = function() {
-        rest.post('serviceUpdateStatus', arrToJson($scope.deviceData)).then(function(result) {
-
-            console.log(result);
+    this.updateRequest = function(request) {
+        rest.post('serviceUpdateStatus', arrToJson(request)).then(function (result) {
             invalidate();
-            $location.path('/view');
         });
     };
 
@@ -134,6 +137,56 @@ OperatingServiceCtrl = function ($scope, rest, $location, $q, $filter, $timeout)
         this.getStatuses(request.rowid_status);
 
         $location.path('/edit');
+    };
+
+    this.openUpdateRequest = function(request) {
+
+        statuses = null;
+        this.getStatuses(request.rowid_status);
+
+        var modalInstance = $uibModal.open({
+            ariaLabelledBy: 'modal-title',
+            ariaDescribedBy: 'modal-body',
+            templateUrl: 'modifyRequest.html',
+            size: 'lg',
+            controller: function () {
+
+                this.form = {};
+
+                this.request = self.setData($scope.deviceData, request);
+
+                this.updateRequest = function() {
+
+                    if (getValueFromArray(this.request, 'rowid_status:i') == 3 && !(parseFloat(getValueFromArray(this.request, 'przewidywany_czas_pracy:d')) > 0)) {
+                        this.form.updateRequest['przewidywany_czas_pracy:d'].$error['notZero'] = true;
+                        this.form.updateRequest['przewidywany_czas_pracy:d'].$valid = false;
+                        this.form.updateRequest.$valid = false;
+                    }
+
+                    if (getValueFromArray(this.request, 'rowid_status:i') == 9 && !(parseFloat(getValueFromArray(this.request, 'czas_pracy:d')) > 0)) {
+                        this.form.updateRequest['czas_pracy:d'].$error['notZero'] = true;
+                        this.form.updateRequest['czas_pracy:d'].$valid = false;
+                        this.form.updateRequest.$valid = false;
+                    }
+
+                    if (this.form.updateRequest.$valid) {
+                        modalInstance.close({request: this.request});
+                    }
+                };
+
+                this.cancel = function () {
+                    modalInstance.dismiss('cancel');
+                };
+            },
+            bindToController: true,
+            controllerAs: '$ctrl'
+        });
+
+        modalInstance.result.then(function (data) {
+            self.updateRequest(data.request);
+        }, function () {
+            // nop
+        });
     };
 
     var onModeChanged = function(current, previous) {
@@ -148,11 +201,21 @@ OperatingServiceCtrl = function ($scope, rest, $location, $q, $filter, $timeout)
         }
     };
 
-    var setData = function(request) {
-        angular.forEach($scope.deviceData, function(data) {
-            var key = data.key.split(':')[0];
-            data.value = (request && request[key]) ? request[key] : "";
+    this.setData = function(srcData, values) {
+        angular.forEach(srcData, function(data) {
+            if(data.key) {
+                var key = data.key.split(':')[0];
+                var type = data.key.split(':')[1];
+                data.value = (values && values[key]) ? values[key] : (values && values[data.key]) ? values[data.key] : "";
+                if (type == 'i') {
+                    data.value = data.value ? parseInt(data.value) : "";
+                } else if (type == 'd') {
+                    data.value = data.value ? parseFloat(data.value) : 0.00;
+                }
+            }
         });
+
+        return srcData;
     };
 
     var clients = null;
@@ -229,6 +292,11 @@ OperatingServiceCtrl = function ($scope, rest, $location, $q, $filter, $timeout)
 
     var notifyEmployee = function(email, modeldrukarki, numerseryjny, opisusterki) {
         rest.post('notifyEmployee', {mail: email, model: modeldrukarki, numer: numerseryjny, opis: opisusterki});
+    };
+
+    var getValueFromArray = function (dataObj, key) {
+        var data = $filter('filter')(dataObj, {key: key}, true);
+        return data.length > 0 ? data[0].value : null;
     };
 
     var arrToJson = function(arr) {
