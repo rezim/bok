@@ -542,18 +542,55 @@ ServiceCtrl = function ($scope, rest, $location, $q, $filter, $timeout, $uibModa
             controller: function () {
                 this.requestData = requestData;
 
-                this.openSendEmail = function (request) {
-                    self.openSendEmail(request, invalidateEmails);
+                this.askForEstimates = function (request) {
+
+                    var data = {
+                        title: 'Zapytanie o kosztorys do zlecenia: [' + requestData.revers_number + ']',
+                            email: requestData.mail,
+                        temat: $interpolate(appConf.EMAIL.SERWIS.POTWIERDZENIE_KOSZTORYSU.TEMAT)({numer_rewersu: requestData.revers_number}),
+                        tresc_wiadomosci: $interpolate(appConf.EMAIL.SERWIS.POTWIERDZENIE_KOSZTORYSU.TRESC)({koszt_naprawy: requestData.estymowany_koszt_naprawy}),
+                        revers_number: requestData.revers_number
+                    };
+
+                    self.openSendEmail(request, data, invalidateEmails);
+                };
+
+                this.readyToReceive = function(request) {
+                    var data = {
+                        title: 'Urządzenie gotowe do odbioru, zlecenie: [' + requestData.revers_number + ']',
+                        email: requestData.mail,
+                        temat: $interpolate(appConf.EMAIL.SERWIS.GOTOWA_DO_ODBIORU.TEMAT)({numer_rewersu: requestData.revers_number}),
+                        tresc_wiadomosci: $interpolate(appConf.EMAIL.SERWIS.GOTOWA_DO_ODBIORU.TRESC)({model: requestData.modeldrukarki , numer_seryjny: requestData.numerseryjny}),
+                        revers_number: requestData.revers_number
+                    };
+
+                    self.openSendEmail(request, data, invalidateEmails);
                 };
 
                 this.openEmail = function (email) {
-                    self.openEmail(email, true);
+                    var data = {
+                        title: 'Wiadomość do zlecenia numer [' + email.revers_number + ']',
+                        email: email.email,
+                        temat: email.temat,
+                        tresc_wiadomosci: email.tresc_wiadomosci,
+                        revers_number: email.revers_number
+                    };
+                    self.openEmail(email, data, true);
                 };
 
                 this.replyEmail = function (email) {
                     var mail = angular.copy(email);
                     mail.temat = 'Re: ' + email.temat;
-                    self.openEmail(mail, false, invalidateEmails);
+
+                    var data = {
+                        title: 'Odpowiedz do zlecenia numer [' + mail.revers_number + ']',
+                        email: mail.email,
+                        temat: mail.temat,
+                        tresc_wiadomosci: mail.tresc_wiadomosci,
+                        revers_number: mail.revers_number
+                    };
+
+                    self.openEmail(mail, data, false, invalidateEmails);
                 };
 
                 var invalidateEmails = function() {
@@ -586,20 +623,15 @@ ServiceCtrl = function ($scope, rest, $location, $q, $filter, $timeout, $uibModa
         });
     };
 
-    this.openEmail = function (mail, readonly, callback) {
+    this.openEmail = function (mail, data, readonly, callback) {
         var modalInstance = $uibModal.open({
             ariaLabelledBy: 'modal-title',
             ariaDescribedBy: 'modal-body',
-            templateUrl: 'myModalContent.html',
+            templateUrl: 'emailTemplate.html',
+            size: 'lg',
             controller: function () {
 
-                this.data =
-                    {
-                        email: mail.email,
-                        temat: mail.temat,
-                        tresc_wiadomosci: mail.tresc_wiadomosci,
-                        revers_number: mail.revers_number
-                    };
+                this.data = data;
 
                 this.readonly = readonly;
 
@@ -679,21 +711,16 @@ ServiceCtrl = function ($scope, rest, $location, $q, $filter, $timeout, $uibModa
         });
     };
 
-    this.openSendEmail = function(requestData, callback) {
+    this.openSendEmail = function(requestData, data, callback) {
 
         var modalInstance = $uibModal.open({
             ariaLabelledBy: 'modal-title',
             ariaDescribedBy: 'modal-body',
-            templateUrl: 'myModalContent.html',
+            templateUrl: 'emailTemplate.html',
+            size: 'lg',
             controller: function () {
 
-                this.data =
-                    {
-                        email: requestData.mail,
-                        temat: $interpolate(appConf.EMAIL.SERWIS.POTWIERDZENIE_KOSZTORYSU.TEMAT)({numer_rewersu: requestData.revers_number}),
-                        tresc_wiadomosci: $interpolate(appConf.EMAIL.SERWIS.POTWIERDZENIE_KOSZTORYSU.TRESC)({koszt_naprawy: requestData.estymowany_koszt_naprawy}),
-                        revers_number: requestData.revers_number
-                    };
+                this.data = data;
 
                 this.send = function() {
                     modalInstance.close(this.data);

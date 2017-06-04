@@ -5,8 +5,16 @@
     <div class="modal-body" id="modal-body">
         <form class="form-horizontal" role="form">
 
-            <button class="btn btn-info" type="button" ng-click="$ctrl.openSendEmail($ctrl.requestData)">Wyślij Zapytanie o Wycenę</button>
-
+            <div class="container-fluid">
+                <div class="row text-right">
+                    <button class="btn btn-info" type="button" ng-click="$ctrl.askForEstimates($ctrl.requestData)">
+                        <i class="fa fa-envelope-o"></i> Akceptacja Kosztorysu
+                    </button>
+                    <button class="btn btn-" type="button" ng-click="$ctrl.readyToReceive($ctrl.requestData)">
+                        <i class="fa fa-envelope-o"></i> Gotowa do Odbioru
+                    </button>
+                </div>
+            </div>
             <div class="container-fluid">
                 <div class="row header">
                     <div class="col-sm-3">Data</div>

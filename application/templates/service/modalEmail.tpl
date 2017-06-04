@@ -1,6 +1,6 @@
-<script type="text/ng-template" id="myModalContent.html">
+<script type="text/ng-template" id="emailTemplate.html">
     <div class="modal-header">
-        <h3 class="modal-title" id="modal-title">Nowy Email</h3>
+        <h3 class="modal-title" id="modal-title">[[$ctrl.data.title]]</h3>
     </div>
     <div class="modal-body" id="modal-body">
         <form class="form-horizontal" role="form">
@@ -20,7 +20,7 @@
             <div class="form-group">
                 <label for="message" class="col-sm-2 control-label">Wiadomość</label>
                 <div class="col-sm-10">
-                    <textarea ng-disabled="$ctrl.readonly" class="form-control" rows="4" name="message" ng-model="$ctrl.data.tresc_wiadomosci"></textarea>
+                    <textarea ng-disabled="$ctrl.readonly" class="form-control" rows="16" name="message" ng-model="$ctrl.data.tresc_wiadomosci"></textarea>
                 </div>
             </div>
 
