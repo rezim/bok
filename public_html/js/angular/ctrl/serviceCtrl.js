@@ -229,6 +229,12 @@ ServiceCtrl = function ($scope, rest, $location, $q, $filter, $timeout, $uibModa
             value: ""
         },
         {
+            title: "Notatki",
+            type: "textarea",
+            key: "uwagi:s",
+            value: ""
+        },
+        {
             key: "rowid_clients:i",
             value: ""
         },
