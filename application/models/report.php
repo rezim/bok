@@ -79,7 +79,16 @@ class report extends Model
                 and DATE(datawiadomosci) <= '{$this->dataod}'
                 and DATE(datawiadomosci) >= DATE(a.dataod)
                 and ilosc is not null
-                group by serial),0) as 'strony_black_start',                              
+                group by serial),                
+                IFNULL((SELECT min(ilosc)
+                FROM `pages` as d
+                where d.serial = a.serial and
+                DATE(datawiadomosci) >= '{$this->dataod}'
+                and DATE(datawiadomosci) <= '{$this->datado}'
+                and DATE(datawiadomosci) >= DATE(a.dataod)
+                and ilosc is not null
+                group by serial),0)                
+                ) as 'strony_black_start',                              
                 
                 IFNULL((SELECT max(datawiadomosci)
                 FROM `pages` as d
@@ -88,7 +97,16 @@ class report extends Model
                 and DATE(datawiadomosci) <= '{$this->dataod}'
                 and DATE(datawiadomosci) >= DATE(a.dataod)
                 and ilosc is not null
-                group by serial),'0000-00-00') as 'data_wiadomosci_black_start',
+                group by serial),                
+                IFNULL((SELECT min(datawiadomosci)
+                FROM `pages` as d
+                where d.serial = a.serial and
+                DATE(datawiadomosci) >= '{$this->dataod}'
+                and DATE(datawiadomosci) <= '{$this->datado}'
+                and DATE(datawiadomosci) >= DATE(a.dataod)
+                and ilosc is not null
+                group by serial), '0000-00-00')                              
+                ) as 'data_wiadomosci_black_start',
                                 
                 IFNULL((SELECT max(ilosc)
                 FROM `pages` as d
@@ -115,7 +133,16 @@ class report extends Model
                 and DATE(datawiadomosci) <= '{$this->dataod}'
                 and DATE(datawiadomosci) >= DATE(a.dataod)
                 and ilosckolor is not null
-                group by serial),0) as 'strony_kolor_start',                
+                group by serial),
+                IFNULL((SELECT min(ilosckolor)
+                FROM `pages` as d
+                where d.serial = a.serial and
+                DATE(datawiadomosci) >= '{$this->dataod}'
+                and DATE(datawiadomosci) <= '{$this->datado}'
+                and DATE(datawiadomosci) >= DATE(a.dataod)
+                and ilosckolor is not null
+                group by serial),0)
+                ) as 'strony_kolor_start',                
                                 
                 IFNULL((SELECT max(datawiadomosci)
                 FROM `pages` as d
@@ -124,7 +151,16 @@ class report extends Model
                 and DATE(datawiadomosci) <= '{$this->dataod}'
                 and DATE(datawiadomosci) >= DATE(a.dataod)
                 and ilosckolor is not null
-                group by serial),'0000-00-00') as 'data_wiadomosci_kolor_start',                
+                group by serial),
+                IFNULL((SELECT min(datawiadomosci)
+                FROM `pages` as d
+                where d.serial = a.serial and
+                DATE(datawiadomosci) >= '{$this->dataod}'
+                and DATE(datawiadomosci) <= '{$this->datado}'
+                and DATE(datawiadomosci) >= DATE(a.dataod)
+                and ilosckolor is not null
+                group by serial),'0000-00-00')                                
+                ) as 'data_wiadomosci_kolor_start',                
                 
                 IFNULL((SELECT max(ilosckolor)
                 FROM `pages` as d
