@@ -106,13 +106,15 @@ ServiceCtrl = function ($scope, rest, $location, $q, $filter, $timeout, $uibModa
             title: "Model drukarki",
             type: "text",
             key: "modeldrukarki:s",
-            value: ""
+            value: "",
+            required: true
         },
         {
             title: "Numer seryjny",
             type: "text",
             key: "numerseryjny:s",
-            value: ""
+            value: "",
+            required: true
         },
         {
             title: "Opis usterki",
@@ -170,7 +172,8 @@ ServiceCtrl = function ($scope, rest, $location, $q, $filter, $timeout, $uibModa
             title: "Miasto",
             type: "text",
             key: "dostawa_miasto:s",
-            value: ""
+            value: "",
+            required: true
         },
         {
             title: "Kod pocztowy",
@@ -400,6 +403,18 @@ ServiceCtrl = function ($scope, rest, $location, $q, $filter, $timeout, $uibModa
                 $location.path('/view');
             });
         });
+    };
+
+    this.addUpdateRequestForm = {};
+
+    this.addEditRequest = function(request, client, mode) {
+        if (this.addUpdateRequestForm.request.$valid) {
+            if (mode == 'add') {
+                this.addNewRequest(request, client);
+            } else if (mode == 'edit') {
+                this.updateRequest(request, client);
+            }
+        }
     };
 
     this.addNewRequest = function(request, client) {
