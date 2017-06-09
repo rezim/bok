@@ -37,7 +37,7 @@ class service extends Model
                 left outer join `users_groups` as ug on ug.rowid_user = u.rowid                      
            ";
         if (!$showClosed) {
-            $query = $query . "WHERE sr.rowid_status <> 11";
+            $query = $query . "WHERE sr.rowid_status <> 11 AND sr.rowid_status <> 12";
         }
 
         return json_encode($this->query($query,null,false));
@@ -55,7 +55,7 @@ class service extends Model
                 left outer join `users_groups` as ug on ug.rowid_user = u.rowid                      
            ";
 
-        $query = $query . "WHERE sr.rowid_status = 11";
+        $query = $query . "WHERE sr.rowid_status = 11 OR sr.rowid_status = 12";
 
         return json_encode($this->query($query,null,false));
     }

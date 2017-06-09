@@ -17,7 +17,7 @@ class serviceController extends Controller
     function updateRequest() {
         $currentState = $this->service->query("SELECT * FROM `service_requests` WHERE rowid = " . $_POST['rowid:i']);
 
-        if ($_POST['rowid_status:i'] == 11) {
+        if ($_POST['rowid_status:i'] == 11 || $_POST['rowid_status:i'] == 12) {
             $_POST['date_closed:s'] = date('Y-m-d H:i:s');
         } else {
             $_POST['date_closed:s'] = null;

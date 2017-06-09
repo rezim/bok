@@ -1,8 +1,8 @@
 <div class="container table-responsive">
     <div>
         <div class="btn-group">
-            <label class="btn btn-success" ng-model="requestAgreementsType" uib-btn-radio="'open'" uncheckable>Otwarte</label>
-            <label class="btn btn-success" ng-model="requestAgreementsType" uib-btn-radio="'closed'" uncheckable>Zamknięte</label>
+            <label class="btn btn-success" ng-model="requestAgreementsType" uib-btn-radio="'open'">Otwarte</label>
+            <label class="btn btn-success" ng-model="requestAgreementsType" uib-btn-radio="'closed'">Zamknięte</label>
         </div>
     </div>
 

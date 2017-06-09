@@ -53,15 +53,22 @@
         <td><input type="text" class="form-control" placeholder="opis usterki" ng-model="closedRequestsFilter.opisusterki"></td>
         <td><input type="text" class="form-control" placeholder="data utworzenia" ng-model="closedRequestsFilter.date_insert"></td>
         <td><input type="text" class="form-control" placeholder="data zamknięcia" ng-model="closedRequestsFilter.date_closed"></td>
-        <td></td>
+        <td>
+            <div class="btn-group">
+                <label title="Zamknięte Powodzeniem" class="btn btn-default" ng-model="closedRequestsFilter.rowid_status"
+                       uib-btn-checkbox btn-checkbox-true="'11'" btn-checkbox-false="''"><i class="fa fa-thumbs-up" aria-hidden="true"></i></label>
+                <label title="Zamknięte Niepowodzeniem" class="btn btn-default" ng-model="closedRequestsFilter.rowid_status"
+                       uib-btn-checkbox btn-checkbox-true="'12'" btn-checkbox-false="''"><i class="fa fa-thumbs-down" aria-hidden="true"></i></label>
+            </div>
+        </td>
     </tr>
 
-    <tr ng-repeat="request in ctrl.getClosedRequests() | filter: closedRequestsFilter | orderBy: ctrl.normalizeRequestsSortBy(closedRequestsSortBy)"">
+    <tr ng-repeat="request in ctrl.getClosedRequests() | filter: closedRequestsFilter | orderBy: ctrl.normalizeRequestsSortBy(closedRequestsSortBy)" ng-class="{literal}{'danger': request.rowid_status == 12}{/literal}">
         <td>[[request.revers_number]]</td>
-        <td class="text"><span>[[request.nazwa]]</span></td>
+        <td class="text"><span title="[[request.nazwa]]">[[request.nazwa]]</span></td>
         <td>[[request.modeldrukarki]]</td>
         <td>[[request.numerseryjny]]</td>
-        <td class="text"><span>[[request.opisusterki]]</span></td>
+        <td class="text"><span title="[[request.opisusterki]]">[[request.opisusterki]]</span></td>
         <td>[[request.date_insert]]</td>
         <td>[[request.date_closed]]</td>
         <td>
