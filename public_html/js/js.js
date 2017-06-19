@@ -1751,3 +1751,43 @@ function generateProfitsReport(successCallback, errorCallback)
 function show(path) {
     window.location=sciezka+path;
 }
+
+
+$(function() {
+    $( '.navbar' ).append( '<span class="nav-bg"></span>' );
+
+
+    $('.dropdown-toggle').click(function () {
+
+        if (!$(this).parent().hasClass('open')) {
+
+            $('body').addClass('menu-open');
+
+        } else {
+
+            $('body').removeClass('menu-open');
+
+        }
+
+    });
+
+    $( '.dropdown' ).click(function () {
+        if ($(this).hasClass('open')) {
+            $('.dropdown').removeClass('open');
+        } else {
+            $('.dropdown').removeClass('open');
+            $(this).toggleClass('open');
+        }
+    });
+
+
+    $('.dropdown-menu').click(function (event) {
+        event.stopPropagation();
+    });
+
+    // $(document).on('click touchstart', function (a) {
+    //     if ($(a.target).parents().index($('.navbar-nav')) == -1) {
+    //         $('html').removeClass('menu-open');
+    //     }
+    // });
+});

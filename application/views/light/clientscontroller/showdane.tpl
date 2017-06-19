@@ -1,33 +1,33 @@
 
-<table class='tablesorter displaytable' id='tableClient' cellspacing=0 cellpadding=0>
+<table class='tablesorter displaytable' id='tableClient'>
     <thead>
         <tr>
-              <th style='min-width: 50px;width:50px;'>
+            <th>
                 Lp
             </th >
-            <th style='min-width: 165px;width:165px;'>
+            <th>
                 nazwa krótka
             </th >
-            <th style='min-width: 155px;width:155px;'>
+            <th>
                 kod/miasto
             </th>
-            <th style='min-width: 155px;width:155px;'>
+            <th>
                 adres
             </th>
-            <th style='min-width: 105px;width:105px;'>
+            <th>
                 nip
             </th>
-            <th style='min-width: 95px;width:195px;'>
+            <th>
                 telefon
             </th>
             {if $czycolorbox==''}
-            <th style='min-width: 55px;width:55px;'>
+            <th>
                 umowy
             </th>
-            <th style='min-width: 55px;width:55px;'>
+            <th>
                 drukarki
             </th>
-            <th style='min-width: 75px;width:75px;'>
+            <th>
             </th>
             {/if}
         </tr>
@@ -49,7 +49,7 @@
                         "
                     {/if}
                     >
-                      <td>{$smarty.foreach.loopek.index+1}</td>
+                    <td>{$smarty.foreach.loopek.index+1}</td>
                     <td>{$item.nazwakrotka|escape:'htmlall'}</td>
                     <td>{$item.kodpocztowy|escape:'htmlall'} {$item.miasto|escape:'htmlall'}</td>
                     <td>{$item.ulica|escape:'htmlall'}</td>

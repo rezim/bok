@@ -1,5 +1,5 @@
 
-<table class='tablesorter displaytable' id='tableUmowy' cellspacing=0 cellpadding=0>
+<table class='tablesorter displaytable table table-striped' id='tableUmowy'>
     <thead>
         <tr>
              <th style='min-width: 50px;width:50px;'>

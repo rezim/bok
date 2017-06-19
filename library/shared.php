@@ -97,7 +97,10 @@ function callHook() {
         if($action=='' || $action==null) $action='show';
         
          checkUprawnienia($controller,$action,$queryString);
-        
+
+        global $smarty;
+        $smarty->assign('currentPage', $controller);
+
         $model = rtrim($controller, 's');
         $controller .= 'Controller';
         

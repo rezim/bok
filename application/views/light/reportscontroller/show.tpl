@@ -5,26 +5,30 @@
              '{$smarty.const.FAKTUROWNIA_COMPANYNAME}',
              '{$smarty.const.FAKTUROWNIA_INVOICE_NUMBER_LENGTH}');
 </script>
-<div class='divFilter'>
-     <label for="txtdataod" class="labelNormal" >data od</label>
-     <input type="text" id='txtdataod' class='textBoxNormal' style='width:90px;min-width: 90px;'>  
-     <label for="txtdatado" class="labelNormal" >data do</label>
-     <input type="text" id='txtdatado' class='textBoxNormal' style='width:90px;min-width: 90px;'>  
-     <label for="txtmiesiac" class="labelNormal">miesiąc</label>
-     <select id='txtmiesiac' class="comboboxNormal" style='width:110px;min-width:110px;' 
-             onchange="changeMiesiac(this);">
-                <option value="" selected></option>
-                {foreach from=$months item=item key=key}
-                    <option value="{$rok}-{$key}-01" >{$item}</option>
-                {/foreach}
-     </select>
-     <label for="txtklient" class="labelNormal">klient</label>
-     <input type="text" id='txtklient' class='textBoxNormal' style='width:90px;min-width: 90px;'>  
-     <label for="txtdrukarka" class="labelNormal">drukarka</label>
-     <input type="text" id='txtdrukarka' class='textBoxNormal' style='width:90px;min-width: 90px;'>  
-     
-     
-     <a href="#" class="buttonpokaz" onClick='generujRaport(function(data, params){literal}{invMgr.refreshInvoices(params);invMgr.showAgreementWarnings(params);}{/literal});return false;'>Generuj</a>
+<div class='panel panel-danger'>
+     <div class="panel-body">
+          <div class='divFilter row'>
+               <div class="col-sm-12">
+                    <label for="txtdataod" class="labelNormal" >data od</label>
+                    <input type="text" id='txtdataod' class='textBoxNormal' style='width:90px;min-width: 90px;'>
+                    <label for="txtdatado" class="labelNormal" >data do</label>
+                    <input type="text" id='txtdatado' class='textBoxNormal' style='width:90px;min-width: 90px;'>
+                    <label for="txtmiesiac" class="labelNormal">miesiąc</label>
+                    <select id='txtmiesiac' class="comboboxNormal" style='width:110px;min-width:110px;'
+                            onchange="changeMiesiac(this);">
+                               <option value="" selected></option>
+                               {foreach from=$months item=item key=key}
+                                   <option value="{$rok}-{$key}-01" >{$item}</option>
+                               {/foreach}
+                    </select>
+                    <label for="txtklient" class="labelNormal">klient</label>
+                    <input type="text" id='txtklient' class='textBoxNormal' style='width:90px;min-width: 90px;'>
+                    <label for="txtdrukarka" class="labelNormal">drukarka</label>
+                    <input type="text" id='txtdrukarka' class='textBoxNormal' style='width:90px;min-width: 90px;'>
+                    <button class="btn btn-danger" onClick='generujRaport(function(data, params){literal}{invMgr.refreshInvoices(params);invMgr.showAgreementWarnings(params);}{/literal});return false;'>Generuj</button>
+               </div>
+          </div>
+     </div>
 </div>
 <div class='divLoader' id='divLoader'>
 </div>

@@ -1,25 +1,33 @@
-<div class='divFilter'>
-     <label for="txtfilternrumowy{$czycolorbox}" class="labelNormal">nr umowy</label>
-     <input type="text" id='txtfilternrumowy{$czycolorbox}' class='textBoxNormal'>  
-     <label for="txtfilterserial{$czycolorbox}" class="labelNormal">drukarka</label>
-     <input type="text" id='txtfilterserial{$czycolorbox}' class='textBoxNormal'
-              {if isset($serial)}
-                value='{$serial}'
-            {/if}
-            
-            >  
-     <label for="txtfilternazwaklient{$czycolorbox}" class="labelNormal"
-            
-            >klient</label>
-     <input type="text" id='txtfilternazwaklient{$czycolorbox}' class='textBoxNormal'   {if isset($clientnazwakrotka)}
-                value='{$clientnazwakrotka}'
-            {/if}>  
-     <input type="checkbox" id='checkPokazZakonczone{$czycolorbox}'   class='checkBoxNormal' />
-                                        <label class='labelNormal' for='checkPokazZakonczone' >
-                                            Zakończone
-                                        </label>
-     <a href="#" class="buttonpokaz" onClick="pokazUmowy('divRightCenter{$czycolorbox}','divLoader{$czycolorbox}','{$czycolorbox}');return false;">Filtruj</a>
+<div class='panel panel-info'>
+    <div class="panel-body">
+        <div class='divFilter row'>
+            <div class="col-sm-12">
+                 <label for="txtfilternrumowy{$czycolorbox}" class="labelNormal">nr umowy</label>
+                 <input type="text" id='txtfilternrumowy{$czycolorbox}' class='textBoxNormal'>
+                 <label for="txtfilterserial{$czycolorbox}" class="labelNormal">drukarka</label>
+                 <input type="text" id='txtfilterserial{$czycolorbox}' class='textBoxNormal'
+                          {if isset($serial)}
+                            value='{$serial}'
+                        {/if}
+
+                        >
+                 <label for="txtfilternazwaklient{$czycolorbox}" class="labelNormal"
+
+                        >klient</label>
+                 <input type="text" id='txtfilternazwaklient{$czycolorbox}' class='textBoxNormal'   {if isset($clientnazwakrotka)}
+                            value='{$clientnazwakrotka}'
+                        {/if}>
+                 <input type="checkbox" id='checkPokazZakonczone{$czycolorbox}'   class='checkBoxNormal' />
+                                                    <label class='labelNormal' for='checkPokazZakonczone' >
+                                                        Zakończone
+                                                    </label>
+                 {*<a href="#" class="buttonpokaz" onClick="pokazUmowy('divRightCenter{$czycolorbox}','divLoader{$czycolorbox}','{$czycolorbox}');return false;">Filtruj</a>*}
+                <button class="btn btn-info" onClick="pokazUmowy('divRightCenter{$czycolorbox}','divLoader{$czycolorbox}','{$czycolorbox}');return false;">Filtruj</button>
+            </div>
+        </div>
+    </div>
 </div>
+
 <div class='divLoader' id='divLoader{$czycolorbox}'>
 </div>
 <div class='divRightCenter' id='divRightCenter{$czycolorbox}'>
