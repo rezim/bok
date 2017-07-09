@@ -197,7 +197,8 @@ class report extends Model
             echo('Wybierz zakres dat');die();
         }
         $where = " where a.rowid!=0 and a.activity=1 and a.rozliczenie='roczne' and 
-                  DATE_FORMAT(a.dataod, '%Y') < DATE_FORMAT('{$this->dataod}', '%Y') and (DATE_FORMAT(a.dataod, '%m')-1)=DATE_FORMAT('{$this->dataod}', '%m')
+                  ((DATE_FORMAT(a.dataod, '%Y') <= DATE_FORMAT('{$this->dataod}', '%Y') and (DATE_FORMAT(a.dataod, '%m'))=DATE_FORMAT('{$this->dataod}', '%m')) or 
+                  (DATE_FORMAT(a.dataod, '%Y') = DATE_FORMAT('{$this->dataod}', '%Y') and (DATE_FORMAT(a.dataod, '%m'))=DATE_FORMAT('{$this->dataod}', '%m')))
                 ";
             if($this->filterklient!='')
             {
@@ -276,7 +277,9 @@ class report extends Model
             {$where}
                 order by c.nazwakrotka
             ";
-           
+
+        echo $query;
+
         return $this->query($query,null,false); 
     }   
 }

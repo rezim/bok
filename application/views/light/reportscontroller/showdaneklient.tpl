@@ -147,7 +147,7 @@
                                                     <td style="text-align: center">{$smarty.foreach.loopek.index+1}</td>
                                                     <td class='tdWartosc'  style='display: none;'>{$key2}</td>
 
-                                                    <td class='tdWartosc agreement-nb' onClick="showNewAgreementAdd('{$item2.rowidumowa}')"
+                                                    <td class='tdWartosc agreement-nb' onClick="showNewAgreementAdd('{if isset($item2.rowidumowa)}{$item2.rowidumowa}{/if}')"
                                                     blackStartDate="{$item2.data_wiadomosci_black_start}"
                                                     blackEndDate="{$item2.data_wiadomosci_black_koniec}"
                                                     colorStartDate="{$item2.data_wiadomosci_kolor_start}"
