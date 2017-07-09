@@ -278,8 +278,6 @@ class report extends Model
                 order by c.nazwakrotka
             ";
 
-        echo $query;
-
         return $this->query($query,null,false); 
     }   
 }
