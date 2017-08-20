@@ -15,7 +15,7 @@ class reportsController extends Controller
    {
   
        $this->report->populateWithPost();
-       $dataReportsMiesieczne = $this->report->getReportsMiesieczneOld();
+       $dataReportsMiesieczne = $this->report->getReportsMiesieczne();
         $dataReportsRoczne = $this->report->getReportsRoczne();
       
         foreach($dataReportsMiesieczne as $key=>$item)
