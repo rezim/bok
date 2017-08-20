@@ -978,12 +978,14 @@ function saveDataDevice($dataDevice, $dataWiadomosci, $ip)
         $result->close();
     }
 
-    $query = "insert into pages(serial,ilosc,dateinsert,datawiadomosci,ilosckolor,ilosctotal,rowid_agreement) values 
+    $query = "insert into pages(serial,ilosc,dateinsert,datawiadomosci,ilosckolor,ilosctotal,rowid_agreement,product_version) values 
                             (
                                 '{$dataDevice['system']['dd:SerialNumber']}',{$dataDevice['system']['wydruk']},'" . date('Y-m-d H:i:s') . "','{$dataWiadomosci}'
                                 ," . ($dataDevice['system']['wydrukkolor'] == '' ? 'null' : $dataDevice['system']['wydrukkolor']) . "
                                 ," . ($dataDevice['system']['wydruktotal'] == '' ? 'null' : $dataDevice['system']['wydruktotal']) . ",
-                                (select rowid from agreements where serial='" . $dataDevice['system']['dd:SerialNumber'] . "' and activity=1))";
+                                (select rowid from agreements where serial='" . $dataDevice['system']['dd:SerialNumber'] . "' and activity=1),
+                                (select product_version FROM printers where serial = '" . $dataDevice['system']['dd:SerialNumber'] . "'
+                                )";
 
     if ($result2 = mysqli_query($mysqli, $query)) {
 
