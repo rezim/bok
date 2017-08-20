@@ -20,7 +20,8 @@ class customController extends Controller
        $dataReports = null;
         foreach($dataReportsMiesieczne as $key=>$item) {
 
-            if ($item['data_wiadomosci_black_koniec'] != '0000-00-00'
+            if ($item['data_wiadomosci_black_koniec'] == '0000-00-00' ||
+                $item['data_wiadomosci_black_koniec'] != '0000-00-00'
                 && ($this->custom->getDataDo() != explode(" ", $item['data_wiadomosci_black_koniec'])[0]) ||
                 ($item['data_wiadomosci_kolor_koniec'] != '0000-00-00' && $this->custom->getDataDo() != explode(" ", $item['data_wiadomosci_kolor_koniec'])[0]
                 && intval($item['strony_kolor_koniec']) > 0)) {
