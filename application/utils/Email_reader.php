@@ -978,7 +978,7 @@ function saveDataDevice($dataDevice, $dataWiadomosci, $ip)
         $result->close();
     }
 
-    $query = "insert into pages(serial,ilosc,dateinsert,datawiadomosci,ilosckolor,ilosctotal) values 
+    $query = "insert into pages(serial,ilosc,dateinsert,datawiadomosci,ilosckolor,ilosctotal,rowid_agreement) values 
                             (
                                 '{$dataDevice['system']['dd:SerialNumber']}',{$dataDevice['system']['wydruk']},'" . date('Y-m-d H:i:s') . "','{$dataWiadomosci}'
                                 ," . ($dataDevice['system']['wydrukkolor'] == '' ? 'null' : $dataDevice['system']['wydrukkolor']) . "
