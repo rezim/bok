@@ -984,7 +984,7 @@ function saveDataDevice($dataDevice, $dataWiadomosci, $ip)
                                 ," . ($dataDevice['system']['wydrukkolor'] == '' ? 'null' : $dataDevice['system']['wydrukkolor']) . "
                                 ," . ($dataDevice['system']['wydruktotal'] == '' ? 'null' : $dataDevice['system']['wydruktotal']) . ",
                                 (select rowid from agreements where serial='" . $dataDevice['system']['dd:SerialNumber'] . "' and activity=1),
-                                (select product_version FROM printers where serial = '" . $dataDevice['system']['dd:SerialNumber'] . "'
+                                (select product_version FROM printers where serial = '" . $dataDevice['system']['dd:SerialNumber'] . "')
                                 )";
 
     if ($result2 = mysqli_query($mysqli, $query)) {
