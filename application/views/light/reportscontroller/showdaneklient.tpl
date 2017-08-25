@@ -148,19 +148,19 @@
                                                     <td class='tdWartosc'  style='display: none;'>{$key2}</td>
 
                                                     <td class='tdWartosc agreement-nb' onClick="showNewAgreementAdd('{if isset($item2.rowidumowa)}{$item2.rowidumowa}{/if}')"
-                                                    blackStartDate="{$item2.data_wiadomosci_black_start}"
-                                                    blackEndDate="{$item2.data_wiadomosci_black_koniec}"
-                                                    colorStartDate="{$item2.data_wiadomosci_kolor_start}"
-                                                    colorEndDate="{$item2.data_wiadomosci_kolor_koniec}"
-                                                        blackStart="{$item2.strony_black_start|number_format:0:",":" "|escape:'htmlall'}"
-                                                        blackEnd="{$item2.strony_black_koniec|number_format:0:",":" "|escape:'htmlall'}"
-                                                        colorStart="{$item2.strony_kolor_start|number_format:0:",":" "|escape:'htmlall'}"
-                                                        colorEnd="{$item2.strony_kolor_koniec|number_format:0:",":" "|escape:'htmlall'}"
+                                                    blackStartDate="{foreach $item2.data_wiadomosci_black_start as $data_wiadomosci_black_start}{$data_wiadomosci_black_start}|{/foreach}"
+                                                    blackEndDate="{foreach $item2.data_wiadomosci_black_koniec as $data_wiadomosci_black_koniec}{$data_wiadomosci_black_koniec}|{/foreach}"
+                                                    colorStartDate="{foreach $item2.data_wiadomosci_kolor_start as $data_wiadomosci_kolor_start}{$data_wiadomosci_kolor_start}|{/foreach}"
+                                                    colorEndDate="{foreach $item2.data_wiadomosci_kolor_koniec as $data_wiadomosci_kolor_koniec}{$data_wiadomosci_kolor_koniec}|{/foreach}"
+                                                        blackStart="{foreach $item2.strony_black_start as $strony_black_start}{$strony_black_start|number_format:0:",":" "|escape:'htmlall'}|{/foreach}"
+                                                        blackEnd="{foreach $item2.strony_black_koniec as $strony_black_koniec}{$strony_black_koniec|number_format:0:",":" "|escape:'htmlall'}|{/foreach}"
+                                                        colorStart="{foreach $item2.strony_kolor_start as $strony_kolor_start}{$strony_kolor_start|number_format:0:",":" "|escape:'htmlall'}|{/foreach}"
+                                                        colorEnd="{foreach $item2.strony_kolor_koniec as $strony_kolor_koniec}{$strony_kolor_koniec|number_format:0:",":" "|escape:'htmlall'}|{/foreach}"
                                                     title="
-Strony czarne start - Licznik: {$item2.strony_black_start|number_format:0:",":" "|escape:'htmlall'}, Data: {$item2.data_wiadomosci_black_start}
-Strony czarne koniec - Licznik: {$item2.strony_black_koniec|number_format:0:",":" "|escape:'htmlall'}, Data: {$item2.data_wiadomosci_black_koniec}                                                    
-Strony kolorowe start - Licznik: {$item2.strony_kolor_start|number_format:0:",":" "|escape:'htmlall'}, Data: {$item2.data_wiadomosci_kolor_start}
-Strony kolorowe koniec - Licznik: {$item2.strony_kolor_koniec|number_format:0:",":" "|escape:'htmlall'}, Data: {$item2.data_wiadomosci_kolor_koniec}                                                     
+                                                    {for $i=0 to ($item2.strony_black_start|count)-1}
+Strony czarne: {$item2.data_wiadomosci_black_start[$i]} do {$item2.data_wiadomosci_black_koniec[$i]}: {$item2.strony_black_start[$i]|number_format:0:",":" "|escape:'htmlall'} - {$item2.strony_black_koniec[$i]|number_format:0:",":" "|escape:'htmlall'}
+Strony kolor: {$item2.data_wiadomosci_kolor_start[$i]} do {$item2.data_wiadomosci_kolor_koniec[$i]}: {$item2.strony_kolor_start[$i]|number_format:0:",":" "|escape:'htmlall'} - {$item2.strony_kolor_koniec[$i]|number_format:0:",":" "|escape:'htmlall'}
+                                                  &#10;{/for}
                                                     "    
                                                         
                                                         

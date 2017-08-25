@@ -10,14 +10,54 @@ class reportsController extends Controller
 
        $smarty->assign('fakturownia_conf_file_path', ROOT . DS . 'config' . DS . 'fakturownia.conf');
    }
-  
+
+   function groupByAgreements($reports) {
+        $result = array();
+
+        foreach($reports as $report) {
+            if (!isset($result[$report['serial']])) {
+                $result[$report['serial']] = $report;
+                $result[$report['serial']]['strony_black_koniec'] = array($report['strony_black_koniec']);
+                $result[$report['serial']]['strony_black_start'] = array($report['strony_black_start']);
+                $result[$report['serial']]['strony_kolor_koniec'] = array($report['strony_kolor_koniec']);
+                $result[$report['serial']]['strony_kolor_start'] = array($report['strony_kolor_start']);
+
+                $result[$report['serial']]['data_wiadomosci_black_koniec'] = array($report['data_wiadomosci_black_koniec']);
+                $result[$report['serial']]['data_wiadomosci_black_start'] = array($report['data_wiadomosci_black_start']);
+                $result[$report['serial']]['data_wiadomosci_kolor_koniec'] = array($report['data_wiadomosci_kolor_koniec']);
+                $result[$report['serial']]['data_wiadomosci_kolor_start'] = array($report['data_wiadomosci_kolor_start']);
+
+                $result[$report['serial']]['strony_black_sum'] = $report['strony_black_koniec'] - $report['strony_black_start'];
+                $result[$report['serial']]['strony_kolor_sum'] = $report['strony_kolor_koniec'] - $report['strony_kolor_start'];
+
+            } else {
+                $result[$report['serial']]['strony_black_koniec'][] = $report['strony_black_koniec'];
+                $result[$report['serial']]['strony_black_start'][] = $report['strony_black_start'];
+                $result[$report['serial']]['strony_kolor_koniec'][] = $report['strony_kolor_koniec'];
+                $result[$report['serial']]['strony_kolor_start'][] = $report['strony_kolor_start'];
+
+                $result[$report['serial']]['data_wiadomosci_black_koniec'][] = $report['data_wiadomosci_black_koniec'];
+                $result[$report['serial']]['data_wiadomosci_black_start'][] = $report['data_wiadomosci_black_start'];
+                $result[$report['serial']]['data_wiadomosci_kolor_koniec'][] = $report['data_wiadomosci_kolor_koniec'];
+                $result[$report['serial']]['data_wiadomosci_kolor_start'][] = $report['data_wiadomosci_kolor_start'];
+
+                $result[$report['serial']]['strony_black_sum'] += ($report['strony_black_koniec'] - $report['strony_black_start']);
+                $result[$report['serial']]['strony_kolor_sum'] += ($report['strony_kolor_koniec'] - $report['strony_kolor_start']);
+            }
+        }
+
+        return $result;
+   }
+
     function showdaneklient()
    {
   
        $this->report->populateWithPost();
-       $dataReportsMiesieczne = $this->report->getReportsMiesieczne();
-        $dataReportsRoczne = $this->report->getReportsRoczne();
-      
+       $dataReportsMiesieczne = $this->report->getReportsMiesieczneOld();
+       $dataReportsRoczne = $this->report->getReportsRoczne();
+
+       $dataReportsMiesieczne = $this->groupByAgreements($dataReportsMiesieczne);
+
         foreach($dataReportsMiesieczne as $key=>$item)
         {
          $dzien=0;  
@@ -49,23 +89,20 @@ class reportsController extends Controller
             $dataReports[$item['rowidclient']]['pokazstanlicznika']=$item['pokazstanlicznika'];
             $dataReports[$item['rowidclient']]['fakturadlakazdejumowy']=$item['fakturadlakazdejumowy'];
 
-
-            if($item['strony_black_koniec']==0  && $item['strony_black_start'] == 0)
-            {
-                $dataReports[$item['rowidclient']]['blad']=1;
-                $dataReports[$item['rowidclient']]['umowy'][$item['rowidumowa']]['blad'] = 1;
+            for ($i = 0; $i < count($item['strony_black_koniec']); $i++) {
+                if ($item['strony_black_koniec'][$i] == 0 && $item['strony_black_start'][$i] == 0) {
+                    $dataReports[$item['rowidclient']]['blad'] = 1;
+                    $dataReports[$item['rowidclient']]['umowy'][$item['rowidumowa']]['blad'] = 1;
+                }
+                if (($item['strony_black_koniec'][$i] - $item['strony_black_start'][$i]) < 0) {
+                    $dataReports[$item['rowidclient']]['blad'] = 1;
+                    $dataReports[$item['rowidclient']]['umowy'][$item['rowidumowa']]['blad'] = 1;
+                }
+                if (($item['strony_kolor_koniec'][$i] - $item['strony_kolor_start'][$i]) < 0) {
+                    $dataReports[$item['rowidclient']]['blad'] = 1;
+                    $dataReports[$item['rowidclient']]['umowy'][$item['rowidumowa']]['blad'] = 1;
+                }
             }
-            if(($item['strony_black_koniec']-$item['strony_black_start'])<0)
-            {
-                $dataReports[$item['rowidclient']]['blad']=1;
-                $dataReports[$item['rowidclient']]['umowy'][$item['rowidumowa']]['blad'] = 1;
-            }
-            if(($item['strony_kolor_koniec']-$item['strony_kolor_start'])<0)
-            {
-                $dataReports[$item['rowidclient']]['blad']=1;
-                $dataReports[$item['rowidclient']]['umowy'][$item['rowidumowa']]['blad'] = 1;
-            }
-            
             if(!isset($dataReports['suma']))
             {
                 $dataReports['suma'] = 0;
@@ -118,7 +155,7 @@ class reportsController extends Controller
             if(isset($item['jakczarne']) && !empty($item['jakczarne']) && $item['jakczarne']==1)
             {
                 $stronwsumie = 0;
-                $stronwsumie = ($item['strony_black_koniec']-$item['strony_black_start'])+($item['strony_kolor_koniec']-$item['strony_kolor_start']);
+                $stronwsumie = ($item['strony_black_sum'])+($item['strony_kolor_sum']);
                 $stronblackpowyzej = ($stronwsumie-$item['stronwabonamencie'])<0?0:($stronwsumie-$item['stronwabonamencie']);
                 $stronblackpowyzej = round($stronblackpowyzej);
                 $wartoscblacktemp = $stronblackpowyzej*(empty($item['cenazastrone'])?0:$item['cenazastrone']);
@@ -134,14 +171,15 @@ class reportsController extends Controller
             }    
             else
             {   
-                $stronblackpowyzej = (($item['strony_black_koniec']-$item['strony_black_start'])-$item['stronwabonamencie'])<0?0:(($item['strony_black_koniec']-$item['strony_black_start'])-$item['stronwabonamencie']);
+                $stronblackpowyzej = $item['strony_black_sum']-$item['stronwabonamencie'];
+                $stronblackpowyzej = $stronblackpowyzej < 0 ? 0: $stronblackpowyzej;
                 $stronblackpowyzej = round($stronblackpowyzej);
                 $wartoscblacktemp = $stronblackpowyzej*(empty($item['cenazastrone'])?0:$item['cenazastrone']);
                 $wartoscblack = ($wartoscblacktemp - ($wartoscblacktemp*($item['rabatdowydrukow']/100)));
                 $dataReports[$item['rowidclient']]['wartoscblack'] = $dataReports[$item['rowidclient']]['wartoscblack']+$wartoscblack;
                 
-                $stronkolorpowyzej =(($item['strony_kolor_koniec']-$item['strony_kolor_start'])-$item['iloscstron_kolor'])<0?0:(($item['strony_kolor_koniec']-$item['strony_kolor_start'])-$item['iloscstron_kolor']); 
-                
+                $stronkolorpowyzej =(($item['strony_kolor_sum'])-$item['iloscstron_kolor'])<0?0:(($item['strony_kolor_sum'])-$item['iloscstron_kolor']);
+                $stronkolorpowyzej = $stronkolorpowyzej < 0 ? 0: $stronkolorpowyzej;
                 
                 $stronkolorpowyzej = round($stronkolorpowyzej);
                 
