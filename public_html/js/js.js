@@ -1752,7 +1752,7 @@ function replacePrinter(serial) {
         async: true,
         data: data,
         success: function (dane) {
-            // checkReplay(objError, objLoad, null, objClick, dane, objOk, 1, 3000, null);
+            alert('Dane zapisane poprawnie');
             return false;
         },
         error: function () {

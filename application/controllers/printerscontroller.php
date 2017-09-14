@@ -112,4 +112,16 @@ class printersController extends Controller
            $smarty->assign('czycolorbox','');
        
    }
+
+
+    function replacePrinter() {
+        if( isset( $_SERVER['HTTP_X_REQUESTED_WITH'] ) && ( $_SERVER['HTTP_X_REQUESTED_WITH'] == 'XMLHttpRequest' ) ) {
+
+            echo(json_encode($this->printer->replaceprinter($_POST['serial'],
+                $_POST['counterEnd'], $_POST['counterStart'],
+                $_POST['counterColorEnd'], $_POST['counterColorStart'],
+                $_POST['replacementDate'])));
+
+        }
+    }
 }
