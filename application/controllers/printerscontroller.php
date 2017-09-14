@@ -10,6 +10,19 @@ class printersController extends Controller
        $smarty->assign('dataLogi',$dataLogi);
        unset($dataLogi);
    }
+
+    function service()
+    {
+        global $smarty;
+        $dataService = $this->printer->getService($_POST['serial']);
+        $smarty->assign('dataService',$dataService);
+        unset($dataService);
+    }
+
+    function removeservice() {
+       echo (json_encode($this->printer->removeService($_POST['rowid'])));
+    }
+
    function showdane()
    {
        global $smarty;

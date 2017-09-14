@@ -159,10 +159,39 @@
                           <td style='width:20px;min-width: 20px;'></span></td>
                         </tr>
                          {/if}
-                    {/foreach}    
-                
+                    {/foreach}
+                 <tr><td colspan="2">&nbsp;</td></tr>
+                 <tr id='tr{$key}'>
+                     <td class='tdOpis' colspan="2">Wymiana</td>
+                 </tr>
+                 <tr>
+                     <td  class='tdOpis'><span >Data:</span></td>
+                     <td class='tdWartosc'><input id="replacementDate" class="textBoxForm" type="text" /></td>
+                 </tr>
+                 <tr>
+                     <td  class='tdOpis'><span >Czarno/Białe Koniec:</span></td>
+                     <td class='tdWartosc'><input id="counterEnd" class="textBoxForm" type="text" /></td>
+                 </tr>
+                 <tr>
+                     <td  class='tdOpis'><span >Czarno/Białe Start:</span></td>
+                     <td class='tdWartosc'><input id="counterStart" class="textBoxForm" type="text" /></td>
+                 </tr>
+                 <tr>
+                     <td  class='tdOpis'><span >Kolor Koniec:</span></td>
+                     <td class='tdWartosc'><input id="counterColorEnd" class="textBoxForm" type="text" /></td>
+                 </tr>
+                 <tr>
+                     <td  class='tdOpis'><span >Kolor Start:</span></td>
+                     <td class='tdWartosc'><input id="counterColorStart" class="textBoxForm" type="text" /></td>
+                 </tr>
+                <tr>
+                    <td colspan="2" style="text-align: right">
+                        <input type="button" class="btn btn-primary" value="zapisz" onclick='replacePrinter("{$dane[0]['serial']}")'>
+                        <input type="button" class="btn btn-warning" value="historia" onclick='showPrinterService("{$dane[0]['serial']}")'>
+                    </td>
+                </tr>
             </tbody>
-         </table>   
+         </table>
 
 </div>   
 <div id="divNotiWykonanie" style="float:left;width:50%;min-width: 50%;max-height: 50%">
@@ -355,9 +384,7 @@
                                     </div> 
                                         <br/><br/>
                         {/if}
-                        
-                        
-                        
+
 <div id="divMailePowiazane">
     
 </div>
@@ -366,6 +393,8 @@
   <br/><br/>  
 <script type="text/javascript">
     showMaile();
+    $( "#replacementDate" ).datetimepicker($.datepicker.regional['pl'],{ dateFormat: "yy-mm-dd" , changeMonth: true,timeFormat: 'HH:mm',stepMinute: 10,
+        changeYear: true});
      $( "#data_planowana" ).datetimepicker($.datepicker.regional['pl'],{ dateFormat: "yy-mm-dd" , changeMonth: true,timeFormat: 'HH:mm',stepMinute: 10,
-                        changeYear: true,});
+                        changeYear: true});
 </script>

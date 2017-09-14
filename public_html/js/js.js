@@ -129,6 +129,9 @@ function pokazLogi(serial)
                 }
         });
 }
+
+
+
 function showNewAgreementAdd(rowid)
 {
     
@@ -1516,6 +1519,31 @@ function newEditMail(replyrowid,czyedit)
         });
     
 }
+
+function showChangePrinterDialog() {
+    $.colorbox
+    ({
+        height:800+'px',
+        width: 1200+'px',
+        title:"Wymiana Drukarki",
+        data:
+            {
+            },
+
+        href:sciezka+"/notifications/service/todiv",
+        onClosed:function()
+        {
+
+
+        },
+        onComplete:function()
+        {
+
+
+        }
+    });
+}
+
 function sendMail(noti_rowid,replyrowid,uniqueid)
 {
     
@@ -1708,6 +1736,107 @@ function savePrinterCounters(previousBlack, previousColor, serial)
     }
 }
 
+
+function replacePrinter(serial) {
+    var data = {
+        serial: serial,
+        counterEnd: document.getElementById('counterEnd').value,
+        counterStart: document.getElementById('counterStart').value,
+        counterColorEnd: document.getElementById('counterColorEnd').value,
+        counterColorStart: document.getElementById('counterColorStart').value,
+        replacementDate: document.getElementById('replacementDate').value
+    };
+    $.ajax({
+        type: 'POST',
+        url: sciezka + "/printers/replacePrinter/notemplate",
+        async: true,
+        data: data,
+        success: function (dane) {
+            // checkReplay(objError, objLoad, null, objClick, dane, objOk, 1, 3000, null);
+            return false;
+        },
+        error: function () {
+
+            // showError(objError, objLoad, null, objClick, 3000);
+            return false;
+        }
+    });
+}
+
+function showPrinterService(serial) {
+    $.colorbox
+    ({
+        height:650+'px',
+        width: 800+'px',
+        title:"Historia serwisu drukarki : "+serial,
+        data:
+            {
+                serial:serial
+            },
+
+        href:sciezka+"/printers/service/todiv",
+        onClosed:function()
+        {
+
+
+        },
+        onComplete:function()
+        {
+
+            uprawnienia();
+
+        }
+    });
+}
+
+function removePrinterService(rowid, serial) {
+    if(confirm("Czy na pewno chcesz usunąć ? "))
+    {
+
+        $.ajax({
+            type:'POST',
+            url:sciezka+"/printers/removeService/notemplate",
+            async:true,
+            data:
+                {
+                    rowid:rowid
+                },
+            success: function(dane)
+            {
+                try
+                {
+                    dane = $.parseJSON(dane);
+                }
+                catch(e)
+                {
+
+                    alert('Błąd usunięcia -'+dane);
+                    return false;
+                }
+                if(dane.status===0)
+                {
+                    alert('Błąd usunięcia -'+dane.info);
+                    return false;
+                }
+                else
+                {
+                    alert('Usunięty.');
+                    $.colorbox.close();
+                    showPrinterService(serial);
+                    return false;
+                }
+                return false;
+            },
+            error: function()
+            {
+
+                alert('Problem z usunięciem');
+                return false;
+            }
+        });
+    }
+}
+
 function generateProfitsReport(successCallback, errorCallback)
 {
     var doc=document,objCenter = doc.getElementById('divRightCenter'),objLoad = doc.getElementById('divLoader');
@@ -1750,4 +1879,20 @@ function generateProfitsReport(successCallback, errorCallback)
 
 function show(path) {
     window.location=sciezka+path;
+}
+
+function showPrinterCounters(data_black_start, data_black_koniec, data_kolor_start, data_kolor_koniec,
+                             strony_black_start, strony_black_koniec, strony_kolor_start, strony_kolor_koniec,
+                             strony_black_sum, strony_kolor_sum, serials) {
+
+    var header = "<thead><tr><td>data od</td><td>data do</td><td>strony od</td><td>strony do</td><td>suma</td><td>serial</td>" + "</tr></thead>";
+    var table = header;
+    for (var i=0; i < data_black_start.length; i++) {
+        var row = "<tr><td>" + data_black_start[i] + "</td>" + "<td>" + data_black_koniec[i] + "</td>" +
+                  "<td class='number'>" + strony_black_start[i] + "</td>" + "<td class='number'>" + strony_black_koniec[i] + "</td>" +
+                  "<td class='number'>" + (strony_black_koniec[i] - strony_black_start[i]) + "</td><td>" + serials[i] +"</td></tr>";
+        table += row;
+    }
+
+    $.colorbox({html: "<table border='1' class='printerCounters'>" + table + "</table>" });
 }

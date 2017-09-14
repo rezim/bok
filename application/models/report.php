@@ -188,7 +188,13 @@ class report extends Model
         return $this->query($query,null,false);
 
     }
-    
+
+    function getPrinterService() {
+        $query = "select * from `printer_service` where DATE(date) >= '{$this->dataod}' and DATE(date) <= '{$this->datado}'";
+
+        return $this->query($query,null,false);
+    }
+
     function getReportsMiesieczne()
     {
         if($this->dataod=='' || $this->datado=='')
@@ -224,7 +230,8 @@ class report extends Model
 
         $query = "
                 select 
-                b.serial as serial, 
+                b.serial as serial,
+                a.serial as currentserial, 
                 '{$dateFrom}' as 'dacik',
                 a.rowid as 'rowidumowa', 
                 a.nrumowy as 'nrumowy', 
@@ -271,7 +278,7 @@ class report extends Model
 			    IFNULL(pp1.ilosckolor,0) as strony_kolor_koniec, 
 			    IFNULL(pp1.datawiadomosci, '0000-00-00') as data_wiadomosci_kolor_koniec 
 
-                from (agreements a left outer join printers b on a.serial=b.serial) left outer join clients c on a.rowidclient=c.rowid and c.activity=1 
+                from (agreements a left outer join clients c on a.rowidclient=c.rowid and c.activity=1)  
                 
                 left outer join 
                 
@@ -281,7 +288,7 @@ class report extends Model
                 group by serial, rowid_agreement, product_version, rowid_agreement, product_version) as p2 on p1.serial = p2.serial and p1.datawiadomosci = p2.datawiadomosci_koniec
                 group by p1.serial, p1.datawiadomosci, p1.ilosc, p1.ilosckolor, p1.rowid_agreement, p1.product_version) as pp1
                 
-                on pp1.serial = b.serial
+                on pp1.rowid_agreement = a.rowid
                 
                 left outer join 
                 
@@ -301,7 +308,10 @@ class report extends Model
                 group by serial, rowid_agreement, product_version) as p6 on p5.serial = p6.serial and p5.datawiadomosci = p6.datawiadomosci_start
                 group by p5.serial, p5.datawiadomosci, p5.ilosc, p5.ilosckolor, p5.rowid_agreement, p5.product_version) as pp3
                 
-                on pp1.serial = pp3.serial and pp1.rowid_agreement = pp3.rowid_agreement and pp1.product_version = pp3.product_version
+                on pp1.serial = pp3.serial and pp1.rowid_agreement = pp3.rowid_agreement and pp1.product_version = pp3.product_version              
+                
+                left outer join printers b on b.serial = pp1.serial
+                
             {$where}
                 order by c.nazwakrotka
             ";

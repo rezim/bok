@@ -101,3 +101,20 @@ table.notification-popup td.text-field {
     max-height: calc(100vh - 210px);
     overflow-y: auto;
 }
+
+.printerCounters {
+    margin: 25px;
+    font-size: 16px;
+}
+
+.printerCounters thead {
+    font-weight: bold;
+}
+
+.printerCounters td {
+    padding: 5px;
+}
+
+.printerCounters td.number {
+    text-align: right;
+}

@@ -17,7 +17,7 @@
               <th style='min-width: 90px;width:90px;'>
                 czas zgłoszenia
             </th>
-            <th style='min-width: 90px;width:90px;'>    
+            <th style='min-width: 90px;width:90px;'>
                 czas zakończenia
             </th>
             <th style='min-width: 40px;width:40px;text-align: center'>
@@ -46,26 +46,26 @@
                      <td>{$item.date_insert}</td>
                      <td>{$item.date_zakonczenia}</td>
                      <td style='text-align:center;'>{$item.sla}</td>
-                     <td 
+                     <td
                          {if ($item.czas_trwania-$item.sla)>0}
                             style='text-align:center;background-color: red'
                          {else}
                             style='text-align:center;'
                          {/if}
-                         
-                         
+
+
                          >{$item.czas_trwania}</td>
                     <td style='text-align:right;'>
-                        
+
                         <img class='imgAkcja imgedit' onClick='showNewNotiAdd("{$item.rowid}")' src='{$smarty.const.SCIEZKA}/{$smarty.const.SMARTVERSION}/img/fake.png' alt="Edycja" title='Edycja' />
                         {if $item.serial!=''}
-                        <img class='imgAkcja imgNormalLogs' onClick='pokazLogi("{$item.serial}")' src='{$smarty.const.SCIEZKA}/{$smarty.const.SMARTVERSION}/img/fake.png' title='Pokaż logi' />   
+                        <img class='imgAkcja imgNormalLogs' onClick='pokazLogi("{$item.serial}")' src='{$smarty.const.SCIEZKA}/{$smarty.const.SMARTVERSION}/img/fake.png' title='Pokaż logi' />
                         {/if}
                     </td>
                 </tr>
             {/foreach}
 
 
-    </tbody>    
-        
+    </tbody>
+
 </table>

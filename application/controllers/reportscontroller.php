@@ -11,11 +11,71 @@ class reportsController extends Controller
        $smarty->assign('fakturownia_conf_file_path', ROOT . DS . 'config' . DS . 'fakturownia.conf');
    }
 
-   function groupByAgreements($reports) {
+   function groupByAgreement($reports) {
+       $result = array();
+
+       foreach($reports as $report) {
+           if (!isset($result[$report['rowidumowa']])) {
+               $result[$report['rowidumowa']] = $report;
+               $result[$report['rowidumowa']]['serials'] = array($report['serial']);
+           } else {
+               if ($report['serial'] == $report['currentserial']) {
+                   $tmpReport = $report;
+                   $report = $result[$report['rowidumowa']];
+                   $result[$report['rowidumowa']] = $tmpReport;
+
+                   $result[$report['rowidumowa']]['serials'] = array($result[$report['rowidumowa']]['serial']);
+
+               }
+               $result[$report['rowidumowa']]['strony_black_koniec'] = array_merge($result[$report['rowidumowa']]['strony_black_koniec'], $report['strony_black_koniec']);
+               $result[$report['rowidumowa']]['strony_black_start'] = array_merge($result[$report['rowidumowa']]['strony_black_start'], $report['strony_black_start']);
+               $result[$report['rowidumowa']]['strony_kolor_koniec'] = array_merge($result[$report['rowidumowa']]['strony_kolor_koniec'], $report['strony_kolor_koniec']);
+               $result[$report['rowidumowa']]['strony_kolor_start'] = array_merge($result[$report['rowidumowa']]['strony_kolor_start'], $report['strony_kolor_start']);
+
+               $result[$report['rowidumowa']]['data_wiadomosci_black_koniec'] = array_merge($result[$report['rowidumowa']]['data_wiadomosci_black_koniec'], $report['data_wiadomosci_black_koniec']);
+               $result[$report['rowidumowa']]['data_wiadomosci_black_start'] = array_merge($result[$report['rowidumowa']]['data_wiadomosci_black_start'], $report['data_wiadomosci_black_start']);
+               $result[$report['rowidumowa']]['data_wiadomosci_kolor_koniec'] = array_merge($result[$report['rowidumowa']]['data_wiadomosci_kolor_koniec'], $report['data_wiadomosci_kolor_koniec']);
+               $result[$report['rowidumowa']]['data_wiadomosci_kolor_start'] = array_merge($result[$report['rowidumowa']]['data_wiadomosci_kolor_start'], $report['data_wiadomosci_kolor_start']);
+
+               $result[$report['rowidumowa']]['strony_black_sum'] += ($report['strony_black_sum']);
+               $result[$report['rowidumowa']]['strony_kolor_sum'] += ($report['strony_kolor_sum']);
+
+               $result[$report['rowidumowa']]['serials'][] = $report['serial'];
+           }
+       }
+
+       return $result;
+   }
+
+   function applySerivice($reports, $service) {
         $result = array();
 
         foreach($reports as $report) {
-            if (!isset($result[$report['serial']])) {
+
+            if (isset($service[$report['serial']])) {
+
+                $srv = $service[$report['serial']];
+
+                $result[$report['serial']] = $report;
+                $result[$report['serial']]['strony_black_koniec'] = array($srv['ilosc_koniec'], $report['strony_black_koniec']);
+                $result[$report['serial']]['strony_black_start'] = array($report['strony_black_start'], $srv['ilosc_start']);
+                $result[$report['serial']]['strony_kolor_koniec'] = array($srv['ilosc_kolor_koniec'], $report['strony_kolor_koniec']);
+                $result[$report['serial']]['strony_kolor_start'] = array($report['strony_kolor_start'], $srv['ilosc_kolor_start']);
+
+                $result[$report['serial']]['data_wiadomosci_black_koniec'] = array($srv['date'], $report['data_wiadomosci_black_koniec']);
+                $result[$report['serial']]['data_wiadomosci_black_start'] = array($report['data_wiadomosci_black_start'], $srv['date']);
+                $result[$report['serial']]['data_wiadomosci_kolor_koniec'] = array($srv['date'], $report['data_wiadomosci_kolor_koniec']);
+                $result[$report['serial']]['data_wiadomosci_kolor_start'] = array($report['data_wiadomosci_kolor_start'], $srv['date']);
+
+                $result[$report['serial']]['strony_black_sum'] = 0;
+                $result[$report['serial']]['strony_kolor_sum'] = 0;
+                for($i=0; $i < count($result[$report['serial']]['strony_black_koniec']); $i++) {
+                    $result[$report['serial']]['strony_black_sum'] += $result[$report['serial']]['strony_black_koniec'][$i] - $result[$report['serial']]['strony_black_start'][$i];
+                    $result[$report['serial']]['strony_kolor_sum'] += $result[$report['serial']]['strony_kolor_koniec'][$i] - $result[$report['serial']]['strony_kolor_start'][$i];
+                }
+                $result[$report['serial']]['serials'] = array($report['serial'], $report['serial']);
+
+            } else {
                 $result[$report['serial']] = $report;
                 $result[$report['serial']]['strony_black_koniec'] = array($report['strony_black_koniec']);
                 $result[$report['serial']]['strony_black_start'] = array($report['strony_black_start']);
@@ -30,33 +90,34 @@ class reportsController extends Controller
                 $result[$report['serial']]['strony_black_sum'] = $report['strony_black_koniec'] - $report['strony_black_start'];
                 $result[$report['serial']]['strony_kolor_sum'] = $report['strony_kolor_koniec'] - $report['strony_kolor_start'];
 
-            } else {
-                $result[$report['serial']]['strony_black_koniec'][] = $report['strony_black_koniec'];
-                $result[$report['serial']]['strony_black_start'][] = $report['strony_black_start'];
-                $result[$report['serial']]['strony_kolor_koniec'][] = $report['strony_kolor_koniec'];
-                $result[$report['serial']]['strony_kolor_start'][] = $report['strony_kolor_start'];
-
-                $result[$report['serial']]['data_wiadomosci_black_koniec'][] = $report['data_wiadomosci_black_koniec'];
-                $result[$report['serial']]['data_wiadomosci_black_start'][] = $report['data_wiadomosci_black_start'];
-                $result[$report['serial']]['data_wiadomosci_kolor_koniec'][] = $report['data_wiadomosci_kolor_koniec'];
-                $result[$report['serial']]['data_wiadomosci_kolor_start'][] = $report['data_wiadomosci_kolor_start'];
-
-                $result[$report['serial']]['strony_black_sum'] += ($report['strony_black_koniec'] - $report['strony_black_start']);
-                $result[$report['serial']]['strony_kolor_sum'] += ($report['strony_kolor_koniec'] - $report['strony_kolor_start']);
+                $result[$report['serial']]['serials'] = array($report['serial']);
             }
         }
 
         return $result;
    }
 
+   function getPrinterServiceMap($arrPrinterService) {
+       $result = array();
+
+       foreach ($arrPrinterService as $service) {
+        if (!isset($result[$service['serial']])) {
+            $result[$service['serial']] = $service;
+        }
+       }
+
+       return $result;
+   }
     function showdaneklient()
    {
   
        $this->report->populateWithPost();
-       $dataReportsMiesieczne = $this->report->getReportsMiesieczneOld();
+       $dataReportsMiesieczne = $this->report->getReportsMiesieczne();
        $dataReportsRoczne = $this->report->getReportsRoczne();
+       $dataPrinterService = $this->getPrinterServiceMap($this->report->getPrinterService());
 
-       $dataReportsMiesieczne = $this->groupByAgreements($dataReportsMiesieczne);
+       $dataReportsMiesieczne = $this->applySerivice($dataReportsMiesieczne, $dataPrinterService);
+       // $dataReportsMiesieczne = $this->groupByAgreement($dataReportsMiesieczne);
 
         foreach($dataReportsMiesieczne as $key=>$item)
         {
@@ -239,6 +300,10 @@ class reportsController extends Controller
             $dataReports[$item['rowidclient']]['umowy'][$item['rowidumowa']]['strony_kolor_koniec'] = $item['strony_kolor_koniec'];
             $dataReports[$item['rowidclient']]['umowy'][$item['rowidumowa']]['data_wiadomosci_kolor_koniec'] = $item['data_wiadomosci_kolor_koniec'];
 
+            $dataReports[$item['rowidclient']]['umowy'][$item['rowidumowa']]['strony_black_sum'] = $item['strony_black_sum'];
+            $dataReports[$item['rowidclient']]['umowy'][$item['rowidumowa']]['strony_kolor_sum'] = $item['strony_kolor_sum'];
+            $dataReports[$item['rowidclient']]['umowy'][$item['rowidumowa']]['serials'] = $item['serials'];
+
             // device localization
             $dataReports[$item['rowidclient']]['umowy'][$item['rowidumowa']]['lokalizacja_ulica'] = $item['lokalizacja_ulica'];
             $dataReports[$item['rowidclient']]['umowy'][$item['rowidumowa']]['lokalizacja_miasto'] = $item['lokalizacja_miasto'];
@@ -370,6 +435,12 @@ class reportsController extends Controller
             $dataReports[$item['rowidclient']]['umowy'][$item['rowidumowa']]['data_wiadomosci_kolor_start'] = $item['data_wiadomosci_kolor_start'];
             $dataReports[$item['rowidclient']]['umowy'][$item['rowidumowa']]['strony_kolor_koniec'] = $item['strony_kolor_koniec'];
             $dataReports[$item['rowidclient']]['umowy'][$item['rowidumowa']]['data_wiadomosci_kolor_koniec'] = $item['data_wiadomosci_kolor_koniec'];
+
+            // TODO: this is temporary solution, this should be also updated with the same code as for month agreements
+            $dataReports[$item['rowidclient']]['umowy'][$item['rowidumowa']]['strony_black_sum'] = $item['strony_black_koniec'] - $item['strony_black_start'];
+            $dataReports[$item['rowidclient']]['umowy'][$item['rowidumowa']]['strony_kolor_sum'] = $item['strony_kolor_koniec'] - $item['strony_kolor_start'];
+            // TODO: this probably wont work
+            $dataReports[$item['rowidclient']]['umowy'][$item['rowidumowa']]['serials'] = array($item['serial']);
 
             // device localization
             $dataReports[$item['rowidclient']]['umowy'][$item['rowidumowa']]['lokalizacja_ulica'] = $item['lokalizacja_ulica'];

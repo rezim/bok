@@ -76,6 +76,19 @@ class printer extends Model
             ";
         return $this->query($query,null,false); 
     }
+
+    function getService($serial) {
+        $query = "select * from printer_service 
+            where serial='{$serial}'
+            order by date desc";
+        return $this->query($query,null,false);
+    }
+
+
+    function removeService($rowid) {
+        return $this->update("DELETE FROM `printer_service` WHERE rowid = ?", 'i', array($rowid));
+    }
+
      function getPrintersUmowa()
     {
         
@@ -259,6 +272,17 @@ class printer extends Model
         }
       
     }
+
+    function replaceprinter($serial, $counterEnd, $counterStart, $counterColorEnd, $counterColorStart, $replacementDate) {
+        $this->_table = 'printer_service';
+        $result = $this->insert("`serial`, `ilosc_koniec`, `ilosc_start`, `ilosckolor_koniec`, `ilosckolor_start`, `date`",
+                                'siiiis',
+            array($serial, $counterEnd, $counterStart, $counterColorEnd, $counterColorStart, $replacementDate)
+        );
+
+        return $result;
+    }
+
      function savestanna()
     {
              $query = "select a.rowid, p.product_version from agreements a inner join printers p on a.serial=p.serial 

@@ -158,9 +158,15 @@
                                                         colorEnd="{foreach $item2.strony_kolor_koniec as $strony_kolor_koniec}{$strony_kolor_koniec|number_format:0:",":" "|escape:'htmlall'}|{/foreach}"
                                                     title="
                                                     {for $i=0 to ($item2.strony_black_start|count)-1}
-Strony czarne: {$item2.data_wiadomosci_black_start[$i]} do {$item2.data_wiadomosci_black_koniec[$i]}: {$item2.strony_black_start[$i]|number_format:0:",":" "|escape:'htmlall'} - {$item2.strony_black_koniec[$i]|number_format:0:",":" "|escape:'htmlall'}
-Strony kolor: {$item2.data_wiadomosci_kolor_start[$i]} do {$item2.data_wiadomosci_kolor_koniec[$i]}: {$item2.strony_kolor_start[$i]|number_format:0:",":" "|escape:'htmlall'} - {$item2.strony_kolor_koniec[$i]|number_format:0:",":" "|escape:'htmlall'}
+                                                        {$item2.data_wiadomosci_black_start[$i]} do {$item2.data_wiadomosci_black_koniec[$i]}:&#10;
+                                                        Strony czarne:{$item2.strony_black_start[$i]|number_format:0:",":" "|escape:'htmlall'} - {$item2.strony_black_koniec[$i]|number_format:0:",":" "|escape:'htmlall'}
+                                                                       = {$item2.strony_black_koniec[$i] - $item2.strony_black_start[$i]}&#10;
+                                                        Strony kolor: {$item2.data_wiadomosci_kolor_start[$i]} do {$item2.data_wiadomosci_kolor_koniec[$i]}:&#10;
+                                                        {$item2.strony_kolor_start[$i]|number_format:0:",":" "|escape:'htmlall'} - {$item2.strony_kolor_koniec[$i]|number_format:0:",":" "|escape:'htmlall'}
+                                                                       = {$item2.strony_kolor_koniec[$i] - $item2.strony_kolor_start[$i]}&#10;
                                                   &#10;{/for}
+                                                  Suma czarne: {$item2.strony_black_sum}&#10;
+                                                  Suma kolor: {$item2.strony_kolor_sum}
                                                     "    
                                                         
                                                         
@@ -202,7 +208,12 @@ Strony kolor: {$item2.data_wiadomosci_kolor_start[$i]} do {$item2.data_wiadomosc
                                                        <td class='tdNumber' style='padding-right:20px;' >
                                                                 {if isset($item2.oplatainstalacyjna)} {$item2.oplatainstalacyjna|number_format:2:",":" "|escape:'htmlall'}{/if}     
                                                      </td>
-                                                     <td class='tdNumber' style='padding-right:20px;color:blue;white-space: nowrap' >
+                                                     <td class='tdNumber' style='padding-right:20px;color:blue;white-space: nowrap' onclick='showPrinterCounters({$item2.data_wiadomosci_black_start|json_encode},
+                                                     {$item2.data_wiadomosci_black_koniec|json_encode}, {$item2.data_wiadomosci_kolor_start|json_encode},
+                                                     {$item2.data_wiadomosci_kolor_koniec|json_encode}, {$item2.strony_black_start|json_encode},
+                                                     {$item2.strony_black_koniec|json_encode}, {$item2.strony_kolor_start|json_encode},
+                                                     {$item2.strony_kolor_koniec|json_encode}, {$item2.strony_black_sum},
+                                                     {$item2.strony_kolor_sum}, {$item2.serials|json_encode})'>
                                                                 {if isset($item2.wartosc)} {$item2.wartosc|number_format:2:",":" "|escape:'htmlall'}{/if}     
                                                      </td>
                                                      <td>

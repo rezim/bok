@@ -116,6 +116,8 @@
                         {/if}
                         <img wymaganylevel='w' wymaganyzrobiony='0' class='imgAkcja imgtonery' onClick='historiaTonerow("{$item.serial}")' src='{$smarty.const.SCIEZKA}/{$smarty.const.SMARTVERSION}/img/fake.png' alt="Pokaż historię tonerów" title='Pokaż historię tonerów' />
                         {/if}
+
+                        <img class='imgAkcja imgNormalLogs' onclick='showPrinterService("{$item.serial}")' src='{$smarty.const.SCIEZKA}/{$smarty.const.SMARTVERSION}/img/fake.png' title='Pokaż Historię serwisu' />
                     </td>
                 </tr>
                 
