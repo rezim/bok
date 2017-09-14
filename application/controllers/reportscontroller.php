@@ -54,18 +54,39 @@ class reportsController extends Controller
 
             if (isset($service[$report['serial']])) {
 
-                $srv = $service[$report['serial']];
+                $srvs = $service[$report['serial']];
 
                 $result[$report['serial']] = $report;
-                $result[$report['serial']]['strony_black_koniec'] = array($srv['ilosc_koniec'], $report['strony_black_koniec']);
-                $result[$report['serial']]['strony_black_start'] = array($report['strony_black_start'], $srv['ilosc_start']);
-                $result[$report['serial']]['strony_kolor_koniec'] = array($srv['ilosc_kolor_koniec'], $report['strony_kolor_koniec']);
-                $result[$report['serial']]['strony_kolor_start'] = array($report['strony_kolor_start'], $srv['ilosc_kolor_start']);
 
-                $result[$report['serial']]['data_wiadomosci_black_koniec'] = array($srv['date'], $report['data_wiadomosci_black_koniec']);
-                $result[$report['serial']]['data_wiadomosci_black_start'] = array($report['data_wiadomosci_black_start'], $srv['date']);
-                $result[$report['serial']]['data_wiadomosci_kolor_koniec'] = array($srv['date'], $report['data_wiadomosci_kolor_koniec']);
-                $result[$report['serial']]['data_wiadomosci_kolor_start'] = array($report['data_wiadomosci_kolor_start'], $srv['date']);
+                $result[$report['serial']]['strony_black_koniec'] = array();
+                $result[$report['serial']]['strony_black_start'] = array($report['strony_black_start']);
+                $result[$report['serial']]['strony_kolor_koniec'] = array();
+                $result[$report['serial']]['strony_kolor_start'] = array($report['strony_kolor_start']);
+
+                $result[$report['serial']]['data_wiadomosci_black_koniec'] = array();
+                $result[$report['serial']]['data_wiadomosci_black_start'] = array($report['data_wiadomosci_black_start']);
+                $result[$report['serial']]['data_wiadomosci_kolor_koniec'] = array();
+                $result[$report['serial']]['data_wiadomosci_kolor_start'] = array($report['data_wiadomosci_kolor_start']);
+
+                $result[$report['serial']]['serials'] = array($report['serial']);
+                foreach($srvs as $srv) {
+                    $result[$report['serial']]['strony_black_koniec'][] = $srv['ilosc_koniec'];
+                    $result[$report['serial']]['strony_black_start'][] = $srv['ilosc_start'];
+                    $result[$report['serial']]['strony_kolor_koniec'][] = $srv['ilosc_kolor_koniec'];
+                    $result[$report['serial']]['strony_kolor_start'][] = $srv['ilosc_kolor_start'];
+
+                    $result[$report['serial']]['data_wiadomosci_black_koniec'][] = $srv['date'];
+                    $result[$report['serial']]['data_wiadomosci_black_start'][] = $srv['date'];
+                    $result[$report['serial']]['data_wiadomosci_kolor_koniec'][] = $srv['date'];
+                    $result[$report['serial']]['data_wiadomosci_kolor_start'][] = $srv['date'];
+
+                    $result[$report['serial']]['serials'][] = $report['serial'];
+                }
+                $result[$report['serial']]['strony_black_koniec'][] = $report['strony_black_koniec'];
+                $result[$report['serial']]['strony_kolor_koniec'][] = $report['strony_kolor_koniec'];
+
+                $result[$report['serial']]['data_wiadomosci_black_koniec'][] = $report['data_wiadomosci_black_koniec'];
+                $result[$report['serial']]['data_wiadomosci_kolor_koniec'][] = $report['data_wiadomosci_kolor_koniec'];
 
                 $result[$report['serial']]['strony_black_sum'] = 0;
                 $result[$report['serial']]['strony_kolor_sum'] = 0;
@@ -73,7 +94,6 @@ class reportsController extends Controller
                     $result[$report['serial']]['strony_black_sum'] += $result[$report['serial']]['strony_black_koniec'][$i] - $result[$report['serial']]['strony_black_start'][$i];
                     $result[$report['serial']]['strony_kolor_sum'] += $result[$report['serial']]['strony_kolor_koniec'][$i] - $result[$report['serial']]['strony_kolor_start'][$i];
                 }
-                $result[$report['serial']]['serials'] = array($report['serial'], $report['serial']);
 
             } else {
                 $result[$report['serial']] = $report;
@@ -102,7 +122,9 @@ class reportsController extends Controller
 
        foreach ($arrPrinterService as $service) {
         if (!isset($result[$service['serial']])) {
-            $result[$service['serial']] = $service;
+            $result[$service['serial']] = array($service);
+        } else {
+            $result[$service['serial']][] = $service;
         }
        }
 

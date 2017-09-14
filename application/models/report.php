@@ -190,7 +190,9 @@ class report extends Model
     }
 
     function getPrinterService() {
-        $query = "select * from `printer_service` where DATE(date) >= '{$this->dataod}' and DATE(date) <= '{$this->datado}'";
+        $query = "select * from `printer_service` 
+                  where DATE(date) >= '{$this->dataod}' and DATE(date) <= '{$this->datado}' 
+                  order by date asc";
 
         return $this->query($query,null,false);
     }
