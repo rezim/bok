@@ -72,8 +72,8 @@ class reportsController extends Controller
                 foreach($srvs as $srv) {
                     $result[$report['serial']]['strony_black_koniec'][] = $srv['ilosc_koniec'];
                     $result[$report['serial']]['strony_black_start'][] = $srv['ilosc_start'];
-                    $result[$report['serial']]['strony_kolor_koniec'][] = $srv['ilosc_kolor_koniec'];
-                    $result[$report['serial']]['strony_kolor_start'][] = $srv['ilosc_kolor_start'];
+                    $result[$report['serial']]['strony_kolor_koniec'][] = $srv['ilosckolor_koniec'];
+                    $result[$report['serial']]['strony_kolor_start'][] = $srv['ilosckolor_start'];
 
                     $result[$report['serial']]['data_wiadomosci_black_koniec'][] = $srv['date'];
                     $result[$report['serial']]['data_wiadomosci_black_start'][] = $srv['date'];
