@@ -1885,14 +1885,48 @@ function showPrinterCounters(data_black_start, data_black_koniec, data_kolor_sta
                              strony_black_start, strony_black_koniec, strony_kolor_start, strony_kolor_koniec,
                              strony_black_sum, strony_kolor_sum, serials) {
 
-    var header = "<thead><tr><td>data od</td><td>data do</td><td>strony od</td><td>strony do</td><td>suma</td><td>serial</td>" + "</tr></thead>";
-    var table = header;
-    for (var i=0; i < data_black_start.length; i++) {
-        var row = "<tr><td>" + data_black_start[i] + "</td>" + "<td>" + data_black_koniec[i] + "</td>" +
-                  "<td class='number'>" + strony_black_start[i] + "</td>" + "<td class='number'>" + strony_black_koniec[i] + "</td>" +
-                  "<td class='number'>" + (strony_black_koniec[i] - strony_black_start[i]) + "</td><td>" + serials[i] +"</td></tr>";
-        table += row;
-    }
+    var getTableRows = function(strony_start, strony_koniec, data_start, data_koniec, serials) {
+        var tableRow = "";
+        var sum = 0;
+        for (var i=0; i < data_start.length; i++) {
+            var pagesCount = (strony_koniec[i] - strony_start[i]);
+            var colorStyle = pagesCount < 0 ? "color: red": "";
+            sum += pagesCount;
+            tableRow += "<tr><td>" + data_start[i] + "</td>" + "<td>" + data_koniec[i] + "</td>" +
+                "<td class='number'>" + strony_start[i] + "</td>" + "<td class='number'>" + strony_koniec[i] + "</td>" +
+                "<td class='number' style='" + colorStyle + "'>" + pagesCount + "</td><td>" + serials[i] +"</td></tr>";
+        }
+        var sumRow = "<tr><td colspan='4' style='text-align: right; font-weight: bold'>razem:</td><td style='text-align: right; font-weight: bold'>" + sum + "</td><td></td></tr>";
 
-    $.colorbox({html: "<table border='1' class='printerCounters'>" + table + "</table>" });
+        tableRow += sumRow;
+
+        return tableRow
+    };
+
+    var header = "<tr>" +
+            "<td>data od</td>" +
+            "<td>data do</td>" +
+            "<td>strony od</td>" +
+            "<td>strony do</td>" +
+            "<td>suma</td>" +
+            "<td>serial</td>" +
+        "</tr>";
+
+    var blackHeader = "<tr><td colspan='6' style='text-align: center'>Czarne</td></tr>";
+    var colorHeader = "<tr><td colspan='6' style='text-align: center'>Kolorowe</td></tr>";
+
+    var tableBlack = "<thead>" + blackHeader + header + "</thead>";
+
+    tableBlack += getTableRows(strony_black_start, strony_black_koniec, data_black_start, data_black_koniec, serials);
+
+    var tableColor = "<thead>" + colorHeader + header + "</thead>";
+
+    tableColor += getTableRows(strony_kolor_start, strony_kolor_koniec, data_kolor_start, data_kolor_koniec, serials);
+
+    var html = "<table border='1' class='printerCounters'>" + tableBlack + "</table>";
+
+    html += "<table border='1' class='printerCounters'>" + tableColor + "</table>"
+
+    $.colorbox({html: html });
 }
+

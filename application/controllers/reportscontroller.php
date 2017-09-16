@@ -186,6 +186,12 @@ class reportsController extends Controller
                     $dataReports[$item['rowidclient']]['umowy'][$item['rowidumowa']]['blad'] = 1;
                 }
             }
+
+            if ($item['strony_black_sum'] == 0) {
+                $dataReports[$item['rowidclient']]['blad'] = 1;
+                $dataReports[$item['rowidclient']]['umowy'][$item['rowidumowa']]['blad'] = 1;
+            }
+
             if(!isset($dataReports['suma']))
             {
                 $dataReports['suma'] = 0;
