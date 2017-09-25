@@ -5,23 +5,32 @@
             <th style='min-width: 50px;width:50px;'>
                 Lp
             </th >
-            <th style='min-width: 100px;width:100px;'>
+            <th style='min-width: 60px;width:60px;'>
+                Akcja
+            </th>
+            <th style='min-width: 130px;width:130px;'>
+                Serial (Stara)
+            </th>
+            <th style='min-width: 130px;width:130px;'>
+                Serial (Nowa)
+            </th>
+            <th style='min-width: 80px;width:80px;'>
                 Czarne Koniec
             </th>
-            <th style='min-width: 100px;width:100px;'>
+            <th style='min-width: 80px;width:80px;'>
                 Czarne Start
             </th>
 
-            <th style='min-width: 100px;width:100px;'>
+            <th style='min-width: 80px;width:80px;'>
                 Kolor Koniec
             </th>
-            <th style='min-width: 100px;width:100px;'>
+            <th style='min-width: 80px;width:80px;'>
                 Kolor Start
             </th>
-            <th>
+            <th style='min-width: 80px;width:80px;'>
                 Data Serwisu
             </th>
-            <th style='min-width: 150px;width:150px;'></th>
+            <th style='min-width: 50px;width:50px;'></th>
         </tr>
     </thead>
     <tbody>
@@ -29,6 +38,11 @@
             {foreach from=$dataService item=item key=key}
                 <tr>
                     <td>{$iterator}</td>
+                    <td>wymiana {if $item.serial != $item.new_serial}drukarki{else}formatera{/if}</td>
+                    <td {if $item.serial == $item.new_serial}colspan="2"{/if}>{$item.serial}</td>
+                    {if $item.serial != $item.new_serial}
+                    <td>{$item.new_serial}</td>
+                    {/if}
                     <td>{$item.ilosc_koniec}</td>
                     <td>{$item.ilosc_start}</td>
 

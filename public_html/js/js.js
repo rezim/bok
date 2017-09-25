@@ -1737,9 +1737,11 @@ function savePrinterCounters(previousBlack, previousColor, serial)
 }
 
 
-function replacePrinter(serial) {
+function replacePrinter(serial, newSerial, rowid_agreement) {
     var data = {
         serial: serial,
+        newSerial: newSerial,
+        rowid_agreement: rowid_agreement,
         counterEnd: document.getElementById('counterEnd').value,
         counterStart: document.getElementById('counterStart').value,
         counterColorEnd: document.getElementById('counterColorEnd').value,
@@ -1763,15 +1765,15 @@ function replacePrinter(serial) {
     });
 }
 
-function showPrinterService(serial) {
+function showPrinterService(agreement, rowid_agreement) {
     $.colorbox
     ({
         height:650+'px',
-        width: 800+'px',
-        title:"Historia serwisu drukarki : "+serial,
+        width: 950+'px',
+        title:"Historia serwisu drukarek dla umowy : " + agreement,
         data:
             {
-                serial:serial
+                rowid_agreement: rowid_agreement
             },
 
         href:sciezka+"/printers/service/todiv",

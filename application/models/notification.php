@@ -524,6 +524,13 @@ class notification extends Model
         return $this->query($query,null,false);
     }
 
+    function getAgreementSerial($notifi_rowid)
+    {
+        $query = "select a.serial from notifications n 
+                    left outer join agreements a on n.rowid_agreements = a.rowid where n.rowid = " . $notifi_rowid;
+        return $this->query($query,null,false);
+    }
+
     function getNotiKonczace()
     {
          $query = "select 

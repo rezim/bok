@@ -47,7 +47,49 @@ class reportsController extends Controller
        return $result;
    }
 
-   function applySerivice($reports, $service) {
+   function applyReplacement($reports, $replacements) {
+
+       foreach($replacements as $replacement) {
+           $agr_id = $replacement['rowid_agreement'];
+           if (isset($reports[$agr_id])) {
+               $indexSerial = array_search($replacement['serial'],$reports[$agr_id]['serials']);
+               $indexNewSerial = array_search($replacement['new_serial'],$reports[$agr_id]['serials']);
+
+               if ($indexSerial !== false) {
+                   $reports[$agr_id]['strony_black_koniec'][$indexSerial] = $replacement['ilosc_koniec'];
+                   $reports[$agr_id]['strony_kolor_koniec'][$indexSerial] = $replacement['ilosckolor_koniec'];
+
+                   $reports[$agr_id]['data_wiadomosci_black_koniec'][$indexSerial] = $replacement['date'];
+                   $reports[$agr_id]['data_wiadomosci_kolor_koniec'][$indexSerial] = $replacement['date'];
+               }
+
+               if ($indexNewSerial !== false) {
+                   $reports[$agr_id]['strony_black_start'][$indexNewSerial] = $replacement['ilosc_start'];
+                   $reports[$agr_id]['strony_kolor_start'][$indexNewSerial] = $replacement['ilosckolor_start'];
+
+                   $reports[$agr_id]['data_wiadomosci_black_start'][$indexNewSerial] = $replacement['date'];
+                   $reports[$agr_id]['data_wiadomosci_kolor_start'][$indexNewSerial] = $replacement['date'];
+               } else {
+                   $reports[$agr_id]['strony_black_start'][] = $replacement['ilosc_start'];
+                   $reports[$agr_id]['strony_black_koniec'][] = 0;
+                   $reports[$agr_id]['strony_kolor_start'][] = $replacement['ilosckolor_start'];
+                   $reports[$agr_id]['strony_kolor_koniec'][] = 0;
+
+                   $reports[$agr_id]['data_wiadomosci_black_start'][] = $replacement['date'];
+                   $reports[$agr_id]['data_wiadomosci_black_koniec'][] = $replacement['date'];
+                   $reports[$agr_id]['data_wiadomosci_kolor_start'][] = $replacement['date'];
+                   $reports[$agr_id]['data_wiadomosci_kolor_koniec'][] = $replacement['date'];
+
+                   $reports[$agr_id]['serials'][] = $replacement['new_serial'];
+               }
+
+           }
+       }
+
+       return $reports;
+   }
+
+   function applyService($reports, $service) {
         $result = array();
 
         foreach($reports as $report) {
@@ -121,15 +163,31 @@ class reportsController extends Controller
        $result = array();
 
        foreach ($arrPrinterService as $service) {
-        if (!isset($result[$service['serial']])) {
-            $result[$service['serial']] = array($service);
-        } else {
-            $result[$service['serial']][] = $service;
-        }
+           if($service['serial'] == $service['new_serial']) {
+               if (!isset($result[$service['serial']])) {
+                   $result[$service['serial']] = array($service);
+               } else {
+                   $result[$service['serial']][] = $service;
+               }
+           }
        }
 
        return $result;
    }
+
+
+    function getPrinterReplacements($arrPrinterService) {
+        $result = array();
+
+        foreach ($arrPrinterService as $service) {
+            if($service['serial'] != $service['new_serial']) {
+                $result[] = $service;
+            }
+        }
+
+        return $result;
+    }
+
     function showdaneklient()
    {
   
@@ -138,7 +196,15 @@ class reportsController extends Controller
        $dataReportsRoczne = $this->report->getReportsRoczne();
        $dataPrinterService = $this->getPrinterServiceMap($this->report->getPrinterService());
 
-       $dataReportsMiesieczne = $this->applySerivice($dataReportsMiesieczne, $dataPrinterService);
+       $dataPrinterReplacement = $this->getPrinterReplacements($this->report->getPrinterService());
+
+       $dataReportsMiesieczne = $this->applyService($dataReportsMiesieczne, $dataPrinterService);
+
+       $dataReportsMiesieczne = $this->groupByAgreement($dataReportsMiesieczne);
+
+       $dataReportsMiesieczne = $this->applyReplacement($dataReportsMiesieczne, $dataPrinterReplacement);
+
+
        // $dataReportsMiesieczne = $this->groupByAgreement($dataReportsMiesieczne);
 
         foreach($dataReportsMiesieczne as $key=>$item)

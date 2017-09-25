@@ -77,9 +77,9 @@ class printer extends Model
         return $this->query($query,null,false); 
     }
 
-    function getService($serial) {
+    function getService($rowid_agreement) {
         $query = "select * from printer_service 
-            where serial='{$serial}'
+            where rowid_agreement='{$rowid_agreement}'
             order by date desc";
         return $this->query($query,null,false);
     }
@@ -273,12 +273,16 @@ class printer extends Model
       
     }
 
-    function replaceprinter($serial, $counterEnd, $counterStart, $counterColorEnd, $counterColorStart, $replacementDate) {
+    function replaceprinter($serial, $newSerial, $rowidAgreement, $counterEnd, $counterStart, $counterColorEnd, $counterColorStart, $replacementDate) {
         $this->_table = 'printer_service';
-        $result = $this->insert("`serial`, `ilosc_koniec`, `ilosc_start`, `ilosckolor_koniec`, `ilosckolor_start`, `date`",
-                                'siiiis',
-            array($serial, $counterEnd, $counterStart, $counterColorEnd, $counterColorStart, $replacementDate)
+        $result = $this->insert("`serial`, `new_serial`, `rowid_agreement`, `ilosc_koniec`, `ilosc_start`, `ilosckolor_koniec`, `ilosckolor_start`, `date`",
+                                'ssiiiiis',
+            array($serial, $newSerial, $rowidAgreement, $counterEnd, $counterStart, $counterColorEnd, $counterColorStart, $replacementDate)
         );
+        // printer replacement, update pages
+        if ($serial != $newSerial) {
+            $this->update("UPDATE pages SET `rowid_agreement`=? WHERE `serial`=? AND `datawiadomosci` >= ?", 'iss', array($rowidAgreement, $newSerial, $replacementDate));
+        }
 
         return $result;
     }

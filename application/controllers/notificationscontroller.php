@@ -30,10 +30,15 @@ class notificationsController extends Controller
                 $daneWykonuje = $this->notification->getOsoby();
                 $daneStatus = $this->notification->getStatusy();
                 $daneType = $this->notification->getTypy();
+
                 global $smarty;
                 $smarty->assign('daneWykonuje',$daneWykonuje);
                 $smarty->assign('daneStatus',$daneStatus);
                 $smarty->assign('daneType',$daneType);
+
+                if ($_POST['keyVal']) {
+                    $smarty->assign('agreementSerial', $this->notification->getAgreementSerial($_POST['keyVal'])[0]['serial']);
+                }
 
                 parent::addedit();
           }

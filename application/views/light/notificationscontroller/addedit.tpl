@@ -162,12 +162,22 @@
                     {/foreach}
                  <tr><td colspan="2">&nbsp;</td></tr>
                  <tr id='tr{$key}'>
-                     <td class='tdOpis' colspan="2">Wymiana</td>
+                     <td class='tdOpis' colspan="2">Wymiana {if $dane[0]['serial'] != $agreementSerial}Drukarki{else}Formatera{/if}</td>
                  </tr>
                  <tr>
                      <td  class='tdOpis'><span >Data:</span></td>
                      <td class='tdWartosc'><input id="replacementDate" class="textBoxForm" type="text" /></td>
                  </tr>
+                 <tr>
+                     <td  class='tdOpis'><span >Serial (stara)</span></td>
+                     <td class='tdWartosc'><input class="textBoxForm" type="text" disabled value="{$dane[0]['serial']}"/></td>
+                 </tr>
+                 {if $dane[0]['serial'] != $agreementSerial}
+                 <tr>
+                     <td  class='tdOpis'><span >Serial (nowa)</span></td>
+                     <td class='tdWartosc'><input class="textBoxForm" type="text" disabled value="{$agreementSerial}"/></td>
+                 </tr>
+                 {/if}
                  <tr>
                      <td  class='tdOpis'><span >Czarno/Białe Koniec:</span></td>
                      <td class='tdWartosc'><input id="counterEnd" class="textBoxForm" type="text" /></td>
@@ -186,8 +196,8 @@
                  </tr>
                 <tr>
                     <td colspan="2" style="text-align: right">
-                        <input type="button" class="btn btn-primary" value="zapisz" onclick='replacePrinter("{$dane[0]['serial']}")'>
-                        <input type="button" class="btn btn-warning" value="historia" onclick='showPrinterService("{$dane[0]['serial']}")'>
+                        <input type="button" class="btn btn-primary" value="zapisz" onclick='replacePrinter("{$dane[0]['serial']}", "{$agreementSerial}", {$dane[0]['rowid_agreements']})'>
+                        <input type="button" class="btn btn-warning" value="historia" onclick='showPrinterService("{$dane[0]['umowadane']}", "{$dane[0]['rowid_agreements']}")'>
                     </td>
                 </tr>
             </tbody>
