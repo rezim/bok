@@ -250,7 +250,6 @@ class printer extends Model
               if($wynik['status']==1 && $this->iloscstron!='')
              {
 
-
                      $this->_table = 'pages';
                             $columnList = "`serial`,
                                        `ilosc`,`ilosckolor`,`ilosctotal`,
@@ -301,20 +300,23 @@ class printer extends Model
                  }
              }
 
-               $this->iloscstron_total =  (int)($this->iloscstron==''?"NULL":str_replace(' ','',str_replace(',','.', $this->iloscstron)))+(int)($this->iloscstron_kolor==''?"NULL":str_replace(' ','',str_replace(',','.', $this->iloscstron_kolor)));
-                 $this->_table = 'pages';
-                     
-                            $columnList = "`serial`,
-                                       `ilosc`,`ilosckolor`,`ilosctotal`,
-                                       `dateinsert`,
-                                       `datawiadomosci`, `rowid_agreement`, `product_version`";
-                         return $this->insert($columnList,'sdddssii',
-                                 array(
-                                        $this->serial,
-                                        $this->iloscstron==''?"NULL":str_replace(' ','',str_replace(',','.', $this->iloscstron)),
-                                          $this->iloscstron_kolor==''?"NULL":str_replace(' ','',str_replace(',','.', $this->iloscstron_kolor)),
-                                     $this->iloscstron_total==''?"NULL":str_replace(' ','',str_replace(',','.', $this->iloscstron_total)),
-                                     date('Y-m-d H:i:s'),$this->stanna.' 12:00', $agreement_rowid, $product_version
-                                 ));
+            $this->update("DELETE FROM `pages` WHERE datawiadomosci = ? AND serial = ? ", 'ss', array($this->stanna.' 12:00', $this->serial));
+
+            $this->iloscstron_total =  (int)($this->iloscstron==''?"NULL":str_replace(' ','',str_replace(',','.', $this->iloscstron)))+(int)($this->iloscstron_kolor==''?"NULL":str_replace(' ','',str_replace(',','.', $this->iloscstron_kolor)));
+
+            $this->_table = 'pages';
+
+            $columnList = "`serial`,
+                `ilosc`,`ilosckolor`,`ilosctotal`,
+                `dateinsert`,
+                `datawiadomosci`, `rowid_agreement`, `product_version`";
+            return $this->insert($columnList,'sdddssii',
+                array(
+                    $this->serial,
+                    $this->iloscstron==''?"NULL":str_replace(' ','',str_replace(',','.', $this->iloscstron)),
+                    $this->iloscstron_kolor==''?"NULL":str_replace(' ','',str_replace(',','.', $this->iloscstron_kolor)),
+                    $this->iloscstron_total==''?"NULL":str_replace(' ','',str_replace(',','.', $this->iloscstron_total)),
+                    date('Y-m-d H:i:s'),$this->stanna.' 12:00', $agreement_rowid, $product_version
+                ));
     }
 }
