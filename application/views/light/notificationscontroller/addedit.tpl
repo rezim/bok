@@ -148,7 +148,7 @@
                               {if $item.type=='link' && $item.readonly=='0'}
                                   <span id='{$item.idzewnetrznespan}' style="display:none;">{if isset($dane[0][$item.baza]) && (string)$dane[0][$item.baza]!=''}{$dane[0][$item.baza]}{/if}</span>
                                   <img {if isset($item.wymaganylevel) && $item.wymaganylevel!=''}wymaganylevel='{$item.wymaganylevel}' wymaganyzrobiony='0' {/if} src="{$smarty.const.SCIEZKA}/{$smarty.const.SMARTVERSION}/img/find.png" style='display:inline;margin-left: 5px;cursor:hand;cursor:pointer;' title='Wybierz'
-                                    onclick="openDataShow('{$smarty.const.SCIEZKA}/{$item.link}','{$item.idzewnetrznespan}')"    
+                                    onclick="openDataShow('{$smarty.const.SCIEZKA}/{$item.link}','{$item.idzewnetrznespan}')"
                    />
                      
                               {/if}
@@ -160,6 +160,9 @@
                         </tr>
                          {/if}
                     {/foreach}
+
+                 {if isset($dane) }
+
                  <tr><td colspan="2">&nbsp;</td></tr>
                  <tr id='tr{$key}'>
                      <td class='tdOpis' colspan="2">Wymiana {if $dane[0]['serial'] != $agreementSerial}Drukarki{else}Formatera{/if}</td>
@@ -200,6 +203,9 @@
                         <input type="button" class="btn btn-warning" value="historia" onclick='showPrinterService("{$dane[0]['umowadane']}", "{$dane[0]['rowid_agreements']}")'>
                     </td>
                 </tr>
+
+
+                 {/if}
             </tbody>
          </table>
 
