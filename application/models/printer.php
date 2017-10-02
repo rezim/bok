@@ -289,7 +289,7 @@ class printer extends Model
      function savestanna()
     {
              $query = "select a.rowid, p.product_version from agreements a inner join printers p on a.serial=p.serial 
-                       where a.serial='" . $this->serial . "'";
+                       where a.activity=1 AND a.serial='" . $this->serial . "'";
              $agreement_rowid = null;
              // default version number is 1
              $product_version = 1;
