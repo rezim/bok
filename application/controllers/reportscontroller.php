@@ -17,7 +17,6 @@ class reportsController extends Controller
        foreach($reports as $report) {
            if (!isset($result[$report['rowidumowa']])) {
                $result[$report['rowidumowa']] = $report;
-               $result[$report['rowidumowa']]['serials'] = array($report['serial']);
            } else {
                if ($report['serial'] == $report['currentserial']) {
                    $tmpReport = $report;
