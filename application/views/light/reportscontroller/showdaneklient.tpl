@@ -45,7 +45,7 @@
             {foreach from=$dataReports item=item key=key name=loopek2}
                 {if $key!='suma' && $key!='blad'}
                 {if isset($item.blad) && $item.blad=='1'}
-                        <tr class="tr_{$key}" style='border-bottom:none;border-top:1px solid lightgrey;background-color: red;'>
+                        <tr class="tr_{$key}" style='border-bottom:none;border-top:1px solid lightgrey;color:red; background-color: lightyellow; font-weight: bold'>
                 {else}
                         <tr class="tr_{$key}" style='border-bottom:none;border-top:1px solid lightgrey'>
                 {/if}
@@ -139,7 +139,7 @@
                                     <tbody>
                                          {foreach from=$dataReports[$key].umowy item=item2 key=key2 name=loopek}
                                               {if isset($item2.blad) && $item2.blad=='1'}
-                                                        <tr style='background-color: #FFCCCC;' class="{$item2.nrumowy|replace:'/':'-'}">
+                                                        <tr style='color: red; font-weight: bold; background-color: lightyellow;' class="{$item2.nrumowy|replace:'/':'-'}">
                                                 {else}
                                                         <tr class="{$item2.nrumowy|replace:'/':'-'}">
                                                 {/if}
