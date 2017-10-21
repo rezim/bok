@@ -678,62 +678,104 @@ function getOldHPDataDevice($dom)
     $iloscBlack = '';
     $iloscColor = '';
     $iloscTotal = '';
-    foreach ($bookElemList as $book) {
-        foreach ($book->childNodes as $book2) {
 
-            if ($book2->nodeName == 'xdm:DataItem' && $book2->getAttribute('idRef') == 'system') {
-                foreach ($book2->childNodes as $book3) {
+    if ($assoc['system']['dd:MakeAndModel'] !== 'HP LaserJet P3010 Series') {
 
-                    foreach ($book3->childNodes as $book4) {
+        foreach ($bookElemList as $book) {
+            foreach ($book->childNodes as $book2) {
 
-                        if ($book4->nodeName == 'dd:CounterScale')
-                            $rozaj = $book4->nodeValue;
-                        if ($book4->nodeName == 'dd:ValueFloat') {
+                if ($book2->nodeName == 'xdm:DataItem' && $book2->getAttribute('idRef') == 'system') {
+                    foreach ($book2->childNodes as $book3) {
 
-                            $ilosc = $book4->nodeValue;
+                        foreach ($book3->childNodes as $book4) {
+
+                            if ($book4->nodeName == 'dd:CounterScale')
+                                $rozaj = $book4->nodeValue;
+                            if ($book4->nodeName == 'dd:ValueFloat') {
+
+                                $ilosc = $book4->nodeValue;
+                            }
                         }
+                        $iloscBlack = $ilosc;
+
+                        $iloscTotal = $ilosc;
+                        if ($rozaj == 'normalized')
+                            break;
                     }
-                    $iloscBlack = $ilosc;
+                    $count++;
+                    if ($count == 1) break;
+                } else if ($book2->nodeName == 'xdm:DataItem' && $book2->getAttribute('idRef') == 'iSystem') {
 
-                    $iloscTotal = $ilosc;
-                    if ($rozaj == 'normalized')
-                        break;
-                }
-                $count++;
-                if ($count == 1) break;
-            } else if ($book2->nodeName == 'xdm:DataItem' && $book2->getAttribute('idRef') == 'iSystem') {
+                    foreach ($book2->childNodes as $book3) {
+                        $wartosc = "";
+                        $chromatic = "";
+                        foreach ($book3->childNodes as $book4) {
+                            if ($book4->nodeName == 'dd:ValueFloat') {
+                                $wartosc = $book4->nodeValue;
+                            }
+                            if ($book4->nodeName == 'dd:ChromaticMode') {
+                                $chromatic = $book4->nodeValue;
+                            }
 
-                foreach ($book2->childNodes as $book3) {
-                    $wartosc = "";
-                    $chromatic = "";
-                    foreach ($book3->childNodes as $book4) {
-                        if ($book4->nodeName == 'dd:ValueFloat') {
-                            $wartosc = $book4->nodeValue;
+
                         }
-                        if ($book4->nodeName == 'dd:ChromaticMode') {
-                            $chromatic = $book4->nodeValue;
+                        if ($chromatic == 'color') {
+                            $iloscColor = $wartosc;
+                        }
+                        if ($chromatic == 'monochrome') {
+                            $iloscBlack = $wartosc;
+                        }
+                        if ($chromatic == '') {
+                            $iloscTotal = $wartosc;
                         }
 
-
-                    }
-                    if ($chromatic == 'color') {
-                        $iloscColor = $wartosc;
-                    }
-                    if ($chromatic == 'monochrome') {
-                        $iloscBlack = $wartosc;
-                    }
-                    if ($chromatic == '') {
-                        $iloscTotal = $wartosc;
                     }
 
-                }
+
+                    $count2++;
+                    if ($count2 == 2) break;
+                } else
+                    break;
+
+            }
+        }
+
+    } else {
+        // this is for 'HP LaserJet P3010 Series' printers, probably we have to check other printers
+        // if they should be processed in the same way
+        foreach ($bookElemList as $book) {
+            foreach ($book->childNodes as $book2) {
+                if ($book2->nodeName == 'xdm:DataItem' && $book2->getAttribute('idRef') == 'iSystem') {
+
+                    foreach ($book2->childNodes as $book3) {
+                        $wartosc = "";
+                        $chromatic = "";
+                        foreach ($book3->childNodes as $book4) {
+                            if ($book4->nodeName == 'dd:ValueFloat') {
+                                $wartosc = intval( $book4->nodeValue );
+                            }
+                            if ($book4->nodeName == 'dd:ChromaticMode') {
+                                $chromatic = intval( $book4->nodeValue );
+                            }
 
 
-                $count2++;
-                if ($count2 == 2) break;
-            } else
-                break;
+                        }
+                        if ($chromatic == 'color') {
+                            $iloscColor = $wartosc;
+                        }
+                        if ($chromatic == 'monochrome') {
+                            $iloscBlack = $wartosc;
+                        }
+                        if ($chromatic == '') {
+                            $iloscTotal = $wartosc;
+                        }
 
+                    }
+                    break; // :(
+                } else
+                    break;
+
+            }
         }
     }
 
