@@ -232,27 +232,27 @@ class report extends Model
 
         $query = "
                 select 
-                b.serial as serial,
+                IFNULL(b.serial, bb.serial) as serial,
                 a.serial as currentserial, 
                 '{$dateFrom}' as 'dacik',
                 a.rowid as 'rowidumowa', 
                 a.nrumowy as 'nrumowy', 
                 a.dataod as 'dataod', 
                 a.datado as 'datado', 
-                b.ulica as 'lokalizacja_ulica',
-                b.miasto as 'lokalizacja_miasto',
-                b.kodpocztowy as 'lokalizacja_kodpocztowy',
-                b.telefon as 'lokalizacja_telefon',
-                b.mail as 'lokalizacja_mail', 
-                b.nazwa as 'lokalizacja_nazwa',
-                b.osobakontaktowa as 'lokalizacja_osobakontaktowa',
+                IFNULL(b.ulica, bb.ulica) as 'lokalizacja_ulica',
+                IFNULL(b.miasto, bb.miasto) as 'lokalizacja_miasto',
+                IFNULL(b.kodpocztowy, bb.kodpocztowy) as 'lokalizacja_kodpocztowy',
+                IFNULL(b.telefon, bb.telefon) as 'lokalizacja_telefon',
+                IFNULL(b.mail, bb.mail) as 'lokalizacja_mail', 
+                IFNULL(b.nazwa, bb.nazwa) as 'lokalizacja_nazwa',
+                IFNULL(b.osobakontaktowa, bb.osobakontaktowa) as 'lokalizacja_osobakontaktowa',
                 IFNULL(a.stronwabonamencie,0) as 'stronwabonamencie', 
                 IFNULL(a.cenazastrone,0) as 'cenazastrone', 
                 IFNULL(a.iloscstron_color,0) as 'iloscstron_kolor',
                 IFNULL(a.cenazastrone_kolor,0) as 'cenazastrone_kolor', 
                 IFNULL(a.rabatdoabonamentu,0) as 'rabatdoabonamentu',
                 IFNULL(a.rabatdowydrukow,0) as 'rabatdowydrukow',
-                b.model as 'model', 
+                IFNULL(b.model, bb.model) as 'model', 
                 a.rowidclient as 'rowidclient', 
                 c.nazwakrotka as 'nazwakrotka', 
                 c.nazwapelna as 'nazwapelna', 
@@ -265,7 +265,7 @@ class report extends Model
                 c.pokaznumerseryjny as 'pokaznumerseryjny',
                 c.pokazstanlicznika as 'pokazstanlicznika',                
                 c.fakturadlakazdejumowy as 'fakturadlakazdejumowy',                
-                b.iloscstron as 'currentiloscstron', 
+                IFNULL(b.iloscstron, bb.iloscstron) as 'currentiloscstron', 
                 a.abonament as 'abonament', 
                 a.rozliczenie as 'rozliczenie', 
                 IFNULL(a.cenainstalacji,0) as 'cenainstalacji',
@@ -313,6 +313,7 @@ class report extends Model
                 on pp1.serial = pp3.serial and pp1.rowid_agreement = pp3.rowid_agreement and pp1.product_version = pp3.product_version              
                 
                 left outer join printers b on b.serial = pp1.serial
+                left outer join printers bb on bb.serial = a.serial
                 
             {$where}
                 order by c.nazwakrotka
