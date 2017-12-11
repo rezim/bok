@@ -3,7 +3,8 @@ class agreementsController extends Controller
 {  
      function delete()
     {
-             echo(json_encode($this->agreement->delete($_POST['rowid'])));   
+        $this->agreement->populateWithPost();
+        echo(json_encode($this->agreement->delete()));
     }
      function saveupdate()
     {
@@ -37,16 +38,25 @@ class agreementsController extends Controller
          
          $smarty->assign('dataClients',$dataClient);
          unset($client);unset($dataClient);
-         
+
+         $smarty->assign('prtcntrowid', 0);
          
          if($_POST['rowid']!='0')
          {
               $dataUmowa = $this->agreement->getUmowaByRowid($_POST['rowid']);
-              $smarty->assign('dataUmowa',$dataUmowa );
-             
+             $smarty->assign('dataUmowa', $dataUmowa);
+
+              if (isset($dataUmowa[0])) {
+                  $dataCounters = $this->agreement->getAgreementPrinterCounters($_POST['rowid'], $dataUmowa[0]['serial']);
+              }
+              if (isset($dataCounters) && count($dataCounters) > 0) {
+                  $smarty->assign('prtcntrowid', $dataCounters[0]['rowid']);
+                  $smarty->assign('dataCounters', $dataCounters);
+              }
+
               $printer = new printer();
                 $dataPrinters = $printer->getPrintersUmowaBezSerialu($dataUmowa[0]['serial']);
-                
+
                 $smarty->assign('dataPrinters',$dataPrinters);
                 unset($printer);unset($dataPrinters); unset($dataUmowa);
          }
@@ -65,6 +75,16 @@ class agreementsController extends Controller
                  header("Location: /");
           }
      }
+
+   function getAgreementPrinterCounters() {
+         if (isset($_POST['rowid']) && isset($_POST['serial'])) {
+             $result = $this->agreement->getAgreementPrinterCounters($_POST['rowid'], $_POST['serial']);
+             if (isset($result) && count($result) > 0) {
+                 echo json_encode($result[0]);
+             }
+         }
+   }
+
    function showdane()
    {
         if( isset( $_SERVER['HTTP_X_REQUESTED_WITH'] ) && ( $_SERVER['HTTP_X_REQUESTED_WITH'] == 'XMLHttpRequest' ) )

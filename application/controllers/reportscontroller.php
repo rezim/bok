@@ -88,6 +88,33 @@ class reportsController extends Controller
        return $reports;
    }
 
+
+   function applyAgreementPrinters($reports, $agreementPrintersStart, $agreementPrintersEnd) {
+       $result = array();
+
+       foreach($reports as $report) {
+            $agreementPrintersKey = $report['serial'] . '-' . $report['rowidumowa'];
+            if (isset($agreementPrintersStart[$agreementPrintersKey])
+                && $report['rowidumowa'] == $agreementPrintersStart[$agreementPrintersKey]['rowid_agreement']) {
+                $report['strony_black_start'] = $agreementPrintersStart[$agreementPrintersKey]['ilosc_start'];
+                $report['strony_kolor_start'] = $agreementPrintersStart[$agreementPrintersKey]['ilosckolor_start'];
+                $report['data_wiadomosci_black_start'] = $agreementPrintersStart[$agreementPrintersKey]['date_start'];
+                $report['data_wiadomosci_kolor_start'] = $agreementPrintersStart[$agreementPrintersKey]['date_start'];
+            }
+           if (isset($agreementPrintersEnd[$agreementPrintersKey])
+               && $report['rowidumowa'] == $agreementPrintersEnd[$agreementPrintersKey]['rowid_agreement']) {
+               $report['strony_black_koniec'] = $agreementPrintersEnd[$agreementPrintersKey]['ilosc_koniec'];
+               $report['strony_kolor_koniec'] = $agreementPrintersEnd[$agreementPrintersKey]['ilosckolor_koniec'];
+               $report['data_wiadomosci_black_koniec'] = $agreementPrintersEnd[$agreementPrintersKey]['date_koniec'];
+               $report['data_wiadomosci_kolor_koniec'] = $agreementPrintersEnd[$agreementPrintersKey]['date_koniec'];
+           }
+
+           $result[$report['serial']] = $report;
+       }
+
+       return $result;
+   }
+
    function applyService($reports, $service) {
         $result = array();
 
@@ -175,6 +202,18 @@ class reportsController extends Controller
    }
 
 
+    function getAgreementPrintersMap($arrAgreementPrinters) {
+        $result = array();
+
+        foreach ($arrAgreementPrinters as $printerAgreement) {
+            if (!isset($result[$printerAgreement['serial']])) {
+                $result[$printerAgreement['serial'] . '-' . $printerAgreement['rowid_agreement']] = $printerAgreement;
+            }
+        }
+
+        return $result;
+    }
+
     function getPrinterReplacements($arrPrinterService) {
         $result = array();
 
@@ -193,6 +232,13 @@ class reportsController extends Controller
        $this->report->populateWithPost();
        $dataReportsMiesieczne = $this->report->getReportsMiesieczne();
        $dataReportsRoczne = $this->report->getReportsRoczne();
+
+
+       $agreementPrintersStart = $this->getAgreementPrintersMap($this->report->getAgreementPrintersStart());
+       $agreementPrintersEnd = $this->getAgreementPrintersMap($this->report->getAgreementPrintersEnd());
+
+       $dataReportsMiesieczne = $this->applyAgreementPrinters($dataReportsMiesieczne, $agreementPrintersStart, $agreementPrintersEnd);
+
        $dataPrinterService = $this->getPrinterServiceMap($this->report->getPrinterService());
 
        $dataPrinterReplacement = $this->getPrinterReplacements($this->report->getPrinterService());

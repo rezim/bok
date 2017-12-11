@@ -197,6 +197,23 @@ class report extends Model
         return $this->query($query,null,false);
     }
 
+    function getAgreementPrintersStart() {
+        $query = "select * from `agreement_printers` 
+                  where DATE(date_start) >= '{$this->dataod}' and DATE(date_start) <= '{$this->datado}' 
+                  order by date_start asc";
+
+        return $this->query($query,null,false);
+    }
+
+    function getAgreementPrintersEnd() {
+        $query = "select * from `agreement_printers` 
+                  where DATE(date_koniec) >= '{$this->dataod}' and DATE(date_koniec) <= '{$this->datado}' 
+                  order by date_koniec asc";
+
+        return $this->query($query,null,false);
+    }
+
+
     function getReportsMiesieczne()
     {
         if($this->dataod=='' || $this->datado=='')

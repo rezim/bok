@@ -250,18 +250,29 @@ class printer extends Model
               if($wynik['status']==1 && $this->iloscstron!='')
              {
 
+                 $query = "select a.rowid, p.product_version from agreements a inner join printers p on a.serial=p.serial 
+                       where a.activity=1 AND a.serial='" . $this->serial . "'";
+                 $agreement_rowid = null;
+
+                 if ($result = ($this->query($query, null,false))) {
+                     if (count($result) > 0) {
+                         $agreement_rowid = $result[0]['rowid'];
+                     }
+                 }
+
+
                      $this->_table = 'pages';
                             $columnList = "`serial`,
                                        `ilosc`,`ilosckolor`,`ilosctotal`,
                                        `dateinsert`,
-                                       `datawiadomosci`";
-                         return $this->insert($columnList,'sdddss',
+                                       `datawiadomosci`, `rowid_agreement`, `product_version`";
+                         return $this->insert($columnList,'sdddssii',
                                  array(
                                         $this->serial,
                                         $this->iloscstron==''?"NULL":str_replace(' ','',str_replace(',','.', $this->iloscstron)),
                                      $this->iloscstron_kolor==''?"NULL":str_replace(' ','',str_replace(',','.', $this->iloscstron_kolor)),
                           $this->iloscstron_total==''?"NULL":str_replace(' ','',str_replace(',','.', $this->iloscstron_total)),
-                                     date('Y-m-d H:i:s'),date('Y-m-d H:i:s')
+                                     date('Y-m-d H:i:s'),date('Y-m-d H:i:s'), $agreement_rowid, 1
                                  ));
 
              }

@@ -132,6 +132,34 @@ function pokazLogi(serial)
 
 
 
+function updateAgreementWithPrinter(rowid, serial) {
+    $.ajax({
+        type: 'POST',
+        url: sciezka + "/agreements/getAgreementPrinterCounters/notemplate",
+        async: true,
+        data: {
+            rowid: rowid,
+            serial: serial
+        },
+        success: function (result) {
+            result = (result) ? $.parseJSON(result) : {};
+            document.getElementById("counterstart").value = result['ilosc_start'] || '';
+            document.getElementById("countercolorstart").value = result['ilosckolor_start'] || '';
+            document.getElementById("datacounterstart").value = result['date_start'] || '';
+            document.getElementById("counterend").value = result['ilosc_koniec'] || '';
+            document.getElementById("countercolorend").value = result['ilosckolor_koniec'] || '';
+            document.getElementById("datacounterend").value = result['date_koniec'] || '';
+            document.getElementById("prtcntrowid").value = result['rowid'] || 0;
+
+            console.log(result);
+            return false;
+        },
+        error: function () {
+            return false;
+        }
+    });
+}
+
 function showNewAgreementAdd(rowid)
 {
     
@@ -414,7 +442,14 @@ function zapiszUmowe(rowid)
                 prowizjapartnerska:doc.getElementById('txtprowizjapartnerska').value,
                 sla:doc.getElementById('txtsla').value,
                 wartoscurzadzenia:doc.getElementById('txtwartoscurzadzenia').value,
-                jakczarne:doc.getElementById("checkJakCzarne").checked?1:0
+                jakczarne:doc.getElementById("checkJakCzarne").checked?1:0,
+                counterstart:doc.getElementById("counterstart").value,
+                countercolorstart:doc.getElementById("countercolorstart").value,
+                datacounterstart:doc.getElementById("datacounterstart").value,
+                counterend:doc.getElementById("counterend").value,
+                countercolorend:doc.getElementById("countercolorend").value,
+                datacounterend:doc.getElementById("datacounterend").value,
+                prtcntrowid:doc.getElementById("prtcntrowid").value
             },
             success: function(dane) 
             {
@@ -617,7 +652,15 @@ function usunUmowe(rowid)
             async:true,
             data: 
             {
-                rowid:rowid
+                rowid:rowid,
+                serial:document.getElementById('txtdrukarka').value,
+                counterstart:document.getElementById("counterstart").value,
+                countercolorstart:document.getElementById("countercolorstart").value,
+                datacounterstart:document.getElementById("datacounterstart").value,
+                counterend:document.getElementById("counterend").value,
+                countercolorend:document.getElementById("countercolorend").value,
+                datacounterend:document.getElementById("datacounterend").value,
+                prtcntrowid:document.getElementById("prtcntrowid").value
             },
             success: function(dane) 
             {
@@ -1932,3 +1975,9 @@ function showPrinterCounters(data_black_start, data_black_koniec, data_kolor_sta
     $.colorbox({html: html });
 }
 
+function closeColorbox(callback) {
+    $.colorbox.close();
+    if (callback) {
+        callback();
+    }
+}

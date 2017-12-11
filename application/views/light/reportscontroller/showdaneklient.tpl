@@ -147,31 +147,9 @@
                                                     <td style="text-align: center">{$smarty.foreach.loopek.index+1}</td>
                                                     <td class='tdWartosc'  style='display: none;'>{$key2}</td>
 
-                                                    <td class='tdWartosc agreement-nb' onClick="showNewAgreementAdd('{if isset($item2.rowidumowa)}{$item2.rowidumowa}{/if}')"
-                                                    blackStartDate="{foreach $item2.data_wiadomosci_black_start as $data_wiadomosci_black_start}{$data_wiadomosci_black_start}|{/foreach}"
-                                                    blackEndDate="{foreach $item2.data_wiadomosci_black_koniec as $data_wiadomosci_black_koniec}{$data_wiadomosci_black_koniec}|{/foreach}"
-                                                    colorStartDate="{foreach $item2.data_wiadomosci_kolor_start as $data_wiadomosci_kolor_start}{$data_wiadomosci_kolor_start}|{/foreach}"
-                                                    colorEndDate="{foreach $item2.data_wiadomosci_kolor_koniec as $data_wiadomosci_kolor_koniec}{$data_wiadomosci_kolor_koniec}|{/foreach}"
-                                                        blackStart="{foreach $item2.strony_black_start as $strony_black_start}{$strony_black_start|number_format:0:",":" "|escape:'htmlall'}|{/foreach}"
-                                                        blackEnd="{foreach $item2.strony_black_koniec as $strony_black_koniec}{$strony_black_koniec|number_format:0:",":" "|escape:'htmlall'}|{/foreach}"
-                                                        colorStart="{foreach $item2.strony_kolor_start as $strony_kolor_start}{$strony_kolor_start|number_format:0:",":" "|escape:'htmlall'}|{/foreach}"
-                                                        colorEnd="{foreach $item2.strony_kolor_koniec as $strony_kolor_koniec}{$strony_kolor_koniec|number_format:0:",":" "|escape:'htmlall'}|{/foreach}"
-                                                    title="
-                                                    {for $i=0 to ($item2.strony_black_start|count)-1}
-                                                        {$item2.data_wiadomosci_black_start[$i]} do {$item2.data_wiadomosci_black_koniec[$i]}:&#10;
-                                                        Strony czarne:{$item2.strony_black_start[$i]|number_format:0:",":" "|escape:'htmlall'} - {$item2.strony_black_koniec[$i]|number_format:0:",":" "|escape:'htmlall'}
-                                                                       = {$item2.strony_black_koniec[$i] - $item2.strony_black_start[$i]}&#10;
-                                                        Strony kolor: {$item2.data_wiadomosci_kolor_start[$i]} do {$item2.data_wiadomosci_kolor_koniec[$i]}:&#10;
-                                                        {$item2.strony_kolor_start[$i]|number_format:0:",":" "|escape:'htmlall'} - {$item2.strony_kolor_koniec[$i]|number_format:0:",":" "|escape:'htmlall'}
-                                                                       = {$item2.strony_kolor_koniec[$i] - $item2.strony_kolor_start[$i]}&#10;
-                                                  &#10;{/for}
-                                                  Suma czarne: {$item2.strony_black_sum}&#10;
-                                                  Suma kolor: {$item2.strony_kolor_sum}
-                                                    "    
-                                                        
-                                                        
-                                                        
-                                                        ><span class="fa fa-exclamation-triangle"></span>{$item2.nrumowy}</td>
+                                                    <td class='tdWartosc agreement-nb' onClick="showNewAgreementAdd('{if isset($item2.rowidumowa)}{$item2.rowidumowa}{/if}')">
+                                                        <span class="fa fa-exclamation-triangle"></span>{$item2.nrumowy}
+                                                    </td>
                                                     
                                                     <td class='tdLink' style='vertical-align: top;' onClick='showNewPrinterAdd("{$item2.serial}")'>
                                                         {$item2.serial|escape:'htmlall'}<br/>
