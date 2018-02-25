@@ -172,7 +172,7 @@ function email_pull()
 
         // for My Slow Low, check if I found an image attachment
 
-        // TR NOTE: check if body contains informations indicates minolta service data
+        // TR NOTE: check if body contains information indicates minolta service data
         if (($minoltaMessage = isMinoltaServiceMessage($email['body'])) != null) {
 
             if (!saveMinoltaDataDevice($minoltaMessage)) {
@@ -188,6 +188,19 @@ function email_pull()
                 continue;
             }
 
+        } else if (strpos($email['header']->subject, TEMATKYOCERA) !== false) {
+            // TR NOTE:
+            // KYOCERA sends two emails, second one which is currently not very useful to us contains
+            // 'event email' text, we will ignore it
+            if (!strpos($email['header']->subject, 'event mail')) {
+                if (!_readKyocera(base64_decode($email['body']), $datawiadomosc, $ip)) {
+                    $emailReader->move($email['index'], 'INBOX.Rejected');
+                    continue;
+                }
+            } else {
+                $emailReader->move($email['index'], 'INBOX.Rejected');
+                continue;
+            }
         } else {
             $found_img = FALSE;
             foreach ($attachments as $a) {
@@ -221,6 +234,7 @@ function email_pull()
                 continue;
             }
         }
+
         // get content from the email that I want to store
         $addr = $email['header']->from[0]->mailbox . "@" . $email['header']->from[0]->host;
         $sender = $email['header']->from[0]->mailbox;
@@ -286,6 +300,20 @@ function _readMinolta($message, $dataWiadomosci, $ip)
 {
 
     $dataDevice = getDataDeviceMinolta($message);
+
+    if (count($dataDevice) == 0) {
+        return false;
+    }
+    if ($dataDevice['system']['dd:SerialNumber'] != '')
+        saveDataDevice($dataDevice, $dataWiadomosci, $ip);
+
+    unset($message);
+    unset($dataDevice);
+    return true;
+}
+
+function _readKyocera($message, $dataWiadomosci, $ip) {
+    $dataDevice = getDataDeviceKyocera($message);
 
     if (count($dataDevice) == 0) {
         return false;
@@ -920,6 +948,70 @@ function getDataDeviceMinolta($message)
 }
 
 
+function getDataDeviceKyocera($message) {
+    $messageRows = preg_split('/\r\n|\r|\n/', $message);
+
+    $data = array();
+    $dataDevice = array();
+
+    $counterArray = null;
+    $counterPropertyArray = null;
+
+    foreach ($messageRows as $key => $item) {
+        $property = explode(":", $item);
+        if (count($property) === 2) {
+            $propertyName = trim($property[0]);
+            $propertyValue = trim($property[1]);
+
+            if (strpos($propertyName, 'Counters') !== false) {
+                $data[$propertyName] = array();
+                $counterArray = &$data[$propertyName];
+                unset($counterPropertyArray);
+                $counterPropertyArray = null;
+            } else if (is_array($counterArray) && $propertyValue === '') {
+                $counterArray[$propertyName] = array();
+                $counterPropertyArray = &$counterArray[$propertyName];
+            } else {
+                if (!is_array($counterArray)) {
+                    $data[$propertyName] = $propertyValue;
+                } else {
+                    if (is_array($counterPropertyArray)) {
+                        $counterPropertyArray[$propertyName] = $propertyValue;
+                    } else {
+                        $counterArray[$propertyName] = $propertyValue;
+                    }
+                }
+            }
+        }
+    }
+
+
+    $dataDevice['system']['dd:SerialNumber'] = $data['Serial Number'];
+
+    $dataDevice['system']['dd:MakeAndModel'] = mapKyoceraModelName($data['Model Name']);
+    $dataDevice['system']['dd:ProductNumber'] = "KYOCERA";
+    $dataDevice['system']['dd:Version']['dd:Revision'] = "";
+    $dataDevice['system']['dd:Version']['dd:Date'] = "";
+    $dataDevice['system']['ip'] = "";
+
+    $dataDevice['system']['wydruk'] = $data['Counters by Function']['Printed Pages']['Total'];
+    $dataDevice['system']['wydrukkolor'] = 0;
+    $dataDevice['system']['wydruktotal'] = $data['Counters by Function']['Printed Pages']['Total'];
+
+    $dataDevice['system']['black_toner'] = "";
+    $dataDevice['system']['cyan_toner'] = "";
+    $dataDevice['system']['magenta_toner'] = "";
+    $dataDevice['system']['yellow_toner'] = "";
+    $dataDevice['system']['blackdrum_toner'] = "";
+    $dataDevice['system']['cyandrum_toner'] = "";
+    $dataDevice['system']['magentadrum_toner'] = "";
+    $dataDevice['system']['yellowdrum_toner'] = "";
+    $dataDevice['system']['fuser'] = "";
+
+
+    return $dataDevice;
+}
+
 function saveMinoltaDataDevice($minoltaMessage) {
     global $mysqli;
     $statement = $mysqli->prepare("INSERT INTO logs (sequencenumber, eventcode, description,timestamp,valuefloat,revision,dateinsert,serial)
@@ -1512,6 +1604,10 @@ function isMinoltaServiceMessage($email_body) {
     }
 
     return $result;
+}
+
+function mapKyoceraModelName($modelName) {
+    return str_replace('ECOSYS', 'KYOCERA', $modelName);
 }
 
 function strRight($delimiter, $str) {
