@@ -190,9 +190,9 @@ function email_pull()
 
         } else if (strpos($email['header']->subject, TEMATKYOCERA) !== false) {
             // TR NOTE:
-            // KYOCERA sends two emails, second one which is currently not very useful to us contains
+            // KYOCERA sends two emails, second one which is currently not very useful to us do NOT contains
             // 'event email' text, we will ignore it
-            if (!strpos($email['header']->subject, 'event mail')) {
+            if (strpos($email['header']->subject, 'event mail') !== false) {
                 if (!_readKyocera(base64_decode($email['body']), $datawiadomosc, $ip)) {
                     $emailReader->move($email['index'], 'INBOX.Rejected');
                     continue;
@@ -982,6 +982,12 @@ function getDataDeviceKyocera($message) {
                     }
                 }
             }
+        } else if ($item === '') {
+            // toners
+            unset($counterPropertyArray);
+            unset($counterArray);
+            $counterPropertyArray = null;
+            $counterArray = null;
         }
     }
 
@@ -998,7 +1004,7 @@ function getDataDeviceKyocera($message) {
     $dataDevice['system']['wydrukkolor'] = 0;
     $dataDevice['system']['wydruktotal'] = $data['Counters by Function']['Printed Pages']['Total'];
 
-    $dataDevice['system']['black_toner'] = "";
+    $dataDevice['system']['black_toner'] = str_replace('%', '', $data['black']);
     $dataDevice['system']['cyan_toner'] = "";
     $dataDevice['system']['magenta_toner'] = "";
     $dataDevice['system']['yellow_toner'] = "";
