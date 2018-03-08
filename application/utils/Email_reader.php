@@ -1575,7 +1575,7 @@ function saveDataDevice($dataDevice, $dataWiadomosci, $ip)
 
     // koniec tonerów
     if ($dataDevice['logs'] != null) {
-        if ($dateupdate == '') // insertujemy wszystkie logi
+        if ($dateupdate == '' && false) // insertujemy wszystkie logi
         {
             $statement = $mysqli->prepare("INSERT INTO logs (sequencenumber, eventcode, description,timestamp,valuefloat,revision,dateinsert,serial) 
                                     VALUES (?,?,?,?,?,?,?,?)");
