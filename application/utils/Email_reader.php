@@ -1575,13 +1575,13 @@ function saveDataDevice($dataDevice, $dataWiadomosci, $ip)
 
     // koniec tonerów
     if ($dataDevice['logs'] != null) {
-        if ($dateupdate == '' && false) // insertujemy wszystkie logi
+        if ($dateupdate == '') // insertujemy wszystkie logi
         {
             $statement = $mysqli->prepare("INSERT INTO logs (sequencenumber, eventcode, description,timestamp,valuefloat,revision,dateinsert,serial) 
                                     VALUES (?,?,?,?,?,?,?,?)");
             foreach ($dataDevice['logs'] as $key => $item) {
                 // 2018-01-01T12:00:01.123+01:00 => 2018-01-01 12:00:01
-                $timestamp = str_replace('T', ' ', explode('+', $item['timestamp'])[0]);
+                $timestamp = str_replace('T', ' ', explode('.', $item['timestamp'])[0]);
                 $statement->bind_param("isssdsss", $item['sequencenumber'], $item['eventcode'], $item['description'],
                     $timestamp, $item['valuefloat'], $item['revision'], date('Y-m-d H:i:s'), $dataDevice['system']['dd:SerialNumber']);
                 $statement->execute();
@@ -1592,7 +1592,7 @@ function saveDataDevice($dataDevice, $dataWiadomosci, $ip)
                                     VALUES (?,?,?,?,?,?,?,?)");
             foreach ($dataDevice['logs'] as $key => $item) {
                 // 2018-01-01T12:00:01.123+01:00 => 2018-01-01 12:00:01
-                $timestamp = str_replace('T', ' ', explode('+', $item['timestamp'])[0]);
+                $timestamp = str_replace('T', ' ', explode('.', $item['timestamp'])[0]);
 
                 $query = "select rowid  from logs where serial='{$dataDevice['system']['dd:SerialNumber']}' and 
                                               timestamp = '" . $timestamp . "'";
