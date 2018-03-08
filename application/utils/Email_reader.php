@@ -408,54 +408,48 @@ function getHPDataDevice($dom)
             foreach($logs->getElementsByTagName('Log') as $log) {
                 $type = ($log->getElementsByTagName('Type')->length > 0) ?
                     $log->getElementsByTagName('Type')[0]->nodeValue : '';
-                $entries = $log->getElementsByTagName('Entries');
-                if ($entries->length > 0) {
-                    foreach($entries[0]->getElementsByTagName('Entry') as $entry) {
-                        foreach ($entry->childNodes as $entryRow) {
-                            switch ($entryRow->nodeName) {
-                                case 'dd:SequenceNumber':
-                                    $arrLogs['sequencenumber'] = $entryRow->nodeValue;
-                                    break;
-                                case 'dd:EventCode':
-                                    $arrLogs['eventcode'] = $entryRow->nodeValue;
-                                    break;
-                                case 'dd:Description':
-                                    $arrLogs['description'] = '[' . $type . ']' . $entryRow->nodeValue;
-                                    break;
-                                case 'dd:TimeStamp':
-                                    $arrLogs['timestamp'] = $entryRow->nodeValue;
-                                    break;
-                                case 'ct:Counter':
-                                    if ($entryRow->getElementsByTagName('FixedPointNumber')->length > 0) {
-                                        $fixedPointNumber = $entryRow->getElementsByTagName('FixedPointNumber')[0];
-                                        if ($fixedPointNumber->getElementsByTagName('Significand')->length > 0) {
-                                            $arrLogs['valuefloat'] =
-                                                $fixedPointNumber->getElementsByTagName('Significand')[0]->nodeValue;
+                if ($type === 'error') {
+                    $entries = $log->getElementsByTagName('Entries');
+                    if ($entries->length > 0) {
+                        foreach ($entries[0]->getElementsByTagName('Entry') as $entry) {
+                            foreach ($entry->childNodes as $entryRow) {
+                                switch ($entryRow->nodeName) {
+                                    case 'dd:SequenceNumber':
+                                        $arrLogs['sequencenumber'] = $entryRow->nodeValue;
+                                        break;
+                                    case 'dd:EventCode':
+                                        $arrLogs['eventcode'] = $entryRow->nodeValue;
+                                        break;
+                                    case 'dd:Description':
+                                        $arrLogs['description'] = '[' . $type . ']' . $entryRow->nodeValue;
+                                        break;
+                                    case 'dd:TimeStamp':
+                                        $arrLogs['timestamp'] = $entryRow->nodeValue;
+                                        break;
+                                    case 'ct:Counter':
+                                    case 'Counter':
+                                        if ($entryRow->getElementsByTagName('FixedPointNumber')->length > 0) {
+                                            $fixedPointNumber = $entryRow->getElementsByTagName('FixedPointNumber')[0];
+                                            if ($fixedPointNumber->getElementsByTagName('Significand')->length > 0) {
+                                                $arrLogs['valuefloat'] =
+                                                    $fixedPointNumber->getElementsByTagName('Significand')[0]->nodeValue;
+                                            }
                                         }
-                                    }
-                                    break;
-                                case 'Counter':
-                                    if ($entryRow->getElementsByTagName('FixedPointNumber')->length > 0) {
-                                        $fixedPointNumber = $entryRow->getElementsByTagName('FixedPointNumber')[0];
-                                        if ($fixedPointNumber->getElementsByTagName('Significand')->length > 0) {
-                                            $arrLogs['valuefloat'] =
-                                                $fixedPointNumber->getElementsByTagName('Significand')[0]->nodeValue;
+                                        break;
+                                    case 'log:Payload':
+                                        foreach ($entryRow->getElementsByTagName('KeyValuePair') as $keyValuePair) {
+                                            if ($keyValuePair->getElementsByTagName('Key')[0]->nodeValue == 'FirmwareVersion') {
+                                                $arrLogs['revision'] =
+                                                    $keyValuePair->getElementsByTagName('ValueString')[0]->nodeValue;
+                                                break;
+                                            }
                                         }
-                                    }
-                                    break;
-                                case 'log:Payload':
-                                    foreach ($entryRow->getElementsByTagName('KeyValuePair') as $keyValuePair) {
-                                        if ($keyValuePair->getElementsByTagName('Key')[0]->nodeValue == 'FirmwareVersion') {
-                                            $arrLogs['revision'] =
-                                                $keyValuePair->getElementsByTagName('ValueString')[0]->nodeValue;
-                                            break;
-                                        }
-                                    }
-                                    break;
+                                        break;
+                                }
                             }
-                        }
 
-                        $assoc['logs'][] = $arrLogs;
+                            $assoc['logs'][] = $arrLogs;
+                        }
                     }
                 }
             }
