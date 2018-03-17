@@ -478,7 +478,7 @@ class reportsController extends Controller
          
         
             if(
-                    (date("Y",strtotime($item['dataod']))+1)==date("Y",strtotime($item['dacik'])))
+                    (date("Y",strtotime($item['dataod'])))==date("Y",strtotime($item['dacik'])))
             {
                
                 $oplatainstalacyjna = $item['cenainstalacji'];
