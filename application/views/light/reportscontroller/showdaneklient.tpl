@@ -186,12 +186,16 @@
                                                        <td class='tdNumber' style='padding-right:20px;' >
                                                                 {if isset($item2.oplatainstalacyjna)} {$item2.oplatainstalacyjna|number_format:2:",":" "|escape:'htmlall'}{/if}     
                                                      </td>
-                                                     <td class='tdNumber' style='padding-right:20px;color:blue;white-space: nowrap' onclick='showPrinterCounters({$item2.data_wiadomosci_black_start|json_encode},
-                                                     {$item2.data_wiadomosci_black_koniec|json_encode}, {$item2.data_wiadomosci_kolor_start|json_encode},
-                                                     {$item2.data_wiadomosci_kolor_koniec|json_encode}, {$item2.strony_black_start|json_encode},
-                                                     {$item2.strony_black_koniec|json_encode}, {$item2.strony_kolor_start|json_encode},
-                                                     {$item2.strony_kolor_koniec|json_encode}, {$item2.strony_black_sum},
-                                                     {$item2.strony_kolor_sum}, {$item2.serials|json_encode})'>
+                                                     <td class='tdNumber' style='padding-right:20px;color:blue;white-space: nowrap'
+                                                             {if !($item2.rozliczenie === 'roczne')}{* no need to show counters for by year agreements*}
+                                                                 onclick='showPrinterCounters({$item2.data_wiadomosci_black_start|json_encode},
+                                                             {$item2.data_wiadomosci_black_koniec|json_encode}, {$item2.data_wiadomosci_kolor_start|json_encode},
+                                                             {$item2.data_wiadomosci_kolor_koniec|json_encode}, {$item2.strony_black_start|json_encode},
+                                                             {$item2.strony_black_koniec|json_encode}, {$item2.strony_kolor_start|json_encode},
+                                                             {$item2.strony_kolor_koniec|json_encode}, {$item2.strony_black_sum},
+                                                             {$item2.strony_kolor_sum}, {$item2.serials|json_encode})'
+                                                             {/if}
+                                                     >
                                                                 {if isset($item2.wartosc)} {$item2.wartosc|number_format:2:",":" "|escape:'htmlall'}{/if}     
                                                      </td>
                                                      <td>
