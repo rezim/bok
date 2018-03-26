@@ -287,6 +287,10 @@ function showOk(objOk,objLoad,info,objClick,czyreload,showtime,adtrestoredirect)
                                                         {
                                                           pokazTonery();
                                                         }
+                                                        if(document.getElementById("tableAlert")!==null)
+                                                        {
+                                                            showAlerts('divRightCenter','divLoader');
+                                                        }
                                                         if(document.getElementById("tableCounters")!==null)
                                                         {
                                                           generujCustom();
@@ -812,6 +816,39 @@ function pokazTonery()
                                 });
                delete objCenter;delete objLoad;
                return false;
+}
+
+
+function showAlerts(objtoshow,objtoload,czycolorbox)
+{
+    czycolorbox = (czycolorbox!== undefined) ? czycolorbox : '';
+    var doc=document,objCenter = doc.getElementById(objtoshow),objLoad = doc.getElementById(objtoload);
+
+    objCenter.innerHTML='';
+    objLoad.innerHTML = '<p><img src="light/img/loader.gif" alt="Loading" /></p>';
+
+    $.ajax({
+        url:sciezka+"/alerts/showdane/todiv",
+        type: 'POST',
+        data: {
+            czycolorbox:czycolorbox
+        },
+        success: function(data) {
+
+            objCenter.innerHTML = data;
+            $(objCenter).animate({opacity: 1}, 1500 );
+        },
+        error: function(){
+            objCenter.innerHTML = 'Problem z pobraniem drukarek';
+        }
+    }).done(function ()
+    {
+        objLoad.innerHTML = '';
+        $("#tablePrinter").tablesorter();
+        uprawnienia();
+    });
+    delete objCenter;delete objLoad;
+    return false;
 }
 
 
