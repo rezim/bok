@@ -51,7 +51,7 @@ class alert extends Model
             from 
             (printers a left outer join agreements b on a.serial=b.serial and b.activity=1)
                 left outer join clients c on b.rowidclient=c.rowid and c.activity=1
-            {$where} order by a.date_insert desc
+            {$where} order by a.black_toner asc
             ";
         return $this->query($query,null,false);
 
