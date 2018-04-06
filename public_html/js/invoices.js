@@ -118,25 +118,28 @@ InvoiceManager = function(api_token, endpoint, company_name, invoice_number_leng
         }
     };
 
+    var lockAdd = false;
     this.add = function (invoice, agreementIds) {
-        if (agreementIds && agreementIds.length > 0) {
+        if (agreementIds && agreementIds.length > 0 && !lockAdd) {
 
             if (invoice['fakturadlakazdejumowy'] && agreementIds.length > 1) {
                 var calls = [];
 
                 var id = agreementIds.splice(0,1);
                 var params = getInvoiceParams(invoice, id);
-
+                lockAdd = true;
                 post(params, function () {
                     self.refreshInvoices(null, function() {
+                        lockAdd = false;
                         self.add(invoice, agreementIds);
                     });
                 });
             } else {
                 var params = getInvoiceParams(invoice, agreementIds);
-
+                lockAdd = true;
                 post(params, function (data) {
                     self.refreshInvoices();
+                    lockAdd = false;
                 });
             }
         } else {
