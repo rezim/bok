@@ -49,7 +49,7 @@ class alert extends Model
             group by l.serial, eventcode, c.nazwakrotka, p.model, p.miasto, p.type_color
         ";
 
-        $query .= " order by p.black_toner asc ";
+        $query .= " order by black_toner asc ";
 
         return $this->query($query,null,false);
 
