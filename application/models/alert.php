@@ -25,34 +25,32 @@ class alert extends Model
     }
     function getPrinters()
     {
-
-        $where = " where a.serial!='' AND a.black_toner is not null AND a.black_toner <> 0 AND a.black_toner <= 10";
-
-        if($this->filterserial!='')
-        {
-            $where.=" and ( a.serial like '%{$this->filterserial}%')   ";
-        }
-        if($this->filtermodel!='')
-        {
-            $where.=" and ( a.model like '%{$this->filtermodel}%')";
-        }
-        if($this->clientrowid!='')
-        {
-            $where.=" and ( c.rowid = {$this->clientrowid})";
-        }
-        if($this->filterklient!='')
-        {
-            $where.=" and ( c.nazwakrotka like '%{$this->filterklient}%' or  c.nazwapelna like '%{$this->filterklient}%')";
-        }
+        $where = " where p.serial!='' AND p.black_toner is not null AND p.black_toner <> 0 AND p.black_toner <= 10";
 
         $query = "
-            select a.*,b.nrumowy,b.sla,b.rowid as 'rowidumowa',c.rowid as 'rowidclient',c.nazwakrotka as 'nazwaklient',
-            (select d.rowid from logs d where d.serial=a.serial and d.przeczytany=0 limit 1) as `blad`
+            select p.serial, p.black_toner, p.type_color, p.model, p.miasto, a.nrumowy, a.sla, a.rowid as 'rowidumowa',c.rowid as 'rowidclient',c.nazwakrotka as 'nazwaklient',
+            (select d.rowid from logs d where d.serial=p.serial and d.przeczytany=0 limit 1) as `blad`
             from 
-            (printers a left outer join agreements b on a.serial=b.serial and b.activity=1)
-                left outer join clients c on b.rowidclient=c.rowid and c.activity=1
-            {$where} order by a.black_toner asc
+            (printers p left outer join agreements a on p.serial=a.serial and a.activity=1)
+                left outer join clients c on a.rowidclient=c.rowid and c.activity=1
+            {$where}
             ";
+
+        $query .= " UNION ALL ";
+
+        $query .= "
+            select p.serial, '10' as black_toner, p.type_color, p.model, p.miasto, a.nrumowy, a.sla, a.rowid as 'rowidumowa',c.rowid as 'rowidclient',c.nazwakrotka as 'nazwaklient',
+                l.rowid as `blad`
+            FROM `logs` l inner join agreements a on l.serial = a.serial  
+            inner join clients c on a.rowidclient=c.rowid and c.activity=1
+            inner join printers p on p.serial=l.serial
+            where (eventcode like '%toner%B%' or   eventcode like '%toner%Cyan%' or   eventcode like '%toner%Magenta%')
+            and l.dateinsert BETWEEN DATE_SUB(NOW(), INTERVAL 10 DAY) AND NOW()
+            group by l.serial, eventcode, c.nazwakrotka, p.model, p.miasto, p.type_color
+        ";
+
+        $query .= " order by p.black_toner asc ";
+
         return $this->query($query,null,false);
 
     }
