@@ -214,11 +214,12 @@ InvoiceManager = function(api_token, endpoint, company_name, invoice_number_leng
                 var invNbPattern = null;
 
                 $.each(invoices, function (index, invoice) {
-                    if (!groupedInvoices[invoice['buyer_tax_no']]) {
-                        groupedInvoices[invoice['buyer_tax_no']] = [];
+                    var buyerTaxNo = invoice['buyer_tax_no'] || invoice['buyer_id'];
+                    if (!groupedInvoices[buyerTaxNo]) {
+                        groupedInvoices[buyerTaxNo] = [];
                     }
 
-                    groupedInvoices[invoice['buyer_tax_no']].push(invoice);
+                    groupedInvoices[buyerTaxNo].push(invoice);
 
                     var invoiceIdx = parseInt(invoice.number.split('/')[0])-1;
 
