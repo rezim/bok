@@ -15,6 +15,7 @@
         <th style='min-width: 85px;width:85px;'>
             lokalizacja
         </th>
+
         <!-- <th style='min-width: 70px;width:70px;'>
             fuser
         </th>-->
@@ -25,7 +26,11 @@
             <th style='min-width: 85px;width:85px;'>
                 klient
             </th>
+
         {/if}
+        <th style='min-width: 85px;width:85px;'>
+            data
+        </th>
         <th style='min-width: 80px;width:80px;'>
 
         </th>
@@ -78,6 +83,10 @@
                 <td class='tdLink' onClick='showNewAgreementAdd("{$item.rowidumowa}")'>{$item.nrumowy|escape:'htmlall'}</td>
                 <td class='tdLink' {if !empty($item.nazwaklient)}onClick='showNewClientAdd("{$item.rowidclient}")'{/if}>{$item.nazwaklient|escape:'htmlall'}</td>
             {/if}
+
+            <td align="left">
+                {if !empty($item.data)} {$item.data|date_format:"%Y-%m-%d"}{/if}
+            </td>
 
             <td style='text-align:right;'>
                 {if $czycolorbox==''}

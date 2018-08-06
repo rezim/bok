@@ -29,7 +29,8 @@ class alert extends Model
 
         $query = "
             select p.serial, p.black_toner, p.type_color, p.model, p.miasto, a.nrumowy, a.sla, a.rowid as 'rowidumowa',c.rowid as 'rowidclient',c.nazwakrotka as 'nazwaklient',
-            (select d.rowid from logs d where d.serial=p.serial and d.przeczytany=0 limit 1) as `blad`
+            (select d.rowid from logs d where d.serial=p.serial and d.przeczytany=0 limit 1) as `blad`, 
+            IFNULL((select d.timestamp from logs d where d.serial=p.serial order by d.timestamp desc limit 1), p.dateupdate) as `data`
             from 
             (printers p left outer join agreements a on p.serial=a.serial and a.activity=1)
                 left outer join clients c on a.rowidclient=c.rowid and c.activity=1
@@ -40,7 +41,7 @@ class alert extends Model
 
         $query .= "
             select p.serial, '10' as black_toner, p.type_color, p.model, p.miasto, a.nrumowy, a.sla, a.rowid as 'rowidumowa',c.rowid as 'rowidclient',c.nazwakrotka as 'nazwaklient',
-                l.rowid as `blad`
+                l.rowid as `blad`, l.timestamp as `data`
             FROM `logs` l inner join agreements a on l.serial = a.serial  
             inner join clients c on a.rowidclient=c.rowid and c.activity=1
             inner join printers p on p.serial=l.serial
