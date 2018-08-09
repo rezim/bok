@@ -428,5 +428,9 @@ class report extends Model
             ";
 
         return $this->query($query,null,false); 
-    }   
+    }
+
+    function getDateTo() {
+        return $this->datado;
+    }
 }

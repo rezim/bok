@@ -298,6 +298,17 @@ class reportsController extends Controller
                 }
             }
 
+            // check for date for black and color,
+            if ($this->isDateIncorrect($item['data_wiadomosci_black_koniec'][count($item['data_wiadomosci_black_koniec'])-1], $this->report->getDateTo())) {
+                $dataReports[$item['rowidclient']]['blad'] = 1;
+                $dataReports[$item['rowidclient']]['umowy'][$item['rowidumowa']]['blad'] = 1;
+            }
+            // check for date for color,
+            if ($this->isDateIncorrect($item['data_wiadomosci_kolor_koniec'][count($item['data_wiadomosci_kolor_koniec'])-1], $this->report->getDateTo())) {
+                $dataReports[$item['rowidclient']]['blad'] = 1;
+                $dataReports[$item['rowidclient']]['umowy'][$item['rowidumowa']]['blad'] = 1;
+            }
+
             if ($item['strony_black_sum'] == 0) {
                 $dataReports[$item['rowidclient']]['blad'] = 1;
                 $dataReports[$item['rowidclient']]['umowy'][$item['rowidumowa']]['blad'] = 1;
@@ -596,5 +607,13 @@ class reportsController extends Controller
        
        
 
+   }
+
+   function isDateIncorrect($strDateToCheck, $strDateTo) {
+       $dateTo = new DateTime($strDateTo);
+       $dateToCheck = new DateTime($strDateToCheck);
+       $today = new DateTime();
+
+       return $today > $dateTo && $dateTo->format('Y-m-d') != $dateToCheck->format('Y-m-d');
    }
 }
