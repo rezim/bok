@@ -117,9 +117,6 @@ function email_pull()
         }
         $attachments = array();
 
-        die();
-
-
         if (isset($email['structure']->parts) && count($email['structure']->parts)) {
 
             for ($i = 0; $i < count($email['structure']->parts); $i++) {
