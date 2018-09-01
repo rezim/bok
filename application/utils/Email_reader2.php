@@ -82,7 +82,7 @@ class Email_reader2 {
 	        $this->msg_cnt = imap_num_msg($this->conn);
 	 
 	        $in = array();
-	        for($i = 1; $i <= $this->msg_cnt; $i++) {
+	        for($i = 1; $i <= min($this->msg_cnt, 100); $i++) {
 	            $in[] = array(
 	                'index'     => $i,
 	                'header'    => imap_headerinfo($this->conn, $i),
