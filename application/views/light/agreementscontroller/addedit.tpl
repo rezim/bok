@@ -12,7 +12,23 @@
     <tr>
         <td style='height:3px;min-height: 3px;' colspan=2></td>
     </tr>
-
+    <tr>
+        <td class='tdOpis'>
+            Type umowy
+        </td>
+        <td class='tdWartosc' colspan="3">
+            <select id='txttypumowy' class="comboboxForm" style='width:200px;min-width:200px;'>
+                <option value="" selected></option>
+                {foreach from=$dataAgreementTypes item=item key=key}
+                    <option value="{$item.rowid}"
+                            {if $rowid!=0 && $dataUmowa[0].rowid_type==$item.rowid}selected{/if}>{$item.description}</option>
+                {/foreach}
+            </select>
+        </td>
+    </tr>
+    <tr>
+        <td style='height:3px;min-height: 3px;' colspan=2></td>
+    </tr>
     <tr>
         <td class='tdOpis'>
             Klient

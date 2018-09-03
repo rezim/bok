@@ -453,7 +453,8 @@ function zapiszUmowe(rowid)
                 counterend:doc.getElementById("counterend").value,
                 countercolorend:doc.getElementById("countercolorend").value,
                 datacounterend:doc.getElementById("datacounterend").value,
-                prtcntrowid:doc.getElementById("prtcntrowid").value
+                prtcntrowid:doc.getElementById("prtcntrowid").value,
+                rowid_type:doc.getElementById("txttypumowy").value
             },
             success: function(dane) 
             {

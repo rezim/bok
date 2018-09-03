@@ -10,7 +10,7 @@ class agreement extends Model
             $rabatdowydrukow='',
             $prowizjapartnerska='',
             $sla='',
-            $wartoscurzadzenia='',$jakczarne='';
+            $wartoscurzadzenia='',$jakczarne='',$rowid_type;
      protected $filternrumowy='',$filterserial='',$filternazwaklienta='',$clientrowid='',$pokazzakonczone=0;
 
      protected $prtcntrowid=0,
@@ -109,9 +109,10 @@ class agreement extends Model
                                     `prowizjapartnerska`=?,
                                     `sla`=?,
                                     `wartoscurzadzenia`=?,
-                                    `jakczarne`=?
+                                    `jakczarne`=?,
+                                    `rowid_type`=?
                                      where `rowid`=?"
-                    , 'sssiddssissidddddidii',
+                    , 'sssiddssissidddddidiii',
                     array
                     (
                         $this->nrumowy == '' ? "NULL" : $this->nrumowy,
@@ -134,6 +135,7 @@ class agreement extends Model
                         $this->sla == '' ? "NULL" : str_replace(' ', '', str_replace(',', '.', $this->sla)),
                         $this->wartoscurzadzenia == '' ? "NULL" : str_replace(' ', '', str_replace(',', '.', $this->wartoscurzadzenia)),
                         $this->jakczarne == '' ? "NULL" : $this->jakczarne,
+                        $this->rowid_type == '' ? "1" : $this->rowid_type,
                         $this->rowid
                     )
                 );
@@ -156,10 +158,11 @@ class agreement extends Model
                                     `prowizjapartnerska`,
                                     `sla`,
                                     `wartoscurzadzenia`,
-                                    `jakczarne`
+                                    `jakczarne`,
+                                    `rowid_type`
                             ";
                 $this->_table = 'agreements';
-                $result = $this->insert($columnList, 'sssiddsisssidddddidi',
+                $result = $this->insert($columnList, 'sssiddsisssidddddidii',
                     array(
                         $this->nrumowy == '' ? "NULL" : $this->nrumowy,
                         ($this->dataod == '' || $this->dataod == '0000-00-00') ? "NULL" : $this->dataod,
@@ -179,6 +182,7 @@ class agreement extends Model
                         $this->sla == '' ? "NULL" : str_replace(' ', '', str_replace(',', '.', $this->sla)),
                         $this->wartoscurzadzenia == '' ? "NULL" : str_replace(' ', '', str_replace(',', '.', $this->wartoscurzadzenia)),
                         $this->jakczarne == '' ? "NULL" : $this->jakczarne,
+                        $this->rowid_type == '' ? "1" : $this->rowid_type,
                     ));
 
                  $this->rowid = isset($result) ? $result['rowid'] : 0;
@@ -241,6 +245,11 @@ class agreement extends Model
     function getAgreementPrinterCounters($rowid, $serial) {
       $query = "select * from agreement_printers where rowid_agreement={$rowid} and serial='{$serial}'";
       return $this->query($query, null, false);
+    }
+
+    function getAgreementTypes() {
+        $query = "select * from agreement_type";
+        return $this->query($query, null, false);
     }
 
      function getUmowaByRowid($rowid)

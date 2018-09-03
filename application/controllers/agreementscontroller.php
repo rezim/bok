@@ -40,7 +40,9 @@ class agreementsController extends Controller
          unset($client);unset($dataClient);
 
          $smarty->assign('prtcntrowid', 0);
-         
+
+         $smarty->assign('dataAgreementTypes', $this->agreement->getAgreementTypes());
+
          if($_POST['rowid']!='0')
          {
               $dataUmowa = $this->agreement->getUmowaByRowid($_POST['rowid']);
