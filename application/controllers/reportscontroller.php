@@ -462,6 +462,9 @@ class reportsController extends Controller
             $dataReports[$item['rowidclient']]['umowy'][$item['rowidumowa']]['lokalizacja_mail'] = $item['lokalizacja_mail'];
             $dataReports[$item['rowidclient']]['umowy'][$item['rowidumowa']]['lokalizacja_nazwa'] = $item['lokalizacja_nazwa'];
 
+
+            $dataReports[$item['rowidclient']]['umowy'][$item['rowidumowa']]['typ_umowy'] = $item['typ_umowy'];
+
        }
 
         foreach($dataReportsRoczne as $key=>$item)
@@ -599,6 +602,8 @@ class reportsController extends Controller
             $dataReports[$item['rowidclient']]['umowy'][$item['rowidumowa']]['lokalizacja_telefon'] = $item['lokalizacja_telefon'];
             $dataReports[$item['rowidclient']]['umowy'][$item['rowidumowa']]['lokalizacja_mail'] = $item['lokalizacja_mail'];
             $dataReports[$item['rowidclient']]['umowy'][$item['rowidumowa']]['lokalizacja_nazwa'] = $item['lokalizacja_nazwa'];
+
+            $dataReports[$item['rowidclient']]['umowy'][$item['rowidumowa']]['typ_umowy'] = $item['typ_umowy'];
         }
         
          global $smarty;

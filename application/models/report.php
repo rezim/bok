@@ -288,6 +288,7 @@ class report extends Model
                 IFNULL(a.cenainstalacji,0) as 'cenainstalacji',
                 a.activity,
                 a.jakczarne,
+                a_t.description as 'typ_umowy',
                 COALESCE (pp2.ilosc, pp3.ilosc, 0) as strony_black_start, 
                 COALESCE(pp2.datawiadomosci, pp3.datawiadomosci, '0000-00-00') as data_wiadomosci_black_start, 
                 IFNULL(pp1.ilosc, 0) as strony_black_koniec, 
@@ -331,6 +332,8 @@ class report extends Model
                 
                 left outer join printers b on b.serial = pp1.serial
                 left outer join printers bb on bb.serial = a.serial
+                
+                left outer join agreement_type a_t on a.rowid_type = a_t.rowid 
                 
             {$where}
                 order by c.nazwakrotka
@@ -403,6 +406,7 @@ class report extends Model
                 IFNULL(a.cenainstalacji,0) as 'cenainstalacji',
                 a.activity,
                 a.jakczarne,
+                a_t.description as 'typ_umowy',
                 IFNULL((SELECT d.ilosc FROM `pages` d where d.serial = a.serial and DATE(d.datawiadomosci) >= '{$this->dataod}' and DATE(d.datawiadomosci) <= '{$this->datado}' and DATE(d.datawiadomosci)>=DATE(a.dataod)  and d.ilosc is not null
                 order by datawiadomosci asc limit 1),0) as 'strony_black_start', 
                 IFNULL((SELECT d.datawiadomosci FROM `pages` d where d.serial = a.serial and DATE(d.datawiadomosci) >= '{$this->dataod}' and DATE(d.datawiadomosci) <= '{$this->datado}' and DATE(d.datawiadomosci)>=DATE(a.dataod) and d.ilosc is not null
@@ -423,6 +427,7 @@ class report extends Model
             from
             (agreements a left outer join printers b on a.serial=b.serial)
                 left outer join clients c on a.rowidclient=c.rowid and c.activity=1
+                left outer join agreement_type a_t on a.rowid_type = a_t.rowid 
             {$where}
                 order by c.nazwakrotka
             ";

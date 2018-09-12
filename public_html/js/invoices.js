@@ -120,6 +120,7 @@ InvoiceManager = function(api_token, endpoint, company_name, invoice_number_leng
 
     var lockAdd = false;
     this.add = function (invoice, agreementIds) {
+
         if (agreementIds && agreementIds.length > 0 && !lockAdd) {
 
             if (invoice['fakturadlakazdejumowy'] && agreementIds.length > 1) {
@@ -472,8 +473,25 @@ InvoiceManager = function(api_token, endpoint, company_name, invoice_number_leng
         $.each(invoice["umowy"], function(key, agreement) {
 
             if (agreementIds.indexOf(agreement["nrumowy"]) != -1) {
+
+                var title = '';
+
+                switch(agreement["typ_umowy"]) {
+                    case 'wynajem drukarki':
+                        title = getPositionDesc("Wynajem drukarki", agreement, invoice['pokaznumerseryjny'], invoice['pokazstanlicznika']);
+                        break;
+                    case 'wynajem domeny':
+                        title = getPositionDesc("Opłata za domenę", agreement);
+                        break;
+                    case 'hosting':
+                        title = getPositionDesc("Opłata za hosting", agreement);
+                        break;
+                    default:
+                        title = getPositionDesc("Wynajem drukarki", agreement, invoice['pokaznumerseryjny'], invoice['pokazstanlicznika']);
+                }
+
                 positions.push({
-                    "name": getPositionDesc("Wynajem drukarki", agreement, invoice['pokaznumerseryjny'], invoice['pokazstanlicznika']),
+                    "name": title,
                     "additional_info": getLocalization(agreement),
                     "tax": 23,
                     "quantity": 1,
