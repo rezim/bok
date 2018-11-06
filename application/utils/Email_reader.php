@@ -1081,12 +1081,18 @@ function saveMinoltaDataDevice($minoltaMessage) {
     $statement = $mysqli->prepare("INSERT INTO logs (sequencenumber, eventcode, description,timestamp,valuefloat,revision,dateinsert,serial)
                                     VALUES (?,?,?,?,?,?,?,?)");
 
-    $d = DateTime::createFromFormat('Y/m/d H:i:s', $minoltaMessage['timestamp']);
+    $d = DateTime::createFromFormat('d/m/Y H:i:s', $minoltaMessage['timestamp']);
 
-    $statement->bind_param("isssdsss", $minoltaMessage['sequencenumber'], $minoltaMessage['eventcode'], $minoltaMessage['description'],
-        $d->format('Y-m-d H:i:s'), $minoltaMessage['valuefloat'], $minoltaMessage['revision'], date('Y-m-d H:i:s'), $minoltaMessage['serial']);
+    if (!$d->format('Y-m-d H:i:s')) {
 
-    return $statement->execute();
+        $statement->bind_param("isssdsss", $minoltaMessage['sequencenumber'], $minoltaMessage['eventcode'], $minoltaMessage['description'],
+            $d->format('Y-m-d H:i:s'), $minoltaMessage['valuefloat'], $minoltaMessage['revision'], date('Y-m-d H:i:s'), $minoltaMessage['serial']);
+
+        return $statement->execute();
+    } else {
+        echo 'timestamp: - [' . $minoltaMessage['timestamp'] . ']';
+        return false;
+    }
 }
 
 function saveDataDevice($dataDevice, $dataWiadomosci, $ip)
