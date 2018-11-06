@@ -1070,13 +1070,22 @@ function getDataDeviceKyocera($message) {
     return $dataDevice;
 }
 
+function validateDate($date, $format)
+{
+    $d = DateTime::createFromFormat($format, $date);
+    return $d && $d->format($format) == $date;
+}
+
 function saveMinoltaDataDevice($minoltaMessage) {
     global $mysqli;
     $statement = $mysqli->prepare("INSERT INTO logs (sequencenumber, eventcode, description,timestamp,valuefloat,revision,dateinsert,serial)
                                     VALUES (?,?,?,?,?,?,?,?)");
 
-    $d = DateTime::createFromFormat('d/m/Y H:i:s', $minoltaMessage['timestamp']);
-
+    if (validateDate('d/m/Y H:i:s', $minoltaMessage['timestamp'])) {
+        $d = DateTime::createFromFormat('d/m/Y H:i:s', $minoltaMessage['timestamp']);
+    } else if (validateDate('Y/m/d H:i:s', $minoltaMessage['timestamp'])) {
+        $d = DateTime::createFromFormat('Y/m/d H:i:s', $minoltaMessage['timestamp']);
+    }
     $statement->bind_param("isssdsss", $minoltaMessage['sequencenumber'], $minoltaMessage['eventcode'], $minoltaMessage['description'],
         $d->format('Y-m-d H:i:s'), $minoltaMessage['valuefloat'], $minoltaMessage['revision'], date('Y-m-d H:i:s'), $minoltaMessage['serial']);
 
