@@ -1083,16 +1083,15 @@ function saveMinoltaDataDevice($minoltaMessage) {
 
     $d = DateTime::createFromFormat('d/m/Y H:i:s', $minoltaMessage['timestamp']);
 
-    if (!$d->format('Y-m-d H:i:s')) {
-
-        $statement->bind_param("isssdsss", $minoltaMessage['sequencenumber'], $minoltaMessage['eventcode'], $minoltaMessage['description'],
-            $d->format('Y-m-d H:i:s'), $minoltaMessage['valuefloat'], $minoltaMessage['revision'], date('Y-m-d H:i:s'), $minoltaMessage['serial']);
-
-        return $statement->execute();
-    } else {
+    if (!$d || !$d->format('Y-m-d H:i:s')) {
         echo 'timestamp: - [' . $minoltaMessage['timestamp'] . ']';
         return false;
     }
+
+    $statement->bind_param("isssdsss", $minoltaMessage['sequencenumber'], $minoltaMessage['eventcode'], $minoltaMessage['description'],
+        $d->format('Y-m-d H:i:s'), $minoltaMessage['valuefloat'], $minoltaMessage['revision'], date('Y-m-d H:i:s'), $minoltaMessage['serial']);
+
+    return $statement->execute();
 }
 
 function saveDataDevice($dataDevice, $dataWiadomosci, $ip)
