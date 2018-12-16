@@ -89,7 +89,7 @@
                     }                  
             }
                 function sendMailPrzydzielonoZlecenie($rowid,$mail,$tresc,$temat,$clientname,
-                    $osobazglaszajaca='',$nrkontaktowy='',$modelurzadzenia='',$nrseryjny='',$przebieg='',$stantonera='',$adresip='',$firmware='',$terminwykonania='',
+                    $osobazglaszajaca='',$nrkontaktowy='',$modelurzadzenia='',$nrseryjny='',$lokalizacja='',$przebieg='',$stantonera='',$adresip='',$firmware='',$terminwykonania='',
                         $dataZalacznikiFirst
                     )
             {
@@ -142,6 +142,7 @@
                                 -Nr kontaktowy do osoby zgłaszającej:{$nrkontaktowy}<br/>
                                 -Model urządzenia:{$modelurzadzenia}<br/>
                                 -NR Seryjny urządzenia:{$nrseryjny}<br/>
+                                -Lokalizacja urządzenia:{$lokalizacja}<br/>
                                 -Przebieg:{$przebieg}<br/>
                                 -Stan tonera:{$stantonera}<br/>
                                 -Adres IP:{$adresip}<br/>
@@ -167,8 +168,8 @@
                         echo 'Błąd wysłania wiadomości.';
                         echo 'Mailer Error: ' .$mailek->ErrorInfo;
                     } else {
-                        
-                    }                  
+
+                    }
             }
         function sendMailPrzypomnienie($rowid,$mail,$tresc,$temat,$clientname,
                     $osobazglaszajaca='',$nrkontaktowy='',$modelurzadzenia='',$nrseryjny='',$przebieg='',$stantonera='',$adresip='',$firmware='',$pozostalo_godzin=0

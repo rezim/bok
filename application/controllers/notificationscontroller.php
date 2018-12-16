@@ -115,6 +115,7 @@ class notificationsController extends Controller
                           $stantonera='';
                           $adresip='';
                           $firmware='';
+                          $lokalizacja='';
                 }
                 else
                 {
@@ -129,6 +130,9 @@ class notificationsController extends Controller
                           $stantonera=$dataPrinter[0]['black_toner']."%";
                           $adresip=$dataPrinter[0]['ip'];
                           $firmware=$dataPrinter[0]['nr_firmware'];
+                          $lokalizacja = ($dataPrinter[0]['ulica'] && $dataPrinter[0]['ulica'] !== '') ? $dataPrinter[0]['ulica'] : '';
+                          $lokalizacja .= ($dataPrinter[0]['miasto'] && $dataPrinter[0]['miasto'] !== '') ? ', ' . $dataPrinter[0]['miasto'] : '';
+                          $lokalizacja .= ($dataPrinter[0]['kodpocztowy'] && $dataPrinter[0]['kodpocztowy'] !== '') ? ' ' . $dataPrinter[0]['kodpocztowy'] : '';
 
                     unset($printer);
 
@@ -139,12 +143,12 @@ class notificationsController extends Controller
                 $dataZalacznikiFirst = $this->$nameOfModel->getZalacznikiPierwszyMail($wynik['keyval']);
                   
                    $mailing = new mailing();
-              $mailing->sendMailPrzydzielonoZlecenie($wynik['keyval'],$dataMail[0]['mail'], nl2br($this->$nameOfModel->_filedsToEdit['tresc_wiadomosci']['value']),
+                   $mailing->sendMailPrzydzielonoZlecenie($wynik['keyval'],$dataMail[0]['mail'], nl2br($this->$nameOfModel->_filedsToEdit['tresc_wiadomosci']['value']),
                       "[Ticket#{$wynik['keyval']}] ".$this->$nameOfModel->_filedsToEdit['temat']['value'],
                       $wynik['clientname'],
                       $this->$nameOfModel->_filedsToEdit['osobazglaszajaca']['value'],
                       $this->$nameOfModel->_filedsToEdit['nr_telefonu']['value'],
-                      $modelurzadzenia,$nrseryjny,$przebieg,$stantonera,$adresip,$firmware,$this->$nameOfModel->_filedsToEdit['data_planowana']['value'],
+                      $modelurzadzenia,$nrseryjny,$lokalizacja,$przebieg,$stantonera,$adresip,$firmware,$this->$nameOfModel->_filedsToEdit['data_planowana']['value'],
                               $dataZalacznikiFirst
                       );
               unset($mailing);
