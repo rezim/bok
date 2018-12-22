@@ -133,20 +133,34 @@ class notification extends Model
                     'wart_domyslna'=>'1',
                        'value'=>'',
                     ),
-                'rowid_type'=>array(
-                    'baza'=>'rowid_type',
-                    'sql' => '`rowid_type` as `rowid_type`',
-                    'datatype'=>'i',
-                    'activity'=>'1',
-                    'type'=>'combobox',
-                    'label'=>'Typ zgłoszenia',
-                    'class'=>'comboboxForm',
-                    'style'=>'width:250px;min-width:250px;max-width:250px;',
-                    'arr' => 'daneType',
-                    'divek'=>'divNotiWykonanie',
-                    'wart_domyslna'=>'1',
-                    'value'=>'',
-                ),
+                    'rowid_priority'=>array(
+                        'baza'=>'rowid_priority',
+                        'sql' => '`rowid_priority` as `rowid_priority`',
+                        'datatype'=>'i',
+                        'activity'=>'1',
+                        'type'=>'combobox',
+                        'label'=>'Piorytet',
+                        'class'=>'comboboxForm',
+                        'style'=>'width:250px;min-width:250px;max-width:250px;',
+                        'arr' => 'danePriority',
+                        'divek'=>'divNotiWykonanie',
+                        'wart_domyslna'=>'2',
+                        'value'=>'',
+                    ),
+                    'rowid_type'=>array(
+                        'baza'=>'rowid_type',
+                        'sql' => '`rowid_type` as `rowid_type`',
+                        'datatype'=>'i',
+                        'activity'=>'1',
+                        'type'=>'combobox',
+                        'label'=>'Typ zgłoszenia',
+                        'class'=>'comboboxForm',
+                        'style'=>'width:250px;min-width:250px;max-width:250px;',
+                        'arr' => 'daneType',
+                        'divek'=>'divNotiWykonanie',
+                        'wart_domyslna'=>'1',
+                        'value'=>'',
+                    ),
                  'temat'=>array(
                         'baza'=>'temat',
                         'sql' => '`temat` as `temat`',
@@ -513,9 +527,20 @@ class notification extends Model
     }
     function getStatus()
     {
-        
         $query = "select * from notifications_status ";
         return $this->query($query,null,false); 
+    }
+
+    function getPriority()
+    {
+        $query = "select rowid as id,nazwa as dane from notifications_priority ";
+        return $this->query($query,'id',false);
+    }
+
+    function getPriorityById($rowid)
+    {
+        $query = "select nazwa from notifications_priority where rowid = " . $rowid;
+        return $this->query($query,null,false);
     }
 
     function getType()
@@ -621,6 +646,7 @@ a.SLA-(( unix_timestamp(now())
                 b.nazwakrotka as 'nazwakrotka',
                 a.serial as 'serial',
                 a.rowid_type as 'rowid_type',
+                a.rowid_priority as 'rowid_priority',
                 a.date_insert as 'date_insert',
                 a.date_zakonczenia as 'date_zakonczenia',
                 c.sla as 'sla',

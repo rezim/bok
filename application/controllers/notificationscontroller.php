@@ -29,11 +29,13 @@ class notificationsController extends Controller
                 
                 $daneWykonuje = $this->notification->getOsoby();
                 $daneStatus = $this->notification->getStatusy();
+                $danePriority = $this->notification->getPriority();
                 $daneType = $this->notification->getTypy();
 
                 global $smarty;
                 $smarty->assign('daneWykonuje',$daneWykonuje);
                 $smarty->assign('daneStatus',$daneStatus);
+                $smarty->assign('danePriority',$danePriority);
                 $smarty->assign('daneType',$daneType);
 
                 if ($_POST['keyVal']) {
@@ -141,17 +143,20 @@ class notificationsController extends Controller
               
             
                 $dataZalacznikiFirst = $this->$nameOfModel->getZalacznikiPierwszyMail($wynik['keyval']);
-                  
+
+                   $priority = $this->notification->getPriorityById($this->$nameOfModel->_filedsToEdit['rowid_priority']['value']);
+                   $priority = (!empty($priority) && $priority[0]['nazwa'] != '') ? $priority[0]['nazwa'] : '';
+
                    $mailing = new mailing();
                    $mailing->sendMailPrzydzielonoZlecenie($wynik['keyval'],$dataMail[0]['mail'], nl2br($this->$nameOfModel->_filedsToEdit['tresc_wiadomosci']['value']),
                       "[Ticket#{$wynik['keyval']}] ".$this->$nameOfModel->_filedsToEdit['temat']['value'],
                       $wynik['clientname'],
                       $this->$nameOfModel->_filedsToEdit['osobazglaszajaca']['value'],
-                      $this->$nameOfModel->_filedsToEdit['nr_telefonu']['value'],
+                      $this->$nameOfModel->_filedsToEdit['nr_telefonu']['value'], $priority,
                       $modelurzadzenia,$nrseryjny,$lokalizacja,$przebieg,$stantonera,$adresip,$firmware,$this->$nameOfModel->_filedsToEdit['data_planowana']['value'],
                               $dataZalacznikiFirst
                       );
-              unset($mailing);
+                unset($mailing);
                 
             }
             

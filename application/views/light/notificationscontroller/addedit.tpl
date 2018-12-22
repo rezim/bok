@@ -285,17 +285,19 @@
                                          {if isset($item.wymaganylevel) && $item.wymaganylevel!=''}wymaganylevel='{$item.wymaganylevel}' wymaganyzrobiony='0' {/if}
                                          {if isset($item.idzewnetrznespan) && $item.idzewnetrznespan!=''}zewnetrznyspan='{$item.idzewnetrznespan}'{/if}
                                           >
-                                        <option value="" selected></option>
+                                        <option value=""></option>
                                         {if isset($item.arr) && $item.arr!=''}
                                                 {foreach from=${$item.arr} item=item2 key=key2}
                                                     <option value="{$key2}" 
                                                          {if isset($item.value)  && $item.value!=''}
-                                                                {if $key2==  $item.value}selected{/if}>{$item.value}</option> 
+                                                                {if $key2==  $item.value}selected{/if}>{$item.value}</option>
                                                          {elseif !isset($dane)}
-                                                                {if isset($item.wart_domyslna) && $item.wart_domyslna==$key2}selected{/if}>{$item2.dane}</option> 
+                                                                {if isset($item.wart_domyslna) && $item.wart_domyslna==$key2}selected{/if}>{$item2.dane}</option>
+                                                         {elseif $dane[0][$item.baza]}
+                                                             {if isset($dane) && $key2==$dane[0][$item.baza]}selected{/if}>{$item2.dane}</option>
                                                          {else}
-                                                             {if isset($dane) && $key2==  $dane[0][$item.baza]}selected{/if}>{$item2.dane}</option> 
-                                                          {/if}
+                                                             {if isset($item.wart_domyslna) && $item.wart_domyslna==$key2}selected{/if}>{$item2.dane}</option>
+                                                         {/if}
                                                 {/foreach}
                                         {/if}
                                     </select>

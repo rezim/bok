@@ -89,7 +89,7 @@
                     }                  
             }
                 function sendMailPrzydzielonoZlecenie($rowid,$mail,$tresc,$temat,$clientname,
-                    $osobazglaszajaca='',$nrkontaktowy='',$modelurzadzenia='',$nrseryjny='',$lokalizacja='',$przebieg='',$stantonera='',$adresip='',$firmware='',$terminwykonania='',
+                    $osobazglaszajaca='',$nrkontaktowy='',$priority='',$modelurzadzenia='',$nrseryjny='',$lokalizacja='',$przebieg='',$stantonera='',$adresip='',$firmware='',$terminwykonania='',
                         $dataZalacznikiFirst
                     )
             {
@@ -137,6 +137,7 @@
                                 Przydzielono nowe zgłoszenie do wykonania :<br/>
                                 -Nr zgłoszenia: {$rowid}<br/>
                                 -Termin wykonania : {$terminwykonania}<br/>
+                                -Piorytet : {$priority}<br/>
                                 -Nazwa klienta : {$clientname}<br/>
                                 -Osoba zgłaszająca :{$osobazglaszajaca}<br/>
                                 -Nr kontaktowy do osoby zgłaszającej:{$nrkontaktowy}<br/>
