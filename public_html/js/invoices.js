@@ -453,7 +453,7 @@ InvoiceManager = function(api_token, endpoint, company_name, invoice_number_leng
 
     var getCounterState = function(agreement) {
         var counterState = "licznik:" + agreement["strony_black_koniec"];
-        if (agreement["wartosckolor"] > 0) {
+        if (agreement["strony_kolor_koniec"]) {
             counterState += "/" + agreement["strony_kolor_koniec"];
         }
 
