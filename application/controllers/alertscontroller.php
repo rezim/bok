@@ -27,34 +27,30 @@ class alertsController extends Controller
     {
         global $smarty;
         $this->alert->populateWithPost();
-        $dataPrinters = $this->alert->getPrinters();
-        $smarty->assign('dataPrinters',$dataPrinters);
+
+        $dataAlerts = $this->alert->getAlerts();
+
+        $smarty->assign('dataAlerts',$dataAlerts);
+
         $smarty->assign('czycolorbox',$_POST['czycolorbox']);
-        unset($dataPrinters);
+
+        unset($dataAlerts);
     }
     function delete()
     {
-        $umowa = new agreement();
-        $dane = $umowa->getUmowaByPrinter($_POST['serial']);
-        unset($umowa);
-        if(count($dane)!=0)
-        {
-            echo('Ta drukarka jest przypisana do umowy  najpierw usuń umowę.');
-        }
-        else
-            echo(json_encode($this->alert->delete($_POST['serial'])));
+
     }
     function addedit()
     {
 
-        global $smarty;
-        if($_POST['serial']!='')
-        {
-            $dataPrinter = $this->alert->getPrinterBySerial($_POST['serial']);
-            $smarty->assign('dataPrinter',$dataPrinter );
-            unset($dataPrinter);
-        }
-        $smarty->assign('serial',$_POST['serial']);
+//        global $smarty;
+//        if($_POST['serial']!='')
+//        {
+//            $dataPrinter = $this->alert->getPrinterBySerial($_POST['serial']);
+//            $smarty->assign('dataPrinter',$dataPrinter );
+//            unset($dataPrinter);
+//        }
+//        $smarty->assign('serial',$_POST['serial']);
     }
     function saveupdate()
     {

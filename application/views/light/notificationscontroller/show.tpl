@@ -77,7 +77,7 @@
                         changeYear: true,});
     {if isset($queryString) && $queryString[0]=='addeditnoti'}
         $("#divFilterNoti").hide();
-        showNewNotiAdd('{$queryString[1]}')
+        showNewNotiAdd('{$queryString[1]}', '{$queryString[2]}', '{$queryString[3]}')
     {else}
         $("#divFilterNoti").show();
         pokazNotiFi();

@@ -1375,13 +1375,23 @@ function showNotification(rowid)
     });
 }
 
-function showNewNotiAdd(rowid)
+function showNewNotiAdd(rowid, serial, tonertype)
 {
     
     if(document.getElementById("divFilterNoti")===null || document.getElementById("divFilterNoti")===undefined)
     {
-        
-        window.location=sciezka+'/notifications/show/addeditnoti/'+rowid;
+        newLocation=sciezka+'/notifications/show/addeditnoti/'+rowid;
+
+        if (serial) {
+            newLocation += '/' + serial;
+            if (tonertype) {
+                newLocation += '/' + tonertype;
+            }
+        }
+        window.location = newLocation;
+
+        // // not sure why it is not working for case whit only rowid, it should
+        // if (serial && tonertype) return;
     }
    $("#divFilterNoti").hide();
     var doc=document,objCenter = doc.getElementById('divRightCenter'),objLoad = doc.getElementById('divLoader');
@@ -1392,7 +1402,9 @@ function showNewNotiAdd(rowid)
                           type: 'POST',
                           data: {
                                   keyVal:rowid,
-                                  keyname:'rowid'
+                                  keyname:'rowid',
+                                  serial: serial,
+                                  tonertype: tonertype
                                 },
                           success: function(data) {
                           

@@ -38,8 +38,57 @@ class notificationsController extends Controller
                 $smarty->assign('danePriority',$danePriority);
                 $smarty->assign('daneType',$daneType);
 
-                if ($_POST['keyVal']) {
-                    $smarty->assign('agreementSerial', $this->notification->getAgreementSerial($_POST['keyVal'])[0]['serial']);
+                if (isset($_POST['serial']) && $_POST['serial']) {
+
+                    $printerData = $this->notification->getPrinterDataBySerial($_POST['serial']);
+
+                    $smarty->assign('agreementSerial', $_POST['serial']);
+
+                    $this->notification->_filedsToEdit['temat']['readonly']=1;
+
+                    $dane = array(array(
+                        'rowid_client' => $printerData[0]['clientid'],
+                        'clientdane' => $printerData[0]['clientname'],
+                        'serial' => $_POST['serial'],
+                        'serialdane' => $_POST['serial'],
+                        'rowid_agreements' => $printerData[0]['agreementid'],
+                        'umowadane' => $printerData[0]['agreementnumber'],
+                        'osobazglaszajaca' => $_SESSION['user']['imie'] . ' ' . $_SESSION['user']['nazwisko'],
+                        'email' => $_SESSION['user']['mail'],
+                        'nr_telefonu' => null,
+                        'sla' => null,
+                        'wykonuje' => null,
+                        'status' => null,
+                        'rowid_priority' => 1,
+                        'rowid_type' => 2,
+                        'temat' => 'Wymiana tonera ' . $_POST['tonertype'],
+                        'date_email' => null,
+                        'data_planowana' => null,
+                        'tresc_wiadomosci' => 'Wymagana jest wymiana tonera ' . $_POST['tonertype'] . '.',
+                        'diagnoza' => null,
+                        'cozrobione' => null,
+                        'uzyte_materialy' => null,
+                        'ilosc_km' => null,
+                        'czas_pracy' => null,
+                        'wartosc_materialow' => null,
+                        'user_podjecia' => null,
+                        'date_podjecia' => null,
+                        'user_zakonczenia' => null,
+                        'date_zakonczenia' => null,
+                        'user_insert' => null,
+                        'date_insert' => null,
+                        'activity' => 1,
+                        'user_delete' => null,
+                        'date_delete' => null,
+                    ));
+                    $smarty->assign('dane',$dane);
+
+                    unset($dane);
+
+                } else {
+                    if ($_POST['keyVal']) {
+                        $smarty->assign('agreementSerial', $this->notification->getAgreementSerial($_POST['keyVal'])[0]['serial']);
+                    }
                 }
 
                 parent::addedit();

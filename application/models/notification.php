@@ -435,6 +435,7 @@ class notification extends Model
                 );
         // </editor-fold> 
     protected $_keyname='rowid';
+    protected $_serial='serial';
     
     
     protected $filterklient='',$filternrseryjny='',$filternrzlecenia='',$filterdataod='',$filterdatado='',$filterstatusy='';
@@ -680,5 +681,14 @@ a.SLA-(( unix_timestamp(now())
                
         return $this->query($query,null,false); 
         
+    }
+
+    function getPrinterDataBySerial($serial) {
+        $query = "  
+        select c.rowid as clientid, c.nazwakrotka as clientname, a.rowid as agreementid, a.nrumowy as agreementnumber 
+        from printers p inner join agreements a on p.serial = a.serial INNER join clients c on a.rowidclient = c.rowid
+        where p.serial = '" . $serial . "'";
+
+        return $this->query($query,null,false);
     }
 }
