@@ -159,6 +159,9 @@
                     {if isset($smarty.session.przypisanemenu['li_alertsshow'])}
                         <li id='li_alertshow' class='last'><a href='{$smarty.const.SCIEZKA}/alerts/show'><span>Alerty</span></a></li>
                     {/if}
+                    {if isset($smarty.session.przypisanemenu['li_messagesshow'])}
+                        <li id='li_alertshow' class='last'><a href='{$smarty.const.SCIEZKA}/messages/show'><span>Tablica</span></a></li>
+                    {/if}
                 </ul>
          </div>
    

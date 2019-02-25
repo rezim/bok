@@ -118,3 +118,32 @@ table.notification-popup td.text-field {
 .printerCounters td.number {
     text-align: right;
 }
+
+.messages {
+    text-align: left;
+    margin-top: 15px;
+}
+
+.messages .created {
+    color: #bbb;
+}
+
+.messages .owner {
+    font-weight: bold;
+}
+
+.messages .message {
+    border-bottom: solid 1px #ccc;
+    margin-bottom: 20px;
+    padding: 5px 0;
+}
+
+.messages .addNew {
+    margin: 15px 0;
+}
+
+.messages .action {
+    color: red;
+    float: right;
+    font-size: 16px;
+}

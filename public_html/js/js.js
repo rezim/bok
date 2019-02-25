@@ -295,6 +295,10 @@ function showOk(objOk,objLoad,info,objClick,czyreload,showtime,adtrestoredirect)
                                                         {
                                                           generujCustom();
                                                         }
+                                                        if(document.getElementById("tableMessages")!==null)
+                                                        {
+                                                            showMessages();
+                                                        }
                                                 }
                                             else
                                             {
@@ -563,6 +567,7 @@ function zapiszStanNa(serial)
             }
             });
 }
+
 function pokazKlientow(objtoshow,objtoload,czycolorbox)
 {
    
@@ -2030,4 +2035,96 @@ function closeColorbox(callback) {
     if (callback) {
         callback();
     }
+}
+
+function saveUpdateMessage(message, rowid)
+{
+    var
+        doc=document,
+        objLoad=doc.getElementById('actionloader'),
+        objOk = doc.getElementById('actionok'),
+        objError = doc.getElementById('actionerror'),
+        objClick = doc.getElementById('actionbuttonclick');
+
+    $.ajax({
+        type:'POST',
+        url:sciezka+"/messages/saveupdate/notemplate",
+        async:true,
+        data:
+        {
+            message: doc.getElementById('messageArea').value,
+            rowid: rowid
+        },
+        success: function(dane)
+        {
+            // checkReplay(objError,objLoad,null,objClick,dane,objOk,1,3000,null);
+            showMessages();
+            doc.getElementById('messageArea').value = '';
+            return false;
+        },
+        error: function()
+        {
+            showError(objError,objLoad,null,objClick,3000);
+            return false;
+        }
+    });
+}
+
+function showMessages()
+{
+    var doc=document,objCenter = doc.getElementById('divRightCenter'),objLoad = doc.getElementById('divLoader');
+    objCenter.innerHTML='';
+    objLoad.innerHTML = '<p><img src="light/img/loader.gif" alt="Loading" /></p>';
+
+
+    $.ajax({
+        url:sciezka+"/messages/showdane/todiv",
+        type: 'POST',
+        data: {
+        },
+        success: function(data) {
+            objCenter.innerHTML = data;
+            $(objCenter).animate({opacity: 1}, 1500 );
+        },
+        error: function(){
+            objCenter.innerHTML = 'Problem z pobraniem wiadomości';
+        }
+    }).done(function ()
+    {
+        objLoad.innerHTML = '';
+        uprawnienia();
+    });
+    delete objCenter;delete objLoad;
+    return false;
+}
+
+function removeMessage(rowid) {
+
+    if (confirm('Czy na pewno chcesz usunąć wiadomość ?')) {
+
+        var doc = document, objCenter = doc.getElementById('divRightCenter'), objLoad = doc.getElementById('divLoader');
+        objCenter.innerHTML = '';
+        objLoad.innerHTML = '<p><img src="light/img/loader.gif" alt="Loading" /></p>';
+
+
+        $.ajax({
+            url: sciezka + "/messages/remove/todiv",
+            type: 'POST',
+            data: {
+                rowid: rowid
+            },
+            success: function (data) {
+                showMessages();
+            },
+            error: function () {
+                objCenter.innerHTML = 'Problem z usunięciem wiadomości';
+            }
+        }).done(function () {
+            objLoad.innerHTML = '';
+            uprawnienia();
+        });
+        delete objCenter;
+        delete objLoad;
+    }
+    return false;
 }
