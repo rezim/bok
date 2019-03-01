@@ -13,7 +13,8 @@ class alert extends Model
             INNER JOIN (
                 SELECT MAX(dateinsert) as maxdateinsert, serial, eventcode, 
                     IF(INSTR(eventcode, 'Cyan') > 0, 'Cyan', 
-                       IF(INSTR(eventcode, 'Magenta') > 0, 'Magenta', 'Black')
+                       IF(INSTR(eventcode, 'Magenta') > 0, 'Magenta', 
+                          IF(INSTR(eventcode, 'Zolty') > 0, 'Yellow', 'Black'))
                     ) as toner
                 FROM `logs`
                 WHERE dateinsert BETWEEN DATE_SUB(NOW(), INTERVAL " . $days ." DAY) AND NOW()
@@ -37,7 +38,7 @@ class alert extends Model
             LEFT JOIN 
             
             (SELECT rowid, serial, replace(temat, 'Wymiana tonera ', '') as temattoner FROM `notifications`
-			where temat in ('Wymiana tonera Black', 'Wymiana tonera Magenta', 'Wymiana tonera Cyan')
+			where temat in ('Wymiana tonera Black', 'Wymiana tonera Magenta', 'Wymiana tonera Cyan', 'Wymiana tonera Yellow')
       		AND date_insert BETWEEN DATE_SUB(NOW(), INTERVAL " . $days . " DAY) AND NOW()) n 
             
             ON p.serial = n.serial and n.temattoner like t.toner_type
