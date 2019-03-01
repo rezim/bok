@@ -172,8 +172,11 @@ function email_pull()
         // for My Slow Low, check if I found an image attachment
 
         // TR NOTE: check if body contains information indicates minolta service data
-        if (($minoltaMessage = isMinoltaServiceMessage($email['body'])) != null) {
-
+        if (
+            (($minoltaMessage = isMinoltaServiceMessage($email['body'])) != null)
+            ||
+            (($minoltaMessage = isMinoltaServiceMessage(base64_decode ($email['body']))) != null)
+        ) {
             if (!saveMinoltaDataDevice($minoltaMessage)) {
                 $emailReader->move($email['index'], 'INBOX.Rejected');
                 continue;
@@ -1667,6 +1670,10 @@ function isMinoltaServiceMessage($email_body) {
         }
         if (startWith(preg_replace('/[^A-Za-z0-9:]/','',$row), "BBd")) {
             $result['eventcode'] = $value;
+
+            if (base64_encode($result['eventcode']) == 'VXp1cGUBQm5paiB0b25lci4gAXvzAUJ0eQ==') {
+                $result['eventcode'] = 'UzupeBnij toner. Zolty';
+            }
         }
     }
 
