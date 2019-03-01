@@ -9,9 +9,9 @@ class alert extends Model
             "
             Select t.serial, t.toner_type, t.date, t.toner_left, p.model, p.product_number, p.ulica, p.miasto, p.kodpocztowy, p.telefon, p.mail, p.nazwa, p.osobakontaktowa, n.rowid as notification_rowid From 
             (
-            SELECT l1.serial as serial, l2.toner as toner_type, l1.dateinsert as date, '" . $toner_left ."' as toner_left from `logs` l1
+            SELECT l1.serial as serial, l2.toner as toner_type, l1.timestamp as date, '" . $toner_left ."' as toner_left from `logs` l1
             INNER JOIN (
-                SELECT MAX(dateinsert) as maxdateinsert, serial, eventcode, 
+                SELECT MAX(timestamp) as maxtimestamp, serial, eventcode, 
                     IF(INSTR(eventcode, 'Cyan') > 0, 'Cyan', 
                        IF(INSTR(eventcode, 'Magenta') > 0, 'Magenta', 
                           IF(INSTR(eventcode, 'Zolty') > 0, 'Yellow', 'Black'))
@@ -22,7 +22,7 @@ class alert extends Model
                 GROUP BY serial, eventcode
             ) l2 
             ON 
-            l1.serial = l2.serial and l1.eventcode = l2.eventcode and l1.dateinsert = l2.maxdateinsert
+            l1.serial = l2.serial and l1.eventcode = l2.eventcode and l1.timestamp = l2.maxtimestamp
             
             UNION 
             
