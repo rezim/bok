@@ -35,10 +35,15 @@
         <tr>
             <td>{$item.serial|escape:'htmlall'}</td>
             <td style="text-align: center">
+
+                {if ($item.toner_type !== 'Wymiana pojemnika')}
                     {$item.toner_left} %
-                <img class='{if $item.toner_type !== 'Black'}imgColor{else}imgBlack{/if}'
-                     src='{$smarty.const.SCIEZKA}/{$smarty.const.SMARTVERSION}/img/fake.png' />
-                {$item.toner_type|escape:'htmlall'}
+                    <img class='{if $item.toner_type !== 'Black'}imgColor{else}imgBlack{/if}'
+                         src='{$smarty.const.SCIEZKA}/{$smarty.const.SMARTVERSION}/img/fake.png' />
+                    {$item.toner_type|escape:'htmlall'}
+                {else}
+                    {$item.toner_type|escape:'htmlall'}
+                {/if}
             </td>
             <td>{$item.product_number|escape:'htmlall'}&nbsp;{$item.model|escape:'htmlall'}</td>
             <td>{$item.nazwa|escape:'htmlall'}</td>

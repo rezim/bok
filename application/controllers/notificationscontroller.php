@@ -61,10 +61,13 @@ class notificationsController extends Controller
                         'status' => null,
                         'rowid_priority' => 1,
                         'rowid_type' => 2,
-                        'temat' => 'Wymiana tonera ' . $_POST['tonertype'],
+                        'temat' => $_POST['tonertype'] !== 'Wymiana pojemnika' ?
+                            'Wymiana tonera ' . $_POST['tonertype'] : 'Wymiana pojemnika na toner',
                         'date_email' => null,
                         'data_planowana' => null,
-                        'tresc_wiadomosci' => 'Wymagana jest wymiana tonera ' . $_POST['tonertype'] . '.',
+                        'tresc_wiadomosci' => $_POST['tonertype'] !== 'Wymiana pojemnika' ?
+                            'Wymagana jest wymiana tonera ' . $_POST['tonertype'] . '.' :
+                            'Wymagana jest wymiana pojemnika na toner',
                         'diagnoza' => null,
                         'cozrobione' => null,
                         'uzyte_materialy' => null,
