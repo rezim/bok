@@ -315,7 +315,7 @@ function _readMinolta($message, $dataWiadomosci, $ip)
 }
 
 function _readKyocera($message, $dataWiadomosci, $ip) {
-    $dataDevice = getDataDeviceKyocera($message);
+    $dataDevice = getDataDeviceKyocera($message, $dataWiadomosci, $ip);
 
     if (count($dataDevice) == 0) {
         return false;
@@ -1003,7 +1003,7 @@ function getDataDeviceMinolta($message)
 }
 
 
-function getDataDeviceKyocera($message) {
+function getDataDeviceKyocera($message, $dataWiadomosci, $ip) {
     $messageRows = preg_split('/\r\n|\r|\n/', $message);
 
     $data = array();
@@ -1037,6 +1037,13 @@ function getDataDeviceKyocera($message) {
                     }
                 }
             }
+        } else if (strpos(trim($item), '[ ]', 0) === 0 || strpos(trim($item), '[*]', 0) === 0) {
+            $property = explode(" ", trim( str_replace("[ ]", "[-]", $item)));
+            $propertyValue = array_shift($property);
+            $propertyName = implode(" ", $property);
+            if (!array_key_exists($propertyName, $data)) {
+                $data[$propertyName] = $propertyValue === "[*]" ? true: false;
+            }
         } else if ($item === '') {
             // toners
             unset($counterPropertyArray);
@@ -1068,7 +1075,25 @@ function getDataDeviceKyocera($message) {
     $dataDevice['system']['magentadrum_toner'] = "";
     $dataDevice['system']['yellowdrum_toner'] = "";
     $dataDevice['system']['fuser'] = "";
+//    $dataDevice['system']['low_toner'] = $data['Low Toner'];
+//    $dataDevice['system']['add_toner'] = $data['Add Toner'];
+//    $dataDevice['system']['paper_jam'] = $data['Paper Jam'];
+//    $dataDevice['system']['add_paper'] = $data['Add Paper'];
+//    $dataDevice['system']['cover_open'] = $data['Cover Open'];
+//    $dataDevice['system']['other_errors'] = $data['All Other Errors'];
+//    $dataDevice['system']['full_waste_toner'] = $data['Near Full Waste Toner'];
 
+    // if it is needed, add an event log to replace toner for this printer
+    if ($data['Near Full Waste Toner']) {
+        $eventLog = array();
+        $eventLog['sequencenumber'] = -1;
+        $eventLog['eventcode'] = 'Wymien pojemnik na zuzyty toner.';
+        $eventLog['description'] = '';
+        $eventLog['timestamp'] = $dataWiadomosci;
+        $eventLog['valuefloat'] = -1;
+        $eventLog['revision'] = $ip;
+        $dataDevice['logs'][] = $eventLog;
+    }
 
     return $dataDevice;
 }
@@ -1124,8 +1149,7 @@ function saveDataDevice($dataDevice, $dataWiadomosci, $ip)
                                  ," . ($dataDevice['system']['cyan_toner'] == '' ? 'null' : $dataDevice['system']['cyan_toner']) . "
                                 ," . ($dataDevice['system']['magenta_toner'] == '' ? 'null' : $dataDevice['system']['magenta_toner']) . "
                                 ," . ($dataDevice['system']['yellow_toner'] == '' ? 'null' : $dataDevice['system']['yellow_toner']) . "
-                                ," . ($dataDevice['system']['blackdrum_toner'] == '' ? 'null' : $dataDevice['system']['blackdrum_toner']) . "
-                                ," . ($dataDevice['system']['cyandrum_toner'] == '' ? 'null' : $dataDevice['system']['cyandrum_toner']) . "
+                                ," . ($dataDevice['system']['blackdrum_toner'] == '' ? 'null' : $dataDevice['system']['blackdrum_toner']) . " ," . ($dataDevice['system']['cyandrum_toner'] == '' ? 'null' : $dataDevice['system']['cyandrum_toner']) . "
                                 ," . ($dataDevice['system']['magentadrum_toner'] == '' ? 'null' : $dataDevice['system']['magentadrum_toner']) . "
                                 ," . ($dataDevice['system']['yellowdrum_toner'] == '' ? 'null' : $dataDevice['system']['yellowdrum_toner']) . "
                                 ," . ($dataDevice['system']['fuser'] == '' ? 'null' : $dataDevice['system']['fuser']) . "
