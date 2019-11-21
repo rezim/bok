@@ -394,8 +394,17 @@ ProfitabilityCtrl = function($scope, rest, $q, $filter, $interpolate, appConf) {
         var devices = [];
         var currentElement;
         angular.forEach(positions, function(position) {
+            var newDeviceName;
             if (position.name.startsWith('Wynajem drukarki')) {
-                var newDeviceName = position.name.split('Wynajem drukarki ')[1];
+                newDeviceName = position.name.split('Wynajem drukarki ')[1];
+                currentElement = {name: newDeviceName, sum: parseFloat(position.total_price_net)};
+                devices.push(currentElement);
+            } else if (position.name.startsWith('Wynajem niszczarki')) {
+                newDeviceName = position.name.split('Wynajem niszczarki ')[1];
+                    currentElement = {name: newDeviceName, sum: parseFloat(position.total_price_net)};
+                    devices.push(currentElement);
+            } else if (position.name.startsWith('Wynajem urządzenia')) {
+                newDeviceName = position.name.split('Wynajem urządzenia ')[1];
                 currentElement = {name: newDeviceName, sum: parseFloat(position.total_price_net)};
                 devices.push(currentElement);
             } else {

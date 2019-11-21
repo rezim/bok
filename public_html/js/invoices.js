@@ -486,8 +486,11 @@ InvoiceManager = function(api_token, endpoint, company_name, invoice_number_leng
                     case 'hosting':
                         title = getPositionDesc("Opłata za hosting", agreement);
                         break;
+                    case 'wynajem niszczarki':
+                        title = getPositionDesc("Wynajem niszczarki", agreement, invoice['pokaznumerseryjny'], invoice['pokazstanlicznika']);
+                        break;
                     default:
-                        title = getPositionDesc("Wynajem drukarki", agreement, invoice['pokaznumerseryjny'], invoice['pokazstanlicznika']);
+                        title = getPositionDesc("Wynajem urządzenia", agreement, invoice['pokaznumerseryjny'], invoice['pokazstanlicznika']);
                 }
 
                 positions.push({
