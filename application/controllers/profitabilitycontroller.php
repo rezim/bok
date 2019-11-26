@@ -1,5 +1,5 @@
 <?php
-class profitabilityController extends Controller
+class profitabilityController extends InvoicesController
 {  
     function show()
     {
@@ -28,11 +28,11 @@ class profitabilityController extends Controller
     }
 
     function getinvoices() {
-       if ($_POST['period'] && $_POST['date_from'] && $_POST['date_to']) {
-           echo $this->profitability->getInvoices($_POST['period'], $_POST['date_from'], $_POST['date_to']);
-       } else {
-           echo "błędne parametry wejściowe";
-       }
+        if ($_POST['period'] && $_POST['date_from'] && $_POST['date_to']) {
+            echo $this->getInvoicesByDateRange($_POST['period'], $_POST['date_from'], $_POST['date_to']);
+        } else {
+            echo "błędne parametry wejściowe";
+        }
     }
 
 }
