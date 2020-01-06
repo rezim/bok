@@ -14,7 +14,7 @@ class message extends Model
 
     function saveupdate() {
         $columnList = "`message`,`owner`, `type`";
-        return $this->insert($columnList,'ssd',array($this->message, $_SESSION['user']['id'], 0));
+        return $this->insert($columnList,'ssd',array($this->message, $_SESSION['user']['id'], "0"));
     }
 
     function remove() {

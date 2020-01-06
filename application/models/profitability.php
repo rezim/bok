@@ -72,9 +72,4 @@ class profitability extends Model
 
         return json_encode($invoices);
     }
-
-    function getInvoicesByIds() {
-
-    }
-
 }

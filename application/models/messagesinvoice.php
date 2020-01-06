@@ -14,7 +14,8 @@ class messagesinvoice extends Model
 
     function saveupdate() {
         $columnList = "`message`,`owner`, `type`";
-        return $this->insert($columnList,'ssd',array($this->message, $_SESSION['user']['id'], 1));
+        $this->_table = 'messages';
+        return $this->insert($columnList,'ssd',array($this->message, $_SESSION['user']['id'], "1"));
     }
 
     function remove() {

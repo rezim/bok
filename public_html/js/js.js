@@ -2037,7 +2037,7 @@ function closeColorbox(callback) {
     }
 }
 
-function saveUpdateMessage(message, rowid, type)
+function saveUpdateMessage(type)
 {
     var
         doc=document,
@@ -2052,8 +2052,7 @@ function saveUpdateMessage(message, rowid, type)
         async:true,
         data:
         {
-            message: doc.getElementById('messageArea').value,
-            rowid: rowid
+            message: doc.getElementById('messageArea').value
         },
         success: function(dane)
         {

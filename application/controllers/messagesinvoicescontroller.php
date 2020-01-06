@@ -20,7 +20,7 @@ class messagesinvoicesController extends Controller
                 die('Wpisz wiadomość');
 
             $this->messagesinvoice->populateWithPost();
-            echo(json_encode($this->messageinvoice->saveupdate()));
+            echo(json_encode($this->messagesinvoice->saveupdate()));
         }
         else
         {
