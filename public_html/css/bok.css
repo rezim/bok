@@ -1,3 +1,8 @@
+.center-all {
+    padding-top: 20%;
+    padding-left: 50%
+}
+
 table.notification-popup
 {
     margin: 10px;
@@ -146,4 +151,15 @@ table.notification-popup td.text-field {
     color: red;
     float: right;
     font-size: 16px;
+}
+
+.sortable {
+    cursor: pointer;
+}
+
+.sortorder:after {
+    content: '\25b2';   // BLACK UP-POINTING TRIANGLE
+}
+.sortorder.reverse:after {
+    content: '\25bc';   // BLACK DOWN-POINTING TRIANGLE
 }

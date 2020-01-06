@@ -69,6 +69,7 @@
         <script type="text/javascript" src="{$smarty.const.SCIEZKA}/js/angular/app.config.js"></script>
         <script type="text/javascript" src="{$smarty.const.SCIEZKA}/js/angular/service/rest.js"></script>
         <script type="text/javascript" src="{$smarty.const.SCIEZKA}/js/angular/ctrl/profitabilityCtrl.js?{$smarty.now}"></script>
+        <script type="text/javascript" src="{$smarty.const.SCIEZKA}/js/angular/ctrl/clientInvoicesCtrl.js?{$smarty.now}"></script>
         <script type="text/javascript" src="{$smarty.const.SCIEZKA}/js/angular/ctrl/userSharesCtrl.js?{$smarty.now}"></script>
         <script type="text/javascript" src="{$smarty.const.SCIEZKA}/js/angular/ctrl/serviceCtrl.js?{$smarty.now}"></script>
 
@@ -161,6 +162,12 @@
                     {/if}
                     {if isset($smarty.session.przypisanemenu['li_messagesshow'])}
                         <li id='li_alertshow' class='last'><a href='{$smarty.const.SCIEZKA}/messages/show'><span>Tablica</span></a></li>
+                    {/if}
+                    {if isset($smarty.session.przypisanemenu['li_messagesinvoicesshow'])}
+                        <li id='li_alertshow' class='last'><a href='{$smarty.const.SCIEZKA}/messagesinvoices/show'><span>Tablica Płatności</span></a></li>
+                    {/if}
+                    {if isset($smarty.session.przypisanemenu['li_clientinvoicesshow'])}
+                        <li id='li_clientinvoicesshow' class='last'><a href='{$smarty.const.SCIEZKA}/clientinvoices/show'><span>Faktury</span></a></li>
                     {/if}
                 </ul>
          </div>

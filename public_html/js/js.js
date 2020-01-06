@@ -2037,7 +2037,7 @@ function closeColorbox(callback) {
     }
 }
 
-function saveUpdateMessage(message, rowid)
+function saveUpdateMessage(message, rowid, type)
 {
     var
         doc=document,
@@ -2048,7 +2048,7 @@ function saveUpdateMessage(message, rowid)
 
     $.ajax({
         type:'POST',
-        url:sciezka+"/messages/saveupdate/notemplate",
+        url:sciezka+ ((!type) ? "/messages/saveupdate/notemplate" : "/messagesinvoices/saveupdate/notemplate"),
         async:true,
         data:
         {
@@ -2058,7 +2058,7 @@ function saveUpdateMessage(message, rowid)
         success: function(dane)
         {
             // checkReplay(objError,objLoad,null,objClick,dane,objOk,1,3000,null);
-            showMessages();
+            showMessages(type);
             doc.getElementById('messageArea').value = '';
             return false;
         },
@@ -2070,7 +2070,7 @@ function saveUpdateMessage(message, rowid)
     });
 }
 
-function showMessages()
+function showMessages(type)
 {
     var doc=document,objCenter = doc.getElementById('divRightCenter'),objLoad = doc.getElementById('divLoader');
     objCenter.innerHTML='';
@@ -2078,7 +2078,7 @@ function showMessages()
 
 
     $.ajax({
-        url:sciezka+"/messages/showdane/todiv",
+        url: sciezka +  ((!type) ? "/messages/showdane/todiv" : "/messagesinvoices/showdane/todiv"),
         type: 'POST',
         data: {
         },
@@ -2098,7 +2098,7 @@ function showMessages()
     return false;
 }
 
-function removeMessage(rowid) {
+function removeMessage(rowid, type) {
 
     if (confirm('Czy na pewno chcesz usunąć wiadomość ?')) {
 
@@ -2108,13 +2108,13 @@ function removeMessage(rowid) {
 
 
         $.ajax({
-            url: sciezka + "/messages/remove/todiv",
+            url: sciezka + ((!type) ? "/messages/remove/todiv" : "/messagesinvoices/remove/todiv"),
             type: 'POST',
             data: {
                 rowid: rowid
             },
             success: function (data) {
-                showMessages();
+                showMessages(type);
             },
             error: function () {
                 objCenter.innerHTML = 'Problem z usunięciem wiadomości';

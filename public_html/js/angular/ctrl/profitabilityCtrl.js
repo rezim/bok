@@ -239,8 +239,6 @@ ProfitabilityCtrl = function($scope, rest, $q, $filter, $interpolate, appConf) {
             }
         });
 
-
-
         angular.forEach(objProfits, function(profit) {
 
             var tmpAgreements = [];

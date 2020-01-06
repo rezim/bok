@@ -1,12 +1,12 @@
 <?php
-class message extends Model
+class messagesinvoice extends Model
 {
     protected $message='', $rowid='';
 
     function getMessages() {
         $query = "
                 SELECT * FROM `messages`
-                WHERE active = 1 and type = 0
+                WHERE active = 1 and type = 1
                 ORDER BY created desc
               ";
         return $this->query($query,null,false);
@@ -14,7 +14,7 @@ class message extends Model
 
     function saveupdate() {
         $columnList = "`message`,`owner`, `type`";
-        return $this->insert($columnList,'ssd',array($this->message, $_SESSION['user']['id'], 0));
+        return $this->insert($columnList,'ssd',array($this->message, $_SESSION['user']['id'], 1));
     }
 
     function remove() {

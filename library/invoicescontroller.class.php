@@ -27,9 +27,10 @@ class InvoicesController extends Controller {
 
         curl_close ($ch);
 
-        return json_encode(array_filter($invoices, function($value) {
-            return $value['paid_date'] === null;
-        }));
+//        return json_encode(array_filter($invoices, function($value) {
+//            return $value['paid_date'] === null;
+//        }));
+        return json_encode($invoices);
     }
 
 }
