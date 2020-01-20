@@ -11,22 +11,6 @@ class clientinvoicesController extends InvoicesController
         $smarty->assign('fakturownia_conf_file_path', ROOT . DS . 'config' . DS . 'fakturownia.conf');
     }
 
-//    function getagreementnotifications() {
-//        if ($_POST['date_from'] && $_POST['date_to'] && $_POST['rowagreement_id']) {
-//            echo $this->profitability->getAgreementNotifications($_POST['date_from'], $_POST['date_to'], $_POST['rowagreement_id']);
-//        } else {
-//            echo "blędne parametry wejściowe";
-//        }
-//    }
-
-//    function getoveralcosts() {
-//        if ($_POST['date_from'] && $_POST['date_to']) {
-//            echo $this->profitability->getOveralCosts($_POST['date_from'], $_POST['date_to']);
-//        } else {
-//            echo "blędne parametry wejściowe";
-//        }
-//    }
-
     function getagreements() {
         echo $this->clientinvoice->getAgreements();
     }
@@ -40,4 +24,29 @@ class clientinvoicesController extends InvoicesController
         }
     }
 
+    function getpayments() {
+        if ($_POST['client_id'] && $_POST['date_from']) {
+            echo $this->getClientPayments($_POST['client_id'], $_POST['date_from']);
+        } else {
+            echo "błędne parametry wejściowe";
+        }
+    }
+    function getoverpaidpayments() {
+        echo $this->getAllOverpaidPayments();
+    }
+
+    function addinvoicepayment() {
+        if ($_POST['price'] && $_POST['invoice_id'] && $_POST['invoice_tax_no'] && $_POST['client_id'] && $_POST['paid_name'] && $_POST['paid_date']) {
+            echo $this->addPayment(
+                $_POST['price'],
+                $_POST['invoice_id'],
+                $_POST['client_id'],
+                $_POST['invoice_tax_no'],
+                $_POST['paid_name'],
+                $_POST['paid_date'],
+                $_POST['description']);
+        } else {
+            echo "błędne parametry wejściowe";
+        }
+    }
 }

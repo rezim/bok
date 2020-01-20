@@ -1,4 +1,4 @@
-ClientInvoicesCtrl = function($scope, rest, $q, $filter, $interpolate, appConf) {
+ClientInvoicesCtrl = function($scope, rest, $q, $filter, $uibModal, $interpolate, appConf) {
 
     $scope.date = new Date();
 
@@ -39,7 +39,7 @@ ClientInvoicesCtrl = function($scope, rest, $q, $filter, $interpolate, appConf) 
         is_paid: false
     };
 
-    $scope.show_details = {};
+    this.show_details = {};
 
     var date_to = new Date();
 
@@ -72,115 +72,63 @@ ClientInvoicesCtrl = function($scope, rest, $q, $filter, $interpolate, appConf) 
         clientInvoices = [];
     };
 
-
-    this.getNotificationTemplate = function (notification) {
-        return $interpolate("<table class='notification-popup' cellspacing='10' cellpadding='5'>" +
-            "<tr>" +
-            "<td>serial:</td><td>[[serial]]</td>" +
-            "</tr>" +
-            "<tr>" +
-            "<td>osoba zgłaszająca:</td><td>[[osobazglaszajaca]]</td>" +
-            "</tr>" +
-            "<tr>" +
-            "<td>email:</td><td>[[email]]</td>" +
-            "</tr>" +
-            "<tr>" +
-            "<td>nr telefonu:</td><td>[[nr_telefonu]]</td>" +
-            "</tr>" +
-            "<tr>" +
-            "<td>temat:</td><td>[[temat]]</td>" +
-            "</tr>" +
-            "<tr>" +
-            "<td>treść wiadomości:</td><td class='text-field'>[[tresc_wiadomosci]]</td>" +
-            "</tr>" +
-            "<tr>" +
-            "<td>diagnoza:</td><td class='text-field'>[[diagnoza]]</td>" +
-            "</tr>" +
-            "<tr>" +
-            "<td>co zrobione:</td><td class='text-field'>[[cozrobione]]</td>" +
-            "</tr>" +
-            "<tr>" +
-            "<td>użyte materiały:</td><td>[[uzyte_materialy]]</td>" +
-            "</tr>" +
-            "<tr>" +
-            "<td>ilosc km:</td><td>[[ilosc_km]]</td>" +
-            "</tr>" +
-            "<tr>" +
-            "<td>czas pracy:</td><td>[[czas_pracy]]</td>" +
-            "</tr>" +
-            "</table>")(notification);
-    };
-
-
-    this.getAgreementNotifications = function (date_from, date_to, rowagreement_id) {
-        if (!agreementNotifications[rowagreement_id]) {
-            agreementNotifications[rowagreement_id] = {isPending: true};
-            rest.post('getagreementnotifications', {
-                date_from: date_from,
-                date_to: date_to,
-                rowagreement_id: rowagreement_id
-            }).then(function (notifications) {
-                agreementNotifications[rowagreement_id] = notifications;
-            });
-        }
-
-        return agreementNotifications[rowagreement_id];
-    };
-
-    var invoices, overalCosts;
-
+    let invoices;
 
     this.loadData = function(date_from, date_to) {
         if (date_from && date_to) {
             $scope.isPending = true;
             this.invalidate();
-            rest.post('getinvoices', {
+            const invoicesPromise = rest.post('getinvoices', {
                 period: 'more',
                 date_from: date_from,
                 date_to: date_to
-            }).then(function (arrInvoices) {
-                rest.post('getagreements', {
-                }).then(function (arrAgreements) {
-
-
-                    calculate(arrInvoices, arrAgreements);
-
-                    $scope.isPending = false;
-
-                });
             });
 
+            const agreementsPromise = rest.post('getagreements', {});
+
+            const overpaidPaymentsPromise = rest.post('getoverpaidpayments', {});
+
+            $q.all([invoicesPromise, agreementsPromise, overpaidPaymentsPromise]).then(result => {
+                calculate(result[0], result[1], result[2]);
+
+                $scope.isPending = false;
+            });
         }
     };
 
-    this.showInactive = function(show) {
-        this.invalidate();
-        calculate(invoices, overalCosts, show);
+    const initClientInvoice = function(name, nip) {
+        return {
+            name: name,
+            nip: nip,
+            clientId: null,
+            agreements: {},
+            invoices: {
+                nip: nip,
+                sum: {
+                    all: 0,
+                    notPaid: 0
+                },
+                count: {
+                    all: 0,
+                    notPaid: 0
+                },
+                list: []
+            },
+            overpaid: {
+                sum: 0,
+                list: []
+            }
+        };
     };
 
-    let calculate = function(invoices, agreements) {
+    const calculate = function(invoices, agreements, overpaidpaymets) {
         let objClientInvoice = {};
 
         angular.forEach(agreements, function (agreement) {
 
-                if (!objClientInvoice[agreement['client_nip']]) {
-                    objClientInvoice[agreement['client_nip']] = {
-                        name: agreement['client_name'],
-                        nip: agreement['client_nip'],
-                        agreements: {},
-                        invoices: {
-                            nip: agreement['client_nip'],
-                            sum: {
-                                all: 0,
-                                notPaid: 0
-                            },
-                            count: {
-                                all: 0,
-                                notPaid: 0
-                            },
-                            list: []
-                        }
-                    };
+            if (!objClientInvoice[agreement['client_nip']]) {
+                objClientInvoice[agreement['client_nip']] =
+                    initClientInvoice(agreement['client_name'], agreement['client_nip']);
 
                 let client = objClientInvoice[agreement['client_nip']];
 
@@ -196,37 +144,19 @@ ClientInvoicesCtrl = function($scope, rest, $q, $filter, $interpolate, appConf) 
         });
 
         angular.forEach(invoices, function (invoice) {
-            if (invoice.kind == 'vat') {
-                // you can use it in case of need to see a list of
-                // results for particular client
-
-                // if (invoice.buyer_tax_no == '5272718493') {
-                //     console.log(invoice);
-                // }
+            if (invoice.kind == 'vat' || invoice.kind == 'correction') {
 
                 // 8992755868 <- 9141528038 ->
                 invoice.buyer_tax_no = mapTaxNo(invoice.buyer_tax_no);
 
                 if (!objClientInvoice[invoice.buyer_tax_no]) {
-                    objClientInvoice[invoice.buyer_tax_no] = {
-                        name: ['# - (brak umowy)', invoice.buyer_name].join(' '),
-                        nip: invoice.buyer_tax_no
-                    };
+                    const noAgreementClientName = ['# - (brak umowy)', invoice.buyer_name].join(' ');
+                    objClientInvoice[invoice.buyer_tax_no] =
+                        initClientInvoice(noAgreementClientName, invoice.buyer_tax_no);
                 }
 
-                if (!objClientInvoice[invoice.buyer_tax_no]['invoices']) {
-                    objClientInvoice[invoice.buyer_tax_no]['invoices'] = {
-                        nip: invoice.buyer_tax_no,
-                        sum: {
-                            all: 0,
-                            notPaid: 0
-                        },
-                        count: {
-                            all: 0,
-                            notPaid: 0
-                        },
-                        list: []
-                    }
+                if (!objClientInvoice[invoice.buyer_tax_no].clientId) {
+                    objClientInvoice[invoice.buyer_tax_no].clientId = invoice.client_id;
                 }
 
                 invoice.is_paid = parseFloat(invoice.paid) >= parseFloat(invoice.price_gross);
@@ -240,6 +170,7 @@ ClientInvoicesCtrl = function($scope, rest, $q, $filter, $interpolate, appConf) 
                 if (invoice.is_late_days < 0) {
                     invoice.is_late_days = 0;
                 }
+
                 objClientInvoice[invoice.buyer_tax_no]['invoices'].sum.all += parseFloat(invoice.price_gross);
                 objClientInvoice[invoice.buyer_tax_no]['invoices'].count.all++;
                 if (!invoice.is_paid) {
@@ -255,8 +186,145 @@ ClientInvoicesCtrl = function($scope, rest, $q, $filter, $interpolate, appConf) 
             clientInvoices.push(clientInvoice);
         });
 
+        angular.forEach(overpaidpaymets, function (payment) {
+            let clientInvoice = null;
+            if (payment.invoice_tax_no) {
+                clientInvoice = objClientInvoice[payment.invoice_tax_no];
+            } else if (payment.client_id) {
+                clientInvoice = clientInvoices.find(clientInv => clientInv.clientId === payment.client_id);
+            } else {
+                console.log('Nie można powiązać płatności ' + payment.id + ' z zadna fakturą.');
+            }
+
+            if (clientInvoice) {
+                clientInvoice.overpaid.list.push(payment);
+                clientInvoice.overpaid.sum += parseFloat(payment.overpaid);
+            }
+        });
+
+
+
         console.log(clientInvoices);
     };
+
+    this.showDetails = function(clientInvoice) {
+        this.show_details[clientInvoice.nip] = !this.show_details[clientInvoice.nip];
+
+        // if (!clientInvoice.hasPaymentsLoaded) {
+        //     this.loadPaymentsForClientInvoice(clientInvoice);
+        //     clientInvoice.hasPaymentsLoaded = true;
+        // }
+    };
+
+    this.loadPaymentsForClientInvoice = function(clientInvoice) {
+        rest.post('getpayments', {
+            client_id: clientInvoice.clientId,
+            date_from: $scope.date_from
+        }).then(function (arrPayments) {
+            arrPayments.forEach(function(payment) {
+                let invoice = clientInvoice.invoices.list.find(inv => inv.id === payment.invoice_id);
+                if (invoice) {
+                    if (!invoice.payments) {
+                        invoice.payments = [];
+                    }
+                    invoice.payments.push(payment);
+                }
+            })
+        });
+    };
+
+    this.paymentsList = function(clientId, clientName, dateFrom, dateTo) {
+
+            let modalInstance = $uibModal.open({
+                ariaLabelledBy: 'modal-title',
+                ariaDescribedBy: 'modal-body',
+                templateUrl: 'paymentList.html',
+                size: 'lg',
+                controller: function () {
+                    this.data = {
+                        dateFrom: dateFrom,
+                        dateTo: dateTo,
+                        clientId: clientId,
+                        clientName: clientName
+                    };
+
+                    let payments = null;
+                    this.getPayments = function (clientId, dateFrom) {
+                        if (!payments) {
+                            payments = [];
+                            rest.post('getpayments', {
+                                client_id: clientId,
+                                date_from: dateFrom
+                            }).then(function (arrPayments) {
+                                payments = arrPayments;
+                            });
+                        }
+                        return payments;
+                    };
+
+                    this.cancel = function () {
+                        modalInstance.dismiss('cancel');
+                    };
+                },
+                controllerAs: '$ctrl'
+            });
+    };
+
+    this.addPayment = function(clientId, invoiceTaxNo, invoice, callback) {
+
+        let modalInstance = $uibModal.open({
+            ariaLabelledBy: 'modal-title',
+            ariaDescribedBy: 'modal-body',
+            templateUrl: 'addPayment.html',
+            size: 'md',
+            controller: function () {
+
+                this.data = {
+                    clientId: clientId,
+                    invoiceTaxNo: invoiceTaxNo,
+                    invoice: invoice,
+                    form: {
+                        paid: (invoice.price_gross - invoice.paid).toFixed(2),
+                        paymentname: "Płatność za FV numer " + invoice.number,
+                        paymentdate: self.getToday()
+                    }
+                };
+
+                this.save = function() {
+                    modalInstance.close(this.data);
+                };
+
+                this.cancel = function () {
+                    modalInstance.dismiss('cancel');
+                };
+            },
+            controllerAs: '$ctrl',
+            resolve: {
+                items: function () {
+                    return [];
+                }
+            }
+        });
+
+        modalInstance.result.then(function (data) {
+            rest.post('addinvoicepayment', {
+                price: data.form.paid,
+                invoice_id: data.invoice.id,
+                client_id: data.clientId,
+                invoice_tax_no: data.invoiceTaxNo,
+                paid_name: data.form.paymentname,
+                paid_date: data.form.paymentdate,
+                description: data.form.paymentdescription
+            }).then(function (payment) {
+                console.log(payment);
+                self.loadData($scope.date_from, $scope.date_to);
+            });
+
+        }, function () {
+            // nop
+        });
+    };
+
 
     /**
      * Currently we need to map NIP for only one client,
