@@ -78,6 +78,26 @@ class InvoicesController extends Controller {
         return json_encode($result);
     }
 
+
+    public function deletePaymentById($paymentId)
+    {
+        $ch = curl_init();
+        $url = FAKTUROWNIA_ENDPOINT . '/banking/payments/' . $paymentId . '.json?'
+            .'api_token='.FAKTUROWNIA_APITOKEN;
+
+        curl_setopt($ch, CURLOPT_URL, $url );
+        curl_setopt($ch, CURLOPT_CUSTOMREQUEST, "DELETE");
+        curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+
+        $result = curl_exec($ch);
+
+        $result = json_decode($result);
+
+        curl_close($ch);
+
+        return $result;
+    }
+
     function getClientPayments($clientId, $dateFrom) {
         $payments = array();
 

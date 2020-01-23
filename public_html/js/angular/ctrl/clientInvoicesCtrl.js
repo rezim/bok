@@ -77,7 +77,6 @@ ClientInvoicesCtrl = function($scope, rest, $q, $filter, $uibModal, $interpolate
     this.loadData = function(date_from, date_to) {
         if (date_from && date_to) {
             $scope.isPending = true;
-            this.invalidate();
             const invoicesPromise = rest.post('getinvoices', {
                 period: 'more',
                 date_from: date_from,
@@ -89,6 +88,9 @@ ClientInvoicesCtrl = function($scope, rest, $q, $filter, $uibModal, $interpolate
             const overpaidPaymentsPromise = rest.post('getoverpaidpayments', {});
 
             $q.all([invoicesPromise, agreementsPromise, overpaidPaymentsPromise]).then(result => {
+
+                self.invalidate();
+
                 calculate(result[0], result[1], result[2]);
 
                 $scope.isPending = false;
@@ -233,19 +235,22 @@ ClientInvoicesCtrl = function($scope, rest, $q, $filter, $uibModal, $interpolate
         });
     };
 
-    this.paymentsList = function(clientId, clientName, dateFrom, dateTo) {
+    this.paymentsList = function(clientInvoice, dateFrom, dateTo) {
 
-            let modalInstance = $uibModal.open({
+        let invalidateListOfInvoices = false;
+
+        let modalInstance = $uibModal.open({
                 ariaLabelledBy: 'modal-title',
                 ariaDescribedBy: 'modal-body',
                 templateUrl: 'paymentList.html',
                 size: 'lg',
                 controller: function () {
+
                     this.data = {
                         dateFrom: dateFrom,
                         dateTo: dateTo,
-                        clientId: clientId,
-                        clientName: clientName
+                        clientId: clientInvoice.clientId,
+                        clientName: clientInvoice.name
                     };
 
                     let payments = null;
@@ -256,18 +261,44 @@ ClientInvoicesCtrl = function($scope, rest, $q, $filter, $uibModal, $interpolate
                                 client_id: clientId,
                                 date_from: dateFrom
                             }).then(function (arrPayments) {
-                                payments = arrPayments;
+                                payments = arrPayments.map(payment =>
+                                    Object.assign(payment, {
+                                        invoice: clientInvoice.invoices.list.find(
+                                            invoice => payment.invoice_id === invoice.id
+                                        )
+                                    })
+                                );
                             });
                         }
                         return payments;
                     };
 
+                    this.deletePayment = function(paymentId) {
+                        rest.post('deleteinvoicepayment', {
+                            payment_id: paymentId
+                        }).then(function () {
+                            payments = null;
+                            invalidateListOfInvoices = true;
+                        });
+                    };
+
                     this.cancel = function () {
                         modalInstance.dismiss('cancel');
-                    };
+                        if (invalidateListOfInvoices) {
+                            invalidateListOfInvoices = false;
+                            self.loadData($scope.date_from, $scope.date_to);
+                        }
+                     };
                 },
                 controllerAs: '$ctrl'
             });
+
+        modalInstance.result.then(function() {}, function() {
+            if (invalidateListOfInvoices) {
+                invalidateListOfInvoices = false;
+                self.loadData($scope.date_from, $scope.date_to);
+            }
+        });
     };
 
     this.addPayment = function(clientId, invoiceTaxNo, invoice, callback) {
@@ -316,7 +347,6 @@ ClientInvoicesCtrl = function($scope, rest, $q, $filter, $uibModal, $interpolate
                 paid_date: data.form.paymentdate,
                 description: data.form.paymentdescription
             }).then(function (payment) {
-                console.log(payment);
                 self.loadData($scope.date_from, $scope.date_to);
             });
 

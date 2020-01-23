@@ -49,4 +49,12 @@ class clientinvoicesController extends InvoicesController
             echo "błędne parametry wejściowe";
         }
     }
+
+    function deleteinvoicepayment() {
+        if ($_POST['payment_id']) {
+            echo $this->deletePaymentById($_POST['payment_id']);
+        } else {
+            echo "błędne parametry wejściowe";
+        }
+    }
 }

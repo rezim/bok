@@ -37,7 +37,7 @@
 </div>
 <div>
     <div>
-        <table class='tablesorter displaytable' id='tableReport' cellspacing=0 cellpadding=0 width="100%">
+        <table class='tablesorter displaytable' id='tableReport' cellspacing=0 cellpadding=0 width="100%" style="padding-bottom: 30px">
             <thead>
             <tr>
                 <th width="20%" ng-click="sortBy('name')" class="sortable">
@@ -63,76 +63,82 @@
             </thead>
             <tbody ng-repeat="clientInvoice in ctrl.getClientInvoices() | filter:search | filter: deptorsOnly(ctrl.filters.show_paid_invoices) | orderBy:orderBy.propertyName:orderBy.reverse"
                    ng-click="ctrl.showDetails(clientInvoice)"
-                   ng-if="clientInvoice.invoices.sum.notPaid > 0 || ctrl.filters.show_non_deptors">
+                   ng-if="(clientInvoice.invoices.sum.notPaid > 0 || ctrl.filters.show_non_deptors) && clientInvoice.invoices.count.all > 0">
 
                 <tr ng-if="!ctrl.filters.show_paid_invoices">
                     <td class='tdLink'">[[clientInvoice.name]]</td>
                     <td align="center" class="profit">[[clientInvoice.invoices.count.notPaid]]</td>
                     <td align="right" class="profit">[[clientInvoice.invoices.sum.notPaid.toFixed(2)]]</td>
                     <td align="right" class="profit">[[clientInvoice.overpaid.sum.toFixed(2)]]</td>
-                    <td align="right" class="profit"><a href="javascript:void(0)" ng-click="ctrl.paymentsList(clientInvoice.clientId, clientInvoice.name, date_from, date_to); $event.stopPropagation();">lista płatności</a></td>
+                    <td align="right" class="profit"></td>
                 </tr>
                 <tr ng-if="ctrl.filters.show_paid_invoices">
                     <td class='tdLink' ng-click="ctrl.sortBy('name')">[[clientInvoice.name]]</td>
                     <td align="center" ng-click="ctrl.sortBy('clientInvoice.invoices.count.notPaid')" class="profit">[[clientInvoice.invoices.count.notPaid]] / [[clientInvoice.invoices.count.all]]</td>
-                    <td align="right" ng-click="ctrl.sortBy('clientInvoice.invoices.sum.notPaid')" class="profit" ng-if="ctrl.filters.show_paid_invoices">[[clientInvoice.invoices.sum.notPaid.toFixed(2)]]zł / [[clientInvoice.invoices.sum.all.toFixed(2)]] zł</td>
+                    <td align="right" ng-click="ctrl.sortBy('clientInvoice.invoices.sum.notPaid')" class="profit" ng-if="ctrl.filters.show_paid_invoices">
+                        [[clientInvoice.invoices.sum.notPaid.toFixed(2)]]zł / [[clientInvoice.invoices.sum.all.toFixed(2)]] zł
+                    </td>
                     <td align="right" class="profit">[[clientInvoice.overpaid.sum.toFixed(2)]]</td>
-                    <td align="right" class="profit"><a href="javascript:void(0)" ng-click="ctrl.paymentsList(clientInvoice.clientId, clientInvoice.name, date_from, date_to); $event.stopPropagation();">lista płatności</a></td>
+                    <td align="right" class="profit"></td>
                 </tr>
 
                 <tr ng-if="(ctrl.show_details[clientInvoice.nip] ) && clientInvoice.invoices.list.length">
                     <td colspan="5" class="inner-table">
-
-                    <table class='tablesorter displaytable' id='tableReport' cellspacing=0 cellpadding=0>
-                        <thead>
-                        <tr>
-                            <th width="200px">
-                                numer faktury
-                            </th>
-                            <th width="200px">
-                                data wystawienia
-                            </th>
-                            <th width="200px">
-                                termin płatności
-                            </th>
-                            <th width="200px" style="text-align: right">
-                                netto
-                            </th>
-                            <th width="200px" style="text-align: right">
-                                brutto
-                            </th>
-                            <th width="200px" style="text-align: right">
-                                zapłacono
-                            </th>
-                            <th width="200px" style="text-align: right">
-                                opóźnienie dni
-                            </th>
-                            <th width="100px" style="text-align: right">
-                                akcja
-                            </th>
-                        </tr>
-                        </thead>
-                        <tbody ng-repeat="invoice in clientInvoice.invoices.list | filter: notPaidInvoicesOnly(ctrl.filters.show_paid_invoices)">
+                        <table class='tablesorter displaytable' id='tableReport' cellspacing=0 cellpadding=0>
+                            <thead>
                             <tr>
-                                <td><a href="[[invoice.view_url]]" target="_blank" ng-click="$event.stopPropagation();">[[invoice.number]]</a></td>
-                            <td>[[invoice.sell_date]]</td>
-                            <td>[[invoice.payment_to]]</td>
-                            <td align="right">[[invoice.price_net]]</td>
-                            <td align="right">[[invoice.price_gross]]</td>
-                            <td align="right">[[invoice.paid]]</td>
-                            <td align="right">[[invoice.is_late_days]]</td>
-                            <td align="right">
-                                <button ng-click="ctrl.addPayment(clientInvoice.clientId, clientInvoice.nip, invoice); $event.stopPropagation();" class="btn btn-primary ng-scope" type="button" style="font-size: 10px">płatność</button>
-                            </td>
+                                <th width="200px">
+                                    numer faktury
+                                </th>
+                                <th width="200px">
+                                    data wystawienia
+                                </th>
+                                <th width="200px">
+                                    termin płatności
+                                </th>
+                                <th width="200px" style="text-align: right">
+                                    netto
+                                </th>
+                                <th width="200px" style="text-align: right">
+                                    brutto
+                                </th>
+                                <th width="200px" style="text-align: right">
+                                    zapłacono
+                                </th>
+                                <th width="200px" style="text-align: right">
+                                    opóźnienie dni
+                                </th>
+                                <th width="100px" style="text-align: right">
+                                    akcja
+                                </th>
                             </tr>
-                        </tbody>
+                            </thead>
+                            <tbody>
+                                <tr ng-repeat="invoice in clientInvoice.invoices.list | filter: notPaidInvoicesOnly(ctrl.filters.show_paid_invoices)">
+                                    <td><a href="[[invoice.view_url]]" target="_blank" ng-click="$event.stopPropagation();">[[invoice.number]]</a></td>
+                                    <td>[[invoice.sell_date]]</td>
+                                    <td>[[invoice.payment_to]]</td>
+                                    <td align="right">[[invoice.price_net]]</td>
+                                    <td align="right">[[invoice.price_gross]]</td>
+                                    <td align="right">[[invoice.paid]]</td>
+                                    <td align="right">[[invoice.is_late_days]]</td>
+                                    <td align="right">
+                                        <button ng-click="ctrl.addPayment(clientInvoice.clientId, clientInvoice.nip, invoice); $event.stopPropagation();" class="btn btn-primary ng-scope" type="button" style="font-size: 10px">płatność</button>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td colspan="8" align="right">
+                                        <a href="javascript:void(0)" ng-click="ctrl.paymentsList(clientInvoice, date_from, date_to); $event.stopPropagation();">zarządzaj płatnościami</a>
+                                    </td>
+                                </tr>
+                            </tbody>
                         </table>
-                    </>
+                    </td>
                 </tr>
             </tbody>
         </table>
-        <div ng-if="isPending" class="center-all">
-            <i ng-if="isPending" class="fa fa-spinner fa-spin fa-5x" aria-hidden="true" style="margin-top: 50px;"></i>
-        </div>
     </div>
+
+    <div ng-if="isPending" class="loading">Loading&#8230;</div>
+
 </div>

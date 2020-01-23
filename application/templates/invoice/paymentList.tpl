@@ -4,7 +4,7 @@
             Płatności.
         </h3>
         <div>Klient: [[$ctrl.data.clientName]]</div>
-        <div>Okres: od '[[$ctrl.data.dateFrom]]' do '[[$ctrl.data.dateTo]]'</div>
+        <div>Okres: od '<b>[[$ctrl.data.dateFrom]]</b>' do '<b>[[$ctrl.data.dateTo]]</b>'</div>
     </div>
     <div class="modal-body" id="modal-body">
         <form class="form-horizontal" role="form">
@@ -18,13 +18,19 @@
                     <div class="col-sm-2">Kupujący</div>
                     <div class="col-sm-2">akcja</div>
                 </div>
-                <div class="row" ng-repeat="payment in $ctrl.getPayments($ctrl.data.clientId, $ctrl.data.dateFrom)">
+                <div class="row" ng-repeat="payment in $ctrl.getPayments($ctrl.data.clientId, $ctrl.data.dateFrom) track by $index">
                     <div class="col-sm-2" role="button">[[payment.name]]</div>
                     <div class="col-sm-2" role="button">[[payment.price]]</div>
                     <div class="col-sm-2" role="button">[[payment.provider]]</div>
-                    <div class="col-sm-2" role="button">[[payment.invoice_id]]</div>
+                    <div class="col-sm-2" role="button">
+                        <a href="[[payment.invoice.view_url]]" target="_blank" ng-click="$event.stopPropagation();">
+                            [[payment.invoice.number]]
+                        </a>
+                    </div>
                     <div class="col-sm-2" role="button">[[payment.client_id]]</div>
-                    <div class="col-sm-2" role="button"></div>
+                    <div class="col-sm-2" role="button">
+                        <span class="action fa fa-times fa-3" ng-click="$ctrl.deletePayment(payment.id)"></span>
+                    </div>
                 </div>
             </div>
 
