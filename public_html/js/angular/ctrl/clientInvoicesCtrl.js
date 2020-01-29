@@ -68,6 +68,19 @@ ClientInvoicesCtrl = function($scope, rest, $q, $filter, $uibModal, $interpolate
         return clientInvoices;
     };
 
+
+    this.getTotal = function(search, showPaidInvoices) {
+        let total = 0;
+
+        const filteredClientInvoices = ($filter('filter')($filter('filter')(clientInvoices, search), $scope.deptorsOnly(showPaidInvoices)))
+
+        .forEach(clientInvoice => {
+            total += parseFloat(clientInvoice.balance);
+        });
+
+        return total;
+    };
+
     this.invalidate = function() {
         clientInvoices = [];
     };
@@ -119,7 +132,8 @@ ClientInvoicesCtrl = function($scope, rest, $q, $filter, $uibModal, $interpolate
             overpaid: {
                 sum: 0,
                 list: []
-            }
+            },
+            balance: 0
         };
     };
 
@@ -204,7 +218,9 @@ ClientInvoicesCtrl = function($scope, rest, $q, $filter, $uibModal, $interpolate
             }
         });
 
-
+        clientInvoices.forEach(clientInvoice => {
+            clientInvoice.balance = clientInvoice.overpaid.sum - clientInvoice.invoices.sum.notPaid;
+        });
 
         console.log(clientInvoices);
     };
@@ -253,6 +269,10 @@ ClientInvoicesCtrl = function($scope, rest, $q, $filter, $uibModal, $interpolate
                         clientName: clientInvoice.name
                     };
 
+                    this.parseDate = function(dateStr) {
+                        return new Date(dateStr);
+                    };
+
                     let payments = null;
                     this.getPayments = function (clientId, dateFrom) {
                         if (!payments) {
@@ -268,6 +288,20 @@ ClientInvoicesCtrl = function($scope, rest, $q, $filter, $uibModal, $interpolate
                                         )
                                     })
                                 );
+                                // add also overpaid payments to the list
+                                const overpaidPayments = clientInvoice.overpaid.list.map(payment =>
+                                    Object.assign(payment, {
+                                        invoice: clientInvoice.invoices.list.find(
+                                            invoice => payment.invoice_id === invoice.id
+                                        )
+                                    })
+                                );
+                                overpaidPayments.forEach(overpaidPayment => {
+                                    // without duplicates
+                                     if (!payments.some(payment => payment.id === overpaidPayment.id)) {
+                                         payments.push(overpaidPayment);
+                                     }
+                                });
                             });
                         }
                         return payments;
@@ -277,7 +311,12 @@ ClientInvoicesCtrl = function($scope, rest, $q, $filter, $uibModal, $interpolate
                         rest.post('deleteinvoicepayment', {
                             payment_id: paymentId
                         }).then(function () {
-                            payments = null;
+                            const removedIdx = payments.findIndex(payment => payment.id === paymentId);
+
+                            if (removedIdx !== -1) {
+                                payments.splice(removedIdx, 1);
+                            }
+
                             invalidateListOfInvoices = true;
                         });
                     };

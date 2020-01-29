@@ -37,24 +37,20 @@
 </div>
 <div>
     <div>
-        <table class='tablesorter displaytable' id='tableReport' cellspacing=0 cellpadding=0 width="100%" style="padding-bottom: 30px">
+        <table class='tablesorter displaytable payments' id='tableReport' cellspacing=0 cellpadding=0 width="100%" style="padding-bottom: 30px">
             <thead>
             <tr>
-                <th width="20%" ng-click="sortBy('name')" class="sortable">
-                    nazwa
+                <th width="40%" ng-click="sortBy('name')" class="sortable">
+                    client
                     <span class="sortorder" ng-show="orderBy.propertyName === 'name'" ng-class="(orderBy.reverse) ? 'reverse': ''"></span>
                 </th>
                 <th width="20%" style="text-align: right" ng-click="sortBy('invoices.count.notPaid')" class="sortable">
-                    ilość faktur niezapłaconych
+                    faktur niezapłaconych
                     <span class="sortorder" ng-show="orderBy.propertyName === 'invoices.count.notPaid'" ng-class="(orderBy.reverse) ? 'reverse': ''"></span>
                 </th>
-                <th width="20%" style="text-align: right" ng-click="sortBy('invoices.sum.notPaid')" class="sortable">
-                    suma faktur niezapłaconych
-                    <span class="sortorder" ng-show="orderBy.propertyName === 'invoices.sum.notPaid'" ng-class="(orderBy.reverse) ? 'reverse': ''"></span>
-                </th>
-                <th width="20%" style="text-align: right" ng-click="sortBy('overpaid.sum')" class="sortable">
-                    nadpłata
-                    <span class="sortorder" ng-show="orderBy.propertyName === 'overpaid.sum'" ng-class="(orderBy.reverse) ? 'reverse': ''"></span>
+                <th width="20%" style="text-align: right" ng-click="sortBy('balance')" class="sortable">
+                    saldo
+                    <span class="sortorder" ng-show="orderBy.propertyName === 'balance'" ng-class="(orderBy.reverse) ? 'reverse': ''"></span>
                 </th>
                 <th width="20%" style="text-align: right">
                     akcja
@@ -67,18 +63,26 @@
 
                 <tr ng-if="!ctrl.filters.show_paid_invoices">
                     <td class='tdLink'">[[clientInvoice.name]]</td>
-                    <td align="center" class="profit">[[clientInvoice.invoices.count.notPaid]]</td>
-                    <td align="right" class="profit">[[clientInvoice.invoices.sum.notPaid.toFixed(2)]]</td>
-                    <td align="right" class="profit">[[clientInvoice.overpaid.sum.toFixed(2)]]</td>
+                    <td align="center" class="profit"
+                        ng-class="(clientInvoice.balance < 0) ? 'underpaid' : (clientInvoice.balance > 0) ? 'overpaid' : 'paid'">
+                        [[clientInvoice.invoices.count.notPaid]]
+                    </td>
+                    <td align="right" class="profit"
+                        ng-class="(clientInvoice.balance < 0) ? 'underpaid' : (clientInvoice.balance > 0) ? 'overpaid' : 'paid'">
+                        [[clientInvoice.balance.toFixed(2)]]
+                    </td>
                     <td align="right" class="profit"></td>
                 </tr>
                 <tr ng-if="ctrl.filters.show_paid_invoices">
                     <td class='tdLink' ng-click="ctrl.sortBy('name')">[[clientInvoice.name]]</td>
-                    <td align="center" ng-click="ctrl.sortBy('clientInvoice.invoices.count.notPaid')" class="profit">[[clientInvoice.invoices.count.notPaid]] / [[clientInvoice.invoices.count.all]]</td>
-                    <td align="right" ng-click="ctrl.sortBy('clientInvoice.invoices.sum.notPaid')" class="profit" ng-if="ctrl.filters.show_paid_invoices">
-                        [[clientInvoice.invoices.sum.notPaid.toFixed(2)]]zł / [[clientInvoice.invoices.sum.all.toFixed(2)]] zł
+                    <td align="center" ng-click="ctrl.sortBy('clientInvoice.invoices.count.notPaid')" class="profit"
+                        ng-class="(clientInvoice.balance < 0) ? 'underpaid' : (clientInvoice.balance > 0) ? 'overpaid' : 'paid'">
+                        [[clientInvoice.invoices.count.notPaid]]
                     </td>
-                    <td align="right" class="profit">[[clientInvoice.overpaid.sum.toFixed(2)]]</td>
+                    <td align="right" class="profit"
+                        ng-class="(clientInvoice.balance < 0) ? 'underpaid' : (clientInvoice.balance > 0) ? 'overpaid' : 'paid'">
+                        [[clientInvoice.balance.toFixed(2)]]
+                    </td>
                     <td align="right" class="profit"></td>
                 </tr>
 
@@ -136,6 +140,11 @@
                     </td>
                 </tr>
             </tbody>
+{*            <tfoot>*}
+{*                <tr>*}
+{*                    <td>[[ctrl.getTotal(search, filters.show_paid_invoices)]]</td>*}
+{*                </tr>*}
+{*            </tfoot>*}
         </table>
     </div>
 

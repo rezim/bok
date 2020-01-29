@@ -164,6 +164,20 @@ table.notification-popup td.text-field {
     content: '\25bc';   // BLACK DOWN-POINTING TRIANGLE
 }
 
+.payments .underpaid {
+    color: red;
+    font-weight: bold;
+}
+
+.payments .overpaid {
+    color: green;
+    font-weight: bold;
+}
+
+.payments .paid {
+    color: black;
+}
+
 /*
 TODO move loading indicator to separate file
 */

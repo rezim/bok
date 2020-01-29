@@ -11,23 +11,21 @@
 
             <div class="container-fluid">
                 <div class="row header">
-                    <div class="col-sm-2">Nazwa</div>
+                    <div class="col-sm-2">Data</div>
+                    <div class="col-sm-4">Tytułem</div>
                     <div class="col-sm-2">Kwota</div>
-                    <div class="col-sm-2">Rodzaj</div>
                     <div class="col-sm-2">Faktura</div>
-                    <div class="col-sm-2">Kupujący</div>
                     <div class="col-sm-2">akcja</div>
                 </div>
-                <div class="row" ng-repeat="payment in $ctrl.getPayments($ctrl.data.clientId, $ctrl.data.dateFrom) track by $index">
-                    <div class="col-sm-2" role="button">[[payment.name]]</div>
-                    <div class="col-sm-2" role="button">[[payment.price]]</div>
-                    <div class="col-sm-2" role="button">[[payment.provider]]</div>
+                <div class="row" ng-repeat="payment in $ctrl.getPayments($ctrl.data.clientId, $ctrl.data.dateFrom) | orderBy:'paid_date':true track by $index">
+                    <div class="col-sm-2" role="button">[[$ctrl.parseDate(payment.paid_date) | date : 'y-MM-dd']]</div>
+                    <div class="col-sm-4" role="button">[[payment.name]]</div>
+                    <div class="col-sm-2" role="button">[[payment.price.toFixed(2)]]</div>
                     <div class="col-sm-2" role="button">
                         <a href="[[payment.invoice.view_url]]" target="_blank" ng-click="$event.stopPropagation();">
                             [[payment.invoice.number]]
                         </a>
                     </div>
-                    <div class="col-sm-2" role="button">[[payment.client_id]]</div>
                     <div class="col-sm-2" role="button">
                         <span class="action fa fa-times fa-3" ng-click="$ctrl.deletePayment(payment.id)"></span>
                     </div>

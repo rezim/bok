@@ -167,7 +167,7 @@
                         <li id='li_alertshow' class='last'><a href='{$smarty.const.SCIEZKA}/messagesinvoices/show'><span>Tablica Płatności</span></a></li>
                     {/if}
                     {if isset($smarty.session.przypisanemenu['li_clientinvoicesshow'])}
-                        <li id='li_clientinvoicesshow' class='last'><a href='{$smarty.const.SCIEZKA}/clientinvoices/show'><span>Faktury</span></a></li>
+                        <li id='li_clientinvoicesshow' class='last'><a href='{$smarty.const.SCIEZKA}/clientinvoices/show'><span>Płatności</span></a></li>
                     {/if}
                 </ul>
          </div>
