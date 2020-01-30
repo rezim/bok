@@ -56,6 +56,11 @@
                     akcja
                 </th>
             </tr>
+            <tr>
+                <td colspan="2" align="right">suma:</td>
+                <td align="right" ng-class="(ctrl.getTotal(search, ctrl.filters.show_paid_invoices, ctrl.filters.show_non_deptors) < 0) ? 'underpaid' : (clientInvoice.balance > 0) ? 'overpaid' : 'paid'">[[ctrl.getTotal(search, ctrl.filters.show_paid_invoices, ctrl.filters.show_non_deptors) | currency : '']]</td>
+                <td></td>
+            </tr>
             </thead>
             <tbody ng-repeat="clientInvoice in ctrl.getClientInvoices() | filter:search | filter: deptorsOnly(ctrl.filters.show_paid_invoices) | orderBy:orderBy.propertyName:orderBy.reverse"
                    ng-click="ctrl.showDetails(clientInvoice)"
@@ -140,11 +145,9 @@
                     </td>
                 </tr>
             </tbody>
-{*            <tfoot>*}
-{*                <tr>*}
-{*                    <td>[[ctrl.getTotal(search, filters.show_paid_invoices)]]</td>*}
-{*                </tr>*}
-{*            </tfoot>*}
+            <tfoot>
+
+            </tfoot>
         </table>
     </div>
 

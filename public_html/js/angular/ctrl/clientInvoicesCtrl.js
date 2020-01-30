@@ -69,12 +69,16 @@ ClientInvoicesCtrl = function($scope, rest, $q, $filter, $uibModal, $interpolate
     };
 
 
-    this.getTotal = function(search, showPaidInvoices) {
+    this.getTotal = function(search, showPaidInvoices, showNonDeptors) {
         let total = 0;
 
-        const filteredClientInvoices = ($filter('filter')($filter('filter')(clientInvoices, search), $scope.deptorsOnly(showPaidInvoices)))
+        let filteredClientInvoices = ($filter('filter')($filter('filter')(clientInvoices, search), $scope.deptorsOnly(showPaidInvoices)));
 
-        .forEach(clientInvoice => {
+        if (!showNonDeptors) {
+            filteredClientInvoices = filteredClientInvoices.filter(invoice => invoice.invoices.sum.notPaid > 0);
+        }
+
+        filteredClientInvoices.forEach(clientInvoice => {
             total += parseFloat(clientInvoice.balance);
         });
 
