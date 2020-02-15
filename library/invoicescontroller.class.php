@@ -11,33 +11,50 @@ class InvoicesController extends Controller {
 	}
 
     function getInvoicesByDateRange($period, $dateFrom, $dateTo) {
+
+	    $max_multi_calls_count = 50;
+
         $invoices = array();
 
-        $ch = curl_init();
+        $curl_arr = array();
+        $mh = curl_multi_init();
+
         $pageNb = 1;
         $url = FAKTUROWNIA_ENDPOINT .'/invoices.json?'
+
             .'period='.$period
             .'&date_from='.$dateFrom
             .'&date_to='.$dateTo
             .'&api_token='.FAKTUROWNIA_APITOKEN;
+
         do {
-            curl_setopt($ch, CURLOPT_URL, $url . '&page=' . $pageNb);
-            curl_setopt($ch, CURLOPT_RETURNTRANSFER, TRUE);
-            if (USE_PROXY) {
-                curl_setopt($ch, CURLOPT_PROXY, '127.0.0.1:8888');
+            for ($i = 0; $i < $max_multi_calls_count; $i++) {
+
+                $curl_arr[$i] = curl_init($url . '&page=' . $pageNb);
+                curl_setopt($curl_arr[$i], CURLOPT_RETURNTRANSFER, true);
+                if (USE_PROXY) {
+                    curl_setopt($curl_arr[$i], CURLOPT_PROXY, '127.0.0.1:8888');
+                }
+                curl_multi_add_handle($mh, $curl_arr[$i]);
+
+                $pageNb++;
             }
-            $data = json_decode(curl_exec($ch), true);
 
-            $invoices = array_merge($invoices, $data);
-            $pageNb++;
-        } while(count($data) == 50);
+            do {
+                curl_multi_exec($mh, $running);
+            } while ($running > 0);
 
-        curl_close ($ch);
+            for ($i = 0; $i < $max_multi_calls_count; $i++) {
+                $results[] = curl_multi_getcontent($curl_arr[$i]);
 
-// // Filter example:
-//        return json_encode(array_filter($invoices, function($value) {
-//            return $value['paid_date'] === null;
-//        }));
+                curl_multi_remove_handle($mh, $curl_arr[$i]);
+
+                $data = json_decode(curl_multi_getcontent($curl_arr[$i]), true);
+                $invoices = array_merge($invoices, $data);
+            }
+        } while (count($invoices) === ($pageNb-1)*50);
+
+        curl_multi_close($mh);
 
         return json_encode($invoices);
     }
