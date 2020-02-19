@@ -44,22 +44,25 @@
                     client
                     <span class="sortorder" ng-show="orderBy.propertyName === 'name'" ng-class="(orderBy.reverse) ? 'reverse': ''"></span>
                 </th>
-                <th width="20%" style="text-align: right" ng-click="sortBy('invoices.count.notPaid')" class="sortable">
+                <th width="15%" style="text-align: right" ng-click="sortBy('invoices.count.notPaid')" class="sortable">
                     faktur niezapłaconych
                     <span class="sortorder" ng-show="orderBy.propertyName === 'invoices.count.notPaid'" ng-class="(orderBy.reverse) ? 'reverse': ''"></span>
                 </th>
-                <th width="20%" style="text-align: right" ng-click="sortBy('balance')" class="sortable">
+                <th width="15%" style="text-align: right" ng-click="sortBy('balance')" class="sortable">
                     saldo
                     <span class="sortorder" ng-show="orderBy.propertyName === 'balance'" ng-class="(orderBy.reverse) ? 'reverse': ''"></span>
                 </th>
-                <th width="20%" style="text-align: right">
+                <th width="15%" style="text-align: right" class="sortable">
+                    nadpłata
+                </th>
+                <th width="15%" style="text-align: right">
                     akcja
                 </th>
             </tr>
             <tr>
                 <td colspan="2" align="right">suma:</td>
                 <td align="right" ng-class="(ctrl.getTotal(search, ctrl.filters.show_paid_invoices, ctrl.filters.show_non_deptors) < 0) ? 'underpaid' : (clientInvoice.balance > 0) ? 'overpaid' : 'paid'">[[ctrl.getTotal(search, ctrl.filters.show_paid_invoices, ctrl.filters.show_non_deptors) | currency : '']]</td>
-                <td></td>
+                <td colspan="2"></td>
             </tr>
             </thead>
             <tbody ng-repeat="clientInvoice in ctrl.getClientInvoices() | filter:search | filter: deptorsOnly(ctrl.filters.show_paid_invoices) | orderBy:orderBy.propertyName:orderBy.reverse"
@@ -73,10 +76,18 @@
                         [[clientInvoice.invoices.count.notPaid]]
                     </td>
                     <td align="right" class="profit"
-                        ng-class="(clientInvoice.balance < 0) ? 'underpaid' : (clientInvoice.balance > 0) ? 'overpaid' : 'paid'">
+                                                 ng-class="(clientInvoice.balance < 0) ? 'underpaid' : (clientInvoice.balance > 0) ? 'overpaid' : 'paid'">
                         [[clientInvoice.balance.toFixed(2)]]
                     </td>
-                    <td align="right" class="profit"></td>
+                    <td align="right" class="profit"
+                        ng-class="(clientInvoice.overpaid.sum > 0) ? 'overpaid' : 'paid'">
+                        [[clientInvoice.overpaid.sum.toFixed(2)]]
+                    </td>
+                    <td align="right" class="profit">
+                        <button ng-if="clientInvoice.overpaid.sum > 0 && clientInvoice.invoices.count.notPaid > 0"
+                                ng-click="ctrl.splitPayments(clientInvoice.clientId);$event.stopPropagation();"
+                                class="btn btn-warning ng-scope" type="button" style="font-size: 10px">rozksięguj</button>
+                    </td>
                 </tr>
                 <tr ng-if="ctrl.filters.show_paid_invoices">
                     <td class='tdLink' ng-click="ctrl.sortBy('name')">[[clientInvoice.name]]</td>
@@ -88,11 +99,19 @@
                         ng-class="(clientInvoice.balance < 0) ? 'underpaid' : (clientInvoice.balance > 0) ? 'overpaid' : 'paid'">
                         [[clientInvoice.balance.toFixed(2)]]
                     </td>
-                    <td align="right" class="profit"></td>
+                    <td align="right" class="profit"
+                        ng-class="(clientInvoice.overpaid.sum > 0) ? 'overpaid' : 'paid'">
+                        [[clientInvoice.overpaid.sum.toFixed(2)]]
+                    </td>
+                    <td align="right" class="profit">
+                        <button ng-if="clientInvoice.overpaid.sum > 0 && clientInvoice.invoices.count.notPaid > 0"
+                                ng-click="ctrl.splitPayments(clientInvoice.clientId);$event.stopPropagation();"
+                                class="btn btn-warning ng-scope" type="button" style="font-size: 10px">rozksięguj</button>
+                    </td>
                 </tr>
 
                 <tr ng-if="(ctrl.show_details[clientInvoice.nip] ) && clientInvoice.invoices.list.length">
-                    <td colspan="5" class="inner-table">
+                    <td colspan="6" class="inner-table">
                         <table class='tablesorter displaytable' id='tableReport' cellspacing=0 cellpadding=0>
                             <thead>
                             <tr>
@@ -132,12 +151,12 @@
                                     <td align="right">[[invoice.paid]]</td>
                                     <td align="right">[[invoice.is_late_days]]</td>
                                     <td align="right">
-                                        <button ng-click="ctrl.addPayment(clientInvoice.clientId, clientInvoice.nip, invoice); $event.stopPropagation();" class="btn btn-primary ng-scope" type="button" style="font-size: 10px">płatność</button>
+                                        <button ng-click="ctrl.addPayment(clientInvoice.clientId, clientInvoice.nip, invoice); $event.stopPropagation();" class="btn btn-primary ng-scope" type="button" style="font-size: 10px">zapłać</button>
                                     </td>
                                 </tr>
                                 <tr>
                                     <td colspan="8" align="right">
-                                        <a href="javascript:void(0)" ng-click="ctrl.paymentsList(clientInvoice, date_from, date_to); $event.stopPropagation();">zarządzaj płatnościami</a>
+                                        <a href="javascript:void(0)" ng-click="ctrl.paymentsList(clientInvoice, date_from, date_to); $event.stopPropagation();">pokaż płatności</a>
                                     </td>
                                 </tr>
                             </tbody>

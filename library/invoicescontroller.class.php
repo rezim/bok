@@ -10,6 +10,33 @@ class InvoicesController extends Controller {
         parent::__destruct();
 	}
 
+	function geInvoicesByClientId($clientId, $isPaid) {
+        $invoices = array();
+
+        $ch = curl_init();
+        $pageNb = 1;
+        $url = FAKTUROWNIA_ENDPOINT .'/invoices.json?'
+            .'client_id='.$clientId
+            .'&status='. (($isPaid) ? 'paid' : 'not_paid')
+            .'&order=issue_date'
+            .'&api_token='.FAKTUROWNIA_APITOKEN;
+        do {
+            curl_setopt($ch, CURLOPT_URL, $url . '&page=' . $pageNb);
+            curl_setopt($ch, CURLOPT_RETURNTRANSFER, TRUE);
+            if (USE_PROXY) {
+                curl_setopt($ch, CURLOPT_PROXY, '127.0.0.1:8888');
+            }
+            $data = json_decode(curl_exec($ch), true);
+
+            $invoices = array_merge($invoices, $data);
+            $pageNb++;
+        } while(count($data) == 50);
+
+        curl_close ($ch);
+
+        return $invoices;
+    }
+
     function getInvoicesByDateRange($period, $dateFrom, $dateTo) {
 
 	    $max_multi_calls_count = 50;
@@ -21,7 +48,6 @@ class InvoicesController extends Controller {
 
         $pageNb = 1;
         $url = FAKTUROWNIA_ENDPOINT .'/invoices.json?'
-
             .'period='.$period
             .'&date_from='.$dateFrom
             .'&date_to='.$dateTo
@@ -56,7 +82,7 @@ class InvoicesController extends Controller {
 
         curl_multi_close($mh);
 
-        return json_encode($invoices);
+        return $invoices;
     }
 
     function addPayment($price, $invoiceId, $clientId, $invoiceTaxNo, $name, $paidDate, $description) {
@@ -83,6 +109,45 @@ class InvoicesController extends Controller {
         curl_setopt($ch, CURLOPT_URL, $url);
         curl_setopt($ch, CURLOPT_POSTFIELDS, $data_string);
         curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+        if (USE_PROXY) {
+            curl_setopt($ch, CURLOPT_PROXY, '127.0.0.1:8888');
+        }
+        curl_setopt($ch, CURLOPT_HTTPHEADER, array(
+                'Content-Type: application/json',
+                'Content-Length: ' . strlen($data_string))
+        );
+
+        $result = json_decode(curl_exec($ch), true);
+
+        curl_close ($ch);
+
+        if (floatval($result['overpaid']) > 0) {
+            $this->splitPayments($clientId);
+        }
+
+        return $result;
+    }
+
+    function updatePaymentById($paymentId, $price) {
+
+        $ch = curl_init();
+        $url = FAKTUROWNIA_ENDPOINT . '/banking/payments/' . $paymentId . '.json?';
+
+        $data = array(
+            "api_token" => FAKTUROWNIA_APITOKEN,
+            "banking_payment" => array(
+                "price" => $price
+            )
+        );
+        $data_string = json_encode($data);
+
+        curl_setopt($ch, CURLOPT_URL, $url);
+        curl_setopt($ch, CURLOPT_CUSTOMREQUEST, "PUT");
+        curl_setopt($ch, CURLOPT_POSTFIELDS, $data_string);
+        curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+        if (USE_PROXY) {
+            curl_setopt($ch, CURLOPT_PROXY, '127.0.0.1:8888');
+        }
         curl_setopt($ch, CURLOPT_HTTPHEADER, array(
                 'Content-Type: application/json',
                 'Content-Length: ' . strlen($data_string))
@@ -92,7 +157,7 @@ class InvoicesController extends Controller {
 
         curl_close ($ch);
 
-        return json_encode($result);
+        return $result;
     }
 
 
@@ -105,10 +170,11 @@ class InvoicesController extends Controller {
         curl_setopt($ch, CURLOPT_URL, $url );
         curl_setopt($ch, CURLOPT_CUSTOMREQUEST, "DELETE");
         curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+        if (USE_PROXY) {
+            curl_setopt($ch, CURLOPT_PROXY, '127.0.0.1:8888');
+        }
 
         $result = curl_exec($ch);
-
-        $result = json_decode($result);
 
         curl_close($ch);
 
@@ -138,10 +204,10 @@ class InvoicesController extends Controller {
 
         curl_close ($ch);
 
-        return json_encode($payments);
+        return $payments;
     }
 
-    function getAllOverpaidPayments() {
+    function getAllOverpaidPayments($clientId = null) {
         $payments = array();
 
         $ch = curl_init();
@@ -149,6 +215,9 @@ class InvoicesController extends Controller {
         $url = FAKTUROWNIA_ENDPOINT .'/banking/payments.json?'
             .'status=overpaid'
             .'&api_token='.FAKTUROWNIA_APITOKEN;
+        if ($clientId) {
+            $url .= '&client_id='.$clientId;
+        }
         do {
             curl_setopt($ch, CURLOPT_URL, $url . '&page=' . $pageNb);
             curl_setopt($ch, CURLOPT_RETURNTRANSFER, TRUE);
@@ -163,7 +232,50 @@ class InvoicesController extends Controller {
 
         curl_close ($ch);
 
-        return json_encode($payments);
+        return $payments;
     }
 
+    function splitPayments($clientId) {
+        $notPaidInvoices = $this->geInvoicesByClientId($clientId, false);
+        $overPaidPayments = $this->getAllOverpaidPayments($clientId);
+
+        if (count($notPaidInvoices) > 0 && count($overPaidPayments) > 0) {
+            $overpaid = 0;
+
+            foreach ($overPaidPayments as $payment) {
+                $overpaid += floatval($payment['overpaid']);
+
+                $this->updatePaymentById(
+                    $payment['id'],
+                    floatval($payment['price']) - floatval($payment['overpaid'])
+                );
+            }
+            $idx = 0;
+            do {
+                $invoice = $notPaidInvoices[$idx];
+                $leftToPay = floatval($invoice['price_gross']) - floatval($invoice['paid']);
+
+                // if not enough overpaid for the invoice or it is last invoice,
+                // pay all remaining many
+                if ($leftToPay > $overpaid || $idx === count($notPaidInvoices) - 1) {
+                    $leftToPay = $overpaid;
+                }
+
+                $this->addPayment(
+                    $leftToPay,
+                    $invoice['id'],
+                    $invoice['client_id'],
+                    $invoice['buyer_tax_no'],
+                    'rozksiegowanie',
+                    date('Y-m-d'),
+                    ''
+                );
+
+                $overpaid -= $leftToPay;
+
+                $idx++;
+            } while($overpaid > 0 && $idx < count($notPaidInvoices));
+        }
+        return $overpaid;
+    }
 }
