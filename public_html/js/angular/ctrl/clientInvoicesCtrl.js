@@ -29,6 +29,8 @@ ClientInvoicesCtrl = function($scope, rest, $q, $filter, $uibModal, $interpolate
         }
     };
 
+
+
     $scope.notPaidInvoicesOnly = function(disabled) {
         return function(item) {
             return !disabled ? !item.is_paid : true;
@@ -314,7 +316,7 @@ ClientInvoicesCtrl = function($scope, rest, $q, $filter, $uibModal, $interpolate
                     this.deletePayment = function(paymentId) {
                         rest.post('deleteinvoicepayment', {
                             payment_id: paymentId
-                        }).then(function () {
+                        }).then(() => {
                             const removedIdx = payments.findIndex(payment => payment.id === paymentId);
 
                             if (removedIdx !== -1) {
@@ -344,7 +346,15 @@ ClientInvoicesCtrl = function($scope, rest, $q, $filter, $uibModal, $interpolate
         });
     };
 
-    this.addPayment = function(clientId, invoiceTaxNo, invoice, callback) {
+    this.splitPayments = function(clientId) {
+        rest.post('splitclientpayments', {
+            client_id: clientId
+        }).then(() => {
+            self.loadData($scope.date_from, $scope.date_to);
+        });
+    };
+
+    this.addPayment = function(clientId, invoiceTaxNo, invoice) {
 
         let modalInstance = $uibModal.open({
             ariaLabelledBy: 'modal-title',
@@ -388,7 +398,7 @@ ClientInvoicesCtrl = function($scope, rest, $q, $filter, $uibModal, $interpolate
                 invoice_tax_no: data.invoiceTaxNo,
                 paid_name: data.form.paymentname,
                 paid_date: data.form.paymentdate,
-                description: data.form.paymentdescription
+                description: data.form.paid
             }).then(function (payment) {
                 self.loadData($scope.date_from, $scope.date_to);
             });
@@ -411,7 +421,7 @@ ClientInvoicesCtrl = function($scope, rest, $q, $filter, $uibModal, $interpolate
      */
     let mapTaxNo = function(taxNo) {
         let result = taxNo;
-        if (result == "8992755868") {
+        if (result === "8992755868") {
             result = "9141528038";
         }
 
