@@ -128,7 +128,7 @@ class InvoicesController extends Controller {
         return $result;
     }
 
-    function updatePaymentById($paymentId, $price, $description) {
+    function updatePaymentById($paymentId, $price) {
 
         $ch = curl_init();
         $url = FAKTUROWNIA_ENDPOINT . '/banking/payments/' . $paymentId . '.json?';
@@ -136,8 +136,7 @@ class InvoicesController extends Controller {
         $data = array(
             "api_token" => FAKTUROWNIA_APITOKEN,
             "banking_payment" => array(
-                "price" => $price,
-                "description" => $description
+                "price" => $price
             )
         );
         $data_string = json_encode($data);
@@ -248,8 +247,7 @@ class InvoicesController extends Controller {
 
                 $this->updatePaymentById(
                     $payment['id'],
-                    floatval($payment['price']) - floatval($payment['overpaid']),
-                    $payment['price']
+                    floatval($payment['price']) - floatval($payment['overpaid'])
                 );
             }
             $idx = 0;
