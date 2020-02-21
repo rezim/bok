@@ -287,4 +287,8 @@ class InvoicesController extends Controller {
             } while($overpaid > 0 && $idx < count($invoices));
         }
     }
+
+    function normalizeCurrencyValue($value) {
+        return str_replace(',', '.', $value );
+    }
 }

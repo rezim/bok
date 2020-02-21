@@ -27,7 +27,7 @@
                             [[payment.invoice.number]]
                         </a>
                     </div>
-                    <div class="col-sm-2" role="button">[[payment.description | currency: '']]</div>
+                    <div class="col-sm-2" role="button">[[payment.description.replace(',', '.') | currency: '']]</div>
                     <div class="col-sm-1" role="button">
                         <span class="action fa fa-times fa-3" ng-click="$ctrl.deletePayment(payment.id)"></span>
                     </div>

@@ -397,8 +397,7 @@ ClientInvoicesCtrl = function($scope, rest, $q, $filter, $uibModal, $interpolate
                 client_id: data.clientId,
                 invoice_tax_no: data.invoiceTaxNo,
                 paid_name: data.form.paymentname,
-                paid_date: data.form.paymentdate,
-                description: data.form.paid
+                paid_date: data.form.paymentdate
             }).then(function (payment) {
                 self.loadData($scope.date_from, $scope.date_to);
             });

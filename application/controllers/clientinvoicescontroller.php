@@ -61,7 +61,7 @@ class clientinvoicesController extends InvoicesController
                     $_POST['invoice_tax_no'],
                     $_POST['paid_name'],
                     $_POST['paid_date'],
-                    $_POST['description']
+                    $this->normalizeCurrencyValue($_POST['price'])
                 )
             );
         } else {
