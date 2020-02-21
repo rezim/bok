@@ -236,28 +236,38 @@ class InvoicesController extends Controller {
     }
 
     function splitPayments($clientId) {
-        $notPaidInvoices = $this->geInvoicesByClientId($clientId, false);
+
         $overPaidPayments = $this->getAllOverpaidPayments($clientId);
 
-        if (count($notPaidInvoices) > 0 && count($overPaidPayments) > 0) {
-            $overpaid = 0;
+        foreach ($overPaidPayments as $payment) {
+            $notPaidInvoices = $this->geInvoicesByClientId($clientId, false);
 
-            foreach ($overPaidPayments as $payment) {
-                $overpaid += floatval($payment['overpaid']);
-
-                $this->updatePaymentById(
-                    $payment['id'],
-                    floatval($payment['price']) - floatval($payment['overpaid'])
-                );
+            if (count($notPaidInvoices) > 0) {
+                $this->splitPayment($notPaidInvoices, $payment);
             }
+        }
+
+        return 'OK';
+    }
+
+    // split single payment
+    function splitPayment($invoices, $payment) {
+        if (count($invoices) > 0 && $payment) {
+            $overpaid = $payment['overpaid'];
+            $paidDate = $payment['paid_date'];
+            $this->updatePaymentById(
+                $payment['id'],
+                floatval($payment['price']) - floatval($payment['overpaid'])
+            );
+
             $idx = 0;
             do {
-                $invoice = $notPaidInvoices[$idx];
+                $invoice = $invoices[$idx];
                 $leftToPay = floatval($invoice['price_gross']) - floatval($invoice['paid']);
 
                 // if not enough overpaid for the invoice or it is last invoice,
                 // pay all remaining many
-                if ($leftToPay > $overpaid || $idx === count($notPaidInvoices) - 1) {
+                if ($leftToPay > $overpaid || $idx === count($invoices) - 1) {
                     $leftToPay = $overpaid;
                 }
 
@@ -267,15 +277,14 @@ class InvoicesController extends Controller {
                     $invoice['client_id'],
                     $invoice['buyer_tax_no'],
                     'rozksiegowanie',
-                    date('Y-m-d'),
+                    $paidDate,
                     ''
                 );
 
                 $overpaid -= $leftToPay;
 
                 $idx++;
-            } while($overpaid > 0 && $idx < count($notPaidInvoices));
+            } while($overpaid > 0 && $idx < count($invoices));
         }
-        return 'OK';
     }
 }
