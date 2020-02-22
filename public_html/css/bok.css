@@ -178,6 +178,19 @@ table.notification-popup td.text-field {
     color: black;
 }
 
+.invoices .paid {
+    color: green;
+    text-decoration: line-through;
+}
+
+.invoices .partial {
+    color: orange;
+}
+
+.invoices .notpaid {
+    color: red;
+}
+
 /*
 TODO move loading indicator to separate file
 */

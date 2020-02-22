@@ -18,8 +18,8 @@ ClientInvoicesCtrl = function($scope, rest, $q, $filter, $uibModal, $interpolate
         $scope.orderBy.propertyName = propertyName;
     };
 
-    $scope.filters = {
-        show_paid_invoices: false,
+    this.filters = {
+        show_paid_invoices: true,
         show_non_deptors: false
     };
 

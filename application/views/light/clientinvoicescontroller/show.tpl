@@ -112,7 +112,7 @@
 
                 <tr ng-if="(ctrl.show_details[clientInvoice.nip] ) && clientInvoice.invoices.list.length">
                     <td colspan="6" class="inner-table">
-                        <table class='tablesorter displaytable' id='tableReport' cellspacing=0 cellpadding=0>
+                        <table class='tablesorter displaytable invoices' id='tableReport' cellspacing=0 cellpadding=0>
                             <thead>
                             <tr>
                                 <th width="200px">
@@ -142,7 +142,8 @@
                             </tr>
                             </thead>
                             <tbody>
-                                <tr ng-repeat="invoice in clientInvoice.invoices.list | filter: notPaidInvoicesOnly(ctrl.filters.show_paid_invoices)">
+                                <tr ng-repeat="invoice in clientInvoice.invoices.list | filter: notPaidInvoicesOnly(ctrl.filters.show_paid_invoices)"
+                                    ng-class="(invoice.status === 'paid') ? 'paid' : (invoice.status === 'partial') ? 'partial': 'notpaid'">
                                     <td><a href="[[invoice.view_url]]" target="_blank" ng-click="$event.stopPropagation();">[[invoice.number]]</a></td>
                                     <td>[[invoice.sell_date]]</td>
                                     <td>[[invoice.payment_to]]</td>
