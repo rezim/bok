@@ -132,8 +132,12 @@
                    }
                   
                    $mailek->Subject = $temat;
-                   $mailek->Body    = 
+                   $mailek->Body    =
+                           "                                    
+                                    <b>Oryginalna wiadomość :</b><br/><br/>
                             "
+                                . $tresc
+                            ."
                                 Przydzielono nowe zgłoszenie do wykonania :<br/>
                                 -Nr zgłoszenia: {$rowid}<br/>
                                 -Termin wykonania : {$terminwykonania}<br/>
@@ -149,13 +153,7 @@
                                 -Adres IP:{$adresip}<br/>
                                 -Firmware:{$firmware}
                                 
-                                <br/><br/>
-                                <b>Oryginalna wiadomość :</b><br/><br/>
-                               
-                            "
-                                       . $tresc
-                            ;
-                    
+                            ";
                     
                    $mailek->AltBody = 
                             "
