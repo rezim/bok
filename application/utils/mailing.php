@@ -134,10 +134,10 @@
                    $mailek->Subject = $temat;
                    $mailek->Body    =
                            "                                    
-                                    <b>Oryginalna wiadomość :</b><br/><br/>
+                                <b>Oryginalna wiadomość :</b><br/><br/>
                             "
                                 . $tresc
-                            ."
+                            ."<br/><br/>
                                 Przydzielono nowe zgłoszenie do wykonania :<br/>
                                 -Nr zgłoszenia: {$rowid}<br/>
                                 -Termin wykonania : {$terminwykonania}<br/>
