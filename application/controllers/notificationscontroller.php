@@ -201,7 +201,7 @@ class notificationsController extends Controller
 
                    $mailing = new mailing();
                    $mailing->sendMailPrzydzielonoZlecenie($wynik['keyval'],$dataMail[0]['mail'], nl2br($this->$nameOfModel->_filedsToEdit['tresc_wiadomosci']['value']),
-                       $wynik['clientname'] . " #Serwis [Ticket#{$wynik['keyval']}] ".$this->$nameOfModel->_filedsToEdit['temat']['value'],
+                       "#Serwis " . $wynik['clientname'] . " [Ticket#{$wynik['keyval']}] ".$this->$nameOfModel->_filedsToEdit['temat']['value'],
                       $wynik['clientname'],
                       $this->$nameOfModel->_filedsToEdit['osobazglaszajaca']['value'],
                       $this->$nameOfModel->_filedsToEdit['nr_telefonu']['value'], $priority,
