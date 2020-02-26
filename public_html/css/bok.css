@@ -192,6 +192,47 @@ table.notification-popup td.text-field {
 }
 
 /*
+TODO move filters styles to separate file
+*/
+
+.filters-container {
+    width: 100%;
+}
+
+.filters-left {
+    width: 50%;
+    display: inline;
+}
+
+.filters-right {
+    width: 50%;
+    display: inline;
+}
+
+.filters-bottom {
+    width: 100%;
+}
+
+@media only screen and (max-width: 1200px) {
+    .filters-left {
+        width: 100%;
+        display: block;
+    }
+
+    .filters-right {
+        padding-top: 10px;
+        padding-bottom: 10px;
+        width: 100%;
+        display: block;
+    }
+}
+
+@media only screen and (max-width: 900px) {
+    .filters-bottom .labelNormal {
+        display: block;
+    }
+}
+/*
 TODO move loading indicator to separate file
 */
 /* Absolute Center Spinner */

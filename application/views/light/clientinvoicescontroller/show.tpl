@@ -8,34 +8,35 @@
 
     {include file="$templates/invoice/addPayment.tpl"}
     {include file="$templates/invoice/paymentList.tpl"}
+<div class="filters-container">
+    <div class="filters-left">
+        <a href="javascript:void(0)" ng-click="date_from=ctrl.getLastMonths(24); date_to=ctrl.getToday();ctrl.loadData(date_from, date_to)" style="padding-right: 15px">24 miesiące</a>|
+        <a href="javascript:void(0)" ng-click="date_from=ctrl.getLastMonths(12); date_to=ctrl.getToday();ctrl.loadData(date_from, date_to)" style="padding: 15px">12 miesięcy</a>|
+        <a href="javascript:void(0)" ng-click="date_from=ctrl.getLastMonths(6); date_to=ctrl.getToday();ctrl.loadData(date_from, date_to)" style="padding: 15px">6 miesięcy</a>|
+        <a href="javascript:void(0)" ng-click="date_from=ctrl.getLastMonths(3); date_to=ctrl.getToday();ctrl.loadData(date_from, date_to)" style="padding: 15px">3 miesiące</a>
+    </div>
+    <div class="filters-right">
+        <label for="txtdataod" class="labelNormal" >data od</label>
+         <input type="text" id='txtdataod' class='textBoxNormal' style='width:90px;min-width: 90px;' ng-model="date_from" datepicker required>
+         <label for="txtdatado" class="labelNormal" >data do</label>
+         <input type="text" id='txtdatado' class='textBoxNormal' style='width:90px;min-width: 90px;' ng-model="date_to" datepicker required>
+         <a href="#" class="buttonpokaz" ng-click='ctrl.loadData(date_from, date_to, show_inactive)'>Pokaż</a>
+    </div>
 
-<div style="width: 475px; display: inline">
-    <a href="javascript:void(0)" ng-click="date_from=ctrl.getLastMonths(24); date_to=ctrl.getToday();ctrl.loadData(date_from, date_to)" style="padding-right: 15px">24 miesiące</a>|
-    <a href="javascript:void(0)" ng-click="date_from=ctrl.getLastMonths(12); date_to=ctrl.getToday();ctrl.loadData(date_from, date_to)" style="padding: 15px">12 miesięcy</a>|
-    <a href="javascript:void(0)" ng-click="date_from=ctrl.getLastMonths(6); date_to=ctrl.getToday();ctrl.loadData(date_from, date_to)" style="padding: 15px">6 miesięcy</a>|
-    <a href="javascript:void(0)" ng-click="date_from=ctrl.getLastMonths(3); date_to=ctrl.getToday();ctrl.loadData(date_from, date_to)" style="padding: 15px">3 miesiące</a>
-</div>
-<div style="width: 475px; display: inline">
-    <label for="txtdataod" class="labelNormal" >data od</label>
-     <input type="text" id='txtdataod' class='textBoxNormal' style='width:90px;min-width: 90px;' ng-model="date_from" datepicker required>
-     <label for="txtdatado" class="labelNormal" >data do</label>
-     <input type="text" id='txtdatado' class='textBoxNormal' style='width:90px;min-width: 90px;' ng-model="date_to" datepicker required>
-     <a href="#" class="buttonpokaz" ng-click='ctrl.loadData(date_from, date_to, show_inactive)'>Pokaż</a>
-</div>
-
-<div class="" ng-if="ctrl.getClientInvoices().length">
-    <label class="labelNormal" style="padding-right: 30px">
-        pokaż opłacone
-        <input type="checkbox" ng-model="ctrl.filters.show_paid_invoices"/></label>
-    <label class="labelNormal" style="padding-right: 30px">
-        pokaż klientów bez zadłużenia
-        <input type="checkbox" ng-model="ctrl.filters.show_non_deptors"/></label>
-    <label class="labelNormal" style="padding-right: 30px" ng-if="!ctrl.show_devices_view">
-        klient <input type="text" class='textBoxNormal' ng-model="search.name">
-    </label>
-    <label class="labelNormal" style="padding-right: 30px" ng-if="ctrl.show_devices_view">
-        model <input type="text" class='textBoxNormal' ng-model="ctrl.device.agreementPrinterModel">
-    </label>
+    <div class="filters-bottom" ng-if="ctrl.getClientInvoices().length">
+        <label class="labelNormal" style="padding-right: 30px">
+            pokaż opłacone
+            <input type="checkbox" ng-model="ctrl.filters.show_paid_invoices"/></label>
+        <label class="labelNormal" style="padding-right: 30px">
+            pokaż klientów bez zadłużenia
+            <input type="checkbox" ng-model="ctrl.filters.show_non_deptors"/></label>
+        <label class="labelNormal" style="padding-right: 30px" ng-if="!ctrl.show_devices_view">
+            klient <input type="text" class='textBoxNormal' ng-model="search.name">
+        </label>
+        <label class="labelNormal" style="padding-right: 30px" ng-if="ctrl.show_devices_view">
+            model <input type="text" class='textBoxNormal' ng-model="ctrl.device.agreementPrinterModel">
+        </label>
+    </div>
 </div>
 <div>
     <div>
