@@ -24,17 +24,21 @@
     </div>
 
     <div class="filters-bottom" ng-if="ctrl.getClientInvoices().length">
-        <label class="labelNormal" style="padding-right: 30px">
-            pokaż opłacone
-            <input type="checkbox" ng-model="ctrl.filters.show_paid_invoices"/></label>
-        <label class="labelNormal" style="padding-right: 30px">
-            pokaż klientów bez zadłużenia
-            <input type="checkbox" ng-model="ctrl.filters.show_non_deptors"/></label>
-        <label class="labelNormal" style="padding-right: 30px" ng-if="!ctrl.show_devices_view">
-            klient <input type="text" class='textBoxNormal' ng-model="search.name">
+        <label class="labelNormal" style="margin-right: 12px">
+        <label class="labelNormal" style="margin-right: 12px">
+            <input type="checkbox" ng-model="ctrl.filters.show_paid_invoices"/>
+            pokaż faktury opłacone
         </label>
-        <label class="labelNormal" style="padding-right: 30px" ng-if="ctrl.show_devices_view">
-            model <input type="text" class='textBoxNormal' ng-model="ctrl.device.agreementPrinterModel">
+        <label class="labelNormal" style="margin-right: 12px">
+            <input type="checkbox" ng-model="ctrl.filters.show_overpaid_invoices"/>
+            pokaż klientów z nadpłatą
+        </label>
+        <label class="labelNormal" style="margin-right: 23px">
+            <input type="checkbox" ng-model="ctrl.filters.show_non_deptors"/>
+            pokaż klientów bez zadłużenia
+        </label>
+        <label class="labelNormal" ng-if="!ctrl.show_devices_view">
+            klient <input type="text" class='textBoxNormal' ng-model="search.name">
         </label>
     </div>
 </div>
@@ -68,9 +72,8 @@
                 <td colspan="2"></td>
             </tr>
             </thead>
-            <tbody ng-repeat="clientInvoice in ctrl.getClientInvoices() | filter:search | filter: deptorsOnly(ctrl.filters.show_paid_invoices) | orderBy:orderBy.propertyName:orderBy.reverse"
-                   ng-click="ctrl.showDetails(clientInvoice)"
-                   ng-if="(clientInvoice.invoices.sum.notPaid > 0 || ctrl.filters.show_non_deptors) && clientInvoice.invoices.count.all > 0">
+            <tbody ng-repeat="clientInvoice in ctrl.getClientInvoices() | filter:search | filter: ctrl.clientInvoicesFilter() | orderBy:orderBy.propertyName:orderBy.reverse"
+                   ng-click="ctrl.showDetails(clientInvoice)">
 
                 <tr ng-if="!ctrl.filters.show_paid_invoices">
                     <td class='tdLink'">[[clientInvoice.name]]</td>
@@ -145,7 +148,7 @@
                             </tr>
                             </thead>
                             <tbody>
-                                <tr ng-repeat="invoice in clientInvoice.invoices.list | filter: notPaidInvoicesOnly(ctrl.filters.show_paid_invoices)"
+                                <tr ng-repeat="invoice in clientInvoice.invoices.list | filter: ctrl.notPaidInvoicesOnlyFilter()"
                                     ng-class="(invoice.status === 'paid') ? 'paid' : (invoice.status === 'partial') ? 'partial': 'notpaid'">
                                     <td><a href="[[invoice.view_url]]" target="_blank" ng-click="$event.stopPropagation();">[[invoice.number]]</a></td>
                                     <td>[[invoice.sell_date]]</td>

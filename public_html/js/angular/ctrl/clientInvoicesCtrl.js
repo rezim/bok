@@ -20,25 +20,27 @@ ClientInvoicesCtrl = function($scope, rest, $q, $filter, $uibModal, $interpolate
 
     this.filters = {
         show_paid_invoices: true,
+        show_overpaid_invoices: true,
         show_non_deptors: false
     };
 
-    $scope.deptorsOnly = function(disabled) {
+    this.clientInvoicesFilter = function () {
         return function(item) {
-            return !disabled ? item.invoices.sum.notPaid > 0 : true;
+            if (self.filters.show_overpaid_invoices && item.overpaid.sum > 0) {
+                return true;
+            }
+            if (self.filters.show_non_deptors || item.invoices.sum.notPaid > 0) {
+                return true;
+            }
+
+            return false;
         }
     };
 
-
-
-    $scope.notPaidInvoicesOnly = function(disabled) {
+    this.notPaidInvoicesOnlyFilter = function() {
         return function(item) {
-            return !disabled ? !item.is_paid : true;
+            return !self.filters.show_paid_invoices ? !item.is_paid : true;
         }
-    };
-
-    $scope.notPaidInvoices = {
-        is_paid: false
     };
 
     this.show_details = {};
@@ -74,11 +76,7 @@ ClientInvoicesCtrl = function($scope, rest, $q, $filter, $uibModal, $interpolate
     this.getTotal = function(search, showPaidInvoices, showNonDeptors) {
         let total = 0;
 
-        let filteredClientInvoices = ($filter('filter')($filter('filter')(clientInvoices, search), $scope.deptorsOnly(showPaidInvoices)));
-
-        if (!showNonDeptors) {
-            filteredClientInvoices = filteredClientInvoices.filter(invoice => invoice.invoices.sum.notPaid > 0);
-        }
+        let filteredClientInvoices = ($filter('filter')($filter('filter')(clientInvoices, search), this.clientInvoicesFilter()));
 
         filteredClientInvoices.forEach(clientInvoice => {
             total += parseFloat(clientInvoice.balance);
