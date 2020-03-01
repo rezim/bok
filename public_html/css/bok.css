@@ -228,6 +228,9 @@ TODO move filters styles to separate file
 }
 
 @media only screen and (max-width: 900px) {
+    .filters-bottom {
+        padding-bottom: 70px;
+    }
     .filters-bottom .labelNormal {
         display: block;
     }

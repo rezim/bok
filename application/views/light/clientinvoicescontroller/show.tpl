@@ -22,7 +22,14 @@
          <input type="text" id='txtdatado' class='textBoxNormal' style='width:90px;min-width: 90px;' ng-model="date_to" datepicker required>
          <a href="#" class="buttonpokaz" ng-click='ctrl.loadData(date_from, date_to, show_inactive)'>Pokaż</a>
     </div>
-
+    <div class="filters-middle" ng-if="ctrl.getClientInvoices().length">
+        <label class="labelNormal">
+            klient <input type="text" class='textBoxNormal' ng-model="search.name">
+        </label>
+        <label class="labelNormal">
+                nip <input type="text" class='textBoxNormal' ng-model="search.nip">
+            </label>
+    </div>
     <div class="filters-bottom" ng-if="ctrl.getClientInvoices().length">
         <label class="labelNormal" style="margin-right: 12px">
         <label class="labelNormal" style="margin-right: 12px">
@@ -36,9 +43,6 @@
         <label class="labelNormal" style="margin-right: 23px">
             <input type="checkbox" ng-model="ctrl.filters.show_non_deptors"/>
             pokaż klientów bez zadłużenia
-        </label>
-        <label class="labelNormal" ng-if="!ctrl.show_devices_view">
-            klient <input type="text" class='textBoxNormal' ng-model="search.name">
         </label>
     </div>
 </div>
