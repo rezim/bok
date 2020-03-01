@@ -403,12 +403,19 @@ function saveSprawa()
           unset($mailing);
           
           $mailing = new mailing();
-          $mailing->sendMailInfoNowy($_POST['notimailfields']['noti_rowid'],$_POST['notimailfields']['date_email'],nl2br($_POST['notimailfields']['tresc_wiadomosci']),$_POST['notimailfields']['temat'],$wynik['clientname']);
+          $mailing->sendMailInfoNowy(
+              $_POST['notimailfields']['noti_rowid'],
+              $_POST['notimailfields']['date_email'],
+              nl2br($_POST['notimailfields']['tresc_wiadomosci']),
+              $_POST['notimailfields']['temat'],
+              $wynik['clientname']
+          );
           unset($mailing);
           
     }
     unset($noti);
 }
+
 function saveMail($attachments)
 {
    global $DOZWOLONETYPYPLIKOW;
