@@ -57,12 +57,7 @@ class mailing
                                 -Osoba zgłaszająca :{$osobazglaszajaca}<br/>
                                 -Nr kontaktowy do osoby zgłaszającej:{$nrkontaktowy}<br/>
                                 -Model urządzenia:{$modelurzadzenia}<br/>
-                                -NR Seryjny urządzenia:{$nrseryjny}<br/>
-                                -Przebieg:{$przebieg}<br/>
-                                -Stan tonera:{$stantonera}<br/>
-                                -Adres IP:{$adresip}<br/>
-                                -Firmware:{$firmware}
-                                
+                                -NR Seryjny urządzenia:{$nrseryjny}<br/>                                
                                 <br/><br/>
                                 <b>Oryginalna wiadomość :</b><br/><br/>
                                
@@ -139,10 +134,10 @@ class mailing
                                 -Piorytet : {$priority}<br/>
                                 -Nazwa klienta : {$clientname}<br/>
                                 -Osoba zgłaszająca :{$osobazglaszajaca}<br/>
-                                -Nr kontaktowy do osoby zgłaszającej:{$nrkontaktowy}<br/>
+                                -Nr kontaktowy do osoby zgłaszającej:<a href='tel:{$nrkontaktowy}'>{$nrkontaktowy}</a><br/>
                                 -Model urządzenia:{$modelurzadzenia}<br/>
                                 -NR Seryjny urządzenia:{$nrseryjny}<br/>
-                                -Lokalizacja urządzenia:{$lokalizacja}<br/>
+                                -Lokalizacja urządzenia: <a href='http://maps.google.com/maps?q={$lokalizacja}'>{$lokalizacja}</a><br/> 
                                 -Przebieg:{$przebieg}<br/>
                                 -Stan tonera:{$stantonera}<br/>
                                 -Adres IP:{$adresip}<br/>
@@ -205,7 +200,7 @@ class mailing
                                 -Data i czas zgłoszenia : {$data_email}<br/>
                                 -Nazwa klienta : {$clientname}<br/>
                                 -Osoba zgłaszająca :{$osobazglaszajaca}<br/>
-                                -Nr kontaktowy do osoby zgłaszającej:{$nrkontaktowy}<br/>
+                                -Nr kontaktowy do osoby zgłaszającej:< a href='tel:{$nrkontaktowy}'>{$nrkontaktowy}</a><br/>
                                 -Model urządzenia:{$modelurzadzenia}<br/>
                                 -NR Seryjny urządzenia:{$nrseryjny}<br/>
                                 -Przebieg:{$przebieg}<br/>
