@@ -9,6 +9,7 @@ class clientinvoice extends Model
                     a.rowid as agreement_rowid, c.terminplatnosci as agreement_paymentdate,
                     a.activity as agreement_isactive
              from agreements a inner join clients c on a.rowidclient = c.rowid
+             where c.nip <> '0000000000' OR (c.nip = '0000000000' AND a.activity = 1)
              order by nazwakrotka";
         return json_encode($this->query($query,null,false));
     }

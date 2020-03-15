@@ -146,6 +146,10 @@ ClientInvoicesCtrl = function($scope, rest, $q, $filter, $uibModal, $interpolate
 
         angular.forEach(agreements, function (agreement) {
 
+            if (agreement['client_nip'].startsWith('000')) {
+                console.log(agreement);
+            }
+
             if (!objClientInvoice[agreement['client_nip']]) {
                 objClientInvoice[agreement['client_nip']] =
                     initClientInvoice(agreement['client_name'], agreement['client_nip']);
@@ -168,6 +172,10 @@ ClientInvoicesCtrl = function($scope, rest, $q, $filter, $uibModal, $interpolate
 
                 // 8992755868 <- 9141528038 ->
                 invoice.buyer_tax_no = mapTaxNo(invoice.buyer_tax_no);
+
+                if (invoice.buyer_tax_no.startsWith('000')) {
+                    console.log(invoice);
+                }
 
                 if (!objClientInvoice[invoice.buyer_tax_no]) {
                     const noAgreementClientName = ['# - (brak umowy)', invoice.buyer_name].join(' ');
