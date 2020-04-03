@@ -29,7 +29,7 @@ class profitabilityController extends InvoicesController
 
     function getinvoices() {
         if ($_POST['period'] && $_POST['date_from'] && $_POST['date_to']) {
-            echo $this->getInvoicesByDateRange($_POST['period'], $_POST['date_from'], $_POST['date_to']);
+            echo json_encode($this->getInvoicesByDateRange($_POST['period'], $_POST['date_from'], $_POST['date_to']));
         } else {
             echo "błędne parametry wejściowe";
         }
