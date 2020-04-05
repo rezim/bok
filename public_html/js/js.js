@@ -1552,6 +1552,33 @@ function zapiszNoti(czydelete,savelink)
     
     
 }
+
+function showNotPaidInvoices(clientId, uiContainerSelector) {
+    // no client no invoices
+    if (clientId === '') {
+        return;
+    }
+
+    $.ajax({
+        url:sciezka+"/notifications/shownotpaidinvoices/todiv",
+        type: 'POST',
+        data: {
+            client_id: clientId
+        },
+        success: function(data) {
+            $(uiContainerSelector).html(data);
+        },
+        error: function(){
+            objCenter.innerHTML = 'Problem z pobraniem faktur';
+        }
+    }).done(function ()
+    {
+
+    });
+    return false;
+}
+
+
 function showMaile()
 {
     

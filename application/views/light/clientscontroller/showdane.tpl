@@ -45,6 +45,7 @@
                             {
                                 $('#email').val('{$item.mail}');
                             }
+                            showNotPaidInvoices('{$item.rowid}', '#invoicesContainer');
                             $.colorbox.close();
                         "
                     {/if}

@@ -192,6 +192,24 @@ table.notification-popup td.text-field {
 }
 
 /*
+TODO move notification css to seperate file
+ */
+.notpaid-invoices-alert {
+    border: solid 1px red;
+    text-align: left;
+    margin: 30px 75px 0px 30px;
+    padding: 10px;
+}
+
+.notpaid-invoices-alert .invoice-row {
+    margin-top: 5px;
+}
+
+.notpaid-invoices-alert .fa-exclamation-triangle {
+    color: red;
+}
+
+/*
 TODO move filters styles to separate file
 */
 

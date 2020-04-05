@@ -10,6 +10,24 @@ class InvoicesController extends Controller {
         parent::__destruct();
 	}
 
+	function getClientByTaxNo($clientTaxNo) {
+        $ch = curl_init();
+        $url = FAKTUROWNIA_ENDPOINT .'/clients.json?'
+            .'tax_no='.$clientTaxNo
+            .'&api_token='.FAKTUROWNIA_APITOKEN;
+
+        curl_setopt($ch, CURLOPT_URL, $url);
+        curl_setopt($ch, CURLOPT_RETURNTRANSFER, TRUE);
+        if (USE_PROXY) {
+            curl_setopt($ch, CURLOPT_PROXY, '127.0.0.1:8888');
+        }
+        $client = json_decode(curl_exec($ch), true);
+
+        curl_close ($ch);
+
+        return $client;
+    }
+
 	function geInvoicesByClientId($clientId, $isPaid) {
         $invoices = array();
 
