@@ -1,4 +1,4 @@
-ClientInvoicesCtrl = function($scope, rest, $q, $filter, $uibModal, $interpolate, appConf) {
+PaymentsCtrl = function($scope, rest, $q, $filter, $uibModal, $interpolate, appConf) {
 
     $scope.date = new Date();
 
@@ -21,11 +21,26 @@ ClientInvoicesCtrl = function($scope, rest, $q, $filter, $uibModal, $interpolate
     this.filters = {
         show_paid_invoices: true,
         show_overpaid_invoices: true,
-        show_non_deptors: false
+        show_non_deptors: false,
+        invoiceNb: ''
     };
 
     this.clientInvoicesFilter = function () {
+
         return function(item) {
+
+            if (self.filters.invoiceNb !== '') {
+                if (item.invoices.list.some(
+                        function(invoice) {
+                           return invoice.number.indexOf(self.filters.invoiceNb) !== -1
+                        }
+                    )
+                ) {
+                    return true;
+                } else {
+                    return false;
+                }
+            }
             if (self.filters.show_overpaid_invoices && item.overpaid.sum > 0) {
                 return true;
             }
@@ -438,4 +453,4 @@ ClientInvoicesCtrl = function($scope, rest, $q, $filter, $uibModal, $interpolate
     this.loadData($scope.date_from, $scope.date_to);
 };
 
-app.controller('ClientInvoicesCtrl', ClientInvoicesCtrl);
+app.controller('PaymentsCtrl', PaymentsCtrl);

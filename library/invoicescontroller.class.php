@@ -85,22 +85,25 @@ class InvoicesController extends Controller {
             }
 
             do {
-                curl_multi_exec($mh, $running);
-            } while ($running > 0);
+                $status = curl_multi_exec($mh, $running);
+            } while ($running > 0 && $status === CURLM_OK);
 
-            for ($i = 0; $i < $max_multi_calls_count; $i++) {
-                $results[] = curl_multi_getcontent($curl_arr[$i]);
 
-                curl_multi_remove_handle($mh, $curl_arr[$i]);
+            if ($status === CURLM_OK) {
+                for ($i = 0; $i < $max_multi_calls_count; $i++) {
+                    $results[] = curl_multi_getcontent($curl_arr[$i]);
 
-                $data = json_decode(curl_multi_getcontent($curl_arr[$i]), true);
-                $invoices = array_merge($invoices, $data);
+                    curl_multi_remove_handle($mh, $curl_arr[$i]);
+
+                    $data = json_decode(curl_multi_getcontent($curl_arr[$i]), true);
+                    $invoices = array_merge($invoices, $data);
+                }
             }
-        } while (count($invoices) === ($pageNb-1)*50);
+        } while (count($invoices) === ($pageNb-1)*50 && $status === CURLM_OK);
 
         curl_multi_close($mh);
 
-        return $invoices;
+        return ($status === CURLM_OK) ? $invoices : $status;
     }
 
     function addPayment($price, $invoiceId, $clientId, $invoiceTaxNo, $name, $paidDate, $description) {

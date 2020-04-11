@@ -84,7 +84,7 @@
     <script type="text/javascript"
             src="{$smarty.const.SCIEZKA}/js/angular/ctrl/profitabilityCtrl.js?{$smarty.now}"></script>
     <script type="text/javascript"
-            src="{$smarty.const.SCIEZKA}/js/angular/ctrl/clientInvoicesCtrl.js?{$smarty.now}"></script>
+            src="{$smarty.const.SCIEZKA}/js/angular/ctrl/paymentsCtrl.js?{$smarty.now}"></script>
     <script type="text/javascript"
             src="{$smarty.const.SCIEZKA}/js/angular/ctrl/userSharesCtrl.js?{$smarty.now}"></script>
     <script type="text/javascript" src="{$smarty.const.SCIEZKA}/js/angular/ctrl/serviceCtrl.js?{$smarty.now}"></script>
