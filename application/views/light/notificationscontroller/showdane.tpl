@@ -1,4 +1,3 @@
-
 <table class='tablesorter displaytable' id='tableNotifi' cellspacing=0 cellpadding=0>
     <thead>
         <tr>

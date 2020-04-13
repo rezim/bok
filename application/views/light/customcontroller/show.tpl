@@ -1,6 +1,6 @@
 <div class='divLoader' id='divLoader'>
 </div>
-<div class='divRightCenter' id='divRightCenter'>
+<div class='divRightCenter container' id='divRightCenter'>
     
 </div>
 <script type="text/javascript">

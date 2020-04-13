@@ -1,6 +1,7 @@
-<!DOCTYPE html>
-<html>
+<!doctype html>
+<html lang="en">
 <head>
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
     <meta charset="utf-8"/>
     <title>{if !isset($title) || $title==''}{$smarty.const.TITLE}{else}{$title}{/if}</title>
     <meta name="keywords"
@@ -31,9 +32,9 @@
     <link rel="stylesheet" type="text/css" href="{$smarty.const.SCIEZKA}/{$smarty.const.SMARTVERSION}/css/dropzone.css"
           title="default"/>
 
-
     <!-- bootstrap -->
-    <link rel="stylesheet" type="text/css" href="{$smarty.const.SCIEZKA}/css/bootstrap.min.css" title="default"/>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/css/bootstrap.min.css" integrity="sha384-Vkoo8x4CGsO3+Hhxv8T/Q5PaXtkKtu6ug5TOeNV6gBiFeWPGFN9MuhOf23Q9Ifjh" crossorigin="anonymous">
+
     <link rel="stylesheet" type="text/css" href="{$smarty.const.SCIEZKA}/css/bok.css" title="default"/>
 
     <!-- modules -->
@@ -99,115 +100,162 @@
 </head>
 <?php flush(); ?>
 <body>
-<div id='divContainer' class="container-fluid row">
 
-    {if isset($smarty.session.login) && $smarty.session.login==1}
-        <img src='http://www.otus.pl/templates/otus/images/obraz/logo.png' alt='Otus' title='Otus' border='0'
-             height='82' width='150'
-             style='position:absolute;left:40px;'
-        ></img>
-        <div id='divHeader'>
-            {if isset($smarty.session.przypisanemenu['but_addclient'])}
-                <a id='but_addclient' href="#" onclick='showNewClientAdd("0");return false;' class="butaddclient">Nowy
-                    klient</a>
-            {/if}
-            {if isset($smarty.session.przypisanemenu['but_addprinter'])}
-                <a id='but_addprinter' href="#" onclick='showNewPrinterAdd("");return false;' class="butaddprinter">Nowa
-                    drukarka</a>
-            {/if}
-            {if isset($smarty.session.przypisanemenu['but_addagreement'])}
-                <a id='but_addagreement' href="#" onclick='showNewAgreementAdd("0");return false;' class="butaddumowa">Nowa
-                    umowa</a>
-            {/if}
-            {if isset($smarty.session.przypisanemenu['but_addtoner'])}
-                <a id='but_addtoner' href="#" onclick='showNewTonerAdd("0","");return false;' class="butaddtoner">Nowy
-                    toner</a>
-            {/if}
-            {if isset($smarty.session.przypisanemenu['but_addcase'])}
-                <a id='but_addcase' href="javascript:void(0);" onclick='showNewNotiAdd("0");return false;'
-                   class="butaddcase">Nowe zgłoszenie</a>
-            {/if}
-            {if isset($smarty.session.przypisanemenu['but_addcase'])}
-                <a id='but_addservice' href="{$smarty.const.SCIEZKA}/service/show#addNewRequest" class="butaddservice">Nowy
-                    serwis</a>
-            {/if}
-        </div>
-        <div class='liniaRozdzielajaca'></div>
-        <div id='leftMenu' class="col-xs-3">
+{if isset($smarty.session.login) && $smarty.session.login==1}
+<nav id="appNavBar" class="navbar navbar-expand-lg navbar-dark bg-dark">
+    <a class="navbar-brand" href="{$smarty.const.SCIEZKA}/">
+        <i class="fa fa-gears"></i>&nbsp;OTUS
+    </a>
 
-        <div id='cssmenu'>
-            <ul>
-                <li><a href='{$smarty.const.SCIEZKA}/acls/logout/notemplate'><span>Wyloguj</span></a></li>
-                {if isset($smarty.session.przypisanemenu['li_clientinvoicesshow'])}
-                    <li id='li_clientinvoicesshow' class='last'><a
-                                href='{$smarty.const.SCIEZKA}/clientinvoices/show'><span>Płatności</span></a></li>
-                {/if}
-                {if isset($smarty.session.przypisanemenu['li_printersshow'])}
-                    <li id='li_printersshow'><a href='{$smarty.const.SCIEZKA}/printers/show'><span>Drukarki</span></a>
-                    </li>
-                {/if}
-                {if isset($smarty.session.przypisanemenu['li_clientsshow'])}
-                    <li id='li_clientsshow'><a href='{$smarty.const.SCIEZKA}/clients/show'><span>Klienci</span></a></li>
-                {/if}
-                {if isset($smarty.session.przypisanemenu['li_agreementsshow'])}
-                    <li id='li_agreementsshow'><a href='{$smarty.const.SCIEZKA}/agreements/show'><span>Umowy</span></a>
-                    </li>
-                {/if}
-                {if isset($smarty.session.przypisanemenu['li_tonersshow'])}
-                    <li id='li_tonersshow'><a href='{$smarty.const.SCIEZKA}/toners/show'><span>Tonery</span></a></li>
-                {/if}
-                {if isset($smarty.session.przypisanemenu['li_reportsshow'])}
-                    <li id='li_reportsshow'><a href='{$smarty.const.SCIEZKA}/reports/show'><span>Raporty</span></a></li>
-                {/if}
-
-                {if isset($smarty.session.przypisanemenu['li_passwordshow'])}
-                    <li id='li_passwordshow'><a href='{$smarty.const.SCIEZKA}/acls/passshow'><span>Hasło</span></a></li>
-                {/if}
-
-                {if isset($smarty.session.przypisanemenu['li_casesshow'])}
-                    <li id='li_caseshow'><a
-                                href='{$smarty.const.SCIEZKA}/notifications/show'><span>Zgłoszenia</span></a></li>
-                {/if}
-
-                {if isset($smarty.session.przypisanemenu['li_countersshow'])}
-                    <li id='li_caseshow'><a
-                                href='{$smarty.const.SCIEZKA}/custom/show'><span>Liczniki Drukarek</span></a></li>
-                {/if}
-
-                {if isset($smarty.session.przypisanemenu['li_profitabilityshow'])}
-                    <li id='li_caseshow'><a
-                                href='{$smarty.const.SCIEZKA}/profitability/show'><span>Rentowność Umów</span></a></li>
-                {/if}
-
-                {if isset($smarty.session.przypisanemenu['li_sharesshow'])}
-                    <li id='li_caseshow'><a href='{$smarty.const.SCIEZKA}/shares/show'><span>Uprawnienia</span></a></li>
-                {/if}
-
-                {if isset($smarty.session.przypisanemenu['li_serviceshow'])}
-                    <li id='li_serviceshow' class='last'><a
-                                href='{$smarty.const.SCIEZKA}/service/show'><span>Serwis</span></a></li>
-                {/if}
-
-                {if isset($smarty.session.przypisanemenu['li_serviceoperating'])}
-                    <li id='li_serviceoperating' class='last'><a href='{$smarty.const.SCIEZKA}/service/operating'><span>Serwis Drukarek</span></a>
-                    </li>
-                {/if}
-                {if isset($smarty.session.przypisanemenu['li_alertsshow'])}
-                    <li id='li_alertshow' class='last'><a href='{$smarty.const.SCIEZKA}/alerts/show'><span>Alerty</span></a>
-                    </li>
-                {/if}
-                {if isset($smarty.session.przypisanemenu['li_messagesshow'])}
-                    <li id='li_alertshow' class='last'><a
-                                href='{$smarty.const.SCIEZKA}/messages/show'><span>Tablica</span></a></li>
-                {/if}
-                {if isset($smarty.session.przypisanemenu['li_messagesinvoicesshow'])}
-                    <li id='li_alertshow' class='last'><a href='{$smarty.const.SCIEZKA}/messagesinvoices/show'><span>Tablica Płatności</span></a>
-                    </li>
-                {/if}
-            </ul>
-        </div>
+    <div class="collapse navbar-collapse" id="navbarSupportedContent">
+        <ul class="navbar-nav mr-auto">
+            <li class="nav-item dropdown">
+                <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                    <i class="fa fa-print"></i>&nbsp;Urządzenia
+                </a>
+                <div class="dropdown-menu" aria-labelledby="navbarDropdown">
+                    {if isset($smarty.session.przypisanemenu['but_addprinter'])}
+                        <a href='#' onclick='showNewPrinterAdd("");return false;' class="dropdown-item"><i class="fa fa-plus-circle"></i>&nbsp;Dodaj urządzenie</a>
+                        <div class="dropdown-divider"></div>
+                    {/if}
+                    {if isset($smarty.session.przypisanemenu['li_printersshow'])}
+                    <a href='{$smarty.const.SCIEZKA}/printers/show' class="dropdown-item">Lista urządzeń</a>
+                    {/if}
+                    {if isset($smarty.session.przypisanemenu['li_countersshow'])}
+                    <a href='{$smarty.const.SCIEZKA}/custom/show' class="dropdown-item">Liczniki urządzeń</a>
+                    {/if}
 
 
-        </div>{/if}
-    <div id='rightCenter' class="col-xs-9">
-   
+{*                    {if isset($smarty.session.przypisanemenu['li_serviceoperating'])}*}
+{*                    <a href='{$smarty.const.SCIEZKA}/service/operating' class="dropdown-item"><span>Serwis drukarek</span></a>*}
+{*                    {/if}*}
+                </div>
+            </li>
+
+            <li class="nav-item dropdown">
+                <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                    <i class="fa fa-users"></i>&nbsp;Klienci
+                </a>
+                <div class="dropdown-menu" aria-labelledby="navbarDropdown">
+                    {if isset($smarty.session.przypisanemenu['but_addclient'])}
+                        <a href='#' onclick='showNewClientAdd("0");return false;' class="dropdown-item"><i class="fa fa-plus-circle"></i>&nbsp;Dodaj klienta</a>
+                        <div class="dropdown-divider"></div>
+                    {/if}
+                    {if isset($smarty.session.przypisanemenu['li_clientsshow'])}
+                        <a href='{$smarty.const.SCIEZKA}/clients/show' class="dropdown-item">Lista Klientów</a>
+                        <div class="dropdown-divider"></div>
+                    {/if}
+                    {if isset($smarty.session.przypisanemenu['but_addagreement'])}
+                        <a href='#' onclick='showNewAgreementAdd("0");return false;' class="dropdown-item"><i class="fa fa-plus-circle"></i>&nbsp;Dodaj umowę</a>
+                        <div class="dropdown-divider"></div>
+                    {/if}
+                    {if isset($smarty.session.przypisanemenu['li_agreementsshow'])}
+                        <a href='{$smarty.const.SCIEZKA}/agreements/show' class="dropdown-item">Lista umów</a>
+                    {/if}
+                    <a target="_blank" href='https://ekrs.ms.gov.pl/web/wyszukiwarka-krs/strona-glowna/index.html' class="dropdown-item">KRS</a>
+                    <a target="_blank" href='https://prod.ceidg.gov.pl/CEIDG/CEIDG.Public.UI/Search.aspx' class="dropdown-item">CEIDG</a>
+                    <a target="_blank" href='https://www.podatki.gov.pl/wykaz-podatnikow-vat-wyszukiwarka?fbclid=IwAR2xqKi-wl7ImgKROSgtmHfD0--hQmfxq_wlBf7FdXQFWTYux8z0B65jBsU' class="dropdown-item">VAT</a>
+                </div>
+            </li>
+
+            <li class="nav-item dropdown">
+                <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                    <i class="fa fa-wrench"></i>&nbsp;Serwis
+                </a>
+                <div class="dropdown-menu" aria-labelledby="navbarDropdown">
+                    {if isset($smarty.session.przypisanemenu['but_addcase'])}
+                        <a href='#' onclick='showNewNotiAdd("0");return false;' class="dropdown-item"><i class="fa fa-plus-circle"></i>&nbsp;Dodaj zgłoszenie</a>
+                        <div class="dropdown-divider"></div>
+                    {/if}
+                    {if isset($smarty.session.przypisanemenu['li_casesshow'])}
+                        <a href='{$smarty.const.SCIEZKA}/notifications/show' class="dropdown-item">Lista zgłoszeń</a>
+                    {/if}
+                    {if isset($smarty.session.przypisanemenu['li_alertsshow'])}
+                        <a href='{$smarty.const.SCIEZKA}/alerts/show' class="dropdown-item">Alerty</a>
+                    {/if}
+                    {if isset($smarty.session.przypisanemenu['li_tonersshow'])}
+                        <a href='{$smarty.const.SCIEZKA}/toners/show' class="dropdown-item">Tonery</a>
+                    {/if}
+
+                    {if isset($smarty.session.przypisanemenu['but_addcase'])}
+                        <div class="dropdown-divider"></div>
+                        <a href="{$smarty.const.SCIEZKA}/service/show#addNewRequest" class="dropdown-item"><i class="fa fa-plus-circle"></i>&nbsp;Dodaj serwis</a>
+                        <div class="dropdown-divider"></div>
+                    {/if}
+                    {if isset($smarty.session.przypisanemenu['li_serviceshow'])}
+                        <a href='{$smarty.const.SCIEZKA}/service/show' class="dropdown-item"><span>Serwis urządzeń</span></a>
+                    {/if}
+                </div>
+            </li>
+
+            <li class="nav-item dropdown">
+                <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                    <i class="fa fa-area-chart"></i>&nbsp;Raporty
+                </a>
+                <div class="dropdown-menu" aria-labelledby="navbarDropdown">
+                    {if isset($smarty.session.przypisanemenu['li_clientinvoicesshow'])}
+                        <a href='{$smarty.const.SCIEZKA}/clientinvoices/show' class="dropdown-item">Płatności</a>
+                    {/if}
+                    {if isset($smarty.session.przypisanemenu['li_profitabilityshow'])}
+                        <a href='{$smarty.const.SCIEZKA}/profitability/show' class="dropdown-item">Rentowność umów</a>
+                    {/if}
+                    {if isset($smarty.session.przypisanemenu['li_reportsshow'])}
+                        <a href='{$smarty.const.SCIEZKA}/reports/show' class="dropdown-item">Wystaw faktury</a>
+                    {/if}
+                    <div class="dropdown-divider"></div>
+                    <a target="_blank" href='https://faktury.otus.pl' class="dropdown-item">Faktury</a>
+                    <a target="_blank" href='https://saldeo.brainshare.pl/login.jsf' class="dropdown-item">Wydatki</a>
+                    <a target="_blank" href='https://rejestr-bdo.mos.gov.pl/User/ChooseCompany' class="dropdown-item">BDO</a>
+                </div>
+            </li>
+
+            <li class="nav-item dropdown">
+                <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                    <i class="fa fa-file-text-o"></i>&nbsp;Notatki
+                </a>
+                <div class="dropdown-menu" aria-labelledby="navbarDropdown">
+                    {if isset($smarty.session.przypisanemenu['li_messagesshow'])}
+                        <a href='{$smarty.const.SCIEZKA}/messages/show' class="dropdown-item">Tablica</a>
+                    {/if}
+                    {if isset($smarty.session.przypisanemenu['li_messagesshow'])}
+                        <a href='{$smarty.const.SCIEZKA}/messagesinvoices/show' class="dropdown-item">Tablica płatności</a>
+                    {/if}
+                    <div class="dropdown-divider"></div>
+                    <a target="_blank" href='https://app.nozbe.com' class="dropdown-item">Nozbe</a>
+                </div>
+            </li>
+        </ul>
+        <form class="form-inline my-2 my-lg-0">
+            <input class="form-control mr-sm-2" type="search" placeholder="Search" aria-label="Search">
+            <button class="btn btn-outline-success my-2 my-sm-0" type="submit">Szukaj</button>
+        </form>
+        <ul class="navbar-nav my-2 my-lg-0">
+            <li class="nav-item dropdown">
+                <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                    {$smarty.session.user.mail}
+                </a>
+                <div class="dropdown-menu dropdown-menu-right" aria-labelledby="navbarDropdown">
+                    <a class="dropdown-item" href='{$smarty.const.SCIEZKA}/acls/logout/notemplate'>Wyloguj się&nbsp;<i class="fa fa-unlock"></i></a>
+                </div>
+            </li>
+
+            <li class="nav-item dropdown">
+                <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                    <i class="fa fa-gear"></i>&nbsp;Ustawienia
+                </a>
+                <div class="dropdown-menu" aria-labelledby="navbarDropdown">
+                    {if isset($smarty.session.przypisanemenu['li_passwordshow'])}
+                        <a class="dropdown-item" href='{$smarty.const.SCIEZKA}/acls/passshow'>Hasło</a>
+                    {/if}
+                    {if isset($smarty.session.przypisanemenu['li_sharesshow'])}
+                        <a class="dropdown-item" href='{$smarty.const.SCIEZKA}/shares/show'>Uprawnienia</a>
+                    {/if}
+                    <a class="dropdown-item" href='#'>Konfiguracja</a>
+                    <a target="_blank" class="dropdown-item" href='https://server.otus.pl:5001'>Serwer</a>
+                </div>
+            </li>
+        </ul>
+    </div>
+</nav>
+{/if}
+<div id='divContainer' class="content wide-content">

@@ -1,4 +1,4 @@
-<div class='divFilter'>
+<div class='divFilter container'>
      <label for="txtfilternrumowy{$czycolorbox}" class="labelNormal">nr umowy</label>
      <input type="text" id='txtfilternrumowy{$czycolorbox}' class='textBoxNormal'>  
      <label for="txtfilterserial{$czycolorbox}" class="labelNormal">drukarka</label>
@@ -22,7 +22,7 @@
 </div>
 <div class='divLoader' id='divLoader{$czycolorbox}'>
 </div>
-<div class='divRightCenter' id='divRightCenter{$czycolorbox}'>
+<div class='divRightCenter container' id='divRightCenter{$czycolorbox}'>
     
 </div>
 <script type="text/javascript">

@@ -5,7 +5,7 @@
              '{$smarty.const.FAKTUROWNIA_COMPANYNAME}',
              '{$smarty.const.FAKTUROWNIA_INVOICE_NUMBER_LENGTH}');
 </script>
-<div class='divFilter'>
+<div class='divFilter container'>
      <label for="txtdataod" class="labelNormal" >data od</label>
      <input type="text" id='txtdataod' class='textBoxNormal' style='width:90px;min-width: 90px;'>  
      <label for="txtdatado" class="labelNormal" >data do</label>

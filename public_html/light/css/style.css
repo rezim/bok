@@ -28,15 +28,6 @@ body
     padding: 0px;
     margin: 0px;
     margin:0 auto;
-    
-}
-#divContainer
-{
-    	min-height:100%;
-        margin:0px;padding:0px;
-        position:relative;
-        
-           
 }
 #divHeader
 {
@@ -60,21 +51,11 @@ body
     border-right: linear-gradient(left,rgba(255,255,255,.01),#f2f2f2 10%,#d4d4d4 40%,#d4d4d4 60%,#f2f2f2 90%,rgba(255,255,255,.01));
     float:left;
 }
-#rightCenter
-{
-    
-    /*width:1000px;min-width: 1000px;max-width: 1000px;*/
-    height:auto;
-    min-height: 600px;
-    margin-top:20px;
-    float:left;
 
-	/*text-align: center;*/
-}
 .divFilter
 {
     margin:0 auto;
-    height:30px;min-height: 40px;max-height: 40px;
+
     min-width: 300px;
     
 }

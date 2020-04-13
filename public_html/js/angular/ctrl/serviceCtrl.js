@@ -549,7 +549,9 @@ ServiceCtrl = function ($scope, rest, $location, $q, $filter, $timeout, $uibModa
                     modalInstance.dismiss('cancel');
                 };
             },
-            controllerAs: '$ctrl'
+            controllerAs: '$ctrl',
+            windowClass: 'show',
+            backdropClass: 'show'
         });
     };
 
@@ -636,7 +638,9 @@ ServiceCtrl = function ($scope, rest, $location, $q, $filter, $timeout, $uibModa
                     modalEmailList.dismiss('cancel');
                 };
             },
-            controllerAs: '$ctrl'
+            controllerAs: '$ctrl',
+            windowClass: 'show',
+            backdropClass: 'show'
         });
 
         modalEmailList.result.then(function (data) {
@@ -665,7 +669,9 @@ ServiceCtrl = function ($scope, rest, $location, $q, $filter, $timeout, $uibModa
                     modalInstance.dismiss('cancel');
                 };
             },
-            controllerAs: '$ctrl'
+            controllerAs: '$ctrl',
+            windowClass: 'show',
+            backdropClass: 'show'
         });
 
         if (!mail.wasread) {
@@ -715,7 +721,9 @@ ServiceCtrl = function ($scope, rest, $location, $q, $filter, $timeout, $uibModa
                 };
             },
             bindToController: true,
-            controllerAs: '$ctrl'
+            controllerAs: '$ctrl',
+            windowClass: 'show',
+            backdropClass: 'show'
         });
 
         modalInstance.result.then(function (data) {
@@ -755,7 +763,9 @@ ServiceCtrl = function ($scope, rest, $location, $q, $filter, $timeout, $uibModa
                 items: function () {
                     return [];
                 }
-            }
+            },
+            windowClass: 'show',
+            backdropClass: 'show'
         });
 
         modalInstance.result.then(function (data) {

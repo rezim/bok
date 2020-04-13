@@ -8,7 +8,7 @@
 
     {include file="$templates/invoice/addPayment.tpl"}
     {include file="$templates/invoice/paymentList.tpl"}
-    <div class="filters-container">
+    <div class="container">
         <div class="filters-left">
             <a href="javascript:void(0)"
                ng-click="date_from=ctrl.getLastMonths(24); date_to=ctrl.getToday();ctrl.loadData(date_from, date_to)"
@@ -59,7 +59,7 @@
                 </label>
         </div>
     </div>
-    <div>
+    <div class="container">
         <div>
             <table class='tablesorter displaytable payments' id='tableReport' cellspacing=0 cellpadding=0 width="100%"
                    style="padding-bottom: 30px">

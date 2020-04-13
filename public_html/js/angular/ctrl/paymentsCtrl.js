@@ -348,7 +348,9 @@ PaymentsCtrl = function($scope, rest, $q, $filter, $uibModal, $interpolate, appC
                         }
                      };
                 },
-                controllerAs: '$ctrl'
+                controllerAs: '$ctrl',
+                windowClass: 'show',
+                backdropClass: 'show'
             });
 
         modalInstance.result.then(function() {}, function() {
@@ -400,7 +402,9 @@ PaymentsCtrl = function($scope, rest, $q, $filter, $uibModal, $interpolate, appC
                 items: function () {
                     return [];
                 }
-            }
+            },
+            windowClass: 'show',
+            backdropClass: 'show'
         });
 
         modalInstance.result.then(function (data) {

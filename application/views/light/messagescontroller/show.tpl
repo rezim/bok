@@ -9,12 +9,12 @@
 </div>
 <div class='divLoader' id='divLoader'>
 </div>
-<div class="addNew">
+<div class="addNew container">
     <textarea id="messageArea" cols="160" rows="4" placeholder="Wpisz nową wiadomość"></textarea>
     <br/>
     <button id='actionbuttonclick' class="btn btn-success" onclick="saveUpdateMessage()">Zapisz</button>
 </div>
-<div class='divRightCenter' id='divRightCenter'>
+<div class='divRightCenter container' id='divRightCenter'>
 </div>
 
 <script type="text/javascript">

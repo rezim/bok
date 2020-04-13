@@ -1,5 +1,5 @@
 <div ng-app="app" ng-controller="UserSharesCtrl as ctrl" ng-cloak>
-    <div class="divFilter">
+    <div class="divFilter container">
         <label class="labelNormal" style="padding-right: 10px">
             rola <input type="text" class='textBoxNormal' ng-model="search.roleName">
         </label>
@@ -10,6 +10,7 @@
             akcja <input type="text" class='textBoxNormal' ng-model="search.action">
         </label>
     </div>
+    <div class="container">
     <table ng-if="lastActionResult">
         <tr><td colspan="8" style="text-align: center" ng-bind-html="ctrl.toTrusted(lastActionResult)">
             </td></tr>
@@ -65,6 +66,7 @@
             </tr>
         </tbody>
     </table>
-
+    </div>
     <i ng-if="isPending" class="fa fa-spinner fa-spin fa-5x" aria-hidden="true" style="margin-top: 50px;"></i>
+
 </div>

@@ -1,4 +1,5 @@
-<div id="divFilterNoti" class='divFilter' style='height:auto;min-height: 80px;'>
+<div id="divFilterNoti" class='divFilter container'>
+    <div>
      <label for="txtfilterklient" class="labelNormal">klient</label>
      <input type="text" id='txtfilterklient' class='textBoxNormal'>  
      <label for="txtfilternrseryjny" class="labelNormal">nr seryjny</label>
@@ -8,10 +9,9 @@
      <label for="txtfilterdataod" class="labelNormal">data od</label>
      <input type="text" id='txtfilterdataod' class='textBoxNormal' style='width:80px;'>  
      <label for="txtfilterdatado" class="labelNormal">data do</label>
-     <input type="text" id='txtfilterdatado' class='textBoxNormal' style='width:80px;'>  
-     
-     
-     <br/>
+     <input type="text" id='txtfilterdatado' class='textBoxNormal' style='width:80px;'>
+    </div>
+        <div>
      {foreach from=$statusZgloszenie item=item key=key}
          {*
             TR NOTE: this is kind of work arround to not show closed option for 'service' group
@@ -29,15 +29,11 @@
          {/if}
      {/foreach}
        <a href="#" class="buttonpokaz" onClick='pokazNotiFi();return false;'>Filtruj</a>
-     
-     
-     
-     
-    
+     </div>
 </div>
 <div class='divLoader' id='divLoader'>
 </div>
-<div class='divRightCenter' id='divRightCenter'>
+<div class='divRightCenter container' id='divRightCenter'>
     
 </div>
 <script type="text/javascript">

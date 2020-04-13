@@ -1,4 +1,4 @@
-<div class='divFilter'>
+<div class='divFilter container'>
     <label for="txtfilterdrukarka" class="labelNormal">serial drukarka</label>
      <input type="text" id='txtfilterdrukarka' class='textBoxNormal' style='width:100px;min-width: 100px;'>  
      <label for="txtfilterserial" class="labelNormal">serial toner</label>

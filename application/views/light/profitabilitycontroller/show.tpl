@@ -5,7 +5,7 @@
     });
 </script>
 <div ng-app="app" ng-controller="ProfitabilityCtrl as ctrl" ng-cloak>
-<div class='divFilter'>
+<div class='divFilter container'>
     <a href="javascript:void(0)" ng-click="date_from='2013-08-01'; date_to=ctrl.getToday(); ctrl.loadData(date_from, date_to)" style="padding: 20px">od 2013</a>|
     <a href="javascript:void(0)" ng-click="date_from='2015-05-01'; date_to=ctrl.getToday(); ctrl.loadData(date_from, date_to)" style="padding: 20px">od 2015</a>|
     <a href="javascript:void(0)" ng-click="date_from='2016-06-01'; date_to=ctrl.getToday(); ctrl.loadData(date_from, date_to)" style="padding: 20px">od 2016</a>
@@ -16,7 +16,7 @@
      <a href="#" class="buttonpokaz" ng-click='ctrl.loadData(date_from, date_to, show_inactive)'>Pokaż</a>
 </div>
 
-<div class="divFilter" ng-if="ctrl.getProfits().length">
+<div class="divFilter container" ng-if="ctrl.getProfits().length">
     <label class="labelNormal" style="padding-right: 30px">
         widok urządzeń
         <input type="checkbox" ng-model="ctrl.show_devices_view"/></label>
@@ -36,7 +36,7 @@
         model <input type="text" class='textBoxNormal' ng-model="ctrl.device.agreementPrinterModel">
     </label>
 </div>
-<div>
+<div class="container">
     <div>
         <table class='tablesorter displaytable' id='tableReport' cellspacing=0 cellpadding=0>
             <thead>

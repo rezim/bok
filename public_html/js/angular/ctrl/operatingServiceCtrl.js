@@ -179,7 +179,9 @@ OperatingServiceCtrl = function ($scope, rest, $location, $q, $filter, $timeout,
                 };
             },
             bindToController: true,
-            controllerAs: '$ctrl'
+            controllerAs: '$ctrl',
+            windowClass: 'show',
+            backdropClass: 'show'
         });
 
         modalInstance.result.then(function (data) {
