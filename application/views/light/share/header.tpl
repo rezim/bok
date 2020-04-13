@@ -149,6 +149,7 @@
                     {/if}
                     {if isset($smarty.session.przypisanemenu['li_agreementsshow'])}
                         <a href='{$smarty.const.SCIEZKA}/agreements/show' class="dropdown-item">Lista umów</a>
+                        <div class="dropdown-divider"></div>
                     {/if}
                     <a target="_blank" href='https://ekrs.ms.gov.pl/web/wyszukiwarka-krs/strona-glowna/index.html'
                        class="dropdown-item">KRS</a>
