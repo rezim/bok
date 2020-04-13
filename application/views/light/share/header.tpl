@@ -119,7 +119,6 @@
                     {if isset($smarty.session.przypisanemenu['but_addprinter'])}
                         <a href='#' onclick='showNewPrinterAdd("");return false;' class="dropdown-item"><i
                                     class="fa fa-plus-circle"></i>&nbsp;Dodaj urządzenie</a>
-                        <div class="dropdown-divider"></div>
                     {/if}
                     {if isset($smarty.session.przypisanemenu['li_printersshow'])}
                         <a href='{$smarty.const.SCIEZKA}/printers/show' class="dropdown-item">Lista urządzeń</a>
@@ -127,11 +126,6 @@
                     {if isset($smarty.session.przypisanemenu['li_countersshow'])}
                         <a href='{$smarty.const.SCIEZKA}/custom/show' class="dropdown-item">Liczniki urządzeń</a>
                     {/if}
-
-
-                    {*                    {if isset($smarty.session.przypisanemenu['li_serviceoperating'])}*}
-                    {*                    <a href='{$smarty.const.SCIEZKA}/service/operating' class="dropdown-item"><span>Serwis drukarek</span></a>*}
-                    {*                    {/if}*}
                 </div>
             </li>
 
@@ -144,7 +138,6 @@
                     {if isset($smarty.session.przypisanemenu['but_addclient'])}
                         <a href='#' onclick='showNewClientAdd("0");return false;' class="dropdown-item"><i
                                     class="fa fa-plus-circle"></i>&nbsp;Dodaj klienta</a>
-                        <div class="dropdown-divider"></div>
                     {/if}
                     {if isset($smarty.session.przypisanemenu['li_clientsshow'])}
                         <a href='{$smarty.const.SCIEZKA}/clients/show' class="dropdown-item">Lista Klientów</a>
@@ -153,7 +146,6 @@
                     {if isset($smarty.session.przypisanemenu['but_addagreement'])}
                         <a href='#' onclick='showNewAgreementAdd("0");return false;' class="dropdown-item"><i
                                     class="fa fa-plus-circle"></i>&nbsp;Dodaj umowę</a>
-                        <div class="dropdown-divider"></div>
                     {/if}
                     {if isset($smarty.session.przypisanemenu['li_agreementsshow'])}
                         <a href='{$smarty.const.SCIEZKA}/agreements/show' class="dropdown-item">Lista umów</a>
@@ -177,7 +169,6 @@
                     {if isset($smarty.session.przypisanemenu['but_addcase'])}
                         <a href='#' onclick='showNewNotiAdd("0");return false;' class="dropdown-item"><i
                                     class="fa fa-plus-circle"></i>&nbsp;Dodaj zgłoszenie</a>
-                        <div class="dropdown-divider"></div>
                     {/if}
                     {if isset($smarty.session.przypisanemenu['li_casesshow'])}
                         <a href='{$smarty.const.SCIEZKA}/notifications/show' class="dropdown-item">Lista zgłoszeń</a>
@@ -193,7 +184,6 @@
                         <div class="dropdown-divider"></div>
                         <a href="{$smarty.const.SCIEZKA}/service/show#addNewRequest" class="dropdown-item"><i
                                     class="fa fa-plus-circle"></i>&nbsp;Dodaj serwis</a>
-                        <div class="dropdown-divider"></div>
                     {/if}
                     {if isset($smarty.session.przypisanemenu['li_serviceshow'])}
                         <a href='{$smarty.const.SCIEZKA}/service/show'
@@ -232,10 +222,6 @@
                 <div class="dropdown-menu" aria-labelledby="navbarDropdown">
                     {if isset($smarty.session.przypisanemenu['li_messagesshow'])}
                         <a href='{$smarty.const.SCIEZKA}/messages/show' class="dropdown-item">Tablica</a>
-                    {/if}
-                    {if isset($smarty.session.przypisanemenu['li_messagesshow'])}
-                        <a href='{$smarty.const.SCIEZKA}/messagesinvoices/show' class="dropdown-item">Tablica
-                            płatności</a>
                     {/if}
                     <div class="dropdown-divider"></div>
                     <a target="_blank" href='https://app.nozbe.com' class="dropdown-item">Nozbe</a>
