@@ -389,7 +389,6 @@ TODO move loading indicator to separate file
 .content {
     min-width: 400px;
     min-height: 620px;
-    margin-bottom: 25px;
     padding-bottom: 20px;
     overflow: visible;
     padding-top: 25px;
@@ -417,4 +416,8 @@ TODO move loading indicator to separate file
 
 body {
     background-color: #f7f7f7;
+}
+
+.aclmessage {
+    display: none;
 }

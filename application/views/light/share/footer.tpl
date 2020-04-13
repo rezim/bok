@@ -2,14 +2,17 @@
 <div style='clear:both'></div>
 </div><!--divContainerCenterKoniec-->
 
-
+{if isset($smarty.session.login) && $smarty.session.login==1}
 <div id='divFooter' class="footer">
-    <div class="container-fluid">
-        <div class="text-right text-muted">
+        <div class="text-right text-muted p-3">
             <a href="{$smarty.const.SCIEZKA}/">powered by OTUS&nbsp;&copy;</a>
         </div>
-    </div>
 </div>
+{else}
+<div class="text-right text-muted fixed-bottom p-3">
+    <a href="{$smarty.const.SCIEZKA}/">powered by OTUS&nbsp;&copy;</a>
+</div>
+{/if}
 
 </div><!--divContainerKoniec-->
 <div>

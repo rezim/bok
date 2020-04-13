@@ -15,8 +15,8 @@ function acl_logowanie(adres,sciezka)
             url:sciezka+"/acls/logowanie/notemplate",
             data: 
             {
-                login:doc.getElementById('txtlogin').value,
-                pass:doc.getElementById('txtPass1').value
+                login:doc.getElementById('txtLogin').value,
+                pass:doc.getElementById('txtPassword').value
             },
             success: function(dane) 
             {//poprawna rejestracja 
