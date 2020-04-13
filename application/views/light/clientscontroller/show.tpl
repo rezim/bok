@@ -1,4 +1,4 @@
-<div class='divFilter'>
+<div class='divFilter container'>
      <label for="txtfilternazwa" class="labelNormal">nazwa</label>
      <input type="text" id='txtfilternazwa' class='textBoxNormal'>  
      <label for="txtfiltermiasto" class="labelNormal">miasto</label>
@@ -16,7 +16,7 @@
 </div>
 <div class='divLoader' id='divLoader{$czycolorbox}'>
 </div>
-<div class='divRightCenter' id='divRightCenter{$czycolorbox}'>
+<div class='divRightCenter container' id='divRightCenter{$czycolorbox}'>
     
 </div>
 <script type="text/javascript">
