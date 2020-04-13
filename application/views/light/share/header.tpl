@@ -11,35 +11,35 @@
     <link rel="stylesheet" href="http://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.4.0/css/font-awesome.min.css">
     {*<link rel="stylesheet" href="{$smarty.const.SCIEZKA}/{$smarty.const.SMARTVERSION}/css/font-awesome.min.css">*}
     <link rel="stylesheet" type="text/css"
-          href="{$smarty.const.SCIEZKA}/{$smarty.const.SMARTVERSION}/css/style.css?{$smarty.now}" title="default"/>
-    <link rel="stylesheet" type="text/css" href="{$smarty.const.SCIEZKA}/{$smarty.const.SMARTVERSION}/css/menu.css"
+          href="{$smarty.const.SCIEZKA}/{$smarty.const.SMARTVERSION}/css/style.css?{$smarty.const.SMARTVERSION}" title="default"/>
+    <link rel="stylesheet" type="text/css" href="{$smarty.const.SCIEZKA}/{$smarty.const.SMARTVERSION}/css/menu.css?{$smarty.const.SMARTVERSION}"
           title="default"/>
     <link rel="stylesheet" type="text/css"
-          href="{$smarty.const.SCIEZKA}/{$smarty.const.SMARTVERSION}/css/profitability.css?{$smarty.now}"
+          href="{$smarty.const.SCIEZKA}/{$smarty.const.SMARTVERSION}/css/profitability.css?{$smarty.const.SMARTVERSION}"
           title="default"/>
-    <link rel="stylesheet" type="text/css" href="{$smarty.const.SCIEZKA}/{$smarty.const.SMARTVERSION}/css/acl.css"
+    <link rel="stylesheet" type="text/css" href="{$smarty.const.SCIEZKA}/{$smarty.const.SMARTVERSION}/css/acl.css?{$smarty.const.SMARTVERSION}"
           title="default"/>
-    <link rel="stylesheet" type="text/css" href="{$smarty.const.SCIEZKA}/{$smarty.const.SMARTVERSION}/css/colorbox.css"
-          title="default"/>
-    <link rel="stylesheet" type="text/css"
-          href="{$smarty.const.SCIEZKA}/{$smarty.const.SMARTVERSION}/css/jquery-ui-1.10.4.custom.min.css"
+    <link rel="stylesheet" type="text/css" href="{$smarty.const.SCIEZKA}/{$smarty.const.SMARTVERSION}/css/colorbox.css?{$smarty.const.SMARTVERSION}"
           title="default"/>
     <link rel="stylesheet" type="text/css"
-          href="{$smarty.const.SCIEZKA}/{$smarty.const.SMARTVERSION}/css/jquery-ui-timepicker-addon.css"
+          href="{$smarty.const.SCIEZKA}/{$smarty.const.SMARTVERSION}/css/jquery-ui-1.10.4.custom.min.css?{$smarty.const.SMARTVERSION}"
           title="default"/>
-    <link rel="stylesheet" type="text/css" href="{$smarty.const.SCIEZKA}/{$smarty.const.SMARTVERSION}/css/sort.css"
+    <link rel="stylesheet" type="text/css"
+          href="{$smarty.const.SCIEZKA}/{$smarty.const.SMARTVERSION}/css/jquery-ui-timepicker-addon.css?{$smarty.const.SMARTVERSION}"
           title="default"/>
-    <link rel="stylesheet" type="text/css" href="{$smarty.const.SCIEZKA}/{$smarty.const.SMARTVERSION}/css/dropzone.css"
+    <link rel="stylesheet" type="text/css" href="{$smarty.const.SCIEZKA}/{$smarty.const.SMARTVERSION}/css/sort.css?{$smarty.const.SMARTVERSION}"
+          title="default"/>
+    <link rel="stylesheet" type="text/css" href="{$smarty.const.SCIEZKA}/{$smarty.const.SMARTVERSION}/css/dropzone.css?{$smarty.const.SMARTVERSION}"
           title="default"/>
 
     <!-- bootstrap -->
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/css/bootstrap.min.css"
           integrity="sha384-Vkoo8x4CGsO3+Hhxv8T/Q5PaXtkKtu6ug5TOeNV6gBiFeWPGFN9MuhOf23Q9Ifjh" crossorigin="anonymous">
 
-    <link rel="stylesheet" type="text/css" href="{$smarty.const.SCIEZKA}/css/bok.css" title="default"/>
+    <link rel="stylesheet" type="text/css" href="{$smarty.const.SCIEZKA}/css/bok.css?{$smarty.const.SMARTVERSION}" title="default"/>
 
     <!-- modules -->
-    <link rel="stylesheet" type="text/css" href="{$smarty.const.SCIEZKA}/css/service.css"/>
+    <link rel="stylesheet" type="text/css" href="{$smarty.const.SCIEZKA}/css/service.css?{$smarty.const.SMARTVERSION}"/>
 
     <script type="text/javascript">
         function loadScript(src, callback) {
