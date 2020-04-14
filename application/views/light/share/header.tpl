@@ -8,38 +8,38 @@
           content="{if !isset($keywords) || $keywords==''}{$smarty.const.KEYWORDS}{else}{$keywords}{/if}">
     <meta name='description'
           content="{if !isset($description) || $description==''}{$smarty.const.DESCRIPTION}{else}{$description}{/if}"/>
-    <link rel="stylesheet" href="http://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.4.0/css/font-awesome.min.css">
+    <link rel="stylesheet" href="http://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.4.0/css/font-awesome.min.css?{$smarty.const.APPVERSION}">
     {*<link rel="stylesheet" href="{$smarty.const.SCIEZKA}/{$smarty.const.SMARTVERSION}/css/font-awesome.min.css">*}
     <link rel="stylesheet" type="text/css"
-          href="{$smarty.const.SCIEZKA}/{$smarty.const.SMARTVERSION}/css/style.css?{$smarty.const.SMARTVERSION}" title="default"/>
-    <link rel="stylesheet" type="text/css" href="{$smarty.const.SCIEZKA}/{$smarty.const.SMARTVERSION}/css/menu.css?{$smarty.const.SMARTVERSION}"
+          href="{$smarty.const.SCIEZKA}/{$smarty.const.SMARTVERSION}/css/style.css?{$smarty.const.APPVERSION}" title="default"/>
+    <link rel="stylesheet" type="text/css" href="{$smarty.const.SCIEZKA}/{$smarty.const.SMARTVERSION}/css/menu.css?{$smarty.const.APPVERSION}"
           title="default"/>
     <link rel="stylesheet" type="text/css"
-          href="{$smarty.const.SCIEZKA}/{$smarty.const.SMARTVERSION}/css/profitability.css?{$smarty.const.SMARTVERSION}"
+          href="{$smarty.const.SCIEZKA}/{$smarty.const.SMARTVERSION}/css/profitability.css?{$smarty.const.APPVERSION}"
           title="default"/>
-    <link rel="stylesheet" type="text/css" href="{$smarty.const.SCIEZKA}/{$smarty.const.SMARTVERSION}/css/acl.css?{$smarty.const.SMARTVERSION}"
+    <link rel="stylesheet" type="text/css" href="{$smarty.const.SCIEZKA}/{$smarty.const.SMARTVERSION}/css/acl.css?{$smarty.const.APPVERSION}"
           title="default"/>
-    <link rel="stylesheet" type="text/css" href="{$smarty.const.SCIEZKA}/{$smarty.const.SMARTVERSION}/css/colorbox.css?{$smarty.const.SMARTVERSION}"
-          title="default"/>
-    <link rel="stylesheet" type="text/css"
-          href="{$smarty.const.SCIEZKA}/{$smarty.const.SMARTVERSION}/css/jquery-ui-1.10.4.custom.min.css?{$smarty.const.SMARTVERSION}"
+    <link rel="stylesheet" type="text/css" href="{$smarty.const.SCIEZKA}/{$smarty.const.SMARTVERSION}/css/colorbox.css?{$smarty.const.APPVERSION}"
           title="default"/>
     <link rel="stylesheet" type="text/css"
-          href="{$smarty.const.SCIEZKA}/{$smarty.const.SMARTVERSION}/css/jquery-ui-timepicker-addon.css?{$smarty.const.SMARTVERSION}"
+          href="{$smarty.const.SCIEZKA}/{$smarty.const.SMARTVERSION}/css/jquery-ui-1.10.4.custom.min.css?{$smarty.const.APPVERSION}"
           title="default"/>
-    <link rel="stylesheet" type="text/css" href="{$smarty.const.SCIEZKA}/{$smarty.const.SMARTVERSION}/css/sort.css?{$smarty.const.SMARTVERSION}"
+    <link rel="stylesheet" type="text/css"
+          href="{$smarty.const.SCIEZKA}/{$smarty.const.SMARTVERSION}/css/jquery-ui-timepicker-addon.css?{$smarty.const.APPVERSION}"
           title="default"/>
-    <link rel="stylesheet" type="text/css" href="{$smarty.const.SCIEZKA}/{$smarty.const.SMARTVERSION}/css/dropzone.css?{$smarty.const.SMARTVERSION}"
+    <link rel="stylesheet" type="text/css" href="{$smarty.const.SCIEZKA}/{$smarty.const.SMARTVERSION}/css/sort.css?{$smarty.const.APPVERSION}"
+          title="default"/>
+    <link rel="stylesheet" type="text/css" href="{$smarty.const.SCIEZKA}/{$smarty.const.SMARTVERSION}/css/dropzone.css?{$smarty.const.APPVERSION}"
           title="default"/>
 
     <!-- bootstrap -->
-    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/css/bootstrap.min.css"
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/css/bootstrap.min.css?{$smarty.const.APPVERSION}"
           integrity="sha384-Vkoo8x4CGsO3+Hhxv8T/Q5PaXtkKtu6ug5TOeNV6gBiFeWPGFN9MuhOf23Q9Ifjh" crossorigin="anonymous">
 
-    <link rel="stylesheet" type="text/css" href="{$smarty.const.SCIEZKA}/css/bok.css?{$smarty.const.SMARTVERSION}" title="default"/>
+    <link rel="stylesheet" type="text/css" href="{$smarty.const.SCIEZKA}/css/bok.css?{$smarty.const.APPVERSION}" title="default"/>
 
     <!-- modules -->
-    <link rel="stylesheet" type="text/css" href="{$smarty.const.SCIEZKA}/css/service.css?{$smarty.const.SMARTVERSION}"/>
+    <link rel="stylesheet" type="text/css" href="{$smarty.const.SCIEZKA}/css/service.css?{$smarty.const.APPVERSION}"/>
 
     <script type="text/javascript">
         function loadScript(src, callback) {
@@ -237,7 +237,7 @@
             <li class="nav-item dropdown">
                 <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-toggle="dropdown"
                    aria-haspopup="true" aria-expanded="false">
-                    {$smarty.session.user.imie}&nbsp;{$smarty.session.user.nazwisko}
+                    <i class="fa fa-user"></i>&nbsp;{$smarty.session.user.imie}&nbsp;{$smarty.session.user.nazwisko}
                 </a>
                 <div class="dropdown-menu dropdown-menu-right" aria-labelledby="navbarDropdown">
                     <a class="dropdown-item" href='{$smarty.const.SCIEZKA}/acls/logout/notemplate'>Wyloguj się&nbsp;<i

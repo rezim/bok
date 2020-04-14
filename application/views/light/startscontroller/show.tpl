@@ -42,3 +42,7 @@
         {/if}
     </div>
 </div>
+
+{*<div class="embed-responsive embed-responsive-16by9">*}
+{*    <iframe class="embed-responsive-item" src="https://saldeo.brainshare.pl/login.jsf" allowfullscreen></iframe>*}
+{*</div>*}
