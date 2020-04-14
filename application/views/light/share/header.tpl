@@ -104,10 +104,12 @@
 
 {if isset($smarty.session.login) && $smarty.session.login==1}
 <nav id="appNavBar" class="navbar navbar-expand-lg navbar-dark bg-dark">
+    <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+        <span class="navbar-toggler-icon"></span>
+    </button>
     <a class="navbar-brand" href="{$smarty.const.SCIEZKA}/">
         <i class="fa fa-gears"></i>&nbsp;OTUS
     </a>
-
     <div class="collapse navbar-collapse" id="navbarSupportedContent">
         <ul class="navbar-nav mr-auto">
             <li class="nav-item dropdown">
