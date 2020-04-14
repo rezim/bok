@@ -1,10 +1,8 @@
 <div id='acl_OkienkoContainer'>
     <div class="card border-secondary">
         <div class="card-header">
-            <img src='http://www.otus.pl/templates/otus/images/obraz/logo.png' alt='Otus' title='Otus' border='0'
-                 height='41'
-                 width='75'
-                 style='position:relative;margin-left: 0px;'
+            <img src='{$smarty.const.SCIEZKA}/{$smarty.const.SMARTVERSION}/img/otus-logo-nowe.png' alt='Otus' title='Otus' border='0'
+                 style='position:relative;margin-left: 0px;width: 100px'
             />
         </div>
         <div class="card-body">
