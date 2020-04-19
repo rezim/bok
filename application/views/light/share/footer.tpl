@@ -1,5 +1,4 @@
 
-<div style='clear:both'></div>
 </div><!--divContainerCenterKoniec-->
 
 {if isset($smarty.session.login) && $smarty.session.login==1}

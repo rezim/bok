@@ -27,6 +27,33 @@ jQuery(function ($) {
 });
 
 
+function LoadingIndicator() {
+    this.objLoadingIndicator = null;
+
+    this.show = function () {
+        if (!$(this.objLoadingIndicator).length) {
+            this.init();
+        }
+        this.objLoadingIndicator.attr("style", "display:");
+    };
+
+    this.hide = function () {
+        if (!$(this.objLoadingIndicator).length) {
+            this.init();
+        }
+
+        this.objLoadingIndicator.attr("style", "display: none !important");
+    };
+
+    this.init = function() {
+        this.objLoadingIndicator = $("#loadingIndicator");
+    };
+
+    this.init();
+}
+
+const loadingIndicator = new LoadingIndicator();
+
 function menuPodsumowanieClick() {
 
 }
@@ -689,8 +716,9 @@ function pokazDrukarki(objtoshow, objtoload, czycolorbox) {
     czycolorbox = (czycolorbox !== undefined) ? czycolorbox : '';
     var doc = document, objCenter = doc.getElementById(objtoshow), objLoad = doc.getElementById(objtoload);
 
+    loadingIndicator.show();
+
     objCenter.innerHTML = '';
-    objLoad.innerHTML = '<p><img src="light/img/loader.gif" alt="Loading" /></p>';
 
     $.ajax({
         url: sciezka + "/printers/showdane/todiv",
@@ -702,15 +730,17 @@ function pokazDrukarki(objtoshow, objtoload, czycolorbox) {
             czycolorbox: czycolorbox
         },
         success: function (data) {
-
             objCenter.innerHTML = data;
             $(objCenter).animate({opacity: 1}, 1500);
+
         },
         error: function () {
             objCenter.innerHTML = 'Problem z pobraniem drukarek';
         }
     }).done(function () {
-        objLoad.innerHTML = '';
+
+        loadingIndicator.hide();
+
         $("#tablePrinter").tablesorter();
         uprawnienia();
     });
