@@ -1,10 +1,14 @@
-<div class='divLoader' id='divLoader'>
-</div>
-<div class='divRightCenter container' id='divRightCenter'>
-    
+<div class="container-fluid">
+
+    <div class="row">
+        <main id='divRightCenter' class="col-12">
+
+        </main>
+    </div>
+
 </div>
 <script type="text/javascript">
     $(function() {
-        generujCustom();
+        showPrintersCounters();
     });
 </script>

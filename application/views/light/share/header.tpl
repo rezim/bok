@@ -103,7 +103,11 @@
 <body>
 
 {if isset($smarty.session.login) && $smarty.session.login==1}
-<header id="appNavBar" class="navbar navbar-expand-lg navbar-dark bg-dark otus-navbar">
+<div class="progress otus-progress" id="progress">
+    <div id="progressBar" class="progress-bar bg-success" role="progressbar"
+         style="width: 0;" aria-valuenow="10" aria-valuemin="0" aria-valuemax="100"></div>
+</div>
+<header id="appNavBar" class="navbar navbar-expand-lg navbar-dark bg-dark otus-navbar" style="flex-wrap: wrap;">
     <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
         <span class="navbar-toggler-icon"></span>
     </button>

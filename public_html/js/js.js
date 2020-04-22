@@ -277,7 +277,7 @@ function showOk(objOk, objLoad, info, objClick, czyreload, showtime, adtrestored
                     pokazKlientow();
                 }
                 if (document.getElementById("tablePrinter") !== null) {
-                    pokazDrukarki('divRightCenter', 'divLoader');
+                    showPrinters('divRightCenter');
                 }
                 if (document.getElementById("tableUmowy") !== null) {
                     pokazUmowy('divRightCenter', 'divLoader');
@@ -289,7 +289,7 @@ function showOk(objOk, objLoad, info, objClick, czyreload, showtime, adtrestored
                     showAlerts('divRightCenter', 'divLoader');
                 }
                 if (document.getElementById("tableCounters") !== null) {
-                    generujCustom();
+                    showPrintersCounters();
                 }
                 if (document.getElementById("tableMessages") !== null) {
                     showMessages();
@@ -697,7 +697,7 @@ function usunDrukarke(serial) {
                 } else {
                     alert('Drukarka usunięty poprawnie');
                     $.colorbox.close();
-                    pokazDrukarki();
+                    showPrinters();
                     return false;
                 }
                 return false;
@@ -710,43 +710,6 @@ function usunDrukarke(serial) {
         });
     }
 
-}
-
-function pokazDrukarki(objtoshow, objtoload, czycolorbox) {
-    czycolorbox = (czycolorbox !== undefined) ? czycolorbox : '';
-    var doc = document, objCenter = doc.getElementById(objtoshow), objLoad = doc.getElementById(objtoload);
-
-    loadingIndicator.show();
-
-    objCenter.innerHTML = '';
-
-    $.ajax({
-        url: sciezka + "/printers/showdane/todiv",
-        type: 'POST',
-        data: {
-            filterserial: doc.getElementById('txtfilterserial' + czycolorbox).value,
-            filtermodel: doc.getElementById('txtfiltermodel' + czycolorbox).value,
-            filterklient: doc.getElementById('txtfilterklient' + czycolorbox).value,
-            czycolorbox: czycolorbox
-        },
-        success: function (data) {
-            objCenter.innerHTML = data;
-            $(objCenter).animate({opacity: 1}, 1500);
-
-        },
-        error: function () {
-            objCenter.innerHTML = 'Problem z pobraniem drukarek';
-        }
-    }).done(function () {
-
-        loadingIndicator.hide();
-
-        $("#tablePrinter").tablesorter();
-        uprawnienia();
-    });
-    delete objCenter;
-    delete objLoad;
-    return false;
 }
 
 function pokazTonery() {
@@ -805,68 +768,6 @@ function showAlerts(objtoshow, objtoload, czycolorbox) {
     }).done(function () {
         objLoad.innerHTML = '';
         $("#tablePrinter").tablesorter();
-        uprawnienia();
-    });
-    delete objCenter;
-    delete objLoad;
-    return false;
-}
-
-
-function generujCustom(successCallback, errorCallback) {
-    var doc = document, objCenter = doc.getElementById('divRightCenter'), objLoad = doc.getElementById('divLoader');
-    objCenter.innerHTML = '';
-    objLoad.innerHTML = '<p><img src="light/img/loader.gif" alt="Loading" /></p>';
-
-    var dateFrom = new Date();
-    dateFrom.setDate(1);
-    dateFrom.setMonth(dateFrom.getMonth() - 1);
-
-    var dateTo = new Date(dateFrom);
-    dateTo.setMonth(dateFrom.getMonth() + 1, 1);
-    dateTo.setDate(1, 1);
-
-    var params = {
-        dateFrom: $.datepicker.formatDate('yy-mm-dd', dateFrom),
-        dateTo: $.datepicker.formatDate('yy-mm-dd', dateTo)
-    };
-    $.ajax({
-        url: sciezka + "/custom/showdaneklient/todiv",
-        type: 'POST',
-        data: {
-            dataod: params.dateFrom,
-            datado: params.dateTo
-        },
-        success: function (data) {
-
-            objCenter.innerHTML = data;
-            $(objCenter).animate({opacity: 1}, 1500);
-
-            $('.printerCounterDateTo').datepicker($.datepicker.regional['pl'], {
-                dateFormat: "yy-mm-dd",
-                changeMonth: true,
-                changeYear: true,
-                showOtherMonths: true,
-                selectOtherMonths: true
-            });
-
-            $('.printerCounterDateTo').val($.datepicker.formatDate('yy-mm-dd', new Date(params.dateTo)));
-
-            if (successCallback) {
-                successCallback(data, params);
-            }
-
-        },
-        error: function (err) {
-            objCenter.innerHTML = 'Problem z wygenerowaniem raportu';
-
-            if (errorCallback) {
-                errorCallback(err);
-            }
-        }
-    }).done(function () {
-        objLoad.innerHTML = '';
-        $("#tableReport").tablesorter();
         uprawnienia();
     });
     delete objCenter;
@@ -2012,5 +1913,94 @@ function removeMessage(rowid, type) {
         delete objCenter;
         delete objLoad;
     }
+    return false;
+}
+
+function showPrinters(objtoshow, objtoload, czycolorbox) {
+    czycolorbox = (czycolorbox !== undefined) ? czycolorbox : '';
+    var doc = document, objCenter = doc.getElementById(objtoshow);
+
+    $.ajax({
+        url: sciezka + "/printers/showdane/todiv",
+        type: 'POST',
+        data: {
+            filterserial: doc.getElementById('txtfilterserial' + czycolorbox).value,
+            filtermodel: doc.getElementById('txtfiltermodel' + czycolorbox).value,
+            filterklient: doc.getElementById('txtfilterklient' + czycolorbox).value,
+            czycolorbox: czycolorbox
+        },
+        success: function (data) {
+            objCenter.innerHTML = data;
+            $(objCenter).animate({opacity: 1}, 1500);
+
+        },
+        error: function () {
+            objCenter.innerHTML = 'Problem z pobraniem drukarek';
+        }
+    }).done(function () {
+
+        $("#tablePrinter").tablesorter();
+        uprawnienia();
+    });
+    delete objLoad;
+    return false;
+}
+
+function showPrintersCounters(successCallback, errorCallback) {
+
+    var doc = document, objCenter = doc.getElementById('divRightCenter');
+
+    var dateFrom = new Date();
+    dateFrom.setDate(1);
+    dateFrom.setMonth(dateFrom.getMonth() - 1);
+
+    var dateTo = new Date(dateFrom);
+    dateTo.setMonth(dateFrom.getMonth() + 1, 1);
+    dateTo.setDate(1, 1);
+
+    var params = {
+        dateFrom: $.datepicker.formatDate('yy-mm-dd', dateFrom),
+        dateTo: $.datepicker.formatDate('yy-mm-dd', dateTo)
+    };
+    $.ajax({
+        url: sciezka + "/custom/showdaneklient/todiv",
+        type: 'POST',
+        data: {
+            dataod: params.dateFrom,
+            datado: params.dateTo
+        },
+        success: function (data) {
+            objCenter.innerHTML = '';
+            objCenter.innerHTML = data;
+            $(objCenter).animate({opacity: 1}, 1500);
+
+            $('.printerCounterDateTo').datepicker($.datepicker.regional['pl'], {
+                dateFormat: "yy-mm-dd",
+                changeMonth: true,
+                changeYear: true,
+                showOtherMonths: true,
+                selectOtherMonths: true
+            });
+
+            $('.printerCounterDateTo').val($.datepicker.formatDate('yy-mm-dd', new Date(params.dateTo)));
+
+            if (successCallback) {
+                successCallback(data, params);
+            }
+
+        },
+        error: function (err) {
+            objCenter.innerHTML = 'Problem z wygenerowaniem raportu';
+
+            if (errorCallback) {
+                errorCallback(err);
+            }
+        }
+    }).done(function () {
+        $("#tableReport").tablesorter();
+        uprawnienia();
+    });
+    delete objCenter;
+
     return false;
 }

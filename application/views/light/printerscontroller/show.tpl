@@ -4,7 +4,7 @@
         <div class="otus-sidebar col-12 col-md-12 col-xl-2">
             <form>
                 <div class="form-group otus-addnew otus-section">
-                    <button type="button" class="btn btn-block btn-outline-secondary"
+                    <button type="button" class="btn btn-block btn-outline-secondary otus-action-btn"
                             onclick="showNewPrinterAdd(&quot;&quot;);return false;"><i class="fa fa-plus"></i>&nbsp;Nowe
                         Urządzenie
                     </button>
@@ -45,17 +45,17 @@
 
                 <div class="form-group">
                     <button class="btn btn-info btn-block" type="submit"
-                            onClick="pokazDrukarki('divRightCenter{$czycolorbox}','divLoader{$czycolorbox}','{$czycolorbox}');return false;">
+                            onClick="showPrinters('divRightCenter{$czycolorbox},'{$czycolorbox}');return false;">
                         Filtruj
                     </button>
                 </div>
             </form>
         </div>
-        <div id="loadingIndicator" class="d-flex justify-content-center mt-5 pt-5 col-12 col-md-12 col-xl-10">
-            <div class="spinner-border" role="status">
-                <span class="sr-only">Loading...</span>
-            </div>
-        </div>
+{*        <div id="loadingIndicator" class="d-flex justify-content-center mt-5 pt-5 col-12 col-md-12 col-xl-10">*}
+{*            <div class="spinner-border" role="status">*}
+{*                <span class="sr-only">Loading...</span>*}
+{*            </div>*}
+{*        </div>*}
         <main id='divRightCenter{$czycolorbox}' class="col-12 col-md-12 col-xl-10">
 
         </main>
@@ -65,24 +65,24 @@
     $('#txtfilterserial{$czycolorbox}').unbind("keypress");
     $('#txtfilterserial{$czycolorbox}').keypress(function (event) {
         if (event.keyCode == 13) {
-            pokazDrukarki('divRightCenter{$czycolorbox}', 'divLoader{$czycolorbox}', '{$czycolorbox}');
+            showPrinters('divRightCenter{$czycolorbox}', '{$czycolorbox}');
             return false;
         }
     });
     $('#txtfiltermodel{$czycolorbox}').unbind("keypress");
     $('#txtfiltermodel{$czycolorbox}').keypress(function (event) {
         if (event.keyCode == 13) {
-            pokazDrukarki('divRightCenter{$czycolorbox}', 'divLoader{$czycolorbox}', '{$czycolorbox}');
+            showPrinters('divRightCenter{$czycolorbox}', '{$czycolorbox}');
             return false;
         }
     });
     $('#txtfilterklient{$czycolorbox}').unbind("keypress");
     $('#txtfilterklient{$czycolorbox}').keypress(function (event) {
         if (event.keyCode == 13) {
-            pokazDrukarki('divRightCenter{$czycolorbox}', 'divLoader{$czycolorbox}', '{$czycolorbox}');
+            showPrinters('divRightCenter{$czycolorbox}', '{$czycolorbox}');
             return false;
         }
     });
 
-    pokazDrukarki('divRightCenter{$czycolorbox}', 'divLoader{$czycolorbox}', '{$czycolorbox}');
+    showPrinters('divRightCenter{$czycolorbox}', '{$czycolorbox}');
 </script>
