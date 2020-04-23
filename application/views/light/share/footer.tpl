@@ -26,7 +26,7 @@
 <script>
     let timeout = undefined;
     const interval = 5;
-    const delay = 30;
+    const delay = 100;
 
     const updateProgress = function(currentWidth) {
         currentWidth += interval;
