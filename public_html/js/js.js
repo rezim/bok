@@ -775,10 +775,6 @@ function showAlerts(objtoshow, objtoload, czycolorbox) {
 }
 
 function generujRaport(successCallback, errorCallback) {
-
-    $("#progress").css("display","flex");
-    updateProgress(10);
-
     var doc = document, objCenter = doc.getElementById('divRightCenter');
 
     var params = {
@@ -809,16 +805,6 @@ function generujRaport(successCallback, errorCallback) {
     }).done(function () {
         $("#tableReport").tablesorter();
         uprawnienia();
-
-        if (timeout) {
-            clearTimeout(timeout);
-        }
-        $("#progressBar").width("100%");
-
-        setTimeout(function() {
-            $("#progress").css("display","none");
-            $("#progressBar").width("0%");
-        }, 1000);
     });
     delete objLoad;
     return false;

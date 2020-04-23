@@ -23,6 +23,38 @@
 
 </div>
 
+<script>
+    let timeout = undefined;
+    const interval = 5;
+    const delay = 30;
+
+    const updateProgress = function(currentWidth) {
+        currentWidth += interval;
+        if (currentWidth <= 100) {
+            $("#progressBar").width(currentWidth  + '%');
+            timeout = setTimeout(function() {
+                updateProgress(currentWidth);
+            }, delay);
+        }
+    };
+
+    $(document).ajaxStart(function () {
+        $("#progress").css("display","flex");
+        $("#progress").css("display","flex");
+        updateProgress(0);
+    }).ajaxComplete(function() {
+        if (timeout) {
+            clearTimeout(timeout);
+        }
+        $("#progressBar").width("100%");
+
+        setTimeout(function() {
+            $("#progress").css("display","none");
+            $("#progressBar").width("0%");
+        }, 1000);
+    });
+</script>
+
 <!-- Optional JavaScript -->
 <!-- jQuery first, then Popper.js, then Bootstrap JS -->
 {*<script src="https://code.jquery.com/jquery-3.4.1.slim.min.js" integrity="sha384-J6qa4849blE2+poT4WnyKhv5vZF5SrPo0iEjwBvKU7imGFAV0wwj1yYfoRSJoZ+n" crossorigin="anonymous"></script>*}
