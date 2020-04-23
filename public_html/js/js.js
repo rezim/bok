@@ -26,7 +26,6 @@ jQuery(function ($) {
     $.datepicker.setDefaults($.datepicker.regional['pl']);
 });
 
-
 function LoadingIndicator() {
     this.objLoadingIndicator = null;
 
@@ -776,9 +775,11 @@ function showAlerts(objtoshow, objtoload, czycolorbox) {
 }
 
 function generujRaport(successCallback, errorCallback) {
-    var doc = document, objCenter = doc.getElementById('divRightCenter'), objLoad = doc.getElementById('divLoader');
-    objCenter.innerHTML = '';
-    objLoad.innerHTML = '<p><img src="light/img/loader.gif" alt="Loading" /></p>';
+
+    $("#progress").css("display","flex");
+    updateProgress(10);
+
+    var doc = document, objCenter = doc.getElementById('divRightCenter');
 
     var params = {
         dateFrom: doc.getElementById('txtdataod').value,
@@ -794,7 +795,7 @@ function generujRaport(successCallback, errorCallback) {
             filterdrukarka: doc.getElementById('txtdrukarka').value
         },
         success: function (data) {
-
+            objCenter.innerHTML = '';
             objCenter.innerHTML = data;
             $(objCenter).animate({opacity: 1}, 1500);
 
@@ -806,11 +807,19 @@ function generujRaport(successCallback, errorCallback) {
             errorCallback(err);
         }
     }).done(function () {
-        objLoad.innerHTML = '';
         $("#tableReport").tablesorter();
         uprawnienia();
+
+        if (timeout) {
+            clearTimeout(timeout);
+        }
+        $("#progressBar").width("100%");
+
+        setTimeout(function() {
+            $("#progress").css("display","none");
+            $("#progressBar").width("0%");
+        }, 1000);
     });
-    delete objCenter;
     delete objLoad;
     return false;
 }

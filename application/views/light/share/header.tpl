@@ -98,6 +98,42 @@
     <!-- Angular UI bootstrap  -->
     <script type="text/javascript" src="{$smarty.const.SCIEZKA}/js/lib/ui-bootstrap-2.5.0.min.js"></script>
     <script type="text/javascript" src="{$smarty.const.SCIEZKA}/js/lib/ui-bootstrap-tpls-2.5.0.min.js"></script>
+    <script>
+        let timeout = undefined;
+        const interval = 10;
+        const delay = 400;
+
+        const updateProgress = function(currentWidth) {
+            currentWidth += interval;
+            if (currentWidth <= 100) {
+                $("#progressBar").width('"' + currentWidth  + '%"');
+                timeout = setTimeout(function() {
+                    updateProgress(currentWidth);
+                }, delay);
+            } else {
+                currentWidth = interval;
+                timeout = setTimeout(function() {
+                    updateProgress(currentWidth);
+                }, delay);
+            }
+        };
+
+        $(document).ajaxStart(function () {
+            $("#progress").css("display","flex");
+            $("#progress").css("display","flex");
+            updateProgress(10);
+        }).ajaxComplete(function() {
+            if (timeout) {
+                clearTimeout(timeout);
+            }
+            $("#progressBar").width("100%");
+
+            setTimeout(function() {
+                $("#progress").css("display","none");
+                $("#progressBar").width("0%");
+            }, 1000);
+        });
+    </script>
 </head>
 <?php flush(); ?>
 <body>
