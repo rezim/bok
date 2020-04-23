@@ -51,7 +51,7 @@
         setTimeout(function() {
             $("#progress").css("display","none");
             $("#progressBar").width("0%");
-        }, 1000);
+        }, delay);
     });
 </script>
 
