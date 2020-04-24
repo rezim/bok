@@ -51,11 +51,7 @@
                 </div>
             </form>
         </div>
-{*        <div id="loadingIndicator" class="d-flex justify-content-center mt-5 pt-5 col-12 col-md-12 col-xl-10">*}
-{*            <div class="spinner-border" role="status">*}
-{*                <span class="sr-only">Loading...</span>*}
-{*            </div>*}
-{*        </div>*}
+
         <main id='divRightCenter{$czycolorbox}' class="col-12 col-md-12 col-xl-10">
 
         </main>

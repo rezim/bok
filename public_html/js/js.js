@@ -26,41 +26,6 @@ jQuery(function ($) {
     $.datepicker.setDefaults($.datepicker.regional['pl']);
 });
 
-function LoadingIndicator() {
-    this.objLoadingIndicator = null;
-
-    this.show = function () {
-        if (!$(this.objLoadingIndicator).length) {
-            this.init();
-        }
-        this.objLoadingIndicator.attr("style", "display:");
-    };
-
-    this.hide = function () {
-        if (!$(this.objLoadingIndicator).length) {
-            this.init();
-        }
-
-        this.objLoadingIndicator.attr("style", "display: none !important");
-    };
-
-    this.init = function() {
-        this.objLoadingIndicator = $("#loadingIndicator");
-    };
-
-    this.init();
-}
-
-const loadingIndicator = new LoadingIndicator();
-
-function menuPodsumowanieClick() {
-
-}
-
-function menuKlienciClick() {
-
-}
-
 function showSzczegolyRaportRozwin(tr) {
     var obj = document.getElementById(tr);
 
@@ -273,7 +238,7 @@ function showOk(objOk, objLoad, info, objClick, czyreload, showtime, adtrestored
             if (czyreload === 1) {
                 $.colorbox.close();
                 if (document.getElementById("tableClient") !== null) {
-                    pokazKlientow();
+                    showClients();
                 }
                 if (document.getElementById("tablePrinter") !== null) {
                     showPrinters('divRightCenter');
@@ -547,40 +512,6 @@ function zapiszStanNa(serial) {
     });
 }
 
-function pokazKlientow(objtoshow, objtoload, czycolorbox) {
-
-    var doc = document, objCenter = doc.getElementById(objtoshow), objLoad = doc.getElementById(objtoload);
-    objCenter.innerHTML = '';
-    objLoad.innerHTML = '<p><img src="light/img/loader.gif" alt="Loading" /></p>';
-
-    $.ajax({
-        url: sciezka + "/clients/showdane/todiv",
-        type: 'POST',
-        data: {
-            filternazwa: doc.getElementById('txtfilternazwa').value,
-            filternip: doc.getElementById('txtfilternip').value,
-            filtermiasto: doc.getElementById('txtfiltermiasto').value,
-            filterserial: doc.getElementById('txtfilterserial').value,
-            czycolorbox: czycolorbox
-        },
-        success: function (data) {
-
-            objCenter.innerHTML = data;
-            $(objCenter).animate({opacity: 1}, 1500);
-        },
-        error: function () {
-            objCenter.innerHTML = 'Problem z pobraniem klientów';
-        }
-    }).done(function () {
-        objLoad.innerHTML = '';
-        $("#tableClient").tablesorter();
-        uprawnienia();
-    });
-    delete objCenter;
-    delete objLoad;
-    return false;
-}
-
 function usunKlienta(rowid) {
     if (confirm("Czy na pewno chcesz usunąć tego klienta ? ")) {
 
@@ -606,7 +537,7 @@ function usunKlienta(rowid) {
                 } else {
                     alert('Klienta usunięty poprawnie');
                     $.colorbox.close();
-                    pokazKlientow();
+                    showClients();
                     return false;
                 }
                 return false;
@@ -1997,5 +1928,35 @@ function showPrintersCounters(successCallback, errorCallback) {
     });
     delete objCenter;
 
+    return false;
+}
+
+function showClients(czycolorbox) {
+    const doc = document;
+    const objCenterId = czycolorbox ? 'divRightCenter' + czycolorbox : 'divRightCenter';
+    const objCenter = doc.getElementById(objCenterId);
+
+    $.ajax({
+        url: sciezka + "/clients/showdane/todiv",
+        type: 'POST',
+        data: {
+            filternazwa: doc.getElementById('txtfilternazwa').value,
+            filternip: doc.getElementById('txtfilternip').value,
+            filtermiasto: doc.getElementById('txtfiltermiasto').value,
+            filterserial: doc.getElementById('txtfilterserial').value,
+            czycolorbox: czycolorbox
+        },
+        success: function (data) {
+            objCenter.innerHTML = '';
+            objCenter.innerHTML = data;
+            $(objCenter).animate({opacity: 1}, 1500);
+        },
+        error: function () {
+            objCenter.innerHTML = 'Problem z pobraniem klientów';
+        }
+    }).done(function () {
+        $("#tableClient").tablesorter();
+        uprawnienia();
+    });
     return false;
 }

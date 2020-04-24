@@ -40,7 +40,6 @@
 
     $(document).ajaxStart(function () {
         $("#progress").css("display","flex");
-        $("#progress").css("display","flex");
         updateProgress(0);
     }).ajaxComplete(function() {
         if (timeout) {

@@ -68,7 +68,7 @@ class clientsController extends Controller
        $this->client->populateWithPost();
        $dataClient = $this->client->getClients();
        $smarty->assign('dataClient',$dataClient);
-       $smarty->assign('czycolorbox',$_POST['czycolorbox']);
+       $smarty->assign('czycolorbox', isset($_POST['czycolorbox']) ? $_POST['czycolorbox'] : '');
        unset($dataClient);
    }
 }

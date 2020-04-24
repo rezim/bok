@@ -1,76 +1,75 @@
-
-<table class='tablesorter displaytable' id='tableClient' cellspacing=0 cellpadding=0>
-    <thead>
+<div class="table-responsive-sm">
+    <table class='table table-hover table-sm' id='tableClient'>
+        <thead class="thead-dark">
         <tr>
-              <th style='min-width: 50px;width:50px;'>
-                Lp
-            </th >
-            <th style='min-width: 165px;width:165px;'>
+            <th>
+                #
+            </th>
+            <th>
                 nazwa krótka
-            </th >
-            <th style='min-width: 155px;width:155px;'>
+            </th>
+            <th>
                 kod/miasto
             </th>
-            <th style='min-width: 155px;width:155px;'>
+            <th>
                 adres
             </th>
-            <th style='min-width: 105px;width:105px;'>
+            <th>
                 nip
             </th>
-            <th style='min-width: 95px;width:195px;'>
+            <th>
                 telefon
             </th>
             {if $czycolorbox==''}
-            <th style='min-width: 55px;width:55px;'>
-                umowy
-            </th>
-            <th style='min-width: 55px;width:55px;'>
-                drukarki
-            </th>
-            <th style='min-width: 75px;width:75px;'>
-            </th>
+                <th>
+                </th>
             {/if}
         </tr>
-    </thead>
-    <tbody>
+        </thead>
+        <tbody>
 
-            {foreach from=$dataClient item=item key=key name=loopek}
-                <tr
+        {foreach from=$dataClient item=item key=key name=loopek}
+            <tr
                     {if $czycolorbox=='1'}
                         style='cursor:hand;cursor:pointer;'
-                          onClick="
-                            $('#idclientspan').html('{$item.rowid}');
-                            $('#rowid_client').val('{$item.nazwakrotka}');
-                            if($('#email').val()=='')
-                            {
+                        onClick="
+                                $('#idclientspan').html('{$item.rowid}');
+                                $('#rowid_client').val('{$item.nazwakrotka}');
+                                if($('#email').val()=='')
+                                {
                                 $('#email').val('{$item.mail}');
-                            }
-                            showNotPaidInvoices('{$item.rowid}', '#invoicesContainer');
-                            $.colorbox.close();
-                        "
+                                }
+                                showNotPaidInvoices('{$item.rowid}', '#invoicesContainer');
+                                $.colorbox.close();
+                                "
                     {/if}
-                    >
-                      <td>{$smarty.foreach.loopek.index+1}</td>
-                    <td>{$item.nazwakrotka|escape:'htmlall'}</td>
-                    <td>{$item.kodpocztowy|escape:'htmlall'} {$item.miasto|escape:'htmlall'}</td>
-                    <td>{$item.ulica|escape:'htmlall'}</td>
-                    <td>{$item.nip|escape:'htmlall'}</td>
-                    <td>{$item.telefon|escape:'htmlall'}</td>
-                        {if $czycolorbox==''}    
-                    <td class='tdLink' style='text-align:center;' onClick='showUmowyDoKlienta("{$item.rowid}")'>{$item.drukumowy|escape:'htmlall'}</td>
-                    <td class='tdLink' style='text-align:center;' onClick='showDrukarkiDoKlienta("{$item.rowid}")'>{$item.drukumowy|escape:'htmlall'}</td>
-                    <td style='text-align:right;'>
-                
-                        <img wymaganylevel='w' wymaganyzrobiony='0' class='imgAkcja imgedit' onClick='showNewClientAdd("{$item.rowid}")' src='{$smarty.const.SCIEZKA}/{$smarty.const.SMARTVERSION}/img/fake.png' alt="Edycja" title='Edycja' />
-                        
-                        
+            >
+                <th scope="row">{$smarty.foreach.loopek.index+1}</td>
+                <td>{$item.nazwakrotka|escape:'htmlall'}</td>
+                <td>{$item.kodpocztowy|escape:'htmlall'} {$item.miasto|escape:'htmlall'}</td>
+                <td>{$item.ulica|escape:'htmlall'}</td>
+                <td>{$item.nip|escape:'htmlall'}</td>
+                <td>{$item.telefon|escape:'htmlall'}</td>
+                {if $czycolorbox==''}
+                    <td>
+                        <div class="dropdown show">
+                            <button class="btn border border-secondary dropdown-toggle" type="button"
+                                    id="dropdownMenuButton" data-toggle="dropdown" aria-haspopup="true"
+                                    aria-expanded="false">
+                                <i class="fa fa-gear"></i>
+                            </button>
+                            <div class="dropdown-menu dropdown-menu-right" aria-labelledby="dropdownMenuLink">
+                                <a class="dropdown-item" href="#" onClick='showNewClientAdd("{$item.rowid}")'>Edycja Kienta</a>
+                                <a class="dropdown-item" href="#" onClick='showUmowyDoKlienta("{$item.rowid}")'>Pokaż umowy klienta - {$item.drukumowy|escape:'htmlall'}</a>
+                                <a class="dropdown-item" href="#" onClick='showDrukarkiDoKlienta("{$item.rowid}")'>Pokaż urządzenia klienta - {$item.drukumowy|escape:'htmlall'}</a>
+                            </div>
+                        </div>
                     </td>
-                    {/if}
-                </tr>
-            {/foreach}
+                {/if}
+            </tr>
+        {/foreach}
+        </tbody>
 
-
-    </tbody>    
-        
-</table>
+    </table>
+</div>
            
