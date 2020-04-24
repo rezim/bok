@@ -56,12 +56,14 @@
                             <button class="btn border border-secondary dropdown-toggle" type="button"
                                     id="dropdownMenuButton" data-toggle="dropdown" aria-haspopup="true"
                                     aria-expanded="false">
+                                <span class="badge badge-pill
+                                 {if ($item.drukumowy|escape:'htmlall') > 0}badge-success{else}badge-danger{/if}" title="Umowy aktywne">{$item.drukumowy|escape:'htmlall'}</span>
                                 <i class="fa fa-gear"></i>
                             </button>
                             <div class="dropdown-menu dropdown-menu-right" aria-labelledby="dropdownMenuLink">
                                 <a class="dropdown-item" href="#" onClick='showNewClientAdd("{$item.rowid}")'>Edycja Kienta</a>
-                                <a class="dropdown-item" href="#" onClick='showUmowyDoKlienta("{$item.rowid}")'>Pokaż umowy klienta - {$item.drukumowy|escape:'htmlall'}</a>
-                                <a class="dropdown-item" href="#" onClick='showDrukarkiDoKlienta("{$item.rowid}")'>Pokaż urządzenia klienta - {$item.drukumowy|escape:'htmlall'}</a>
+                                <a class="dropdown-item" href="#" onClick='showDrukarkiDoKlienta("{$item.rowid}")'>Pokaż urządzenia klienta</a>
+                                <a class="dropdown-item" href="#" onClick='showUmowyDoKlienta("{$item.rowid}")'>Pokaż umowy klienta</a>
                             </div>
                         </div>
                     </td>
