@@ -41,9 +41,10 @@
             <th>
                 data mail
             </th>
+            {if $czycolorbox==''}
             <th>
-
             </th>
+            {/if}
         </tr>
         </thead>
         <tbody>
@@ -105,7 +106,7 @@
                 </td>
 
                 <td>
-
+                {if $czycolorbox==''}
                     <div class="dropdown show">
                         <button class="btn border border-secondary dropdown-toggle" type="button"
                                 id="dropdownMenuButton" data-toggle="dropdown" aria-haspopup="true"
@@ -121,18 +122,7 @@
                                 Serwisu</a>
                         </div>
                     </div>
-
-                    {*                         {if $czycolorbox==''}    *}
-                    {*                        <img wymaganylevel='r' wymaganyzrobiony='0'  class='imgAkcja imgedit' onClick='showNewPrinterAdd("{$item.serial}")' src='{$smarty.const.SCIEZKA}/{$smarty.const.SMARTVERSION}/img/fake.png' alt="Edycja" title='Edycja' />*}
-                    {*                        {if empty($item.blad)}*}
-                    {*                        <img  class='imgAkcja imgNormalLogs' onClick='pokazLogi("{$item.serial}")' src='{$smarty.const.SCIEZKA}/{$smarty.const.SMARTVERSION}/img/fake.png' alt="Usuń klienta" title='Pokaż logi' />    *}
-                    {*                        {else}*}
-                    {*                        <img  class='imgAkcja imgIstniejeLogs' onClick='pokazLogi("{$item.serial}")' src='{$smarty.const.SCIEZKA}/{$smarty.const.SMARTVERSION}/img/fake.png' alt="Usuń klienta" title='Pokaż logi' />        *}
-                    {*                        {/if}*}
-                    {*                        <img wymaganylevel='w' wymaganyzrobiony='0' class='imgAkcja imgtonery' onClick='historiaTonerow("{$item.serial}")' src='{$smarty.const.SCIEZKA}/{$smarty.const.SMARTVERSION}/img/fake.png' alt="Pokaż historię tonerów" title='Pokaż historię tonerów' />*}
-                    {*                        {/if}*}
-
-                    {*                        <img class='imgAkcja' onclick='alert("nie zaimplementowane");' src='{$smarty.const.SCIEZKA}/{$smarty.const.SMARTVERSION}/img/fake.png' title='Pokaż Historię serwisu' /><!-- //showPrinterService("{ $ item.serial }") -->*}
+                {/if}
                 </td>
             </tr>
             <tr id='tonertr{$item.serial}' style='display:none;' vis='0'>

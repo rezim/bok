@@ -1,7 +1,7 @@
 <div class="container-fluid">
 
     <div class="row">
-        <div class="otus-sidebar col-12 col-md-12 col-xl-2">
+        <div class="otus-sidebar col-12 col-md-12 col-xl-auto">
             <form>
                 <div class="form-group otus-addnew otus-section">
                     <button type="button" class="btn btn-block btn-outline-secondary otus-action-btn"
@@ -52,7 +52,7 @@
             </form>
         </div>
 
-        <main id='divRightCenter{$czycolorbox}' class="col-12 col-md-12 col-xl-10">
+        <main id='divRightCenter{$czycolorbox}' class="col-12 col-md-12 col-xl">
 
         </main>
     </div>

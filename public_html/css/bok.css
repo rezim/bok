@@ -446,6 +446,7 @@ main {
 
 .otus-sidebar .form-group label {
     margin-bottom: 0;
+    font-size: 0.9rem;
 }
 
 .otus-action-btn {
@@ -469,6 +470,7 @@ main {
         }
         .otus-sidebar .form-group {
             display: inline-block;
+            margin-bottom: 0.7rem;
         }
     }
 }
