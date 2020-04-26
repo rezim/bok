@@ -84,10 +84,10 @@
                             <button class="btn border border-secondary dropdown-toggle" type="button"
                                     id="dropdownMenuButton" data-toggle="dropdown" aria-haspopup="true"
                                     aria-expanded="false">
-                                {if !empty($item.blad)}
-                                <span class="badge badge-pill badge-danger" title="Logi Błąd">!</span>
-                                {/if}
                                 <i class="fa fa-gear"></i>
+                                {if !empty($item.blad)}
+                                    <span class="badge badge-pill badge-danger" title="Logi Błąd">!</span>
+                                {/if}
                             </button>
                             <div class="dropdown-menu dropdown-menu-right" aria-labelledby="dropdownMenuLink">
                                 <a wymaganylevel='r' wymaganyzrobiony='0' class="dropdown-item" href="#" onClick='showNewAgreementAdd("{$item.rowid}")'>Edycja</a>

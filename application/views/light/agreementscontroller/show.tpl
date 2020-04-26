@@ -4,8 +4,7 @@
             <form>
                 <div class="form-group otus-addnew otus-section">
                     <button type="button" class="btn btn-block btn-outline-success otus-action-btn"
-                            onclick="showNewAgreementAdd(" 0
-                    ");return false;"><i class="fa fa-plus"></i>&nbsp;Nowa
+                            onclick="showNewAgreementAdd('0');return false;"><i class="fa fa-plus"></i>&nbsp;Nowa
                     Umowa
                     </button>
                 </div>
