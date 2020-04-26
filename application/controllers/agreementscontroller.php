@@ -95,7 +95,7 @@ class agreementsController extends Controller
        $this->agreement->populateWithPost();
        $dataAgreements = $this->agreement->getAgreements();
        $smarty->assign('dataAgreements',$dataAgreements);
-       $smarty->assign('czycolorbox',$_POST['czycolorbox']);
+       $smarty->assign('czycolorbox', isset($_POST['czycolorbox']) ? $_POST['czycolorbox'] : '');
        unset($dataAgreements);
         }
           else

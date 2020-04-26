@@ -241,10 +241,10 @@ function showOk(objOk, objLoad, info, objClick, czyreload, showtime, adtrestored
                     showClients();
                 }
                 if (document.getElementById("tablePrinter") !== null) {
-                    showPrinters('divRightCenter');
+                    showPrinters();
                 }
                 if (document.getElementById("tableUmowy") !== null) {
-                    pokazUmowy('divRightCenter', 'divLoader');
+                    showAgreements();
                 }
                 if (document.getElementById("tableToner") !== null) {
                     pokazTonery();
@@ -586,7 +586,7 @@ function usunUmowe(rowid) {
                 } else {
                     alert('Umowa usunięta poprawnie');
                     $.colorbox.close();
-                    pokazUmowy('divRightCenter', 'divLoader');
+                    showAgreements();
                     return false;
                 }
                 return false;
@@ -751,39 +751,6 @@ function showColorTonerInfo(id) {
         $(obj).hide();
         $(obj).attr('vis', "0");
     }
-}
-
-function pokazUmowy(objtoshow, objtoload, czycolorbox) {
-    czycolorbox = (czycolorbox !== undefined) ? czycolorbox : '';
-    var doc = document, objCenter = doc.getElementById(objtoshow), objLoad = doc.getElementById(objtoload);
-    objCenter.innerHTML = '';
-    objLoad.innerHTML = '<p><img src="light/img/loader.gif" alt="Loading" /></p>';
-
-    $.ajax({
-        url: sciezka + "/agreements/showdane/todiv",
-        type: 'POST',
-        data: {
-            filternrumowy: doc.getElementById('txtfilternrumowy' + czycolorbox).value,
-            filterserial: doc.getElementById('txtfilterserial' + czycolorbox).value,
-            filternazwaklienta: doc.getElementById('txtfilternazwaklient' + czycolorbox).value,
-            pokazzakonczone: doc.getElementById("checkPokazZakonczone" + czycolorbox).checked ? 1 : 0,
-            czycolorbox: czycolorbox
-        },
-        success: function (data) {
-            objCenter.innerHTML = data;
-            $(objCenter).animate({opacity: 1}, 1500);
-        },
-        error: function (data) {
-            objCenter.innerHTML = data;
-        }
-    }).done(function () {
-        objLoad.innerHTML = '';
-        $("#tableUmowy").tablesorter();
-        uprawnienia();
-    });
-    delete objCenter;
-    delete objLoad;
-    return false;
 }
 
 function pokazUmowy2(objtoshow, objtoload, czycolorbox) {
@@ -1842,33 +1809,31 @@ function removeMessage(rowid, type) {
     return false;
 }
 
-function showPrinters(objtoshow, objtoload, czycolorbox) {
-    czycolorbox = (czycolorbox !== undefined) ? czycolorbox : '';
-    var doc = document, objCenter = doc.getElementById(objtoshow);
+function showPrinters(czycolorbox) {
+    const doc = document;
+    const objCenter = doc.getElementById('divRightCenter');
 
     $.ajax({
         url: sciezka + "/printers/showdane/todiv",
         type: 'POST',
         data: {
-            filterserial: doc.getElementById('txtfilterserial' + czycolorbox).value,
-            filtermodel: doc.getElementById('txtfiltermodel' + czycolorbox).value,
-            filterklient: doc.getElementById('txtfilterklient' + czycolorbox).value,
+            filterserial: doc.getElementById('txtfilterserial').value,
+            filtermodel: doc.getElementById('txtfiltermodel').value,
+            filterklient: doc.getElementById('txtfilterklient').value,
             czycolorbox: czycolorbox
         },
         success: function (data) {
+            objCenter.innerHTML = '';
             objCenter.innerHTML = data;
             $(objCenter).animate({opacity: 1}, 1500);
-
         },
         error: function () {
             objCenter.innerHTML = 'Problem z pobraniem drukarek';
         }
     }).done(function () {
-
         $("#tablePrinter").tablesorter();
         uprawnienia();
     });
-    delete objLoad;
     return false;
 }
 
@@ -1956,6 +1921,35 @@ function showClients(czycolorbox) {
         }
     }).done(function () {
         $("#tableClient").tablesorter();
+        uprawnienia();
+    });
+    return false;
+}
+
+function showAgreements(czycolorbox) {
+    const doc = document;
+    const objCenter = doc.getElementById('divRightCenter');
+
+    $.ajax({
+        url: sciezka + "/agreements/showdane/todiv",
+        type: 'POST',
+        data: {
+            filternrumowy: doc.getElementById('txtfilternrumowy').value,
+            filterserial: doc.getElementById('txtfilterserial').value,
+            filternazwaklienta: doc.getElementById('txtfilternazwaklienta').value,
+            pokazzakonczone: doc.getElementById('checkPokazZakonczone').checked ? 1 : 0,
+            czycolorbox: czycolorbox
+        },
+        success: function (data) {
+            objCenter.innerHTML = '';
+            objCenter.innerHTML = data;
+            $(objCenter).animate({opacity: 1}, 1500);
+        },
+        error: function (data) {
+            objCenter.innerHTML = data;
+        }
+    }).done(function () {
+        $("#tableUmowy").tablesorter();
         uprawnienia();
     });
     return false;

@@ -1,101 +1,106 @@
-
-<table class='tablesorter displaytable' id='tableUmowy' cellspacing=0 cellpadding=0>
-    <thead>
+<div class="table-responsive-sm">
+    <table class='table table-hover table-sm' id='tableUmowy'>
+        <thead class="thead-dark">
         <tr>
-             <th style='min-width: 50px;width:50px;'>
-                Lp
-            </th >
-            <th style='min-width: 115px;width:115px;'>
+            <th>
+                #
+            </th>
+            <th>
                 nr umowy
-            </th >
-             {if $czycolorbox==''}  
-            <th style='min-width: 155px;width:155px;'>
-                klient
             </th>
-            <th style='min-width: 115px;width:115px;'>
-                drukarka
-            </th>
+            {if $czycolorbox==''}
+                <th>
+                    klient
+                </th>
+                <th>
+                    drukarka
+                </th>
             {/if}
-            <th wymaganylevel='w' wymaganyzrobiony='0' style='min-width: 75px;width:75px;'>
+            <th wymaganylevel='w' wymaganyzrobiony='0'>
                 data od
             </th>
-            <th wymaganylevel='w' wymaganyzrobiony='0'  style='min-width: 75px;width:75px;'>
+            <th wymaganylevel='w' wymaganyzrobiony='0'>
                 data do
             </th>
-            <th wymaganylevel='w' wymaganyzrobiony='0'  style='min-width: 65px;width:65px;text-align: center;'>
+            <th wymaganylevel='w' wymaganyzrobiony='0'>
                 stron <br/> abonam.
             </th>
-            <th wymaganylevel='w' wymaganyzrobiony='0'  style='min-width: 65px;width:65px;text-align: center;'>
+            <th wymaganylevel='w' wymaganyzrobiony='0'>
                 cena <br/> strona
             </th>
-            <th wymaganylevel='w' wymaganyzrobiony='0'  style='min-width: 65px;width:65px;text-align: center;'>
+            <th wymaganylevel='w' wymaganyzrobiony='0'>
                 rozliczenie
             </th>
-            <th wymaganylevel='w' wymaganyzrobiony='0'  style='min-width: 65px;width:65px;text-align: center;'>
+            <th wymaganylevel='w' wymaganyzrobiony='0'>
                 abonament
             </th>
-             <th style='min-width: 30px;width:30px;text-align: center;' titla="1-tak; 0-nie">
+            <th titla="1-tak; 0-nie">
                 aktywna
             </th>
-            {if $czycolorbox==''}  
-            <th style='min-width: 75px;width:75px;'>
-            </th>
+            {if $czycolorbox==''}
+                <th>
+                </th>
             {/if}
         </tr>
-    </thead>
-    <tbody>
+        </thead>
+        <tbody>
 
-            {foreach from=$dataAgreements item=item key=key name=loopek}
-                <tr
-                     {if $czycolorbox=='1'}
-                        style='cursor:hand;cursor:pointer;'
-                          onClick="
-                            $('#idumowaspan').html('{$item.rowid}');
-                            $('#rowid_agreements').val('{$item.nrumowy}');
-                            $('#sla').val('{$item.sla}');
-                            $.colorbox.close();
-                        "
+        {foreach from=$dataAgreements item=item key=key name=loopek}
+            <tr
+                    {if $czycolorbox=='1'}
+                        onClick="
+                                $('#idumowaspan').html('{$item.rowid}');
+                                $('#rowid_agreements').val('{$item.nrumowy}');
+                                $('#sla').val('{$item.sla}');
+                                $.colorbox.close();
+                                "
                     {/if}
-                    >
-                      <td>{$smarty.foreach.loopek.index+1}</td>
-                    <td>{$item.nrumowy|escape:'htmlall'}</td>
-                     {if $czycolorbox==''}  
-                    <td class='tdLink' onClick='showNewClientAdd("{$item.rowidclient}")'>{$item.nazwakrotka|escape:'htmlall'}</td>
-                    <td class='tdLink' onClick='showNewPrinterAdd("{$item.serial}")'>{$item.serial|escape:'htmlall'}</td>
-                    {/if}
-                    <td wymaganylevel='w' wymaganyzrobiony='0' >{$item.dataod|escape:'htmlall'}</td>
-                    <td wymaganylevel='w' wymaganyzrobiony='0' 
-                         {if ($item.datado|date_format:"%Y-%m")==($smarty.now|date_format:"%Y-%m")}style='background-color:red'{/if}
-                        >
-                        {$item.datado|escape:'htmlall'}
+            >
+                <td>{$smarty.foreach.loopek.index+1}</td>
+                <td>{$item.nrumowy|escape:'htmlall'}</td>
+                {if $czycolorbox==''}
+                    <td
+                        onClick='showNewClientAdd("{$item.rowidclient}")'>{$item.nazwakrotka|escape:'htmlall'}</td>
+                    <td
+                        onClick='showNewPrinterAdd("{$item.serial}")'>{$item.serial|escape:'htmlall'}</td>
+                {/if}
+                <td wymaganylevel='w' wymaganyzrobiony='0'>{$item.dataod|escape:'htmlall'}</td>
+                <td wymaganylevel='w' wymaganyzrobiony='0'
+                    {if ($item.datado|date_format:"%Y-%m")==($smarty.now|date_format:"%Y-%m")}{/if}
+                >
+                    {$item.datado|escape:'htmlall'}
+                </td>
+                <td wymaganylevel='w' wymaganyzrobiony='0'>{$item.stronwabonamencie|number_format:2:",":" "|replace:',00':''}
+                </td>
+                <td wymaganylevel='w' wymaganyzrobiony='0'>{$item.cenazastrone|number_format:3:",":" "|replace:',00':''|escape:'htmlall'}
+                </td>
+                <td wymaganylevel='w' wymaganyzrobiony='0'>{$item.rozliczenie|escape:'htmlall'}</td>
+                <td wymaganylevel='w' wymaganyzrobiony='0'>{if !empty($item.abonament)}{$item.abonament|number_format:2:",":" "|replace:',00':''|escape:'htmlall'}{/if}
+                </td>
+                <td>{$item.activity}</td>
+                {if $czycolorbox==''}
+                    <td>
+                        <div class="dropdown show">
+                            <button class="btn border border-secondary dropdown-toggle" type="button"
+                                    id="dropdownMenuButton" data-toggle="dropdown" aria-haspopup="true"
+                                    aria-expanded="false">
+                                {if !empty($item.blad)}
+                                <span class="badge badge-pill badge-danger" title="Logi Błąd">!</span>
+                                {/if}
+                                <i class="fa fa-gear"></i>
+                            </button>
+                            <div class="dropdown-menu dropdown-menu-right" aria-labelledby="dropdownMenuLink">
+                                <a wymaganylevel='r' wymaganyzrobiony='0' class="dropdown-item" href="#" onClick='showNewAgreementAdd("{$item.rowid}")'>Edycja</a>
+                                {if !empty($item.serial)}
+                                <a class="dropdown-item" href="#" onClick='pokazLogi("{$item.serial}")'>Logi</a>
+                                {/if}
+                            </div>
+                        </div>
                     </td>
-                    <td wymaganylevel='w' wymaganyzrobiony='0'  class='tdNumber'>{$item.stronwabonamencie|number_format:2:",":" "|replace:',00':''}
-                    </td>
-                    <td wymaganylevel='w' wymaganyzrobiony='0'  class='tdNumber'>{$item.cenazastrone|number_format:3:",":" "|replace:',00':''|escape:'htmlall'}
-                    </td>    
-                    <td wymaganylevel='w' wymaganyzrobiony='0'  class='tdNumber'>{$item.rozliczenie|escape:'htmlall'}</td>
-                    <td wymaganylevel='w' wymaganyzrobiony='0'  class='tdNumber'>{if !empty($item.abonament)}{$item.abonament|number_format:2:",":" "|replace:',00':''|escape:'htmlall'}{/if}
-                    </td>  
-                    <td class='tdNumber'>{$item.activity}</td>
-                    {if $czycolorbox==''}  
-                    <td style='text-align: right;'>
-                         
-                        <img wymaganylevel='r' wymaganyzrobiony='0' class='imgAkcja imgedit' onClick='showNewAgreementAdd("{$item.rowid}")' src='{$smarty.const.SCIEZKA}/{$smarty.const.SMARTVERSION}/img/fake.png' alt="Edycja" title='Edycja' />
-                        {if !empty($item.serial)}
-                            {if empty($item.blad)}
-                            <img class='imgAkcja imgNormalLogs' onClick='pokazLogi("{$item.serial}")' src='{$smarty.const.SCIEZKA}/{$smarty.const.SMARTVERSION}/img/fake.png' alt="Usuń klienta" title='Pokaż logi' />    
-                            {else}
-                            <img class='imgAkcja imgIstniejeLogs' onClick='pokazLogi("{$item.serial}")' src='{$smarty.const.SCIEZKA}/{$smarty.const.SMARTVERSION}/img/fake.png' alt="Usuń klienta" title='Pokaż logi' />        
-                            {/if}
-                        {/if}
-                        
-                    </td>
-                    {/if}
-                </tr>
-            {/foreach}
-
-
-    </tbody>    
-        
-</table>
+                {/if}
+            </tr>
+        {/foreach}
+        </tbody>
+    </table>
+</div>
        

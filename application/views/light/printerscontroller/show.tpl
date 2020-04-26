@@ -11,28 +11,28 @@
                 </div>
                 <div class="border-top my-4 otus-separator"></div>
                 <div class="form-group">
-                    <label for="txtfilterserial{$czycolorbox}">Serial</label>
+                    <label for="txtfilterserial">Serial</label>
                 </div>
                 <div class="form-group">
-                    <input type="text" id='txtfilterserial{$czycolorbox}' class="form-control"
+                    <input type="text" id='txtfilterserial' class="form-control"
                            aria-describedby="serialHelp">
                     <small id="emailHelp" class="form-text text-muted">Podaj numer seryjny urządzenia.</small>
                 </div>
 
                 <div class="form-group">
-                    <label for="txtfiltermodel{$czycolorbox}">Model</label>
+                    <label for="txtfiltermodel">Model</label>
                 </div>
                 <div class="form-group">
-                    <input type="text" id='txtfiltermodel{$czycolorbox}' class="form-control"
+                    <input type="text" id='txtfiltermodel' class="form-control"
                            aria-describedby="modelHelp">
                     <small id="modelHelp" class="form-text text-muted">Podaj model urządzenia.</small>
                 </div>
 
                 <div class="form-group">
-                    <label for="txtfilterklient{$czycolorbox}">Klient</label>
+                    <label for="txtfilterklient">Klient</label>
                 </div>
                 <div class="form-group">
-                    <input type="text" id='txtfilterklient{$czycolorbox}' class='form-control'
+                    <input type="text" id='txtfilterklient' class='form-control'
                            aria-describedby="clientHelp"
                             {if isset($clientnazwakrotka)}
                                 value='{$clientnazwakrotka}'
@@ -45,40 +45,40 @@
 
                 <div class="form-group">
                     <button class="btn btn-info btn-block" type="submit"
-                            onClick="showPrinters('divRightCenter{$czycolorbox},'{$czycolorbox}');return false;">
+                            onClick="showPrinters('{$czycolorbox}');return false;">
                         Filtruj
                     </button>
                 </div>
             </form>
         </div>
 
-        <main id='divRightCenter{$czycolorbox}' class="col-12 col-md-12 col-xl">
+        <main id='divRightCenter' class="col-12 col-md-12 col-xl">
 
         </main>
     </div>
 </div>
 <script type="text/javascript">
-    $('#txtfilterserial{$czycolorbox}').unbind("keypress");
-    $('#txtfilterserial{$czycolorbox}').keypress(function (event) {
+    $('#txtfilterserial').unbind("keypress");
+    $('#txtfilterserial').keypress(function (event) {
         if (event.keyCode == 13) {
-            showPrinters('divRightCenter{$czycolorbox}', '{$czycolorbox}');
+            showPrinters('{$czycolorbox}');
             return false;
         }
     });
-    $('#txtfiltermodel{$czycolorbox}').unbind("keypress");
-    $('#txtfiltermodel{$czycolorbox}').keypress(function (event) {
+    $('#txtfiltermodel').unbind("keypress");
+    $('#txtfiltermodel').keypress(function (event) {
         if (event.keyCode == 13) {
-            showPrinters('divRightCenter{$czycolorbox}', '{$czycolorbox}');
+            showPrinters('{$czycolorbox}');
             return false;
         }
     });
-    $('#txtfilterklient{$czycolorbox}').unbind("keypress");
-    $('#txtfilterklient{$czycolorbox}').keypress(function (event) {
+    $('#txtfilterklient').unbind("keypress");
+    $('#txtfilterklient').keypress(function (event) {
         if (event.keyCode == 13) {
-            showPrinters('divRightCenter{$czycolorbox}', '{$czycolorbox}');
+            showPrinters('{$czycolorbox}');
             return false;
         }
     });
 
-    showPrinters('divRightCenter{$czycolorbox}', '{$czycolorbox}');
+    showPrinters('{$czycolorbox}');
 </script>

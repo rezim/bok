@@ -29,7 +29,7 @@ class printersController extends Controller
        $this->printer->populateWithPost();
        $dataPrinters = $this->printer->getPrinters();
        $smarty->assign('dataPrinters',$dataPrinters);
-         $smarty->assign('czycolorbox',$_POST['czycolorbox']);
+       $smarty->assign('czycolorbox', isset($_POST['czycolorbox']) ? $_POST['czycolorbox'] : '');
        unset($dataPrinters);
    }
     function delete()

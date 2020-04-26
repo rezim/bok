@@ -454,6 +454,12 @@ main {
     text-align: left;
 }
 
+.dropdown .badge {
+    position: absolute;
+    top: -6px;
+    left: 40px;
+}
+
 @media (min-width: 768px) {
 
 }
