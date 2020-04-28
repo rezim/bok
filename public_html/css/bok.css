@@ -376,6 +376,11 @@ TODO move loading indicator to separate file
     }
 }
 
+/**colorbox overwrite**/
+
+#cboxLoadedContent {
+    border: none;
+}
 
 /*bootstrap custom styles */
 #appNavBar .navbar-nav .dropdown-menu {

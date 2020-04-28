@@ -104,9 +104,8 @@
                 >
                     {$item.datawiadomosci|escape:'htmlall'}
                 </td>
-
-                <td>
                 {if $czycolorbox==''}
+                <td>
                     <div class="dropdown show">
                         <button class="btn border border-secondary dropdown-toggle" type="button"
                                 id="dropdownMenuButton" data-toggle="dropdown" aria-haspopup="true"
@@ -122,17 +121,10 @@
                                 Serwisu</a>
                         </div>
                     </div>
+                </td>
                 {/if}
-                </td>
-            </tr>
-            <tr id='tonertr{$item.serial}' style='display:none;' vis='0'>
-                <td colspan=12 id='tonertd{$item.serial}'>
-
-                </td>
             </tr>
         {/foreach}
-
-
         </tbody>
 
     </table>

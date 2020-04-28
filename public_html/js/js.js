@@ -1175,7 +1175,8 @@ function openDataShow(link, idzewnetrznespan) {
             uprawnienia();
 
 
-        }
+        },
+        close: 'zamknij'
     });
 }
 
@@ -1809,18 +1810,17 @@ function removeMessage(rowid, type) {
     return false;
 }
 
-function showPrinters(czycolorbox) {
-    const doc = document;
-    const objCenter = doc.getElementById('divRightCenter');
+function showPrinters(isPopup) {
+    const objCenter = getElementById('divRightCenter', isPopup);
 
     $.ajax({
         url: sciezka + "/printers/showdane/todiv",
         type: 'POST',
         data: {
-            filterserial: doc.getElementById('txtfilterserial').value,
-            filtermodel: doc.getElementById('txtfiltermodel').value,
-            filterklient: doc.getElementById('txtfilterklient').value,
-            czycolorbox: czycolorbox
+            filterserial: getElementById('txtfilterserial', isPopup).value,
+            filtermodel: getElementById('txtfiltermodel', isPopup).value,
+            filterklient: getElementById('txtfilterklient', isPopup).value,
+            czycolorbox: isPopup
         },
         success: function (data) {
             objCenter.innerHTML = '';
@@ -1953,4 +1953,8 @@ function showAgreements(czycolorbox) {
         uprawnienia();
     });
     return false;
+}
+
+function getElementById(id, isPopup) {
+    return document.getElementById(isPopup ? id + isPopup : id);
 }

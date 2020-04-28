@@ -3,6 +3,7 @@
     <div class="row">
         <div class="otus-sidebar col-12 col-md-12 col-xl-auto">
             <form>
+                {if !$czycolorbox}
                 <div class="form-group otus-addnew otus-section">
                     <button type="button" class="btn btn-block btn-outline-primary otus-action-btn"
                             onclick="showNewClientAdd("0");return false;"><i class="fa fa-plus"></i>&nbsp;Nowy
@@ -10,6 +11,7 @@
                     </button>
                 </div>
                 <div class="border-top my-4 otus-separator"></div>
+                {/if}
                 <div class="form-group">
                     <label for="txtfilternazwa">Nazwa</label>
                 </div>
