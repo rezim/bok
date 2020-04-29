@@ -46,7 +46,7 @@ class notification extends Model
             'datatype' => 'i',
             'activity' => '1',
             'type' => 'link',
-            'link' => '/agreements/show2/todiv',
+            'link' => '/agreements/show/todiv',
             'label' => 'Nr umowy',
             'class' => 'textBoxForm',
             'style' => 'width:100px;min-width:100px;max-width:100px;',

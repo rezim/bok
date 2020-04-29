@@ -1926,19 +1926,19 @@ function showClients(czycolorbox) {
     return false;
 }
 
-function showAgreements(czycolorbox) {
+function showAgreements(isPopup) {
     const doc = document;
-    const objCenter = doc.getElementById('divRightCenter');
+    const objCenter = getElementById('divRightCenter', isPopup);
 
     $.ajax({
         url: sciezka + "/agreements/showdane/todiv",
         type: 'POST',
         data: {
-            filternrumowy: doc.getElementById('txtfilternrumowy').value,
-            filterserial: doc.getElementById('txtfilterserial').value,
-            filternazwaklienta: doc.getElementById('txtfilternazwaklienta').value,
-            pokazzakonczone: doc.getElementById('checkPokazZakonczone').checked ? 1 : 0,
-            czycolorbox: czycolorbox
+            filternrumowy: getElementById('txtfilternrumowy', isPopup).value,
+            filterserial: getElementById('txtfilterserial', isPopup).value,
+            filternazwaklienta: getElementById('txtfilternazwaklienta', isPopup).value,
+            pokazzakonczone: getElementById('checkPokazZakonczone', isPopup).checked ? 1 : 0,
+            czycolorbox: isPopup
         },
         success: function (data) {
             objCenter.innerHTML = '';

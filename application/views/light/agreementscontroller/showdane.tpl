@@ -8,14 +8,13 @@
             <th>
                 nr umowy
             </th>
-            {if $czycolorbox==''}
-                <th>
-                    klient
-                </th>
-                <th>
-                    drukarka
-                </th>
-            {/if}
+            <th>
+                klient
+            </th>
+            <th>
+                drukarka
+            </th>
+            {if !$czycolorbox}
             <th wymaganylevel='w' wymaganyzrobiony='0'>
                 data od
             </th>
@@ -34,10 +33,11 @@
             <th wymaganylevel='w' wymaganyzrobiony='0'>
                 abonament
             </th>
+            {/if}
             <th titla="1-tak; 0-nie">
                 aktywna
             </th>
-            {if $czycolorbox==''}
+            {if !$czycolorbox}
                 <th>
                 </th>
             {/if}
@@ -56,14 +56,14 @@
                                 "
                     {/if}
             >
-                <td>{$smarty.foreach.loopek.index+1}</td>
+                <th scope="row">{$smarty.foreach.loopek.index+1}</td>
                 <td>{$item.nrumowy|escape:'htmlall'}</td>
-                {if $czycolorbox==''}
-                    <td
-                        onClick='showNewClientAdd("{$item.rowidclient}")'>{$item.nazwakrotka|escape:'htmlall'}</td>
-                    <td
-                        onClick='showNewPrinterAdd("{$item.serial}")'>{$item.serial|escape:'htmlall'}</td>
-                {/if}
+
+                <td
+                    onClick='showNewClientAdd("{$item.rowidclient}")'>{$item.nazwakrotka|escape:'htmlall'}</td>
+                <td
+                    onClick='showNewPrinterAdd("{$item.serial}")'>{$item.serial|escape:'htmlall'}</td>
+                {if !$czycolorbox}
                 <td wymaganylevel='w' wymaganyzrobiony='0'>{$item.dataod|escape:'htmlall'}</td>
                 <td wymaganylevel='w' wymaganyzrobiony='0'
                     {if ($item.datado|date_format:"%Y-%m")==($smarty.now|date_format:"%Y-%m")}{/if}
@@ -77,6 +77,7 @@
                 <td wymaganylevel='w' wymaganyzrobiony='0'>{$item.rozliczenie|escape:'htmlall'}</td>
                 <td wymaganylevel='w' wymaganyzrobiony='0'>{if !empty($item.abonament)}{$item.abonament|number_format:2:",":" "|replace:',00':''|escape:'htmlall'}{/if}
                 </td>
+                {/if}
                 <td>{$item.activity}</td>
                 {if $czycolorbox==''}
                     <td>

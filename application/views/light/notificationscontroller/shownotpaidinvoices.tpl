@@ -1,4 +1,4 @@
-{if $invoices|@count gt 0}
+{if isset($invoices) && $invoices|@count gt 0}
     <div class="notpaid-invoices-alert">
         <div><i class="fa fa-exclamation-triangle" style="color: red"></i> Klient ma niezapłacone faktury</div>
         {foreach from=$invoices item=item key=key}

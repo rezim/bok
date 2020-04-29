@@ -27,7 +27,7 @@
             <th>
                 color
             </th>
-            {if $czycolorbox==''}
+            {if !$czycolorbox}
                 <th>
                     nr umowy
                 </th>
@@ -41,7 +41,7 @@
             <th>
                 data mail
             </th>
-            {if $czycolorbox==''}
+            {if !$czycolorbox}
             <th>
             </th>
             {/if}

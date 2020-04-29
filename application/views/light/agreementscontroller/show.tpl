@@ -2,6 +2,7 @@
     <div class="row">
         <div class="otus-sidebar col-12 col-md-12 col-xl-auto">
             <form>
+                {if !$czycolorbox}
                 <div class="form-group otus-addnew otus-section">
                     <button type="button" class="btn btn-block btn-outline-success otus-action-btn"
                             onclick="showNewAgreementAdd('0');return false;"><i class="fa fa-plus"></i>&nbsp;Nowa
@@ -9,36 +10,37 @@
                     </button>
                 </div>
                 <div class="border-top my-4 otus-separator"></div>
+                {/if}
                 <div class="form-group">
-                    <label for="txtfilternrumowy">Nr umowy</label>
+                    <label for="txtfilternrumowy{$czycolorbox}">Nr umowy</label>
                 </div>
                 <div class="form-group">
-                    <input type="text" id='txtfilternrumowy' class="form-control"
+                    <input type="text" id='txtfilternrumowy{$czycolorbox}' class="form-control"
                            aria-describedby="agreementNbHelp">
                     <small id="agreementNbHelp" class="form-text text-muted">Podaj numer umowy.</small>
                 </div>
 
                 <div class="form-group">
-                    <label for="txtfilterserial">Serial</label>
+                    <label for="txtfilterserial{$czycolorbox}">Serial</label>
                 </div>
                 <div class="form-group">
-                    <input type="text" id='txtfilterserial' class="form-control"
+                    <input type="text" id='txtfilterserial{$czycolorbox}' class="form-control"
                            aria-describedby="serialHelp" {if isset($serial)} value='{$serial}'{/if}>
                     <small id="serialHelp" class="form-text text-muted">Podaj numer seryjny urządzenia.</small>
                 </div>
 
                 <div class="form-group">
-                    <label for="txtfilternazwaklienta">Klient</label>
+                    <label for="txtfilternazwaklienta{$czycolorbox}">Klient</label>
                 </div>
                 <div class="form-group">
-                    <input type="text" id='txtfilternazwaklienta' class='form-control' aria-describedby="clientHelp"
+                    <input type="text" id='txtfilternazwaklienta{$czycolorbox}' class='form-control' aria-describedby="clientHelp"
                             {if isset($clientnazwakrotka)} value='{$clientnazwakrotka}' {/if}>
                     <small id="clientHelp" class="form-text text-muted">Podaj nazwę klienta.</small>
                 </div>
 
                 <div class="form-group mt-4">
-                    <label for="checkPokazZakonczone">Zakończone</label>
-                    <input type="checkbox" id='checkPokazZakonczone' aria-describedby="closedAgreements" />
+                    <label for="checkPokazZakonczone{$czycolorbox}">Zakończone</label>
+                    <input type="checkbox" id='checkPokazZakonczone{$czycolorbox}' aria-describedby="closedAgreements" />
                     <small id="closedAgreementsHelp" class="form-text text-muted">Pokaż zakończone umowy.</small>
                 </div>
 
@@ -53,29 +55,29 @@
             </form>
         </div>
 
-        <main id='divRightCenter' class="col-12 col-md-12 col-xl">
+        <main id='divRightCenter{$czycolorbox}' class="col-12 col-md-12 col-xl">
 
         </main>
     </div>
 </div>
 
 <script type="text/javascript">
-    $('#txtfilternrumowy').unbind("keypress");
-    $('#txtfilternrumowy').keypress(function (event) {
+    $('#txtfilternrumowy{$czycolorbox}').unbind("keypress");
+    $('#txtfilternrumowy{$czycolorbox}').keypress(function (event) {
         if (event.keyCode == 13) {
             showAgreements('{$czycolorbox}');
             return false;
         }
     });
-    $('#txtfilterserial').unbind("keypress");
-    $('#txtfilterserial').keypress(function (event) {
+    $('#txtfilterserial{$czycolorbox}').unbind("keypress");
+    $('#txtfilterserial{$czycolorbox}').keypress(function (event) {
         if (event.keyCode == 13) {
             showAgreements('{$czycolorbox}');
             return false;
         }
     });
-    $('#txtfilternazwaklienta').unbind("keypress");
-    $('#txtfilternazwaklienta').keypress(function (event) {
+    $('#txtfilternazwaklienta{$czycolorbox}').unbind("keypress");
+    $('#txtfilternazwaklienta{$czycolorbox}').keypress(function (event) {
         if (event.keyCode == 13) {
             showAgreements('{$czycolorbox}');
             return false;
