@@ -462,7 +462,7 @@ main {
 .dropdown .badge {
     position: absolute;
     top: -6px;
-    left: 40px;
+    left: 36px;
 }
 
 @media (min-width: 768px) {
