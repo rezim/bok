@@ -1027,53 +1027,6 @@ function showSzczegolyRaport(nazwakrotka) {
     });
 }
 
-function pokazNotiFi() {
-
-    var doc = document, objCenter = doc.getElementById('divRightCenter'), objLoad = doc.getElementById('divLoader');
-    objCenter.innerHTML = '';
-    objLoad.innerHTML = '<p><img src="light/img/loader.gif" alt="Loading" /></p>';
-
-    var statusy = {};
-
-    $("input[type=checkbox][name='txtstatus']")  // for all checkboxes
-        .each(function () {  // first pass, create name mapping
-
-            if (this.checked) {
-                statusy[$(this).attr('id')] = '1';
-            }
-        });
-
-
-    $.ajax({
-        url: sciezka + "/notifications/showdane/todiv",
-        type: 'POST',
-        data: {
-            filterklient: doc.getElementById('txtfilterklient').value,
-            filternrseryjny: doc.getElementById('txtfilternrseryjny').value,
-            filternrzlecenia: doc.getElementById('txtfilternrzlecenia').value,
-            filterdataod: doc.getElementById('txtfilterdataod').value,
-            filterdatado: doc.getElementById('txtfilterdatado').value,
-            filterstatusy: statusy,
-        },
-        success: function (data) {
-
-            objCenter.innerHTML = data;
-            $(objCenter).animate({opacity: 1}, 1500);
-        },
-        error: function () {
-
-            objCenter.innerHTML = 'Problem z pobraniem klientów';
-        }
-    }).done(function () {
-        objLoad.innerHTML = '';
-        $("#tableNoti").tablesorter();
-        uprawnienia();
-    });
-    delete objCenter;
-    delete objLoad;
-    return false;
-}
-
 
 function showNotification(rowid) {
 
@@ -1114,9 +1067,9 @@ function showNewNotiAdd(rowid, serial, tonertype) {
         // if (serial && tonertype) return;
     }
     $("#divFilterNoti").hide();
-    var doc = document, objCenter = doc.getElementById('divRightCenter'), objLoad = doc.getElementById('divLoader');
+    var doc = document, objCenter = doc.getElementById('divRightCenter');
     objCenter.innerHTML = '';
-    objLoad.innerHTML = '<p><img src="light/img/loader.gif" alt="Loading" /></p>';
+
     $.ajax({
         url: sciezka + "/notifications/addedit/todiv",
         type: 'POST',
@@ -1136,7 +1089,6 @@ function showNewNotiAdd(rowid, serial, tonertype) {
             objCenter.innerHTML = 'Problem z pobraniem klientów';
         }
     }).done(function () {
-        objLoad.innerHTML = '';
         $("#tableNoti").tablesorter();
         $('#date_email').datepicker($.datepicker.regional['pl'], {
             dateFormat: 'yy-mm-dd',
@@ -1146,14 +1098,13 @@ function showNewNotiAdd(rowid, serial, tonertype) {
         uprawnienia();
     });
     delete objCenter;
-    delete objLoad;
     return false;
 
 }
 
 function wsteczNoti() {
     $("#divFilterNoti").show();
-    pokazNotiFi();
+    showListOfNotifications();
 }
 
 function openDataShow(link, idzewnetrznespan) {
@@ -1235,7 +1186,7 @@ function zapiszNoti(czydelete, savelink) {
 
                     setTimeout(
                         function () {
-                            pokazNotiFi();
+                            showListOfNotifications();
                         }, 2000);
 
 
@@ -1927,7 +1878,6 @@ function showClients(czycolorbox) {
 }
 
 function showAgreements(isPopup) {
-    const doc = document;
     const objCenter = getElementById('divRightCenter', isPopup);
 
     $.ajax({
@@ -1954,6 +1904,48 @@ function showAgreements(isPopup) {
     });
     return false;
 }
+
+function showListOfNotifications() {
+    const objCenter = getElementById('divRightCenter');
+
+    var statusy = {};
+
+    $("input[type=checkbox][name='txtstatus']")  // for all checkboxes
+        .each(function () {  // first pass, create name mapping
+
+            if (this.checked) {
+                statusy[$(this).attr('id')] = '1';
+            }
+        });
+
+
+    $.ajax({
+        url: sciezka + "/notifications/showdane/todiv",
+        type: 'POST',
+        data: {
+            filterklient: getElementById('txtfilterklient').value,
+            filternrseryjny: getElementById('txtfilternrseryjny').value,
+            filternrzlecenia: getElementById('txtfilternrzlecenia').value,
+            filterdataod: getElementById('txtfilterdataod').value,
+            filterdatado: getElementById('txtfilterdatado').value,
+            filterstatusy: statusy,
+        },
+        success: function (data) {
+            objCenter.innerHTML = '';
+            objCenter.innerHTML = data;
+            $(objCenter).animate({opacity: 1}, 1500);
+        },
+        error: function () {
+
+            objCenter.innerHTML = 'Problem z pobraniem klientów';
+        }
+    }).done(function () {
+        $("#tableNoti").tablesorter();
+        uprawnienia();
+    });
+    return false;
+}
+
 
 function getElementById(id, isPopup) {
     return document.getElementById(isPopup ? id + isPopup : id);

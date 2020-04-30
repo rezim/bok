@@ -10,7 +10,7 @@
                         Klient
                     </button>
                 </div>
-                <div class="border-top my-4 otus-separator"></div>
+                <div class="border-top mt-4 mb-2 otus-separator"></div>
                 {/if}
                 <div class="form-group">
                     <label for="txtfilternazwa">Nazwa</label>
@@ -18,7 +18,7 @@
                 <div class="form-group">
                     <input type="text" id='txtfilternazwa' class="form-control"
                            aria-describedby="nameHelp">
-                    <small id="nameHelp" class="form-text text-muted">Podaj nazwę klienta.</small>
+                    <small id="nameHelp" class="form-text text-muted"><i class="fa fa-info-circle"></i> Podaj nazwę klienta.</small>
                 </div>
 
                 <div class="form-group">
@@ -27,7 +27,7 @@
                 <div class="form-group">
                     <input type="text" id='txtfiltermiasto' class="form-control"
                            aria-describedby="miastoHelp">
-                    <small id="miastoHelp" class="form-text text-muted">Podaj miasto siedziby klienta.</small>
+                    <small id="miastoHelp" class="form-text text-muted"><i class="fa fa-info-circle"></i> Podaj miasto siedziby klienta.</small>
                 </div>
 
                 <div class="form-group">
@@ -36,7 +36,7 @@
                 <div class="form-group">
                     <input type="text" id='txtfilternip' class='form-control'
                            aria-describedby="nipHelp">
-                    <small id="nipHelp" class="form-text text-muted">Podaj NIP klienta.</small>
+                    <small id="nipHelp" class="form-text text-muted"><i class="fa fa-info-circle"></i> Podaj NIP klienta.</small>
                 </div>
 
                 <div class="form-group">
@@ -48,7 +48,7 @@
                             {if isset($serial)}
                                 value='{$serial}'
                             {/if}>
-                    <small id="serialHelp" class="form-text text-muted">Podaj serial urządzenia klienta.</small>
+                    <small id="serialHelp" class="form-text text-muted"><i class="fa fa-info-circle"></i> Podaj serial urządzenia klienta.</small>
                 </div>
 
                 <div class="border-top my-4 otus-separator"></div>

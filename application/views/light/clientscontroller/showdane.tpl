@@ -61,9 +61,10 @@
                                  {if ($item.drukumowy|escape:'htmlall') > 0}badge-success{else}badge-danger{/if}" title="Umowy aktywne">{$item.drukumowy|escape:'htmlall'}</span>
                             </button>
                             <div class="dropdown-menu dropdown-menu-right" aria-labelledby="dropdownMenuLink">
-                                <a class="dropdown-item" href="#" onClick='showNewClientAdd("{$item.rowid}")'>Edycja Kienta</a>
-                                <a class="dropdown-item" href="#" onClick='showDrukarkiDoKlienta("{$item.rowid}")'>Pokaż urządzenia klienta</a>
-                                <a class="dropdown-item" href="#" onClick='showUmowyDoKlienta("{$item.rowid}")'>Pokaż umowy klienta</a>
+                                <a class="dropdown-item" href="#" onClick='showNewClientAdd("{$item.rowid}")'><i class="fa fa-edit"></i> Edycja</a>
+                                <div class="border-top my-1"></div>
+                                <a class="dropdown-item" href="#" onClick='showDrukarkiDoKlienta("{$item.rowid}")'><i class="fa fa-print"></i>&nbsp;&nbsp;Urządzenia klienta</a>
+                                <a class="dropdown-item" href="#" onClick='showUmowyDoKlienta("{$item.rowid}")'><i class="fa fa-file-text-o"></i>&nbsp;&nbsp;Umowy klienta</a>
                             </div>
                         </div>
                     </td>

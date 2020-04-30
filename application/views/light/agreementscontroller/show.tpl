@@ -9,7 +9,7 @@
                     Umowa
                     </button>
                 </div>
-                <div class="border-top my-4 otus-separator"></div>
+                <div class="border-top mt-4 mb-2 otus-separator"></div>
                 {/if}
                 <div class="form-group">
                     <label for="txtfilternrumowy{$czycolorbox}">Nr umowy</label>
@@ -17,7 +17,7 @@
                 <div class="form-group">
                     <input type="text" id='txtfilternrumowy{$czycolorbox}' class="form-control"
                            aria-describedby="agreementNbHelp">
-                    <small id="agreementNbHelp" class="form-text text-muted">Podaj numer umowy.</small>
+                    <small id="agreementNbHelp" class="form-text text-muted"><i class="fa fa-info-circle"></i> Podaj numer umowy.</small>
                 </div>
 
                 <div class="form-group">
@@ -26,7 +26,7 @@
                 <div class="form-group">
                     <input type="text" id='txtfilterserial{$czycolorbox}' class="form-control"
                            aria-describedby="serialHelp" {if isset($serial)} value='{$serial}'{/if}>
-                    <small id="serialHelp" class="form-text text-muted">Podaj numer seryjny urządzenia.</small>
+                    <small id="serialHelp" class="form-text text-muted"><i class="fa fa-info-circle"></i> Podaj numer seryjny urządzenia.</small>
                 </div>
 
                 <div class="form-group">
@@ -35,13 +35,13 @@
                 <div class="form-group">
                     <input type="text" id='txtfilternazwaklienta{$czycolorbox}' class='form-control' aria-describedby="clientHelp"
                             {if isset($clientnazwakrotka)} value='{$clientnazwakrotka}' {/if}>
-                    <small id="clientHelp" class="form-text text-muted">Podaj nazwę klienta.</small>
+                    <small id="clientHelp" class="form-text text-muted"><i class="fa fa-info-circle"></i> Podaj nazwę klienta.</small>
                 </div>
 
                 <div class="form-group mt-4">
-                    <label for="checkPokazZakonczone{$czycolorbox}">Zakończone</label>
                     <input type="checkbox" id='checkPokazZakonczone{$czycolorbox}' aria-describedby="closedAgreements" />
-                    <small id="closedAgreementsHelp" class="form-text text-muted">Pokaż zakończone umowy.</small>
+                    <label for="checkPokazZakonczone{$czycolorbox}">Zakończone</label>
+                    <small id="closedAgreementsHelp" class="form-text text-muted"><i class="fa fa-info-circle"></i> Pokaż zakończone umowy.</small>
                 </div>
 
                 <div class="border-top my-4 otus-separator"></div>

@@ -1,70 +1,75 @@
-<table class='tablesorter displaytable' id='tableNotifi' cellspacing=0 cellpadding=0>
-    <thead>
+<div class="table-responsive-sm">
+    <table class='table table-hover table-sm' id='tableNotifi'>
+        <thead class="thead-dark">
         <tr>
-            <th style='min-width: 50px;width:50px;'>
-                Lp
-            </th >
-            <th style='min-width: 50px;width:50px;'>
+            <th>
+                #
+            </th>
+            <th>
                 Ticket
-            </th >
-            <th style='min-width: 165px;width:165px;'>
+            </th>
+            <th>
                 Klient
-            </th >
-            <th style='min-width: 115px;width:115px;'>
+            </th>
+            <th>
                 drukarka
             </th>
-              <th style='min-width: 90px;width:90px;'>
+            <th>
                 czas zgłoszenia
             </th>
-            <th style='min-width: 90px;width:90px;'>
+            <th>
                 czas zakończenia
             </th>
-            <th style='min-width: 40px;width:40px;text-align: center'>
+            <th>
                 sla
             </th>
-            <th style='min-width: 90px;width:90px;'>
+            <th>
                 czas trwania
             </th>
-            <th style='min-width: 75px;width:75px;'>
+            <th>
             </th>
         </tr>
-    </thead>
-    <tbody>
+        </thead>
+        <tbody>
 
-            {foreach from=$dataNoti item=item key=key name=loopek}
-                <tr>
-                    <td>{$smarty.foreach.loopek.index+1}</td>
-                    <td>{$item.rowid}</td>
-                    <td
-                        {if $item.rowid_client!=''}
-                            class='tdLink'
-                            onClick='showNewClientAdd("{$item.rowid_client}")'
-                        {/if}
-                        >{$item.nazwakrotka|escape:'htmlall'}</td>
-                     <td {if $item.serial!=''}class='tdLink' onClick='showNewPrinterAdd("{$item.serial}")'{/if}>{$item.serial|escape:'htmlall'}</td>
-                     <td>{$item.date_insert}</td>
-                     <td>{$item.date_zakonczenia}</td>
-                     <td style='text-align:center;'>{$item.sla}</td>
-                     <td
-                         {if ($item.czas_trwania-$item.sla)>0}
-                            style='text-align:center;background-color: red'
-                         {else}
-                            style='text-align:center;'
-                         {/if}
+        {foreach from=$dataNoti item=item key=key name=loopek}
+            <tr>
+                <th>{$smarty.foreach.loopek.index+1}</th>
+                <td>{$item.rowid}</td>
+                <td {if $item.rowid_client!=''}onClick='showNewClientAdd("{$item.rowid_client}")'{/if}>
+                    {$item.nazwakrotka|escape:'htmlall'}
+                </td>
+                <td {if $item.serial!=''}onClick='showNewPrinterAdd("{$item.serial}")'{/if}>
+                    {$item.serial|escape:'htmlall'}
+                </td>
+                <td>{$item.date_insert}</td>
+                <td>{$item.date_zakonczenia}</td>
+                <td>{$item.sla}</td>
+                <td>{$item.czas_trwania}</td>
+                <td>
+                    <div class="dropdown show">
+                        <button class="btn border border-secondary dropdown-toggle" type="button"
+                                id="dropdownMenuButton" data-toggle="dropdown" aria-haspopup="true"
+                                aria-expanded="false">
+                            <i class="fa fa-gear"></i>
+                            {if ($item.czas_trwania-$item.sla)>0}
+                                <span class="badge badge-pill badge-danger" title="Przekroczony czas trwania!"><i class="fa fa-bell-o"></i></span>
+                            {/if}
+                        </button>
+                        <div class="dropdown-menu dropdown-menu-right" aria-labelledby="dropdownMenuLink">
+                            <a class="dropdown-item" href="#" onClick='showNewNotiAdd("{$item.rowid}")'><i class="fa fa-edit"></i>&nbsp;&nbsp;Edycja</a>
+                            {if $item.serial!=''}
+                                <div class="border-top my-1"></div>
+                                <a class="dropdown-item" href="#" onClick='pokazLogi("{$item.serial}")'><i class="fa fa-history"></i>&nbsp;&nbsp;Pokaż logi</a>
+                            {/if}
+                        </div>
+                    </div>
+                </td>
+            </tr>
+        {/foreach}
 
 
-                         >{$item.czas_trwania}</td>
-                    <td style='text-align:right;'>
+        </tbody>
 
-                        <img class='imgAkcja imgedit' onClick='showNewNotiAdd("{$item.rowid}")' src='{$smarty.const.SCIEZKA}/{$smarty.const.SMARTVERSION}/img/fake.png' alt="Edycja" title='Edycja' />
-                        {if $item.serial!=''}
-                        <img class='imgAkcja imgNormalLogs' onClick='pokazLogi("{$item.serial}")' src='{$smarty.const.SCIEZKA}/{$smarty.const.SMARTVERSION}/img/fake.png' title='Pokaż logi' />
-                        {/if}
-                    </td>
-                </tr>
-            {/foreach}
-
-
-    </tbody>
-
-</table>
+    </table>
+</div>

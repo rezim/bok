@@ -452,6 +452,13 @@ main {
 .otus-sidebar .form-group label {
     margin-bottom: 0;
     font-size: 0.9rem;
+    color: #6c757d;
+    text-transform: lowercase;
+}
+
+input[type="checkbox"] {
+    position: relative;
+    top: 2px;
 }
 
 .otus-action-btn {

@@ -99,7 +99,7 @@
                                 <div class="dropdown-menu dropdown-menu-right" aria-labelledby="dropdownMenuLink">
                                     <a class="dropdown-item" href="#" onClick="savePrinterCounters('{$item2.strony_black_koniec|number_format:0:",":" "|escape:'htmlall'}',
                                                     {if $item2.type_color}'{$item2.strony_kolor_koniec|number_format:0:",":" "|escape:'htmlall'}'{else}'0'{/if},
-                                                    '{$item2.serial}')">Zapisz</a>
+                                                    '{$item2.serial}')"><i class="fa fa-save"></i>&nbsp;&nbsp;Zapisz</a>
                                 </div>
                             </div>
                             <input type="hidden" id='dateToSave_{$item2.serial}'

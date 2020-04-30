@@ -113,8 +113,9 @@
                             <i class="fa fa-gear"></i>
                         </button>
                         <div class="dropdown-menu dropdown-menu-right" aria-labelledby="dropdownMenuLink">
-                            <a class="dropdown-item" href="#" onClick='showNewPrinterAdd("{$item.serial}")'>Edycja</a>
-                            <a class="dropdown-item" href="#" onClick='pokazLogi("{$item.serial}")'>Logi</a>
+                            <a class="dropdown-item" href="#" onClick='showNewPrinterAdd("{$item.serial}")'><i class="fa fa-edit"></i>&nbsp;&nbsp;Edycja</a>
+                            <div class="border-top my-1"></div>
+                            <a class="dropdown-item" href="#" onClick='pokazLogi("{$item.serial}")'><i class="fa fa-history"></i>&nbsp;&nbsp;Logi</a>
                             <a class="dropdown-item" href="#" onClick='historiaTonerow("{$item.serial}")'>Historia
                                 Tonerów</a>
                             <a class="dropdown-item" href="#" onClick='historiaTonerow("{$item.serial}")'>Historia
