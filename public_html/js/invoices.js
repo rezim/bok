@@ -200,7 +200,7 @@ InvoiceManager = function(api_token, endpoint, company_name, invoice_number_leng
 
                 // remove all invoice corrects (from_invoice_id != null)
                 $.each(inv1[0].concat(inv2[0]).concat(inv3[0]).concat(inv4[0]).concat(inv5[0]).concat(inv6[0]).concat(inv7[0]).concat(inv8[0]).concat(inv9[0]).concat(inv10[0]), function (index, inv) {
-                    if (inv['kind'] == 'vat') {
+                    if (inv['kind'] === 'vat' && inv['pattern'] === 'nr-m/mm/yyyy') {
                         invoices.push(inv);
                     }
                 });
