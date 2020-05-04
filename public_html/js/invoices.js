@@ -243,8 +243,11 @@ InvoiceManager = function(api_token, endpoint, company_name, invoice_number_leng
                     // invoice contains
                     if (invoiceCount != 1) {
 
-                        missingInvoices.push([[(index + 1), '/', invNbPattern].join(''), invoiceCount].join('-'));
-
+                        if (invoiceCount !== 0) {
+                            missingInvoices.push([[(index + 1), '/', invNbPattern].join(''), invoiceCount].join('-'));
+                        } else {
+                            missingInvoices.push([(index + 1), '/', invNbPattern].join(''));
+                        }
                     }
                 });
 
