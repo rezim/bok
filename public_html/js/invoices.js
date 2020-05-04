@@ -224,6 +224,10 @@ InvoiceManager = function(api_token, endpoint, company_name, invoice_number_leng
 
                     var invoiceIdx = parseInt(invoice.number.split('/')[0])-1;
 
+                    if (invoiceIdx === orderedInvoices.length) {
+                        orderedInvoices.push(0);
+                    }
+
                     orderedInvoices[invoiceIdx]++;
 
                     if (!invNbPattern) {
