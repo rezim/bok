@@ -96,7 +96,7 @@
                                </td>
                                <td class='tdWartosc'>
                                    <input type="text" id='txtmailfaktury'
-                                          class='textBoxForm' maxlength="50" style='width:150px;min-width:150px;'
+                                          class='textBoxForm' maxlength="100" style='width:150px;min-width:150px;'
                                           {if $rowid!=0}value="{$dataClient[0].mailfaktury|escape:'htmlall'}"{/if}>  
                                </td>
                            </tr>
