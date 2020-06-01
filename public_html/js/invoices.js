@@ -200,7 +200,9 @@ InvoiceManager = function(api_token, endpoint, company_name, invoice_number_leng
 
                 // remove all invoice corrects (from_invoice_id != null)
                 $.each(inv1[0].concat(inv2[0]).concat(inv3[0]).concat(inv4[0]).concat(inv5[0]).concat(inv6[0]).concat(inv7[0]).concat(inv8[0]).concat(inv9[0]).concat(inv10[0]), function (index, inv) {
-                    if (inv['kind'] === 'vat' && inv['pattern'] === 'nr-m/mm/yyyy') {
+                    // for invoices from Proforma invoices pattern is with P but number without, probably bug on Fakturowania side
+                    if (inv['kind'] === 'vat' && (inv['pattern'] === 'nr-m/mm/yyyy' ||
+                        (inv['pattern'] === 'Pnr-m/mm/yyyy' && inv['number']?.charAt(0) !== 'P'))) {
                         invoices.push(inv);
                     }
                 });
@@ -246,7 +248,7 @@ InvoiceManager = function(api_token, endpoint, company_name, invoice_number_leng
                         if (invoiceCount !== 0) {
                             missingInvoices.push([[(index + 1), '/', invNbPattern].join(''), invoiceCount].join('-'));
                         } else {
-                            missingInvoices.push([(index + 1), '/', invNbPattern].join(''));
+                            missingInvoices.push([(index + 1), '/', invNbPattern].join(''));invoic
                         }
                     }
                 });
