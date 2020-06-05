@@ -507,3 +507,22 @@ input[type="checkbox"] {
         }
     }
 }
+
+.otus-close-btn {
+    position: absolute;
+    top: -15px;
+    right: -13px;
+    display: block;
+    background: url(../light/img/colorbox/controls.png) no-repeat top center;
+    width: 40px;
+    height: 40px;
+    text-indent: -9999px;
+    border: 0;
+    padding: 0;
+    margin: 0;
+    overflow: visible;
+}
+
+#divdropzone {
+    margin-top: 130px;
+}
