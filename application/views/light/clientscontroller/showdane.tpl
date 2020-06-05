@@ -34,7 +34,7 @@
                         style='cursor:hand;cursor:pointer;'
                         onClick="
                                 $('#idclientspan').html('{$item.rowid}');
-                                $('#rowid_client').val('{$item.nazwakrotka}');
+                                $('#rowid_client').val('{$item.nazwakrotka|replace:'"':'&quot;'}');
                                 if($('#email').val()=='')
                                 {
                                 $('#email').val('{$item.mail}');
