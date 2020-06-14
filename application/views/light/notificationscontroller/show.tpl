@@ -7,8 +7,8 @@
 
                     <div class="form-group otus-addnew otus-section">
                         <button type="button" class="btn btn-block btn-outline-warning otus-action-btn"
-                                onclick="showNewNotiAdd('0');return false;"><i class="fa fa-plus"></i>&nbsp;Nowe
-                            Urządzenie
+                                onclick="editNotification('0');return false;"><i class="fas fa-plus"></i>&nbsp;Nowe
+                            Zgłoszenie
                         </button>
                     </div>
                     <div class="border-top mt-4 mb-2 otus-separator"></div>
@@ -17,21 +17,21 @@
                 </div>
                 <div class="form-group">
                 <input type="text" id='txtfilterklient' class="form-control" aria-describedby="clientHelp">
-                    <small id="clientHelp" class="form-text text-muted"><i class="fa fa-info-circle"></i> Podaj nazwę klient.</small>
+                    <small id="clientHelp" class="form-text text-muted"><i class="fas fa-info-circle"></i> Podaj nazwę klient.</small>
                 </div>
                 <div class="form-group">
                 <label for="txtfilternrseryjny">Nr seryjny</label>
                 </div>
                 <div class="form-group">
                 <input type="text" id='txtfilternrseryjny' class="form-control" aria-describedby="modelHelp">
-                    <small id="clientHelp" class="form-text text-muted"><i class="fa fa-info-circle"></i> Podaj numer seryjny.</small>
+                    <small id="clientHelp" class="form-text text-muted"><i class="fas fa-info-circle"></i> Podaj numer seryjny.</small>
                 </div>
                 <div class="form-group">
                 <label for="txtfilternrzlecenia">Nr zlecenia</label>
                 </div>
                 <div class="form-group">
                 <input type="text" id='txtfilternrzlecenia' class="form-control" aria-describedby="modelHelp">
-                    <small id="clientHelp" class="form-text text-muted"><i class="fa fa-info-circle"></i> Podaj numer zlecenia.</small>
+                    <small id="clientHelp" class="form-text text-muted"><i class="fas fa-info-circle"></i> Podaj numer zlecenia.</small>
                 </div>
                 <div class="w-100"></div>
                 <div class="form-group">
@@ -39,14 +39,14 @@
                 </div>
                 <div class="form-group">
                 <input type="text" id='txtfilterdataod' class="form-control" aria-describedby="modelHelp">
-                    <small id="clientHelp" class="form-text text-muted"><i class="fa fa-info-circle"></i> Podaj datę początkową.</small>
+                    <small id="clientHelp" class="form-text text-muted"><i class="fas fa-info-circle"></i> Podaj datę początkową.</small>
                 </div>
                 <div class="form-group">
                 <label for="txtfilterdatado">Data do</label>
                 </div>
                 <div class="form-group">
                 <input type="text" id='txtfilterdatado' class="form-control" aria-describedby="modelHelp">
-                    <small id="clientHelp" class="form-text text-muted"><i class="fa fa-info-circle"></i> Podaj datę końcową.</small>
+                    <small id="clientHelp" class="form-text text-muted"><i class="fas fa-info-circle"></i> Podaj datę końcową.</small>
                 </div>
 
                 {foreach from=$statusZgloszenie item=item key=key}

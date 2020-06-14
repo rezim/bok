@@ -40,7 +40,7 @@
                     <td>[[request.status]]</td>
                     <td>[[request.date_insert]]</td>
                     <td>
-                        <i class="fa fa-edit fa-2x" ng-click="ctrl.openUpdateRequest(request)" style="color: darkgreen"></i>
+                        <i class="fas fa-edit fa-2x" ng-click="ctrl.openUpdateRequest(request)" style="color: darkgreen"></i>
                     </td>
                 </tr>
 
@@ -49,7 +49,7 @@
 
         </table>
 
-        <i ng-if="isPending" class="fa fa-spinner fa-spin fa-5x" aria-hidden="true" style="margin-top: 50px;"></i>
+        <i ng-if="isPending" class="fas fa-spinner fa-spin fa-5x" aria-hidden="true" style="margin-top: 50px;"></i>
     </div>
 
     <div ng-if="ctrl.mode == 'edit'">

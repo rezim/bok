@@ -56,7 +56,7 @@ class clientsController extends Controller
        
        if(isset($_POST['czycolorbox']))
        {
-           $smarty->assign('czycolorbox','1');
+           $smarty->assign('czycolorbox', $_POST['czycolorbox']);
            $smarty->assign('serial',$_POST['serial']);
        }
        else
@@ -69,6 +69,7 @@ class clientsController extends Controller
        $dataClient = $this->client->getClients();
        $smarty->assign('dataClient',$dataClient);
        $smarty->assign('czycolorbox', isset($_POST['czycolorbox']) ? $_POST['czycolorbox'] : '');
+       $smarty->assign('modalselector', isset($_POST['modalselector']) ? $_POST['modalselector'] : '');
        unset($dataClient);
    }
 }

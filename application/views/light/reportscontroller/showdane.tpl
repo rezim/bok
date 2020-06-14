@@ -33,7 +33,7 @@
             <th style='min-width: 75px;width:75px;text-align: center;'>
                 abonament netto
             </th>
-            
+
             <th style='min-width: 75px;width:75px;text-align: center;'>
                 stron<br/>powyżej
             </th>
@@ -66,20 +66,20 @@
                     <td class='tdNumber' style='padding-right:20px;vertical-align: top;'>
                     {if empty($item.abonament)}{else}{$item.abonament|number_format:0:",":" "|escape:'htmlall'}{/if}</td>
                     <td class='tdNumber' style='padding-right:20px;vertical-align: top;'>
-                       {if !empty($item.stronpowyzej)} 
+                       {if !empty($item.stronpowyzej)}
                            {if $item.stronpowyzej=='błąd'}błąd{else}
                                 {$item.stronpowyzej|number_format:0:",":" "|escape:'htmlall'}
                            {/if}
-                       {/if}   
+                       {/if}
                     </td>
                     <td class='tdNumber' style='padding-right:20px;vertical-align: top;'>
-                       {if !empty($item.wartosc)} {$item.wartosc|number_format:2:",":" "|escape:'htmlall'}{/if}     
+                       {if !empty($item.wartosc)} {$item.wartosc|number_format:2:",":" "|escape:'htmlall'}{/if}
                     </td>
                 </tr>
-               
+
             {/foreach}
 
 
-    </tbody>    
-        
+    </tbody>
+
 </table>

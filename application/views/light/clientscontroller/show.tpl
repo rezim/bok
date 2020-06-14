@@ -6,7 +6,7 @@
                 {if !$czycolorbox}
                 <div class="form-group otus-addnew otus-section">
                     <button type="button" class="btn btn-block btn-outline-primary otus-action-btn"
-                            onclick="showNewClientAdd("0");return false;"><i class="fa fa-plus"></i>&nbsp;Nowy
+                            onclick="showNewClientAdd("0");return false;"><i class="fas fa-plus"></i>&nbsp;Nowy
                         Klient
                     </button>
                 </div>
@@ -18,7 +18,7 @@
                 <div class="form-group">
                     <input type="text" id='txtfilternazwa' class="form-control"
                            aria-describedby="nameHelp">
-                    <small id="nameHelp" class="form-text text-muted"><i class="fa fa-info-circle"></i> Podaj nazwę klienta.</small>
+                    <small id="nameHelp" class="form-text text-muted"><i class="fas fa-info-circle"></i> Podaj nazwę klienta.</small>
                 </div>
 
                 <div class="form-group">
@@ -27,7 +27,7 @@
                 <div class="form-group">
                     <input type="text" id='txtfiltermiasto' class="form-control"
                            aria-describedby="miastoHelp">
-                    <small id="miastoHelp" class="form-text text-muted"><i class="fa fa-info-circle"></i> Podaj miasto siedziby klienta.</small>
+                    <small id="miastoHelp" class="form-text text-muted"><i class="fas fa-info-circle"></i> Podaj miasto siedziby klienta.</small>
                 </div>
 
                 <div class="form-group">
@@ -36,7 +36,7 @@
                 <div class="form-group">
                     <input type="text" id='txtfilternip' class='form-control'
                            aria-describedby="nipHelp">
-                    <small id="nipHelp" class="form-text text-muted"><i class="fa fa-info-circle"></i> Podaj NIP klienta.</small>
+                    <small id="nipHelp" class="form-text text-muted"><i class="fas fa-info-circle"></i> Podaj NIP klienta.</small>
                 </div>
 
                 <div class="form-group">
@@ -48,7 +48,7 @@
                             {if isset($serial)}
                                 value='{$serial}'
                             {/if}>
-                    <small id="serialHelp" class="form-text text-muted"><i class="fa fa-info-circle"></i> Podaj serial urządzenia klienta.</small>
+                    <small id="serialHelp" class="form-text text-muted"><i class="fas fa-info-circle"></i> Podaj serial urządzenia klienta.</small>
                 </div>
 
                 <div class="border-top my-4 otus-separator"></div>
@@ -86,6 +86,7 @@
                                                  if (event.keyCode == 13) {
                                                      showClients('{$czycolorbox}');return false;
                                                  }
-                                             });  
+                                             });
+
     showClients('{$czycolorbox}');
 </script>

@@ -51,7 +51,7 @@
 
                     <td>{$item.date}</td>
 
-                    <td style="text-align: right; "><i style="color: red" class="fa fa-remove fa-2x" onclick="removePrinterService({$item.rowid}, '{$item.serial}')"></i></td>
+                    <td style="text-align: right; "><i style="color: red" class="fas fa-remove fa-2x" onclick="removePrinterService({$item.rowid}, '{$item.serial}')"></i></td>
                 </tr>
                 {$iterator = $iterator + 1}
             {/foreach}

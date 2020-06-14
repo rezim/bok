@@ -51,16 +51,16 @@
                         <button class="btn border border-secondary dropdown-toggle" type="button"
                                 id="dropdownMenuButton" data-toggle="dropdown" aria-haspopup="true"
                                 aria-expanded="false">
-                            <i class="fa fa-gear"></i>
+                            <i class="fas fa-cog"></i>
                             {if ($item.czas_trwania-$item.sla)>0}
-                                <span class="badge badge-pill badge-danger" title="Przekroczony czas trwania!"><i class="fa fa-bell-o"></i></span>
+                                <span class="badge badge-pill badge-danger" title="Przekroczony czas trwania!"><i class="far fa-bell"></i></span>
                             {/if}
                         </button>
                         <div class="dropdown-menu dropdown-menu-right" aria-labelledby="dropdownMenuLink">
-                            <a class="dropdown-item" href="#" onClick='showNewNotiAdd("{$item.rowid}")'><i class="fa fa-edit"></i>&nbsp;&nbsp;Edycja</a>
+                            <a class="dropdown-item" href="#" onClick='editNotification("{$item.rowid}")'><i class="fas fa-edit"></i> Edycja</a>
                             {if $item.serial!=''}
                                 <div class="border-top my-1"></div>
-                                <a class="dropdown-item" href="#" onClick='pokazLogi("{$item.serial}")'><i class="fa fa-history"></i>&nbsp;&nbsp;Pokaż logi</a>
+                                <a class="dropdown-item" href="#" onClick='pokazLogi("{$item.serial}")'><i class="fas fa-history"></i>&nbsp;&nbsp;Pokaż logi</a>
                             {/if}
                         </div>
                     </div>

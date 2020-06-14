@@ -45,10 +45,10 @@
   cursor: pointer;
 }
 
-.form-control {
-  height: 28px;
-  padding-left: 3px;
-}
+/*.form-control {*/
+/*  height: 28px;*/
+/*  padding-left: 3px;*/
+/*}*/
 
 form .alert {
   margin: 3px 0;

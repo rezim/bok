@@ -1,6 +1,6 @@
 <table width="100%" class="errorMessageWrapper">
     <tr>
-        <td id="errorMessage" class="fa fa-exclamation-triangle">
+        <td id="errorMessage" class="fas fa-exclamation-triangle">
         </td>
     </tr>
 </table>
@@ -94,12 +94,12 @@
                                 <button class="btn border border-secondary dropdown-toggle" type="button"
                                         id="dropdownMenuButton" data-toggle="dropdown" aria-haspopup="true"
                                         aria-expanded="false">
-                                    <i class="fa fa-gear"></i>
+                                    <i class="fas fa-cog"></i>
                                 </button>
                                 <div class="dropdown-menu dropdown-menu-right" aria-labelledby="dropdownMenuLink">
                                     <a class="dropdown-item" href="#" onClick="savePrinterCounters('{$item2.strony_black_koniec|number_format:0:",":" "|escape:'htmlall'}',
                                                     {if $item2.type_color}'{$item2.strony_kolor_koniec|number_format:0:",":" "|escape:'htmlall'}'{else}'0'{/if},
-                                                    '{$item2.serial}')"><i class="fa fa-save"></i>&nbsp;&nbsp;Zapisz</a>
+                                                    '{$item2.serial}')"><i class="fas fa-save"></i>&nbsp;&nbsp;Zapisz</a>
                                 </div>
                             </div>
                             <input type="hidden" id='dateToSave_{$item2.serial}'
@@ -118,6 +118,6 @@
         {/if}
         </tbody>
     </table>
-</div>>
+</div>
 
 

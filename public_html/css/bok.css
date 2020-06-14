@@ -197,7 +197,7 @@ TODO move notification css to seperate file
 .notpaid-invoices-alert {
     border: solid 1px red;
     text-align: left;
-    margin: 30px 75px 0px 30px;
+    margin: 5px;
     padding: 10px;
 }
 
@@ -472,6 +472,24 @@ input[type="checkbox"] {
     left: 36px;
 }
 
+/*
+    selectNotificationData modal customization
+*/
+
+#selectNotificationData.modal .modal-body {
+    padding: 0;
+}
+
+#selectNotificationData.modal .modal-body main,
+#selectNotificationData.modal .modal-body .otus-sidebar
+{
+    padding-top: 0;
+}
+
+#selectNotificationData.modal .modal-body .selectable-row {
+    cursor: pointer;
+}
+
 @media (min-width: 768px) {
 
 }
@@ -524,5 +542,34 @@ input[type="checkbox"] {
 }
 
 #divdropzone {
-    margin-top: 130px;
+    width: auto;
+    max-width: none;
+    margin-top: auto;
+    margin-left: auto;
+}
+
+.bok-edit-notification.table td {
+    border-top: none;
+}
+
+.bok-edit-notification.table th {
+    background-color: #8d8f8f;
+    color: #FFFFFF;
+    border: solid 3px;
+}
+
+.bok-edit-notification.table th {
+    text-align: right;
+}
+
+[data-toggle="collapse"] .fa:before {
+    content: "\f139";
+}
+
+[data-toggle="collapse"].collapsed .fa:before {
+    content: "\f13a";
+}
+
+#ui-datepicker-div {
+    z-index: 9999 !important;
 }

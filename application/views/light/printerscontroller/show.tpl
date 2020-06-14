@@ -6,7 +6,7 @@
                 {if !$czycolorbox}
                 <div class="form-group otus-addnew otus-section">
                     <button type="button" class="btn btn-block btn-outline-secondary otus-action-btn"
-                            onclick="showNewPrinterAdd(&quot;&quot;);return false;"><i class="fa fa-plus"></i>&nbsp;Nowe
+                            onclick="showNewPrinterAdd(&quot;&quot;);return false;"><i class="fas fa-plus"></i>&nbsp;Nowe
                         Urządzenie
                     </button>
                 </div>
@@ -18,7 +18,7 @@
                 <div class="form-group">
                     <input type="text" id='txtfilterserial{$czycolorbox}' class="form-control"
                            aria-describedby="serialHelp">
-                    <small id="emailHelp" class="form-text text-muted"><i class="fa fa-info-circle"></i> Podaj numer seryjny urządzenia.</small>
+                    <small id="emailHelp" class="form-text text-muted"><i class="fas fa-info-circle"></i> Podaj numer seryjny urządzenia.</small>
                 </div>
 
                 <div class="form-group">
@@ -27,7 +27,7 @@
                 <div class="form-group">
                     <input type="text" id='txtfiltermodel{$czycolorbox}' class="form-control"
                            aria-describedby="modelHelp">
-                    <small id="modelHelp" class="form-text text-muted"><i class="fa fa-info-circle"></i> Podaj model urządzenia.</small>
+                    <small id="modelHelp" class="form-text text-muted"><i class="fas fa-info-circle"></i> Podaj model urządzenia.</small>
                 </div>
 
                 <div class="form-group">
@@ -40,7 +40,7 @@
                                 value='{$clientnazwakrotka}'
                             {/if}
                     >
-                    <small id="clientHelp" class="form-text text-muted"><i class="fa fa-info-circle"></i> Podaj nazwę klienta.</small>
+                    <small id="clientHelp" class="form-text text-muted"><i class="fas fa-info-circle"></i> Podaj nazwę klienta.</small>
                 </div>
 
                 <div class="border-top my-4 otus-separator"></div>

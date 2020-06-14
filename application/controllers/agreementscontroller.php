@@ -107,7 +107,7 @@ class agreementsController extends Controller
         if (isset($_POST['czycolorbox'])) {
             $smarty->assign('clientnazwakrotka', $_POST['clientnazwakrotka']);
             $smarty->assign('serial', $_POST['serial']);
-            $smarty->assign('czycolorbox', '1');
+            $smarty->assign('czycolorbox', $_POST['czycolorbox']);
         } else
             $smarty->assign('czycolorbox', '');
 

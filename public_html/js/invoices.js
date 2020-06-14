@@ -188,12 +188,12 @@ InvoiceManager = function(api_token, endpoint, company_name, invoice_number_leng
             var params9 = params.concat([["page", 9].join('=')]);
             var params10 = params.concat([["page", 10].join('=')]);
 
-            $('.invoice-add').hide();
+            $('.invoice-count').hide();
             $('.invoice-loading').show();
 
             $.when(get(params1), get(params2), get(params3), get(params4), get(params5), get(params6), get(params7), get(params8), get(params9), get(params10)).done(function(inv1, inv2, inv3, inv4, inv5, inv6, inv7, inv8, inv9, inv10) {
 
-                $('.invoice-add').show();
+                $('.invoice-count').show();
                 $('.invoice-loading').hide();
 
                 var invoices = [] ;
@@ -248,7 +248,7 @@ InvoiceManager = function(api_token, endpoint, company_name, invoice_number_leng
                         if (invoiceCount !== 0) {
                             missingInvoices.push([[(index + 1), '/', invNbPattern].join(''), invoiceCount].join('-'));
                         } else {
-                            missingInvoices.push([(index + 1), '/', invNbPattern].join(''));invoic
+                            missingInvoices.push([(index + 1), '/', invNbPattern].join(''));
                         }
                     }
                 });
@@ -256,7 +256,8 @@ InvoiceManager = function(api_token, endpoint, company_name, invoice_number_leng
                 currentPeriodInvoices.missingInvoices = missingInvoices;
 
                 // reset all invoice counts
-                $('.invoice-count').text('0').css({'color':'red'});
+                updateInvoiceCountStyle('.invoice-count', false);
+                $('.invoice-count').text('0');
 
 
                 // set initial state for all agreements, visible and selected
@@ -299,9 +300,11 @@ InvoiceManager = function(api_token, endpoint, company_name, invoice_number_leng
                     $(selector.join(',')).prop('checked', false).hide();
 
                     if ($([selectorPrefix,".to_invoice_agreement"].join(' ')).length != allAgrCount) {
-                        $('.invoice-count.' + key).css({'color':'red', 'font-weight': 'bold'});
+                        updateInvoiceCountStyle('.invoice-count.' + key, false);
+                        // $('.invoice-count.' + key).css({'color':'red', 'font-weight': 'bold'});
                     } else {
-                        $('.invoice-count.' + key).css({'color':'green', 'font-weight': 'bold'});
+                        updateInvoiceCountStyle('.invoice-count.' + key, true);
+                        // $('.invoice-count.' + key).css({'color':'green', 'font-weight': 'bold'});
                     }
                 });
 
@@ -670,6 +673,17 @@ InvoiceManager = function(api_token, endpoint, company_name, invoice_number_leng
         d.setDate(d.getDate() + days);
         
         return d;
+    };
+
+
+    const updateInvoiceCountStyle = function(key, success) {
+        $(key).removeClass('badge-success');
+        $(key).removeClass('badge-danger');
+        if (success) {
+            $(key).addClass('badge-success');
+        } else {
+            $(key).addClass('badge-danger');
+        }
     };
 
     $(window).scroll(function(e){

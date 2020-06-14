@@ -1,79 +1,141 @@
+<div class="container-fluid">
+    <div class="row">
+        <div class="otus-sidebar col-12 col-md-12 col-xl-auto">
+            <form>
+                <div class="form-group">
+                    <label for="txtdataod">data od</label>
+                </div>
+                <div class="form-group">
+                    <input type="text" id='txtdataod' class="form-control"
+                           aria-describedby="dateFromHelp">
+                    <small id="dateFromHelp" class="form-text text-muted"><i class="fas fa-info-circle"></i> Podaj datę
+                        początkową.</small>
+                </div>
+
+                <div class="form-group">
+                    <label for="txtdatado">data do</label>
+                </div>
+                <div class="form-group">
+                    <input type="text" id='txtdatado' class="form-control"
+                           aria-describedby="dateToHelp">
+                    <small id="dateToHelp" class="form-text text-muted"><i class="fas fa-info-circle"></i> Podaj datę
+                        końcową.</small>
+                </div>
+
+                <div class="form-group">
+                    <label for="txtdatado">miesiąc</label>
+                </div>
+                <div class="form-group">
+                    <select id='txtmiesiac' class="form-control"
+                            onchange="changeMiesiac(this);" aria-describedby="monthHelp">
+                        <option value="" selected></option>
+                        {foreach from=$months item=item key=key}
+                            <option value="{$rok}-{$key}-01">{$item}</option>
+                        {/foreach}
+                    </select>
+                    <small id="monthHelp" class="form-text text-muted"><i class="fas fa-info-circle"></i> Wybierz
+                        miesiąc.</small>
+                </div>
+
+                <div class="border-top my-4 otus-separator"></div>
+
+                <div class="w-100"></div>
+
+                <div class="form-group">
+                    <label for="txtklient">klient</label>
+                </div>
+                <div class="form-group">
+                    <input type="text" id='txtklient' class="form-control"
+                           aria-describedby="clientHelp">
+                    <small id="clientHelp" class="form-text text-muted"><i class="fas fa-info-circle"></i> Podaj nazwę
+                        klienta</small>
+                </div>
+
+                <div class="form-group">
+                    <label for="txtdrukarka">drukarka</label>
+                </div>
+                <div class="form-group">
+                    <input type="text" id='txtdrukarka' class="form-control"
+                           aria-describedby="deviceHelp">
+                    <small id="deviceHelp" class="form-text text-muted"><i class="fas fa-info-circle"></i> Podaj serial
+                        urządzenia</small>
+                </div>
+
+                <div class="border-top my-4 otus-separator"></div>
+
+                <div class="form-group">
+                    <button class="btn btn-info btn-block" type="submit"
+                            onClick='generujRaport(function(data, params){literal}{invMgr.refreshInvoices(params);invMgr.showAgreementWarnings(params);}{/literal});return false;'>
+                        Generuj
+                    </button>
+                </div>
+            </form>
+        </div>
+
+        <main id='divRightCenter' class="col-12 col-md-12 col-xl">
+
+        </main>
+    </div>
+</div>
+
 <script type="text/javascript">
-     // initialize invoice manager
-     var invMgr = new InvoiceManager('{$smarty.const.FAKTUROWNIA_APITOKEN}',
-             '{$smarty.const.FAKTUROWNIA_ENDPOINT}',
-             '{$smarty.const.FAKTUROWNIA_COMPANYNAME}',
-             '{$smarty.const.FAKTUROWNIA_INVOICE_NUMBER_LENGTH}');
+    // initialize invoice manager
+    var invMgr = new InvoiceManager('{$smarty.const.FAKTUROWNIA_APITOKEN}',
+        '{$smarty.const.FAKTUROWNIA_ENDPOINT}',
+        '{$smarty.const.FAKTUROWNIA_COMPANYNAME}',
+        '{$smarty.const.FAKTUROWNIA_INVOICE_NUMBER_LENGTH}');
 </script>
-<div class='divFilter container'>
-     <label for="txtdataod" class="labelNormal" >data od</label>
-     <input type="text" id='txtdataod' class='textBoxNormal' style='width:90px;min-width: 90px;'>  
-     <label for="txtdatado" class="labelNormal" >data do</label>
-     <input type="text" id='txtdatado' class='textBoxNormal' style='width:90px;min-width: 90px;'>  
-     <label for="txtmiesiac" class="labelNormal">miesiąc</label>
-     <select id='txtmiesiac' class="comboboxNormal" style='width:110px;min-width:110px;' 
-             onchange="changeMiesiac(this);">
-                <option value="" selected></option>
-                {foreach from=$months item=item key=key}
-                    <option value="{$rok}-{$key}-01" >{$item}</option>
-                {/foreach}
-     </select>
-     <label for="txtklient" class="labelNormal">klient</label>
-     <input type="text" id='txtklient' class='textBoxNormal' style='width:90px;min-width: 90px;'>  
-     <label for="txtdrukarka" class="labelNormal">drukarka</label>
-     <input type="text" id='txtdrukarka' class='textBoxNormal' style='width:90px;min-width: 90px;'>  
-     
-     
-     <a href="#" class="buttonpokaz" onClick='generujRaport(function(data, params){literal}{invMgr.refreshInvoices(params);invMgr.showAgreementWarnings(params);}{/literal});return false;'>Generuj</a>
-</div>
-<div class='divLoader' id='divLoader'>
-</div>
-<div class='divRightCenter' id='divRightCenter'>
-    
-</div>
 <script type="text/javascript">
-                       $('#txtklient').unbind("keypress");
-                       $('#txtklient').keypress(function(event) {
-                                                 if (event.keyCode == 13) {
-                                                    generujRaport();return false;
-                                                 }
-                                             });  
-                       $('#txtdrukarka').unbind("keypress");
-                       $('#txtdrukarka').keypress(function(event) {
-                                                 if (event.keyCode == 13) {
-                                                    generujRaport();return false;
-                                                 }
-                                             });  
-                    $( "#txtdataod" ).datepicker
-                    ($.datepicker.regional['pl'],{ dateFormat: "yy-mm-dd", 
-                        changeMonth: true,
-                        changeYear: true,           
-                        showOtherMonths: true,          
-                        selectOtherMonths: true
-                    });
-                    $( "#txtdatado" ).datepicker($.datepicker.regional['pl'],{ dateFormat: "yy-mm-dd", 
-                        changeMonth: true,
-                        changeYear: true,           
-                        showOtherMonths: true,          
-                        selectOtherMonths: true });
-                    setDateDefault();
-                       $('#txtdataod').unbind("keypress");
-                       $('#txtdataod').keypress(function(event) {
-                                                 if (event.keyCode == 13) {
-                                                    generujRaport();return false;
-                                                 }
-                                             });  
-                       $('#txtdatado').unbind("keypress");
-                       $('#txtdatado').keypress(function(event) {
-                                                 if (event.keyCode == 13) {
-                                                    generujRaport();return false;
-                                                 }
-                                             });  
-                       $('#txtmiesiac').unbind("keypress");
-                       $('#txtmiesiac').keypress(function(event) {
-                                                 if (event.keyCode == 13) {
-                                                    generujRaport();return false;
-                                                 }
-                                             });  
-    
+    $('#txtklient').unbind("keypress");
+    $('#txtklient').keypress(function (event) {
+        if (event.keyCode == 13) {
+            generujRaport();
+            return false;
+        }
+    });
+    $('#txtdrukarka').unbind("keypress");
+    $('#txtdrukarka').keypress(function (event) {
+        if (event.keyCode == 13) {
+            generujRaport();
+            return false;
+        }
+    });
+    $("#txtdataod").datepicker
+    ($.datepicker.regional['pl'], {
+        dateFormat: "yy-mm-dd",
+        changeMonth: true,
+        changeYear: true,
+        showOtherMonths: true,
+        selectOtherMonths: true
+    });
+    $("#txtdatado").datepicker($.datepicker.regional['pl'], {
+        dateFormat: "yy-mm-dd",
+        changeMonth: true,
+        changeYear: true,
+        showOtherMonths: true,
+        selectOtherMonths: true
+    });
+    setDateDefault();
+    $('#txtdataod').unbind("keypress");
+    $('#txtdataod').keypress(function (event) {
+        if (event.keyCode == 13) {
+            generujRaport();
+            return false;
+        }
+    });
+    $('#txtdatado').unbind("keypress");
+    $('#txtdatado').keypress(function (event) {
+        if (event.keyCode == 13) {
+            generujRaport();
+            return false;
+        }
+    });
+    $('#txtmiesiac').unbind("keypress");
+    $('#txtmiesiac').keypress(function (event) {
+        if (event.keyCode == 13) {
+            generujRaport();
+            return false;
+        }
+    });
+
 </script>

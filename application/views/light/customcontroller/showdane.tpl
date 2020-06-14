@@ -1,4 +1,4 @@
-<table class='tablesorter displaytable' id='tableReport' cellspacing=0 cellpadding=0>
+<table class='tablesorter displaytable' id='tableReport'>
     <thead>
         <tr>
             <th style='min-width: 105px;width:105px;'>

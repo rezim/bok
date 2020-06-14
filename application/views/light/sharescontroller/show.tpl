@@ -18,13 +18,13 @@
     <table class='tablesorter displaytable' id='tableReport' cellspacing=0 cellpadding=0 style="margin-left: 5px">
         <thead>
             <tr>
-                <td style="cursor: pointer" width="200px" ng-click="order='roleName'">rola&nbsp;<i class="fa fa-sort-desc" aria-hidden="true" ng-if="order == 'nazwa'"></i></td>
-                <td style="cursor: pointer" width="220px" ng-click="order='controller'">kontroler&nbsp;<i class="fa fa-sort-desc" aria-hidden="true" ng-if="order == 'controller'"></i></td>
-                <td style="cursor: pointer" width="250px" ng-click="order='action'">akcja&nbsp;<i class="fa fa-sort-desc" aria-hidden="true" ng-if="order == 'action'"></i></td>
-                <td style="cursor: pointer" width="50px" ng-click="order='activity'">aktywny&nbsp;<i class="fa fa-sort-desc" aria-hidden="true" ng-if="order == 'activity'"></i></td>
-                <td style="cursor: pointer" width="250px" ng-click="order='id'">id&nbsp;<i class="fa fa-sort-desc" aria-hidden="true" ng-if="order == 'id'"></i></td>
-                <td style="cursor: pointer" width="250px" ng-click="order='nazwa'">opis <i class="fa fa-sort-desc" aria-hidden="true" ng-if="order == 'nazwa'"></i></td>
-                <td style="cursor: pointer" width="100px" ng-click="order='permission'">prawa&nbsp;<i class="fa fa-sort-desc" aria-hidden="true" ng-if="order == 'permission'"></i></td>
+                <td style="cursor: pointer" width="200px" ng-click="order='roleName'">rola&nbsp;<i class="fas fa-sort-desc" aria-hidden="true" ng-if="order == 'nazwa'"></i></td>
+                <td style="cursor: pointer" width="220px" ng-click="order='controller'">kontroler&nbsp;<i class="fas fa-sort-desc" aria-hidden="true" ng-if="order == 'controller'"></i></td>
+                <td style="cursor: pointer" width="250px" ng-click="order='action'">akcja&nbsp;<i class="fas fa-sort-desc" aria-hidden="true" ng-if="order == 'action'"></i></td>
+                <td style="cursor: pointer" width="50px" ng-click="order='activity'">aktywny&nbsp;<i class="fas fa-sort-desc" aria-hidden="true" ng-if="order == 'activity'"></i></td>
+                <td style="cursor: pointer" width="250px" ng-click="order='id'">id&nbsp;<i class="fas fa-sort-desc" aria-hidden="true" ng-if="order == 'id'"></i></td>
+                <td style="cursor: pointer" width="250px" ng-click="order='nazwa'">opis <i class="fas fa-sort-desc" aria-hidden="true" ng-if="order == 'nazwa'"></i></td>
+                <td style="cursor: pointer" width="100px" ng-click="order='permission'">prawa&nbsp;<i class="fas fa-sort-desc" aria-hidden="true" ng-if="order == 'permission'"></i></td>
                 <td width="250px" ></td>
             </tr>
         </thead>
@@ -48,7 +48,7 @@
                 <td><input type="text" ng-model="newShare.description" /></td>
                 <td><input type="text" ng-model="newShare.permission" style="width: 50px;"/></td>
                 <td style="text-align: center">
-                    <span ng-click="ctrl.addPermission()" class="fa fa-user-plus fa-3" aria-hidden="true" style="color: green; cursor: pointer; font-size: 1.4em" title="zapisz"></span>
+                    <span ng-click="ctrl.addPermission()" class="fas fa-user-plus fa-3" aria-hidden="true" style="color: green; cursor: pointer; font-size: 1.4em" title="zapisz"></span>
                 </td>
             </tr>
             <tr ng-repeat="share in ctrl.getUserShares() | filter: search | orderBy: order">
@@ -60,8 +60,8 @@
                 <td>[[share.nazwa]]</td>
                 <td><input type="text" ng-model="share.permission" style="width: 50px;" /></td>
                 <td style="text-align: center">
-                    <span ng-click="ctrl.updatePermission(share.permission, share.rowid, share.rowid_role)" class="fa fa-floppy-o fa-3" aria-hidden="true" style="color: green; cursor: pointer; font-size: 1.4em" title="zapisz"></span>
-                    <span ng-click="ctrl.removePermission(share.rowid, share.rowid_role)" class="fa fa-times fa-3" aria-hidden="true" style="color: red; cursor: pointer; font-size: 1.4em" title="usuń"></span>
+                    <span ng-click="ctrl.updatePermission(share.permission, share.rowid, share.rowid_role)" class="fas fa-floppy-o fa-3" aria-hidden="true" style="color: green; cursor: pointer; font-size: 1.4em" title="zapisz"></span>
+                    <span ng-click="ctrl.removePermission(share.rowid, share.rowid_role)" class="fas fa-times fa-3" aria-hidden="true" style="color: red; cursor: pointer; font-size: 1.4em" title="usuń"></span>
                 </td>
             </tr>
         </tbody>

@@ -208,64 +208,87 @@ function checkReplay(objError, objLoad, info, objClick, dane, objOk, czyreload, 
 
 function showError(objError, objLoad, info, objClick, showtime) {
 
-    if (info !== null)
-        $(objError).children('span').html(info);
+    if (info !== null) {
+        let errorMessageSection = $(objError);
+        if (errorMessageSection.children('span').length) {
+            errorMessageSection = errorMessageSection.children('span');
+        } else {
+            if (errorMessageSection.children('strong').length) {
+                errorMessageSection = errorMessageSection.children('strong');
+            }
+        }
+        errorMessageSection.html(info);
+    }
 
     if (objLoad !== null)
         $(objLoad).hide();
     $(objError).fadeIn();
 
-    setTimeout(
-        function () {
-            $(objError).hide();
-            if (objClick !== null)
-                $(objClick).show();
-            return false;
-        }, showtime);
+    if (showtime >= 0) {
+        setTimeout(
+            function () {
+                $(objError).hide();
+                if (objClick !== null)
+                    $(objClick).show();
+                return false;
+            }, showtime);
+    }
 }
 
 function showOk(objOk, objLoad, info, objClick, czyreload, showtime, adtrestoredirect) {
 
-    if (info !== null)
-        $(objOk).children('span').html(info)
+    if (info !== null) {
+        let successMessageSection = $(objOk);
+        if (successMessageSection.children('span').length) {
+            successMessageSection = successMessageSection.children('span');
+        } else {
+            if (successMessageSection.children('strong').length) {
+                successMessageSection = successMessageSection.children('strong');
+            }
+        }
+        successMessageSection.html(info)
+    }
+
     if (objLoad !== null)
         $(objLoad).hide();
     $(objOk).fadeIn();
 
-    setTimeout(
-        function () {
+    if (showtime >= 0) {
+        setTimeout(
+            function () {
 
-            if (czyreload === 1) {
-                $.colorbox.close();
-                if (document.getElementById("tableClient") !== null) {
-                    showClients();
+                if (czyreload === 1) {
+                    $.colorbox.close();
+                    if (document.getElementById("tableClient") !== null) {
+                        showClients();
+                    }
+                    if (document.getElementById("tablePrinter") !== null) {
+                        showPrinters();
+                    }
+                    if (document.getElementById("tableUmowy") !== null) {
+                        showAgreements();
+                    }
+                    if (document.getElementById("tableToner") !== null) {
+                        pokazTonery();
+                    }
+                    if (document.getElementById("tableAlert") !== null) {
+                        showAlerts('divRightCenter', 'divLoader');
+                    }
+                    if (document.getElementById("tableCounters") !== null) {
+                        showPrintersCounters();
+                    }
+                    if (document.getElementById("tableMessages") !== null) {
+                        showMessages();
+                    }
+                } else {
+                    $(objOk).hide();
+                    if (objClick !== null)
+                        $(objClick).show();
                 }
-                if (document.getElementById("tablePrinter") !== null) {
-                    showPrinters();
-                }
-                if (document.getElementById("tableUmowy") !== null) {
-                    showAgreements();
-                }
-                if (document.getElementById("tableToner") !== null) {
-                    pokazTonery();
-                }
-                if (document.getElementById("tableAlert") !== null) {
-                    showAlerts('divRightCenter', 'divLoader');
-                }
-                if (document.getElementById("tableCounters") !== null) {
-                    showPrintersCounters();
-                }
-                if (document.getElementById("tableMessages") !== null) {
-                    showMessages();
-                }
-            } else {
-                $(objOk).hide();
-                if (objClick !== null)
-                    $(objClick).show();
-            }
 
-            return false;
-        }, showtime);
+                return false;
+            }, showtime);
+    }
     // we dont want to wait for table report to be reloaded, it takes some time, so start operation ASAP
     if (document.getElementById("tableReport") !== null) {
         generujRaport(function (data, params) {
@@ -642,69 +665,6 @@ function usunDrukarke(serial) {
 
 }
 
-function pokazTonery() {
-    var doc = document, objCenter = doc.getElementById('divRightCenter'), objLoad = doc.getElementById('divLoader');
-    objCenter.innerHTML = '';
-    objLoad.innerHTML = '<p><img src="light/img/loader.gif" alt="Loading" /></p>';
-
-    $.ajax({
-        url: sciezka + "/toners/showdane/todiv",
-        type: 'POST',
-        data: {
-            filterserial: doc.getElementById('txtfilterserial').value,
-            filterdrukarka: doc.getElementById('txtfilterdrukarka').value,
-            czyhistoria: doc.getElementById("txttonerzakonczone").checked ? 1 : 0,
-        },
-        success: function (data) {
-
-            objCenter.innerHTML = data;
-            $(objCenter).animate({opacity: 1}, 1500);
-        },
-        error: function () {
-            objCenter.innerHTML = 'Problem z pobraniem tonerów';
-        }
-    }).done(function () {
-        objLoad.innerHTML = '';
-        $("#tableToner").tablesorter();
-        uprawnienia();
-    });
-    delete objCenter;
-    delete objLoad;
-    return false;
-}
-
-
-function showAlerts(objtoshow, objtoload, czycolorbox) {
-    czycolorbox = (czycolorbox !== undefined) ? czycolorbox : '';
-    var doc = document, objCenter = doc.getElementById(objtoshow), objLoad = doc.getElementById(objtoload);
-
-    objCenter.innerHTML = '';
-    objLoad.innerHTML = '<p><img src="light/img/loader.gif" alt="Loading" /></p>';
-
-    $.ajax({
-        url: sciezka + "/alerts/showdane/todiv",
-        type: 'POST',
-        data: {
-            czycolorbox: czycolorbox
-        },
-        success: function (data) {
-
-            objCenter.innerHTML = data;
-            $(objCenter).animate({opacity: 1}, 1500);
-        },
-        error: function () {
-            objCenter.innerHTML = 'Problem z pobraniem drukarek';
-        }
-    }).done(function () {
-        objLoad.innerHTML = '';
-        $("#tablePrinter").tablesorter();
-        uprawnienia();
-    });
-    delete objCenter;
-    delete objLoad;
-    return false;
-}
-
 function generujRaport(successCallback, errorCallback) {
     var doc = document, objCenter = doc.getElementById('divRightCenter');
 
@@ -1027,108 +987,9 @@ function showSzczegolyRaport(nazwakrotka) {
     });
 }
 
-
-function showNotification(rowid) {
-
-    $.colorbox
-    ({
-        height: 650 + 'px',
-        width: 600 + 'px',
-        title: "Zgłoszenie",
-        data:
-            {
-                rowid: rowid
-            },
-
-        href: sciezka + "/notifications/addedit/todiv",
-        onClosed: function () {
-
-        },
-        onComplete: function () {
-            uprawnienia();
-        }
-    });
-}
-
-function showNewNotiAdd(rowid, serial, tonertype) {
-
-    if (document.getElementById("divFilterNoti") === null || document.getElementById("divFilterNoti") === undefined) {
-        newLocation = sciezka + '/notifications/show/addeditnoti/' + rowid;
-
-        if (serial) {
-            newLocation += '/' + serial;
-            if (tonertype) {
-                newLocation += '/' + tonertype;
-            }
-        }
-        window.location = newLocation;
-
-        // // not sure why it is not working for case whit only rowid, it should
-        // if (serial && tonertype) return;
-    }
-    $("#divFilterNoti").hide();
-    var doc = document, objCenter = doc.getElementById('divRightCenter');
-    objCenter.innerHTML = '';
-
-    $.ajax({
-        url: sciezka + "/notifications/addedit/todiv",
-        type: 'POST',
-        data: {
-            keyVal: rowid,
-            keyname: 'rowid',
-            serial: serial,
-            tonertype: tonertype
-        },
-        success: function (data) {
-
-            $(objCenter).html(data);
-            $(objCenter).animate({opacity: 1}, 1500);
-        },
-        error: function () {
-
-            objCenter.innerHTML = 'Problem z pobraniem klientów';
-        }
-    }).done(function () {
-        $("#tableNoti").tablesorter();
-        $('#date_email').datepicker($.datepicker.regional['pl'], {
-            dateFormat: 'yy-mm-dd',
-            changeMonth: true,
-            changeYear: true,
-        });
-        uprawnienia();
-    });
-    delete objCenter;
-    return false;
-
-}
-
 function wsteczNoti() {
     $("#divFilterNoti").show();
     showListOfNotifications();
-}
-
-function openDataShow(link, idzewnetrznespan) {
-    $.colorbox
-    ({
-        height: 650 + 'px',
-        width: 1000 + 'px',
-        data:
-            {
-                czycolorbox: '1',
-                clientnazwakrotka: $("#rowid_client").val(),
-                serial: $("#serial").val(),
-            },
-        href: link,
-        onClosed: function () {
-
-        },
-        onComplete: function () {
-            uprawnienia();
-
-
-        },
-        close: 'zamknij'
-    });
 }
 
 function zapiszNoti(czydelete, savelink) {
@@ -1179,7 +1040,7 @@ function zapiszNoti(czydelete, savelink) {
                 checkReplay(objError, objLoad, null, objClick, dane, objOk, -1, 1000, null, 1);
             } else {
 
-                checkReplay(objError, objLoad, null, objClick, dane, objOk, 0, 3000, null, 1);
+                checkReplay(objError, objLoad, null, objClick, dane, objOk, 0, -1, null, 1);
                 try {
                     dane = $.parseJSON(dane);
                     // przypisaneni rowid do tetboca
@@ -1199,7 +1060,7 @@ function zapiszNoti(czydelete, savelink) {
             return false;
         },
         error: function () {
-
+            showErrorMessgae(objError);
             showError(objError, objLoad, null, objClick, 3000);
             return false;
         }
@@ -1847,6 +1708,59 @@ function showPrintersCounters(successCallback, errorCallback) {
     return false;
 }
 
+function showAlerts(objtoshow, objtoload, czycolorbox) {
+    const doc = document;
+    const objCenterId = czycolorbox ? 'divRightCenter' + czycolorbox : 'divRightCenter';
+    const objCenter = doc.getElementById(objCenterId);
+
+    $.ajax({
+        url: sciezka + "/alerts/showdane/todiv",
+        type: 'POST',
+        data: {
+            czycolorbox: czycolorbox
+        },
+        success: function (data) {
+            objCenter.innerHTML = data;
+            $(objCenter).animate({opacity: 1}, 1500);
+        },
+        error: function () {
+            objCenter.innerHTML = 'Problem z pobraniem drukarek';
+        }
+    }).done(function () {
+        $("#tablePrinter").tablesorter();
+        uprawnienia();
+    });
+    return false;
+}
+
+function pokazTonery() {
+    const doc = document;
+    const objCenterId = 'divRightCenter';
+    const objCenter = doc.getElementById(objCenterId);
+
+    $.ajax({
+        url: sciezka + "/toners/showdane/todiv",
+        type: 'POST',
+        data: {
+            filterserial: doc.getElementById('txtfilterserial').value,
+            filterdrukarka: doc.getElementById('txtfilterdrukarka').value,
+            czyhistoria: doc.getElementById("txttonerzakonczone").checked ? 1 : 0,
+        },
+        success: function (data) {
+            objCenter.innerHTML = data;
+            $(objCenter).animate({opacity: 1}, 1500);
+        },
+        error: function () {
+            objCenter.innerHTML = 'Problem z pobraniem tonerów';
+        }
+    }).done(function () {
+        $("#tableToner").tablesorter();
+        uprawnienia();
+    });
+    return false;
+}
+
+
 function showClients(czycolorbox) {
     const doc = document;
     const objCenterId = czycolorbox ? 'divRightCenter' + czycolorbox : 'divRightCenter';
@@ -1863,7 +1777,6 @@ function showClients(czycolorbox) {
             czycolorbox: czycolorbox
         },
         success: function (data) {
-            objCenter.innerHTML = '';
             objCenter.innerHTML = data;
             $(objCenter).animate({opacity: 1}, 1500);
         },
@@ -1946,7 +1859,157 @@ function showListOfNotifications() {
     return false;
 }
 
+function showNewNotiAdd(rowid, serial, tonertype) {
+    $.colorbox
+    ({
+        width: 1000 + 'px',
+        data:
+            {
+                keyVal: rowid,
+                keyname: 'rowid',
+                serial: serial,
+                tonertype: tonertype
+            },
+
+        href: sciezka + "/notifications/addedit/todiv",
+        onClosed: function () {
+
+        },
+        onComplete: function () {
+            $("#tableNoti").tablesorter();
+            $('#date_email').datepicker($.datepicker.regional['pl'], {
+                dateFormat: 'yy-mm-dd',
+                changeMonth: true,
+                changeYear: true,
+            });
+            uprawnienia();
+        },
+        escKey: false
+    });
+}
+
+function editNotification(rowid) {
+
+    $.colorbox
+    ({
+        width: 1000 + 'px',
+        data:
+            {
+                keyVal: rowid,
+                keyname: 'rowid'
+            },
+
+        href: sciezka + "/notifications/addedit/todiv",
+        onClosed: function () {
+
+        },
+        onComplete: function () {
+            uprawnienia();
+        },
+        escKey: false
+    });
+}
+
+function openDataShow(link, idzewnetrznespan) {
+    const data = {
+        czycolorbox: '#selectNotificationData',
+        clientnazwakrotka: $("#rowid_client").val(),
+        serial: $("#serial").val(),
+    };
+    loadAsyncData(link, data, function (data) {
+        const modal = $('#selectNotificationData');
+
+        modal.on('show.bs.modal', function (event) {
+
+            modal.find('.modal-body').html(data);
+
+            modal.on('hidden.bs.modal', function (event) {
+                modal.find('.modal-body').html('');
+                modal.unbind();
+            });
+        });
+
+        modal.modal({keyboard: true});
+    });
+
+}
+
+function dataRowSelectedHandler(targetElement) {
+    const targetObj = $(targetElement);
+    const sourceName = targetObj.attr('data-source');
+    const modalSelector = targetObj.attr('data-modalselector');
+    switch (sourceName) {
+        case "clients":
+            $('#idclientspan').html(targetObj.attr('data-clientid'));
+            $('#rowid_client').val(targetObj.attr('data-clientname'));
+            if ($('#email').val() === '') {
+                $('#email').val(targetObj.attr('data-clientemail'));
+            }
+            showNotPaidInvoices(targetObj.attr('data-clientid'), '#invoicesContainer');
+            break;
+        case "agreements":
+            $('#idumowaspan').html(targetObj.attr('data-agreementid'));
+            $('#rowid_agreements').val(targetObj.attr('data-agreementnb'));
+            $('#sla').val(targetObj.attr('data-sla'));
+            break;
+        case "devices":
+            $('#idserialspan').html(targetObj.attr('data-serial'));
+            $('#serial').val(targetObj.attr('data-serial'));
+
+            $('#rowid_client').val(targetObj.attr('data-clientname'));
+            $('#idclientspan').html(targetObj.attr('data-clientid'));
+
+            $('#rowid_agreements').val(targetObj.attr('data-agreementnb'));
+            $('#idumowaspan').html(targetObj.attr('data-agreementid'));
+
+            $('#sla').val(targetObj.attr('data-sla'));
+            break;
+        default:
+    }
+
+    $(modalSelector).modal('hide');
+
+    return false;
+}
+
+
+// utils
 
 function getElementById(id, isPopup) {
     return document.getElementById(isPopup ? id + isPopup : id);
+}
+
+
+function loadAsyncData(url, data, callback) {
+    $.ajax({
+        url: url.indexOf(sciezka) !== -1 ? url : sciezka + url,
+        type: 'POST',
+        data: data,
+        success: function (data) {
+            callback(data)
+        },
+        error: function () {
+            console.log('Couldn\'t get data for url:', url, ' data:', data);
+        }
+    }).done(function () {
+
+    });
+    return false;
+}
+
+function showErrorMessgae(objError, info) {
+    if (info !== null)
+        $(objError).html(info);
+    $(objError).fadeIn();
+}
+
+function gotoBottom(id) {
+    const element = document.getElementById(id);
+    element.scrollTop = 30; // element.scrollHeight - element.clientHeight;
+}
+
+function scrollToElement(id) {
+    $([document.documentElement, document.body]).animate({
+        scrollTop: $("#" + id).offset().top
+    }, 0);
 }

@@ -1,5 +1,8 @@
 {if isset($invoices) && $invoices|@count gt 0}
-    <div class="notpaid-invoices-alert">
+    <div class="alert alert-warning" role="alert">
+        <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+            <span aria-hidden="true">&times;</span>
+        </button>
         <div><i class="fa fa-exclamation-triangle" style="color: red"></i> Klient ma niezapłacone faktury</div>
         {foreach from=$invoices item=item key=key}
             <div class="invoice-row">

@@ -3,41 +3,41 @@
     <tr>
         <th class="col-xs-1 sortable" ng-click="closedRequestsSortBy = ctrl.changeSortOrder('revers', closedRequestsSortBy)">
             revers
-            <i class="fa fa-sort-asc" ng-if="closedRequestsSortBy == '+revers'"></i>
+            <i class="fas fa-sort-asc" ng-if="closedRequestsSortBy == '+revers'"></i>
             <i class="fa fa-sort-desc" ng-if="closedRequestsSortBy == '-revers'"></i>
         </th >
         <th class="col-xs-3 sortable" ng-click="closedRequestsSortBy = ctrl.changeSortOrder('nazwa', closedRequestsSortBy)">
             klient
-            <i class="fa fa-sort-asc" ng-if="closedRequestsSortBy == '+nazwa'"></i>
-            <i class="fa fa-sort-desc" ng-if="closedRequestsSortBy == '-nazwa'"></i>
+            <i class="fas fa-sort-asc" ng-if="closedRequestsSortBy == '+nazwa'"></i>
+            <i class="fas fa-sort-desc" ng-if="closedRequestsSortBy == '-nazwa'"></i>
         </th >
         <th class="col-xs-1 sortable" ng-click="closedRequestsSortBy = ctrl.changeSortOrder('modeldrukarki', closedRequestsSortBy)">
             model
-            <i class="fa fa-sort-asc" ng-if="closedRequestsSortBy == '+modeldrukarki'"></i>
-            <i class="fa fa-sort-desc" ng-if="closedRequestsSortBy == '-modeldrukarki'"></i>
+            <i class="fas fa-sort-asc" ng-if="closedRequestsSortBy == '+modeldrukarki'"></i>
+            <i class="fas fa-sort-desc" ng-if="closedRequestsSortBy == '-modeldrukarki'"></i>
         </th>
         <th class="col-xs-1 sortable" ng-click="closedRequestsSortBy = ctrl.changeSortOrder('numerseryjny', closedRequestsSortBy)">
             numer seryjny
-            <i class="fa fa-sort-asc" ng-if="closedRequestsSortBy == '+numerseryjny'"></i>
-            <i class="fa fa-sort-desc" ng-if="closedRequestsSortBy == '-numerseryjny'"></i>
+            <i class="fas fa-sort-asc" ng-if="closedRequestsSortBy == '+numerseryjny'"></i>
+            <i class="fas fa-sort-desc" ng-if="closedRequestsSortBy == '-numerseryjny'"></i>
         </th>
         <th class="col-xs-3">
             opis usterki
         </th>
         <th class="col-xs-1 sortable" ng-click="closedRequestsSortBy = ctrl.changeSortOrder('date_insert', closedRequestsSortBy)">
             czas zgłoszenia
-            <i class="fa fa-sort-asc" ng-if="closedRequestsSortBy == '+date_insert'"></i>
-            <i class="fa fa-sort-desc" ng-if="closedRequestsSortBy == '-date_insert'"></i>
+            <i class="fas fa-sort-asc" ng-if="closedRequestsSortBy == '+date_insert'"></i>
+            <i class="fas fa-sort-desc" ng-if="closedRequestsSortBy == '-date_insert'"></i>
         </th>
         <th class="col-xs-1 sortable" ng-click="closedRequestsSortBy = ctrl.changeSortOrder('date_closed', closedRequestsSortBy)">
             czas zamknięcia
-            <i class="fa fa-sort-asc" ng-if="closedRequestsSortBy == '+date_closed'"></i>
-            <i class="fa fa-sort-desc" ng-if="closedRequestsSortBy == '-date_closed'"></i>
+            <i class="fas fa-sort-asc" ng-if="closedRequestsSortBy == '+date_closed'"></i>
+            <i class="fas fa-sort-desc" ng-if="closedRequestsSortBy == '-date_closed'"></i>
         </th>
         <th class="col-xs-1" align="center">
             &nbsp;
             <button class="btn btn-primary btn-xs btn-filter" uib-btn-checkbox ng-model="closedRequestShowFilters">
-                <i class="fa fa-filter"></i> filtry
+                <i class="fas fa-filter"></i> filtry
             </button>
         </th>
     </tr>

@@ -888,13 +888,6 @@ body {
     color:red;
 }
 
-.invoice-count {
-	position: relative;
-	top: -3px;
-	left: 10px;
-	cursor: pointer;
-}
-
 .invoice-add {
 	cursor: pointer;
 	color: green;
@@ -922,5 +915,3 @@ body {
 .invoice-loading {
 	width: 16px;
 }
-
-

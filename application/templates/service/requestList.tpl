@@ -14,5 +14,5 @@
         {include file="$templates/service/closedRequestList.tpl"}
     </div>
 
-    <i ng-if="isPending" class="fa fa-spinner fa-spin fa-5x" aria-hidden="true" style="margin-top: 50px;"></i>
+    <i ng-if="isPending" class="fas fa-spinner fa-spin fa-5x" aria-hidden="true" style="margin-top: 50px;"></i>
 </div>

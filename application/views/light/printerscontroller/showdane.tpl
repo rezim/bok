@@ -49,25 +49,18 @@
         </thead>
         <tbody>
         {foreach from=$dataPrinters item=item key=key name=loopek}
-            <tr
-                    {if $czycolorbox=='1'}
-                        style='cursor:hand;cursor:pointer;'
-                        onClick="
-                                $('#idserialspan').html('{$item.serial}');
-                                $('#serial').val('{$item.serial}');
-
-                                $('#rowid_client').val('{$item.nazwaklient}');
-                                $('#idclientspan').html('{$item.rowidclient}');
-
-                                $('#rowid_agreements').val('{$item.nrumowy}');
-                                $('#idumowaspan').html('{$item.rowidumowa}');
-
-                                $('#sla').val('{$item.sla}');
-
-                                $.colorbox.close();
-                                "
-                    {/if}
-            >
+            <tr {if $czycolorbox}
+                class="selectable-row"
+                data-source="devices"
+                data-modalselector="{$czycolorbox}"
+                data-serial="{$item.serial}"
+                data-clientname="{$item.nazwaklient}"
+                data-clientid="{$item.rowidclient}"
+                data-agreementnb="{$item.nrumowy}"
+                data-agreementid="{$item.rowidumowa}"
+                data-sla="{{$item.sla}}"
+                onclick="dataRowSelectedHandler(this); return false;"
+                {/if}>
                 <th scope="row">{$smarty.foreach.loopek.index+1}</th>
                 <td>{$item.serial|escape:'htmlall'}</td>
                 <td>{$item.model|escape:'htmlall'} </td>
@@ -79,7 +72,7 @@
 
                 <td>
                     <img class='float-right mt-1 {if $item.type_color}imgColor{else}imgBlack{/if}'
-                         onClick='showTonersInfo("{$item.serial}");'
+                         {if !$czycolorbox}onClick='showTonersInfo("{$item.serial}");'{/if}
                          src='{$smarty.const.SCIEZKA}/{$smarty.const.SMARTVERSION}/img/fake.png'/>
                     {if !empty($item.black_toner)}
                         <span>{$item.black_toner|number_format:2:",":" "|replace:',00':''|escape:'htmlall'}%</span>
@@ -110,12 +103,12 @@
                         <button class="btn border border-secondary dropdown-toggle" type="button"
                                 id="dropdownMenuButton" data-toggle="dropdown" aria-haspopup="true"
                                 aria-expanded="false">
-                            <i class="fa fa-gear"></i>
+                            <i class="fas fa-cog"></i>
                         </button>
                         <div class="dropdown-menu dropdown-menu-right" aria-labelledby="dropdownMenuLink">
-                            <a class="dropdown-item" href="#" onClick='showNewPrinterAdd("{$item.serial}")'><i class="fa fa-edit"></i>&nbsp;&nbsp;Edycja</a>
+                            <a class="dropdown-item" href="#" onClick='showNewPrinterAdd("{$item.serial}")'><i class="fas fa-edit"></i>&nbsp;&nbsp;Edycja</a>
                             <div class="border-top my-1"></div>
-                            <a class="dropdown-item" href="#" onClick='pokazLogi("{$item.serial}")'><i class="fa fa-history"></i>&nbsp;&nbsp;Logi</a>
+                            <a class="dropdown-item" href="#" onClick='pokazLogi("{$item.serial}")'><i class="fas fa-history"></i>&nbsp;&nbsp;Logi</a>
                             <a class="dropdown-item" href="#" onClick='historiaTonerow("{$item.serial}")'>Historia
                                 Tonerów</a>
                             <a class="dropdown-item" href="#" onClick='historiaTonerow("{$item.serial}")'>Historia

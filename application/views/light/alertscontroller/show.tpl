@@ -1,8 +1,10 @@
-<div class='divFilter'>
-</div>
-<div class='divLoader' id='divLoader{$czycolorbox}'>
-</div>
-<div class='divRightCenter' id='divRightCenter{$czycolorbox}'>
+<div class="container-fluid">
+
+    <div class="row">
+        <main id='divRightCenter' class="col-12">
+
+        </main>
+    </div>
 
 </div>
 <script type="text/javascript">

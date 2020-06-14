@@ -46,23 +46,22 @@
         <tbody>
 
         {foreach from=$dataAgreements item=item key=key name=loopek}
-            <tr
-                    {if $czycolorbox=='1'}
-                        onClick="
-                                $('#idumowaspan').html('{$item.rowid}');
-                                $('#rowid_agreements').val('{$item.nrumowy}');
-                                $('#sla').val('{$item.sla}');
-                                $.colorbox.close();
-                                "
-                    {/if}
-            >
+            <tr {if $czycolorbox}
+                class="selectable-row"
+                data-source="agreements"
+                data-modalselector="{$czycolorbox}"
+                data-agreementid="{$item.rowid}"
+                data-agreementnb="{$item.nrumowy}"
+                data-sla="{{$item.sla}}"
+                onclick="dataRowSelectedHandler(this);return false"
+                {/if}>
                 <th scope="row">{$smarty.foreach.loopek.index+1}</th>
                 <td>{$item.nrumowy|escape:'htmlall'}</td>
 
                 <td
-                        onClick='showNewClientAdd("{$item.rowidclient}")'>{$item.nazwakrotka|escape:'htmlall'}</td>
+                        {if !$czycolorbox}onClick='showNewClientAdd("{$item.rowidclient}")'{/if}>{$item.nazwakrotka|escape:'htmlall'}</td>
                 <td
-                        onClick='showNewPrinterAdd("{$item.serial}")'>{$item.serial|escape:'htmlall'}</td>
+                        {if !$czycolorbox}onClick='showNewPrinterAdd("{$item.serial}")'{/if}>{$item.serial|escape:'htmlall'}</td>
                 {if !$czycolorbox}
                     <td wymaganylevel='w' wymaganyzrobiony='0'>{$item.dataod|escape:'htmlall'}</td>
                     <td wymaganylevel='w' wymaganyzrobiony='0'
@@ -88,18 +87,18 @@
                             <button class="btn border border-secondary dropdown-toggle" type="button"
                                     id="dropdownMenuButton" data-toggle="dropdown" aria-haspopup="true"
                                     aria-expanded="false">
-                                <i class="fa fa-gear"></i>
+                                <i class="fas fa-cog"></i>
                                 {if !empty($item.blad)}
-                                    <span class="badge badge-pill badge-danger" title="Logi Błąd">!</span>
+                                    <span class="badge badge-pill badge-danger" title="Logi Błąd"><i class="fas fa-exclamation-circle"></i></span>
                                 {/if}
                             </button>
                             <div class="dropdown-menu dropdown-menu-right" aria-labelledby="dropdownMenuLink">
                                 <a wymaganylevel='r' wymaganyzrobiony='0' class="dropdown-item" href="#"
-                                   onClick='showNewAgreementAdd("{$item.rowid}")'><i class="fa fa-edit"></i>&nbsp;&nbsp;Edycja</a>
+                                   onClick='showNewAgreementAdd("{$item.rowid}")'><i class="fas fa-edit"></i>&nbsp;&nbsp;Edycja</a>
                                 {if !empty($item.serial)}
                                     <div class="border-top my-1"></div>
                                     <a class="dropdown-item" href="#" onClick='pokazLogi("{$item.serial}")'><i
-                                                class="fa fa-history"></i>&nbsp;&nbsp;Logi</a>
+                                                class="fas fa-history"></i>&nbsp;&nbsp;Logi</a>
                                 {/if}
                             </div>
                         </div>
