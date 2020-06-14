@@ -1566,10 +1566,7 @@ function saveUpdateMessage(type) {
 }
 
 function showMessages(type) {
-    var doc = document, objCenter = doc.getElementById('divRightCenter'), objLoad = doc.getElementById('divLoader');
-    objCenter.innerHTML = '';
-    objLoad.innerHTML = '<p><img src="light/img/loader.gif" alt="Loading" /></p>';
-
+    const objCenter = getElementById('divRightCenter');
 
     $.ajax({
         url: sciezka + ((!type) ? "/messages/showdane/todiv" : "/messagesinvoices/showdane/todiv"),
@@ -1583,22 +1580,15 @@ function showMessages(type) {
             objCenter.innerHTML = 'Problem z pobraniem wiadomości';
         }
     }).done(function () {
-        objLoad.innerHTML = '';
         uprawnienia();
     });
-    delete objCenter;
-    delete objLoad;
     return false;
 }
 
 function removeMessage(rowid, type) {
 
     if (confirm('Czy na pewno chcesz usunąć wiadomość ?')) {
-
-        var doc = document, objCenter = doc.getElementById('divRightCenter'), objLoad = doc.getElementById('divLoader');
-        objCenter.innerHTML = '';
-        objLoad.innerHTML = '<p><img src="light/img/loader.gif" alt="Loading" /></p>';
-
+        const objCenter = getElementById('divRightCenter');
 
         $.ajax({
             url: sciezka + ((!type) ? "/messages/remove/todiv" : "/messagesinvoices/remove/todiv"),
@@ -1613,11 +1603,8 @@ function removeMessage(rowid, type) {
                 objCenter.innerHTML = 'Problem z usunięciem wiadomości';
             }
         }).done(function () {
-            objLoad.innerHTML = '';
             uprawnienia();
         });
-        delete objCenter;
-        delete objLoad;
     }
     return false;
 }
