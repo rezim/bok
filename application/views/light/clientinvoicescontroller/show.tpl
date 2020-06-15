@@ -50,9 +50,12 @@
 
                 <div class="border-top my-4 otus-separator"></div>
 
+                <div class="w-100"></div>
+                
                 <div class="form-group">
                     <label for="txtklient">klient</label>
                 </div>
+
                 <div class="form-group">
                     <input type="text" id="txtklient" class="form-control"
                            aria-describedby="clientHelp" ng-model="search.name">
@@ -77,6 +80,8 @@
                            aria-describedby="txtInvoiceNbHelp" ng-model="ctrl.filters.invoiceNb">
                     <small id="txtInvoiceNbHelp" class="form-text text-muted"><i class="fas fa-info-circle"></i> Podaj numer Faktury VAT</small>
                 </div>
+
+                <div class="w-100"></div>
 
                 <div class="form-group mt-4">
                     <input type="checkbox" aria-describedby="paidHelp" ng-model="ctrl.filters.show_paid_invoices">

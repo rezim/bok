@@ -48,6 +48,8 @@
 
                 <div class="border-top my-4 otus-separator"></div>
 
+                <div class="w-100"></div>
+
                 <div class="form-group mt-4">
                     <input type="checkbox" aria-describedby="paidHelp" ng-model="ctrl.show_devices_view">
                     <label for='paidHelp'>
