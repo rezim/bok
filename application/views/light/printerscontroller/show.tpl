@@ -3,14 +3,18 @@
     <div class="row">
         <div class="otus-sidebar col-12 col-md-12 col-xl-auto">
             <form>
-                {if !$czycolorbox && $smarty.session.przypisanemenu['but_addprinter']['permission'] === 'rw'}
-                <div class="form-group otus-addnew otus-section">
-                    <button type="button" class="btn btn-block btn-outline-secondary otus-action-btn"
-                            onclick="showNewPrinterAdd(&quot;&quot;);return false;"><i class="fas fa-plus"></i>&nbsp;Nowe
-                        Urządzenie
-                    </button>
-                </div>
-                <div class="border-top mt-4 mb-2 otus-separator"></div>
+                {if
+                !$czycolorbox &&
+                isset($smarty.session.przypisanemenu['but_addprinter']) &&
+                $smarty.session.przypisanemenu['but_addprinter']['permission'] === 'rw'
+                }
+                    <div class="form-group otus-addnew otus-section">
+                        <button type="button" class="btn btn-block btn-outline-secondary otus-action-btn"
+                                onclick="showNewPrinterAdd(&quot;&quot;);return false;"><i class="fas fa-plus"></i>&nbsp;Nowe
+                            Urządzenie
+                        </button>
+                    </div>
+                    <div class="border-top mt-4 mb-2 otus-separator"></div>
                 {/if}
                 <div class="form-group">
                     <label for="txtfilterserial">Serial</label>
@@ -18,7 +22,8 @@
                 <div class="form-group">
                     <input type="text" id='txtfilterserial{$czycolorbox}' class="form-control"
                            aria-describedby="serialHelp">
-                    <small id="emailHelp" class="form-text text-muted"><i class="fas fa-info-circle"></i> Podaj numer seryjny urządzenia.</small>
+                    <small id="emailHelp" class="form-text text-muted"><i class="fas fa-info-circle"></i> Podaj numer
+                        seryjny urządzenia.</small>
                 </div>
 
                 <div class="form-group">
@@ -27,7 +32,8 @@
                 <div class="form-group">
                     <input type="text" id='txtfiltermodel{$czycolorbox}' class="form-control"
                            aria-describedby="modelHelp">
-                    <small id="modelHelp" class="form-text text-muted"><i class="fas fa-info-circle"></i> Podaj model urządzenia.</small>
+                    <small id="modelHelp" class="form-text text-muted"><i class="fas fa-info-circle"></i> Podaj model
+                        urządzenia.</small>
                 </div>
 
                 <div class="form-group">
@@ -40,7 +46,8 @@
                                 value='{$clientnazwakrotka}'
                             {/if}
                     >
-                    <small id="clientHelp" class="form-text text-muted"><i class="fas fa-info-circle"></i> Podaj nazwę klienta.</small>
+                    <small id="clientHelp" class="form-text text-muted"><i class="fas fa-info-circle"></i> Podaj nazwę
+                        klienta.</small>
                 </div>
 
                 <div class="border-top my-4 otus-separator"></div>

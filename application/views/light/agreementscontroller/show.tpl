@@ -2,7 +2,11 @@
     <div class="row">
         <div class="otus-sidebar col-12 col-md-12 col-xl-auto">
             <form>
-                {if !$czycolorbox && $smarty.session.przypisanemenu['but_addagreement']['permission'] === 'rw'}
+                {if
+                !$czycolorbox &&
+                isset($smarty.session.przypisanemenu['but_addagreement']['permission']) &&
+                $smarty.session.przypisanemenu['but_addagreement']['permission'] === 'rw'
+                }
                 <div class="form-group otus-addnew otus-section">
                     <button type="button" class="btn btn-block btn-outline-success otus-action-btn"
                             onclick="showNewAgreementAdd('0');return false;"><i class="fas fa-plus"></i>&nbsp;Nowa
