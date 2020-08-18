@@ -4,7 +4,7 @@
         {* TODO: check if we can hide sidebar in different way *}
         <div id="divFilterNoti" class="otus-sidebar col-12 col-md-12 col-xl-auto">
             <form>
-
+                {if $smarty.session.przypisanemenu['but_addcase']['permission'] === 'rw'}
                     <div class="form-group otus-addnew otus-section">
                         <button type="button" class="btn btn-block btn-outline-warning otus-action-btn"
                                 onclick="editNotification('0');return false;"><i class="fas fa-plus"></i>&nbsp;Nowe
@@ -12,6 +12,7 @@
                         </button>
                     </div>
                     <div class="border-top mt-4 mb-2 otus-separator"></div>
+                {/if}
                 <div class="form-group">
                 <label for="txtfilterklient">Klient</label>
                 </div>

@@ -1,5 +1,8 @@
-
-
+<script type="text/javascript">
+    {if isset($uprawnienia)}
+    val2 = '{$uprawnienia}';
+    {/if}
+</script>
 
 
 {if isset($smarty.session.shares)}
