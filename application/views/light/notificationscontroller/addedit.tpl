@@ -484,6 +484,10 @@
 
     showMaile();
 
+    $("#replacementDate").focus(function() {
+        window.scrollTo(0, 0);
+    });
+
     $("#replacementDate").datetimepicker($.datepicker.regional['pl'], {
         dateFormat: "yy-mm-dd", changeMonth: true, timeFormat: 'HH:mm', stepMinute: 10,
         changeYear: true
