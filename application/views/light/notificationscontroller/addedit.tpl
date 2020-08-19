@@ -1,3 +1,8 @@
+<script type="text/javascript">
+    {if isset($uprawnienia)}
+    val2 = '{$uprawnienia}';
+    {/if}
+</script>
 <div class="container mt-3">
     <span id="keyval" style='display:none;'>{$keyVal}</span>
 

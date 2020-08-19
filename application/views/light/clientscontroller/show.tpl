@@ -10,7 +10,7 @@
                 }
                 <div class="form-group otus-addnew otus-section">
                     <button type="button" class="btn btn-block btn-outline-primary otus-action-btn"
-                            onclick="showNewClientAdd("0");return false;"><i class="fas fa-plus"></i>&nbsp;Nowy
+                            onclick="showNewClientAdd('0');return false;"><i class="fas fa-plus"></i>&nbsp;Nowy
                         Klient
                     </button>
                 </div>
