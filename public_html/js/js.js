@@ -686,6 +686,8 @@ function generujRaport(successCallback, errorCallback) {
             objCenter.innerHTML = data;
             $(objCenter).animate({opacity: 1}, 1500);
 
+            evalScript(objCenter);
+
             successCallback(data, params);
         },
         error: function (err) {
@@ -1999,4 +2001,11 @@ function scrollToElement(id) {
     $([document.documentElement, document.body]).animate({
         scrollTop: $("#" + id).offset().top
     }, 0);
+}
+
+function evalScript(htmlElement) {
+    const arr = $(htmlElement).find('script');
+    for (let n = 0; n < arr.length; n++) {
+        eval(arr[n].innerHTML);
+    }
 }

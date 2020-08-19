@@ -1,6 +1,4 @@
-
-
-InvoiceManager = function(api_token, endpoint, company_name, invoice_number_length) {
+InvoiceManager = function (api_token, endpoint, company_name, invoice_number_length) {
     var invoicesUrl = [endpoint, 'invoices.json'].join('/');
     var invoiceViewUrl = [endpoint, 'invoice'].join('/');
 
@@ -22,7 +20,7 @@ InvoiceManager = function(api_token, endpoint, company_name, invoice_number_leng
         rejected: "odrzucona"
     };
 
-    var getStatus = function(invStatus, sentTime) {
+    var getStatus = function (invStatus, sentTime) {
         var result = invStatus;
         if (result == 'wystawiona' && sentTime) {
             result = 'wysłana';
@@ -31,12 +29,14 @@ InvoiceManager = function(api_token, endpoint, company_name, invoice_number_leng
         return result;
     };
 
+    this.reportData = null;
+
     /**
-     * tmp function to synch clients, need to be refactored
+     * tmp function to sync clients, need to be refactored
      * @deprecated
      */
-    var updateClients = function() {
-        $.when(getClients(['page=1']), getClients(['page=2'])).done(function(client1, client2) {
+    var updateClients = function () {
+        $.when(getClients(['page=1']), getClients(['page=2'])).done(function (client1, client2) {
             var clients = client1[0].concat(client2[0]);
 
             var text = "START TRANSACTION;\n";
@@ -51,23 +51,27 @@ InvoiceManager = function(api_token, endpoint, company_name, invoice_number_leng
         });
     };
 
-    this.getInvoices = function() {
+    this.setReportData = function (data) {
+        this.reportData = data;
+    };
+
+    this.getInvoices = function () {
         return currentPeriodInvoices.invoices;
     };
 
-    this.getMissingInvoices = function() {
+    this.getMissingInvoices = function () {
         return currentPeriodInvoices.missingInvoices;
     };
 
-    this.showInvoice = function(token, title) {
+    this.showInvoice = function (token, title) {
         var url = [invoiceViewUrl, token].join('/');
         window.open(url, title);
     };
 
-    this.getLastInvoice = function() {
+    this.getLastInvoice = function () {
         var invoices = this.getInvoices();
         var last;
-        invoices.forEach(function(invoice) {
+        invoices.forEach(function (invoice) {
             if (!last) {
                 last = invoice;
             } else {
@@ -80,24 +84,27 @@ InvoiceManager = function(api_token, endpoint, company_name, invoice_number_leng
         return last;
     };
 
-    this.updateInvoiceNumber = function(id, number, callback) {
+    this.updateInvoiceNumber = function (id, number, callback) {
         var url = [endpoint, 'invoices', id + '.json'].join('/');
 
-        var data = {"invoice": {
-            "number": number}};
+        var data = {
+            "invoice": {
+                "number": number
+            }
+        };
 
         put(url, data, callback);
     };
 
-    this.getInvoiceById = function(id) {
+    this.getInvoiceById = function (id) {
         var invoices = this.getInvoices();
 
-        return invoices.find(function(val) {
+        return invoices.find(function (val) {
             return val.id == id
         })
     };
 
-    this.removeInvoice = function(id, rowSelector, status) {
+    this.removeInvoice = function (id, rowSelector, status) {
 
         if (status == 'wystawiona') {
 
@@ -119,18 +126,25 @@ InvoiceManager = function(api_token, endpoint, company_name, invoice_number_leng
     };
 
     var lockAdd = false;
-    this.add = function (invoice, agreementIds) {
+    this.add = function (key) {
+
+        const invoice = this.reportData[key];
+        if (!invoice) {
+            return;
+        }
+
+        const agreementIds = this.getSelectedAgreementIds(`#tr_${key}`, ".to_invoice_agreement:checked");
 
         if (agreementIds && agreementIds.length > 0 && !lockAdd) {
 
             if (invoice['fakturadlakazdejumowy'] && agreementIds.length > 1) {
                 var calls = [];
 
-                var id = agreementIds.splice(0,1);
+                var id = agreementIds.splice(0, 1);
                 var params = getInvoiceParams(invoice, id);
                 lockAdd = true;
                 post(params, function () {
-                    self.refreshInvoices(null, function() {
+                    self.refreshInvoices(null, function () {
                         lockAdd = false;
                         self.add(invoice, agreementIds);
                     });
@@ -148,15 +162,54 @@ InvoiceManager = function(api_token, endpoint, company_name, invoice_number_leng
         }
     };
 
+    this.addAll = async function () {
+        if (!this.reportData) {
+            return;
+        }
+
+        for (const [key, report] of Object.entries(this.reportData)) {
+
+            if (key !== 'suma' && key !== 'blad' && report['blad'] !== 1) {
+
+                const agreementIds = this.getSelectedAgreementIds(`#tr_${key}`, ".to_invoice_agreement:checked");
+
+                if (agreementIds && agreementIds.length > 0 && !lockAdd) {
+
+                    if (report['fakturadlakazdejumowy'] && agreementIds.length > 1) {
+                        var calls = [];
+
+                        var id = agreementIds.splice(0, 1);
+                        var params = getInvoiceParams(report, id);
+                        try {
+                            await post(params);
+                        } catch (e) {
+                            console.log('Error: ', report['nazwapelna'], ': ', e.responseText)
+                        }
+                    } else {
+                        var params = getInvoiceParams(report, agreementIds);
+                        try {
+                            await post(params);
+                        } catch (e) {
+                            console.log('Error: ', report['nazwapelna'], ': ', e.responseText)
+                        }
+                    }
+                }
+
+            }
+        }
+
+        this.refreshInvoices();
+    };
+
     /**
      *
      * @param clientSelector
      * @param agreementSelector
      * @returns {Array}
      */
-    this.getSelectedAgreementIds = function(clientSelector, agreementSelector) {
+    this.getSelectedAgreementIds = function (clientSelector, agreementSelector) {
         var selectedAgreementIds = [];
-        $([clientSelector, agreementSelector].join(" ")).map(function() {
+        $([clientSelector, agreementSelector].join(" ")).map(function () {
             selectedAgreementIds.push($(this).val());
         });
 
@@ -191,12 +244,12 @@ InvoiceManager = function(api_token, endpoint, company_name, invoice_number_leng
             $('.invoice-count').hide();
             $('.invoice-loading').show();
 
-            $.when(get(params1), get(params2), get(params3), get(params4), get(params5), get(params6), get(params7), get(params8), get(params9), get(params10)).done(function(inv1, inv2, inv3, inv4, inv5, inv6, inv7, inv8, inv9, inv10) {
+            $.when(get(params1), get(params2), get(params3), get(params4), get(params5), get(params6), get(params7), get(params8), get(params9), get(params10)).done(function (inv1, inv2, inv3, inv4, inv5, inv6, inv7, inv8, inv9, inv10) {
 
                 $('.invoice-count').show();
                 $('.invoice-loading').hide();
 
-                var invoices = [] ;
+                var invoices = [];
 
                 // remove all invoice corrects (from_invoice_id != null)
                 $.each(inv1[0].concat(inv2[0]).concat(inv3[0]).concat(inv4[0]).concat(inv5[0]).concat(inv6[0]).concat(inv7[0]).concat(inv8[0]).concat(inv9[0]).concat(inv10[0]), function (index, inv) {
@@ -209,7 +262,9 @@ InvoiceManager = function(api_token, endpoint, company_name, invoice_number_leng
 
                 currentPeriodInvoices.invoices = invoices;
 
-                var orderedInvoices = Array.apply(null, Array(invoices.length)).map(function () {return 0});
+                var orderedInvoices = Array.apply(null, Array(invoices.length)).map(function () {
+                    return 0
+                });
 
                 // groupByClient
                 var groupedInvoices = {};
@@ -224,7 +279,7 @@ InvoiceManager = function(api_token, endpoint, company_name, invoice_number_leng
 
                     groupedInvoices[buyerTaxNo].push(invoice);
 
-                    var invoiceIdx = parseInt(invoice.number.split('/')[0])-1;
+                    var invoiceIdx = parseInt(invoice.number.split('/')[0]) - 1;
 
                     if (invoiceIdx === orderedInvoices.length) {
                         orderedInvoices.push(0);
@@ -268,30 +323,30 @@ InvoiceManager = function(api_token, endpoint, company_name, invoice_number_leng
 
                     $('.invoice-count.' + key).text(group.length).unbind('click');
 
-                    $('.invoice-count.' + key).text(group.length).bind('click', function() {
+                    $('.invoice-count.' + key).text(group.length).bind('click', function () {
                         createInvoiceListView(key, group);
                     });
 
                     //TODO: move it to separate function
                     var sum = 0;
-                    for (var i=0; i < group.length; i++) {
+                    for (var i = 0; i < group.length; i++) {
                         sum += parseFloat(group[i].price_net);
                     }
                     $('.invoice-sum.' + key).text(sum.toFixed(2)).unbind('click');
-                    $('.invoice-sum.' + key).text(sum.toFixed(2)).bind('click', function() {
+                    $('.invoice-sum.' + key).text(sum.toFixed(2)).bind('click', function () {
                         createInvoiceListView(key, group);
                     });
 
                     var allAgrCount = 0;
                     var selector = [];
-                    var selectorPrefix = ['.agreements-list',key].join('.');
+                    var selectorPrefix = ['.agreements-list', key].join('.');
 
-                    group.forEach(function(invoice) {
+                    group.forEach(function (invoice) {
                         var agreements = (invoice.internal_note) ? invoice.internal_note.split(',') : [];
                         if (agreements.length > 0) {
-                            agreements.forEach(function(agreement) {
+                            agreements.forEach(function (agreement) {
                                 // split().join() instead of replace all which is not defined :/
-                                selector.push([selectorPrefix, ['.',agreement.split('/').join('-')].join(''), '.to_invoice_agreement'].join(' '));
+                                selector.push([selectorPrefix, ['.', agreement.split('/').join('-')].join(''), '.to_invoice_agreement'].join(' '));
                             });
                         }
                         allAgrCount += agreements.length;
@@ -299,7 +354,7 @@ InvoiceManager = function(api_token, endpoint, company_name, invoice_number_leng
                     // uncheck and hide all agreements already on invoice
                     $(selector.join(',')).prop('checked', false).hide();
 
-                    if ($([selectorPrefix,".to_invoice_agreement"].join(' ')).length != allAgrCount) {
+                    if ($([selectorPrefix, ".to_invoice_agreement"].join(' ')).length != allAgrCount) {
                         updateInvoiceCountStyle('.invoice-count.' + key, false);
                         // $('.invoice-count.' + key).css({'color':'red', 'font-weight': 'bold'});
                     } else {
@@ -326,8 +381,6 @@ InvoiceManager = function(api_token, endpoint, company_name, invoice_number_leng
             });
 
 
-
-
         } else {
             console.log('could not get invoices, no period defined');
         }
@@ -336,7 +389,7 @@ InvoiceManager = function(api_token, endpoint, company_name, invoice_number_leng
     /**
      * @type {{dateFrom: *, dateTo: *}} period
      */
-    this.showAgreementWarnings = function(period) {
+    this.showAgreementWarnings = function (period) {
         var today = new Date();
         today = new Date(dateFormat(today));
         var dateTo = new Date(dateFormat(period.dateTo));
@@ -376,13 +429,22 @@ InvoiceManager = function(api_token, endpoint, company_name, invoice_number_leng
         }
     };
 
-    var createInvoiceListView = function(key, group) {
+    var createInvoiceListView = function (key, group) {
 
         var table$ = $('<table />').attr('class', 'tablesorter displaytable');
 
         var head$ = $('<thead />');
 
-        [{'name': 'Lp', 'width': '20px'}, {'name': 'Numer', 'width': '35px'}, {'name': 'Nazwa klienta', 'width': '220px'}, {'name': 'Umowy', 'width': '150px'}, {'name': 'Cena netto', 'width': '100px'}, {'name': 'Wartość VAT', 'width': '100px'}, {'name': 'Wartość brutto', 'width': '100px'}, {'name':'Status', 'width': '100px'}, {'name':'', 'width': '100px'}].forEach(function(th) {
+        [{'name': 'Lp', 'width': '20px'}, {'name': 'Numer', 'width': '35px'}, {
+            'name': 'Nazwa klienta',
+            'width': '220px'
+        }, {'name': 'Umowy', 'width': '150px'}, {'name': 'Cena netto', 'width': '100px'}, {
+            'name': 'Wartość VAT',
+            'width': '100px'
+        }, {'name': 'Wartość brutto', 'width': '100px'}, {'name': 'Status', 'width': '100px'}, {
+            'name': '',
+            'width': '100px'
+        }].forEach(function (th) {
             head$.append($('<th>').attr('style', ['width', th['width']].join(':')).html(th['name']));
         });
 
@@ -390,7 +452,7 @@ InvoiceManager = function(api_token, endpoint, company_name, invoice_number_leng
 
         var body$ = $('<tbody />');
 
-        for(var i=0; i < group.length; i++) {
+        for (var i = 0; i < group.length; i++) {
             row$ = $('<tr/>').attr('id', ['row', group[i].id].join('-'));
 
             row$.append($('<td/>').html(i + 1));
@@ -408,13 +470,13 @@ InvoiceManager = function(api_token, endpoint, company_name, invoice_number_leng
 
             var actionShow = $('<img>');
             actionShow.attr('class', 'imgAkcja imgNormalLogs');
-            actionShow.attr('onclick', 'invMgr.showInvoice("'+group[i].token+'","'+group[i].buyer_name+'")');
+            actionShow.attr('onclick', 'invMgr.showInvoice("' + group[i].token + '","' + group[i].buyer_name + '")');
 
             //actionShow.attr('title', 'Pokaż fakturę');
 
             var actionDelete = $('<img>');
             actionDelete.attr('class', 'imgAkcja imgusun');
-            actionDelete.attr('onclick', 'invMgr.removeInvoice("'+group[i].id+'","' + ['#colorbox #row',group[i].id].join('-') + '","' + getStatus(status[group[i].status], group[i].sent_time) + '")');
+            actionDelete.attr('onclick', 'invMgr.removeInvoice("' + group[i].id + '","' + ['#colorbox #row', group[i].id].join('-') + '","' + getStatus(status[group[i].status], group[i].sent_time) + '")');
 
             row$.append($('<td align="right"/>').append(actionShow).append(actionDelete));
 
@@ -426,21 +488,21 @@ InvoiceManager = function(api_token, endpoint, company_name, invoice_number_leng
         $('.invoice-details.' + key).empty().append(table$);
 
         $.colorbox({
-            height:650+'px',
-            width: 1185+'px',
+            height: 650 + 'px',
+            width: 1185 + 'px',
             html: table$[0].outerHTML,
             title: group[0].buyer_name
         });
     };
 
-    var getLocalization = function(agreement) {
+    var getLocalization = function (agreement) {
         var localization = [];
         // if (agreement["lokalizacja_ulica"]) {
         //     localization.push( agreement["lokalizacja_ulica"].split(' ').join(' ') );
         // }
 
         if (agreement["lokalizacja_miasto"]) {
-            localization.push( agreement["lokalizacja_miasto"] );
+            localization.push(agreement["lokalizacja_miasto"]);
         }
 
         return localization.join(' ');
@@ -463,7 +525,7 @@ InvoiceManager = function(api_token, endpoint, company_name, invoice_number_leng
         return desc.join(' ');
     };
 
-    var getCounterState = function(agreement) {
+    var getCounterState = function (agreement) {
         var counterState = "licznik:" + agreement["strony_black_koniec"];
         if (agreement["strony_kolor_koniec"]) {
             counterState += "/" + agreement["strony_kolor_koniec"];
@@ -478,17 +540,17 @@ InvoiceManager = function(api_token, endpoint, company_name, invoice_number_leng
      * @param agreementIds
      * @returns {{api_token: *, invoice: {kind: string, number: null, seller_name: string, sell_date: string, issue_date: string, payment_to: string, buyer_name: string, buyer_tax_no: string, positions: *[]}}}
      */
-    var getInvoiceParams = function(invoice, agreementIds) {
+    var getInvoiceParams = function (invoice, agreementIds) {
 
         var positions = [];
 
-        $.each(invoice["umowy"], function(key, agreement) {
+        $.each(invoice["umowy"], function (key, agreement) {
 
             if (agreementIds.indexOf(agreement["nrumowy"]) != -1) {
 
                 var title = '';
 
-                switch(agreement["typ_umowy"]) {
+                switch (agreement["typ_umowy"]) {
                     case 'wynajem drukarki':
                         title = getPositionDesc("Wynajem drukarki", agreement, invoice['pokaznumerseryjny'], invoice['pokazstanlicznika']);
                         break;
@@ -510,7 +572,7 @@ InvoiceManager = function(api_token, endpoint, company_name, invoice_number_leng
                     "additional_info": getLocalization(agreement),
                     "tax": 23,
                     "quantity": 1,
-                    "quantity_unit" : "szt",
+                    "quantity_unit": "szt",
                     "total_price_gross": agreement["wartoscabonament"] * 1.23,
                     "discount_percent": 0
                 });
@@ -521,7 +583,7 @@ InvoiceManager = function(api_token, endpoint, company_name, invoice_number_leng
                         "additional_info": getLocalization(agreement),
                         "tax": 23,
                         "quantity": 1,
-                        "quantity_unit" : "szt",
+                        "quantity_unit": "szt",
                         "total_price_gross": agreement["oplatainstalacyjna"] * 1.23,
                         "discount_percent": 0
                     });
@@ -533,7 +595,7 @@ InvoiceManager = function(api_token, endpoint, company_name, invoice_number_leng
                         "additional_info": getLocalization(agreement),
                         "tax": 23,
                         "quantity": agreement["stronblackpowyzej"],
-                        "quantity_unit" : "szt",
+                        "quantity_unit": "szt",
                         "total_price_gross": agreement["stronblackpowyzej"] * agreement["cenazastrone"] * 1.23,
                         "discount_percent": 0
                     });
@@ -541,11 +603,11 @@ InvoiceManager = function(api_token, endpoint, company_name, invoice_number_leng
 
                 if (agreement["wartosckolor"] > 0) {
                     positions.push({
-                        "name":getPositionDesc("Wydruki powyżej abonamentu", agreement, invoice['pokaznumerseryjny'], false),
+                        "name": getPositionDesc("Wydruki powyżej abonamentu", agreement, invoice['pokaznumerseryjny'], false),
                         "additional_info": getLocalization(agreement),
                         "tax": 23,
                         "quantity": agreement["stronkolorpowyzej"],
-                        "quantity_unit" : "szt",
+                        "quantity_unit": "szt",
                         "total_price_gross": agreement["stronkolorpowyzej"] * agreement["cenazastrone_kolor"] * 1.23,
                         "discount_percent": 0
                     });
@@ -562,38 +624,39 @@ InvoiceManager = function(api_token, endpoint, company_name, invoice_number_leng
         return {
             "api_token": api_token,
             "invoice": {
-                "kind":"vat",
+                "kind": "vat",
                 "number": invNumber,
                 "sell_date": dateFormat(getLastDayInMonth(currentPeriodInvoices.period.dateFrom)),
                 "issue_date": dateFormat(getLastDayInMonth(currentPeriodInvoices.period.dateFrom)),
-                "payment_to": dateFormat(addDaysToDate(getLastDayInMonth(currentPeriodInvoices.period.dateFrom),invoice['terminplatnosci'])),
+                "payment_to": dateFormat(addDaysToDate(getLastDayInMonth(currentPeriodInvoices.period.dateFrom), invoice['terminplatnosci'])),
                 "buyer_name": invoice["nazwapelna"],
                 "buyer_tax_no": invoice["nip"],
                 "buyer_email": invoice["mailfaktury"],
                 "buyer_post_code": invoice["kodpocztowy"],
                 "buyer_city": invoice["miasto"],
                 "buyer_street": invoice["ulica"],
-                "positions":positions,
+                "positions": positions,
                 "show_discount": "0",
                 "internal_note": agreementIds.join(','),
                 "additional_info": "1",
                 "additional_info_desc": "Lokalizacja Urządzenia"
                 // "description": "some test description" // uwagi
-            }};
+            }
+        };
     };
 
-    var normalizeInvNb = function(nb) {
+    var normalizeInvNb = function (nb) {
         var nbLength = nb.split('/')[0].toString().length;
 
-        for(var i = nbLength; i < invoice_number_length; i++) {
+        for (var i = nbLength; i < invoice_number_length; i++) {
             nb = '0' + nb;
         }
 
         return nb;
     };
-    
-    var post = function(data, callback) {
-        $.ajax({
+
+    var post = function (data, callback) {
+        return $.ajax({
             type: "POST",
             url: invoicesUrl,
             data: data,
@@ -602,25 +665,25 @@ InvoiceManager = function(api_token, endpoint, company_name, invoice_number_leng
         });
     };
 
-    var put = function(url, data, callback) {
+    var put = function (url, data, callback) {
         $.ajax({
-            url:url,
+            url: url,
             type: 'post',
-            data: $.extend({_method: 'put', api_token :api_token}, data),
+            data: $.extend({_method: 'put', api_token: api_token}, data),
             success: callback
         });
     };
 
-    var del = function(url, callback) {
+    var del = function (url, callback) {
         $.ajax({
-            url:url,
+            url: url,
             type: 'post',
-            data: {_method: 'delete', api_token :api_token},
+            data: {_method: 'delete', api_token: api_token},
             success: callback
         });
     };
 
-    var get = function(params, callback) {
+    var get = function (params, callback) {
         var api_token_param = ["api_token", api_token].join('=');
         var request_params = params.join('&');
         request_params = [request_params, api_token_param].join('&');
@@ -629,7 +692,7 @@ InvoiceManager = function(api_token, endpoint, company_name, invoice_number_leng
         return $.get(url, callback);
     };
 
-    var getClients = function(params, callback) {
+    var getClients = function (params, callback) {
         var api_token_param = ["api_token", api_token].join('=');
         var request_params = params.join('&');
         request_params = [request_params, api_token_param].join('&');
@@ -638,7 +701,7 @@ InvoiceManager = function(api_token, endpoint, company_name, invoice_number_leng
         return $.get(url, callback);
     };
 
-    var getFormattedDate = function(strDate) {
+    var getFormattedDate = function (strDate) {
         var d = new Date(strDate);
         var day = d.getDate();
         var month = d.getMonth() + 1;
@@ -649,34 +712,34 @@ InvoiceManager = function(api_token, endpoint, company_name, invoice_number_leng
         if (month < 10) {
             month = "0" + month;
         }
-        return [year,month,day].join('-');
+        return [year, month, day].join('-');
     };
 
     /**
      * @param {string} date
      */
-    var getLastDayInMonth = function(date) {
+    var getLastDayInMonth = function (date) {
         var d = new Date(date);
-        var dd = new Date(d.getFullYear(), d.getMonth()+1, 1);
+        var dd = new Date(d.getFullYear(), d.getMonth() + 1, 1);
 
-        return new Date(dd-1);
+        return new Date(dd - 1);
     };
 
-    var dateFormat = function(date) {
+    var dateFormat = function (date) {
         var d = new Date(date);
 
         return d.toISOString().split('T')[0];
     };
 
-    var addDaysToDate = function(date, days) {
+    var addDaysToDate = function (date, days) {
         var d = new Date(date);
         d.setDate(d.getDate() + days);
-        
+
         return d;
     };
 
 
-    const updateInvoiceCountStyle = function(key, success) {
+    const updateInvoiceCountStyle = function (key, success) {
         $(key).removeClass('badge-success');
         $(key).removeClass('badge-danger');
         if (success) {
@@ -686,14 +749,13 @@ InvoiceManager = function(api_token, endpoint, company_name, invoice_number_leng
         }
     };
 
-    $(window).scroll(function(e){
+    $(window).scroll(function (e) {
         var $el = $('.errorMessageWrapper');
         var isPositionFixed = ($el.css('position') == 'fixed');
-        if ($(this).scrollTop() > 69 && !isPositionFixed){
+        if ($(this).scrollTop() > 69 && !isPositionFixed) {
             $('.errorMessageWrapper').css({'position': 'fixed', 'top': '0px'});
         }
-        if ($(this).scrollTop() <= 69 && isPositionFixed)
-        {
+        if ($(this).scrollTop() <= 69 && isPositionFixed) {
             $('.errorMessageWrapper').css({'position': 'static', 'top': '0px'});
         }
     });

@@ -1,9 +1,14 @@
+<script>
+    invMgr.setReportData({$dataReports|json_encode nofilter});
+</script>
+
 <table width="100%" class="errorMessageWrapper">
     <tr>
         <td id="errorMessage" class="fas fa-exclamation-triangle">
         </td>
     </tr>
 </table>
+
 <div class="table-responsive-sm">
     <table class='table table-hover table-sm' id='tableReport'>
         <thead class="thead-dark">
@@ -86,7 +91,7 @@
                         </button>
                         <div class="dropdown-menu dropdown-menu-right" aria-labelledby="dropdownMenuLink">
                             <a class="dropdown-item" href="#"
-                               onClick='invMgr.add({($item)|json_encode nofilter}, invMgr.getSelectedAgreementIds("#tr_{$key}", ".to_invoice_agreement:checked")); return false;'>
+                               onClick='invMgr.add("{$key}"); return false;'>
                                 <i class="far {if $item.fakturadlakazdejumowy}fa-copy{else}fa-file{/if}"></i>&nbsp;&nbsp;Wystaw Fakturę Vat</a>
                         </div>
                     </div>
