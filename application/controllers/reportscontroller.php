@@ -1,5 +1,5 @@
 <?php
-class reportsController extends Controller 
+class reportsController extends InvoicesController
 {  
    function show()
    {
@@ -621,4 +621,13 @@ class reportsController extends Controller
 
        return $today > $dateTo && $dateTo->format('Y-m-d') != $dateToCheck->format('Y-m-d');
    }
+
+
+    function getinvoices() {
+        if ($_POST['period'] && $_POST['date_from'] && $_POST['date_to']) {
+            echo json_encode($this->getInvoicesByDateRange($_POST['period'], $_POST['date_from'], $_POST['date_to']));
+        } else {
+            echo "błędne parametry wejściowe";
+        }
+    }
 }

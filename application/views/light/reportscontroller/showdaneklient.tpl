@@ -50,10 +50,10 @@
         {foreach from=$dataReports item=item key=key name=loopek2}
             {if $key!='suma' && $key!='blad'}
                 {if isset($item.blad) && $item.blad=='1'}
-                    <tr class="tr_{$key}"
+                    <tr class="tr_{$key} clientRow"
                         style='border-bottom:none;border-top:1px solid lightgrey;color:red; background-color: lightyellow; font-weight: bold'>
                         {else}
-                    <tr class="tr_{$key}" style='border-bottom:none;border-top:1px solid lightgrey'>
+                    <tr class="tr_{$key} clientRow" style='border-bottom:none;border-top:1px solid lightgrey'>
                 {/if}
                 <td>{$turns}</td>
                 <td class='tdLink' onClick='showNewClientAdd("{$item.rowidclient}")'><span

@@ -61,11 +61,20 @@
                         urządzenia</small>
                 </div>
 
+                <div class="form-group mt-4">
+                    <input type="checkbox" id='checkShowClientWithAllIssuedInvoices'
+                           aria-describedby="showClientWithAllIssuedInvoices"
+                           onclick="invMgr.showClientWithAllIssuedInvoices(!this.checked)"/>
+                    <label for="checkShowClientWithAllIssuedInvoices">Ukryj klientów z wystawionymi fakturami</label>
+                    <small id="closedAgreementsHelp" class="form-text text-muted"><i class="fas fa-info-circle"></i>
+                        Ukryj klientów z wystawionymi fakturami.</small>
+                </div>
+
                 <div class="border-top my-4 otus-separator"></div>
 
                 <div class="form-group">
                     <button class="btn btn-info btn-block" type="submit"
-                            onClick='generujRaport(function(data, params){literal}{invMgr.refreshInvoices(params);invMgr.showAgreementWarnings(params);}{/literal});return false;'>
+                            onClick='generujRaport(function(data, params){literal}{invMgr.refreshInvoices(params, () => invMgr.showClientWithAllIssuedInvoices(!$(`#checkShowClientWithAllIssuedInvoices`).prop(`checked`)));invMgr.showAgreementWarnings(params);}{/literal});return false;'>
                         Generuj
                     </button>
                 </div>
@@ -73,7 +82,8 @@
                 <div class="border-top my-4 otus-separator"></div>
 
                 <div class="form-group">
-                    <button class="btn btn-info btn-block" type="button" data-toggle="modal" data-target="#exampleModal">
+                    <button class="btn btn-info btn-block" type="button" data-toggle="modal"
+                            data-target="#exampleModal">
                         Wystaw faktury
                     </button>
                 </div>
@@ -88,9 +98,9 @@
     </div>
 </div>
 
-
 <!-- Confirm Issue All Invoices Modal -->
-<div class="modal fade" id="exampleModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+<div class="modal fade" id="exampleModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel"
+     aria-hidden="true">
     <div class="modal-dialog modal-dialog-centered" role="document">
         <div class="modal-content">
             <div class="modal-header">
@@ -104,7 +114,8 @@
             </div>
             <div class="modal-footer">
                 <button type="button" class="btn btn-secondary" data-dismiss="modal">Anuluj</button>
-                <button type="button" class="btn btn-primary" data-dismiss="modal" onClick="invMgr.addAll();">Wystaw</button>
+                <button type="button" class="btn btn-primary" data-dismiss="modal" onClick="invMgr.addAll();">Wystaw
+                </button>
             </div>
         </div>
     </div>

@@ -1970,20 +1970,19 @@ function getElementById(id, isPopup) {
 
 
 function loadAsyncData(url, data, callback) {
-    $.ajax({
+    return $.ajax({
         url: url.indexOf(sciezka) !== -1 ? url : sciezka + url,
         type: 'POST',
         data: data,
         success: function (data) {
-            callback(data)
+            if (callback) {
+                callback(data);
+            }
         },
         error: function () {
             console.log('Couldn\'t get data for url:', url, ' data:', data);
         }
-    }).done(function () {
-
     });
-    return false;
 }
 
 function showErrorMessgae(objError, info) {

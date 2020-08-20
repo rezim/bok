@@ -126,7 +126,7 @@ InvoiceManager = function (api_token, endpoint, company_name, invoice_number_len
     };
 
     var lockAdd = false;
-    this.add = function (key) {
+    this.add = async function (key) {
 
         const invoice = this.reportData[key];
         if (!invoice) {
@@ -143,19 +143,30 @@ InvoiceManager = function (api_token, endpoint, company_name, invoice_number_len
                 var id = agreementIds.splice(0, 1);
                 var params = getInvoiceParams(invoice, id);
                 lockAdd = true;
-                post(params, function () {
-                    self.refreshInvoices(null, function () {
-                        lockAdd = false;
-                        self.add(invoice, agreementIds);
+                try {
+                    await post(invoicesUrl, params, function () {
+                        self.refreshInvoices(null, function () {
+                            lockAdd = false;
+                            self.add(invoice, agreementIds);
+                        });
                     });
-                });
+                } catch (e) {
+                    console.log(e);
+                } finally {
+                    lockAdd = false;
+                }
             } else {
                 var params = getInvoiceParams(invoice, agreementIds);
-                lockAdd = true;
-                post(params, function (data) {
-                    self.refreshInvoices();
+                try {
+                    post(invoicesUrl, params, function (data) {
+                        self.refreshInvoices();
+                        lockAdd = false;
+                    });
+                } catch (e) {
+                    console.log(e);
+                } finally {
                     lockAdd = false;
-                });
+                }
             }
         } else {
             alert("Wybierz przynajmniej jedną umowę!");
@@ -181,14 +192,14 @@ InvoiceManager = function (api_token, endpoint, company_name, invoice_number_len
                         var id = agreementIds.splice(0, 1);
                         var params = getInvoiceParams(report, id);
                         try {
-                            await post(params);
+                            await post(invoicesUrl, params);
                         } catch (e) {
                             console.log('Error: ', report['nazwapelna'], ': ', e.responseText)
                         }
                     } else {
                         var params = getInvoiceParams(report, agreementIds);
                         try {
-                            await post(params);
+                            await post(invoicesUrl, params);
                         } catch (e) {
                             console.log('Error: ', report['nazwapelna'], ': ', e.responseText)
                         }
@@ -219,166 +230,151 @@ InvoiceManager = function (api_token, endpoint, company_name, invoice_number_len
     /**
      * @type {{dateFrom: *, dateTo: *}} period
      */
-    this.refreshInvoices = function (period, callback) {
+    this.refreshInvoices = async function (period, callback) {
         if (period) {
             currentPeriodInvoices.period = period;
         }
 
         if (currentPeriodInvoices.period) {
-            var params = [];
-            params.push("period=more");
-            params.push(["date_from", currentPeriodInvoices.period.dateFrom].join('='));
-            params.push(["date_to", currentPeriodInvoices.period.dateTo].join('='));
-
-            var params1 = params.concat([["page", 1].join('=')]);
-            var params2 = params.concat([["page", 2].join('=')]);
-            var params3 = params.concat([["page", 3].join('=')]);
-            var params4 = params.concat([["page", 4].join('=')]);
-            var params5 = params.concat([["page", 5].join('=')]);
-            var params6 = params.concat([["page", 6].join('=')]);
-            var params7 = params.concat([["page", 7].join('=')]);
-            var params8 = params.concat([["page", 8].join('=')]);
-            var params9 = params.concat([["page", 9].join('=')]);
-            var params10 = params.concat([["page", 10].join('=')]);
-
             $('.invoice-count').hide();
             $('.invoice-loading').show();
 
-            $.when(get(params1), get(params2), get(params3), get(params4), get(params5), get(params6), get(params7), get(params8), get(params9), get(params10)).done(function (inv1, inv2, inv3, inv4, inv5, inv6, inv7, inv8, inv9, inv10) {
+            let loadedInvoices = await loadAsyncData('/reports/getinvoices/notemplate', {
+                period: 'more',
+                date_from: currentPeriodInvoices.period.dateFrom,
+                date_to: currentPeriodInvoices.period.dateTo
+            });
 
-                $('.invoice-count').show();
-                $('.invoice-loading').hide();
+            loadedInvoices = JSON.parse(loadedInvoices);
 
-                var invoices = [];
+            $('.invoice-count').show();
+            $('.invoice-loading').hide();
 
-                // remove all invoice corrects (from_invoice_id != null)
-                $.each(inv1[0].concat(inv2[0]).concat(inv3[0]).concat(inv4[0]).concat(inv5[0]).concat(inv6[0]).concat(inv7[0]).concat(inv8[0]).concat(inv9[0]).concat(inv10[0]), function (index, inv) {
-                    // for invoices from Proforma invoices pattern is with P but number without, probably bug on Fakturowania side
-                    if (inv['kind'] === 'vat' && (inv['pattern'] === 'nr-m/mm/yyyy' ||
-                        (inv['pattern'] === 'Pnr-m/mm/yyyy' && inv['number']?.charAt(0) !== 'P'))) {
-                        invoices.push(inv);
-                    }
-                });
+            // for invoices from Proforma invoices pattern is with P but number without,
+            // probably bug on Fakturowania side
+            const invoices = loadedInvoices.filter(inv =>
+                (inv['kind'] === 'vat' && (inv['pattern'] === 'nr-m/mm/yyyy' ||
+                    (inv['pattern'] === 'Pnr-m/mm/yyyy' && inv['number']?.charAt(0) !== 'P')))
+            );
 
-                currentPeriodInvoices.invoices = invoices;
+            currentPeriodInvoices.invoices = invoices;
 
-                var orderedInvoices = Array.apply(null, Array(invoices.length)).map(function () {
-                    return 0
-                });
+            var orderedInvoices = Array.apply(null, Array(invoices.length)).map(function () {
+                return 0;
+            });
 
-                // groupByClient
-                var groupedInvoices = {};
+            // groupByClient
+            var groupedInvoices = {};
 
-                var invNbPattern = null;
+            var invNbPattern = null;
 
-                $.each(invoices, function (index, invoice) {
-                    var buyerTaxNo = invoice['buyer_tax_no'] || invoice['buyer_id'];
-                    if (!groupedInvoices[buyerTaxNo]) {
-                        groupedInvoices[buyerTaxNo] = [];
-                    }
-
-                    groupedInvoices[buyerTaxNo].push(invoice);
-
-                    var invoiceIdx = parseInt(invoice.number.split('/')[0]) - 1;
-
-                    if (invoiceIdx === orderedInvoices.length) {
-                        orderedInvoices.push(0);
-                    }
-
-                    orderedInvoices[invoiceIdx]++;
-
-                    if (!invNbPattern) {
-                        invNbPattern = invoice.number.split('/');
-                        invNbPattern.shift();
-                        invNbPattern = invNbPattern.join('/');
-                    }
-                });
-
-                var missingInvoices = [];
-
-                $.each(orderedInvoices, function (index, invoiceCount) {
-                    // invoice contains
-                    if (invoiceCount != 1) {
-
-                        if (invoiceCount !== 0) {
-                            missingInvoices.push([[(index + 1), '/', invNbPattern].join(''), invoiceCount].join('-'));
-                        } else {
-                            missingInvoices.push([(index + 1), '/', invNbPattern].join(''));
-                        }
-                    }
-                });
-
-                currentPeriodInvoices.missingInvoices = missingInvoices;
-
-                // reset all invoice counts
-                updateInvoiceCountStyle('.invoice-count', false);
-                $('.invoice-count').text('0');
-
-
-                // set initial state for all agreements, visible and selected
-                $('.to_invoice_agreement').prop('checked', true).show();
-
-                // set new invoice counts
-                $.each(groupedInvoices, function (key, group) {
-
-                    $('.invoice-count.' + key).text(group.length).unbind('click');
-
-                    $('.invoice-count.' + key).text(group.length).bind('click', function () {
-                        createInvoiceListView(key, group);
-                    });
-
-                    //TODO: move it to separate function
-                    var sum = 0;
-                    for (var i = 0; i < group.length; i++) {
-                        sum += parseFloat(group[i].price_net);
-                    }
-                    $('.invoice-sum.' + key).text(sum.toFixed(2)).unbind('click');
-                    $('.invoice-sum.' + key).text(sum.toFixed(2)).bind('click', function () {
-                        createInvoiceListView(key, group);
-                    });
-
-                    var allAgrCount = 0;
-                    var selector = [];
-                    var selectorPrefix = ['.agreements-list', key].join('.');
-
-                    group.forEach(function (invoice) {
-                        var agreements = (invoice.internal_note) ? invoice.internal_note.split(',') : [];
-                        if (agreements.length > 0) {
-                            agreements.forEach(function (agreement) {
-                                // split().join() instead of replace all which is not defined :/
-                                selector.push([selectorPrefix, ['.', agreement.split('/').join('-')].join(''), '.to_invoice_agreement'].join(' '));
-                            });
-                        }
-                        allAgrCount += agreements.length;
-                    });
-                    // uncheck and hide all agreements already on invoice
-                    $(selector.join(',')).prop('checked', false).hide();
-
-                    if ($([selectorPrefix, ".to_invoice_agreement"].join(' ')).length != allAgrCount) {
-                        updateInvoiceCountStyle('.invoice-count.' + key, false);
-                        // $('.invoice-count.' + key).css({'color':'red', 'font-weight': 'bold'});
-                    } else {
-                        updateInvoiceCountStyle('.invoice-count.' + key, true);
-                        // $('.invoice-count.' + key).css({'color':'green', 'font-weight': 'bold'});
-                    }
-                });
-
-
-                if (self.getMissingInvoices().length > 0) {
-
-                    $('.errorMessageWrapper').show();
-                    $('#errorMessage').html('Uwaga: występuje brak ciągłości numeracji faktur. Faktury powodujące problem [numer]-[ilosc]: ' + self.getMissingInvoices().join(', '));
-
-                } else {
-
-                    $('#errorMessage').html('');
-                    $('.errorMessageWrapper').hide();
-
+            $.each(invoices, function (index, invoice) {
+                var buyerTaxNo = invoice['buyer_tax_no'] || invoice['buyer_id'];
+                if (!groupedInvoices[buyerTaxNo]) {
+                    groupedInvoices[buyerTaxNo] = [];
                 }
-                if (callback) {
-                    callback();
+
+                groupedInvoices[buyerTaxNo].push(invoice);
+
+                var invoiceIdx = parseInt(invoice.number.split('/')[0]) - 1;
+
+                if (invoiceIdx === orderedInvoices.length) {
+                    orderedInvoices.push(0);
+                }
+
+                orderedInvoices[invoiceIdx]++;
+
+                if (!invNbPattern) {
+                    invNbPattern = invoice.number.split('/');
+                    invNbPattern.shift();
+                    invNbPattern = invNbPattern.join('/');
                 }
             });
+
+            var missingInvoices = [];
+
+            $.each(orderedInvoices, function (index, invoiceCount) {
+                // invoice contains
+                if (invoiceCount != 1) {
+
+                    if (invoiceCount !== 0) {
+                        missingInvoices.push([[(index + 1), '/', invNbPattern].join(''), invoiceCount].join('-'));
+                    } else {
+                        missingInvoices.push([(index + 1), '/', invNbPattern].join(''));
+                    }
+                }
+            });
+
+            currentPeriodInvoices.missingInvoices = missingInvoices;
+
+            // reset all invoice counts
+            updateInvoiceCountStyle('.invoice-count', false);
+            $('.invoice-count').text('0');
+
+
+            // set initial state for all agreements, visible and selected
+            $('.to_invoice_agreement').prop('checked', true).show();
+
+            // set new invoice counts
+            $.each(groupedInvoices, function (key, group) {
+
+                $('.invoice-count.' + key).text(group.length).unbind('click');
+
+                $('.invoice-count.' + key).text(group.length).bind('click', function () {
+                    createInvoiceListView(key, group);
+                });
+
+                //TODO: move it to separate function
+                var sum = 0;
+                for (var i = 0; i < group.length; i++) {
+                    sum += parseFloat(group[i].price_net);
+                }
+                $('.invoice-sum.' + key).text(sum.toFixed(2)).unbind('click');
+                $('.invoice-sum.' + key).text(sum.toFixed(2)).bind('click', function () {
+                    createInvoiceListView(key, group);
+                });
+
+                var allAgrCount = 0;
+                var selector = [];
+                var selectorPrefix = ['.agreements-list', key].join('.');
+
+                group.forEach(function (invoice) {
+                    var agreements = (invoice.internal_note) ? invoice.internal_note.split(',') : [];
+                    if (agreements.length > 0) {
+                        agreements.forEach(function (agreement) {
+                            // split().join() instead of replace all which is not defined :/
+                            selector.push([selectorPrefix, ['.', agreement.split('/').join('-')].join(''), '.to_invoice_agreement'].join(' '));
+                        });
+                    }
+                    allAgrCount += agreements.length;
+                });
+                // uncheck and hide all agreements already on invoice
+                $(selector.join(',')).prop('checked', false).hide();
+
+                if ($([selectorPrefix, ".to_invoice_agreement"].join(' ')).length != allAgrCount) {
+                    updateInvoiceCountStyle('.invoice-count.' + key, false);
+                    // $('.invoice-count.' + key).css({'color':'red', 'font-weight': 'bold'});
+                } else {
+                    updateInvoiceCountStyle('.invoice-count.' + key, true);
+                    // $('.invoice-count.' + key).css({'color':'green', 'font-weight': 'bold'});
+                }
+            });
+
+
+            if (self.getMissingInvoices().length > 0) {
+
+                $('.errorMessageWrapper').show();
+                $('#errorMessage').html('Uwaga: występuje brak ciągłości numeracji faktur. Faktury powodujące problem [numer]-[ilosc]: ' + self.getMissingInvoices().join(', '));
+
+            } else {
+
+                $('#errorMessage').html('');
+                $('.errorMessageWrapper').hide();
+
+            }
+            if (callback) {
+                callback();
+            }
 
 
         } else {
@@ -426,6 +422,14 @@ InvoiceManager = function (api_token, endpoint, company_name, invoice_number_len
                     $('.' + $(list).attr('id')).find('.fa.fa-exclamation-triangle').show();
                 }
             });
+        }
+    };
+
+    this.showClientWithAllIssuedInvoices = function(show) {
+        if (show) {
+            $('.allInvoicesIssued').show();
+        } else {
+            $('.allInvoicesIssued').hide();
         }
     };
 
@@ -655,10 +659,10 @@ InvoiceManager = function (api_token, endpoint, company_name, invoice_number_len
         return nb;
     };
 
-    var post = function (data, callback) {
+    var post = function (url, data, callback) {
         return $.ajax({
             type: "POST",
-            url: invoicesUrl,
+            url: url,
             data: data,
             dataType: 'json',
             success: callback
@@ -740,10 +744,14 @@ InvoiceManager = function (api_token, endpoint, company_name, invoice_number_len
 
 
     const updateInvoiceCountStyle = function (key, success) {
+        const clientRowClassNameSelector = '.clientRow';
+
         $(key).removeClass('badge-success');
         $(key).removeClass('badge-danger');
+        $(clientRowClassNameSelector).has(key).removeClass('allInvoicesIssued');
         if (success) {
             $(key).addClass('badge-success');
+            $(clientRowClassNameSelector).has(key).addClass('allInvoicesIssued');
         } else {
             $(key).addClass('badge-danger');
         }
