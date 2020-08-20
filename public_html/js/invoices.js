@@ -150,20 +150,22 @@ InvoiceManager = function (api_token, endpoint, company_name, invoice_number_len
                             self.add(invoice, agreementIds);
                         });
                     });
+                    this.showActionError(false);
                 } catch (e) {
-                    console.log(e);
+                    this.showActionError(true,`Błąd!, nie można wystawić FV dla '${invoice['nazwapelna']}', komunikat błędu: ${e.responseText}`);
                 } finally {
                     lockAdd = false;
                 }
             } else {
                 var params = getInvoiceParams(invoice, agreementIds);
                 try {
-                    post(invoicesUrl, params, function (data) {
+                    await post(invoicesUrl, params, function (data) {
                         self.refreshInvoices();
                         lockAdd = false;
                     });
+                    this.showActionError(false);
                 } catch (e) {
-                    console.log(e);
+                    this.showActionError(true,`Błąd!, nie można wystawić FV dla '${invoice['nazwapelna']}', komunikat błędu: ${e.responseText}`);
                 } finally {
                     lockAdd = false;
                 }
@@ -177,7 +179,7 @@ InvoiceManager = function (api_token, endpoint, company_name, invoice_number_len
         if (!this.reportData) {
             return;
         }
-
+        let errorMsg = '';
         for (const [key, report] of Object.entries(this.reportData)) {
 
             if (key !== 'suma' && key !== 'blad' && report['blad'] !== 1) {
@@ -194,14 +196,14 @@ InvoiceManager = function (api_token, endpoint, company_name, invoice_number_len
                         try {
                             await post(invoicesUrl, params);
                         } catch (e) {
-                            console.log('Error: ', report['nazwapelna'], ': ', e.responseText)
+                            errorMsg += `Błąd!, nie można wystawić FV dla '${report['nazwapelna']}', komunikat błędu: ${e.responseText}! `;
                         }
                     } else {
                         var params = getInvoiceParams(report, agreementIds);
                         try {
                             await post(invoicesUrl, params);
                         } catch (e) {
-                            console.log('Error: ', report['nazwapelna'], ': ', e.responseText)
+                            errorMsg += `Błąd!, nie można wystawić FV dla '${report['nazwapelna']}', komunikat błędu: ${e.responseText}! `;
                         }
                     }
                 }
@@ -209,7 +211,11 @@ InvoiceManager = function (api_token, endpoint, company_name, invoice_number_len
             }
         }
 
-        this.refreshInvoices();
+        await this.refreshInvoices();
+
+        if (errorMsg !== '') {
+            this.showActionError(true, errorMsg);
+        }
     };
 
     /**
@@ -360,25 +366,30 @@ InvoiceManager = function (api_token, endpoint, company_name, invoice_number_len
                 }
             });
 
-
             if (self.getMissingInvoices().length > 0) {
-
-                $('.errorMessageWrapper').show();
-                $('#errorMessage').html('Uwaga: występuje brak ciągłości numeracji faktur. Faktury powodujące problem [numer]-[ilosc]: ' + self.getMissingInvoices().join(', '));
-
+                this.showActionError(true,`Uwaga: występuje brak ciągłości numeracji faktur. Faktury powodujące problem [numer]-[ilosc]: ${self.getMissingInvoices().join(', ')}`);
             } else {
-
-                $('#errorMessage').html('');
-                $('.errorMessageWrapper').hide();
-
+                this.showActionError(false);
             }
+
             if (callback) {
                 callback();
             }
 
-
         } else {
             console.log('could not get invoices, no period defined');
+        }
+    };
+
+    this.showActionError = function(show, message) {
+        const actionErrorSelector = '#actionerror';
+
+        if (show) {
+            $(actionErrorSelector).html(`<span><i class="fas fa-exclamation-triangle"></i>&nbsp;${message}</span>`);
+            $(actionErrorSelector).show();
+        } else {
+            $(actionErrorSelector).html('');
+            $(actionErrorSelector).hide();
         }
     };
 

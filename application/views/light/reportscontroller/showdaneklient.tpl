@@ -2,14 +2,11 @@
     invMgr.setReportData({$dataReports|json_encode nofilter});
 </script>
 
-<table width="100%" class="errorMessageWrapper">
-    <tr>
-        <td id="errorMessage" class="fas fa-exclamation-triangle">
-        </td>
-    </tr>
-</table>
-
 <div class="table-responsive-sm">
+    <div>
+        <div id='actionerror' class='actionerror'></div>
+        <div id='actionok' class='actionok'></div>
+    </div>
     <table class='table table-hover table-sm' id='tableReport'>
         <thead class="thead-dark">
         <tr>
