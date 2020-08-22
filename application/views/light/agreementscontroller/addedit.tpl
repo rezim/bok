@@ -46,6 +46,21 @@
     <tr>
         <td style='height:3px;min-height: 3px;' colspan=2></td>
     </tr>
+    <tr>
+        <td class='tdOpis'>
+            id odbiorcy [fakturownia]
+        </td>
+        <td class='tdWartosc' colspan="3">
+            <input type="text" id='txtodbiorca_id'
+                   class='textBoxForm' maxlength="20"
+                   style='width:130px;min-width:130px;'
+                   {if $rowid!=0}value="{$dataUmowa[0].odbiorca_id|escape:'htmlall'}"{/if}>
+
+        </td>
+    </tr>
+    <tr>
+        <td style='height:3px;min-height: 3px;' colspan=2></td>
+    </tr>
 
 
     <tr>

@@ -2,7 +2,7 @@
 class agreement extends Model 
 {
      protected $rowid=0,$nrumowy='',$dataod='',$datado='',$stronwabonamencie='',$cenazastrone='',$serial='',
-             $rowidclient='',$opis='',$rozliczenie='',$abonament='',
+             $rowidclient='',$opis='',$rozliczenie='',$abonament='',$odbiorca_id,
             $iloscstron_kolor='',
             $cenazastrone_kolor='',
             $cenainstalacji='',
@@ -66,6 +66,7 @@ class agreement extends Model
                 a.cenazastrone as 'cenazastrone',
                 a.rowid as 'rowid',
                 a.`serial` as 'serial',
+                a.odbiorca_id as 'odbiorca_id',
                 b.model as 'model',
                 c.nazwakrotka as 'nazwakrotka',
                 a.rowidclient as 'rowidclient',
@@ -99,6 +100,7 @@ class agreement extends Model
                                     `dateinsert`=?,
                                     `serial`=?,
                                     `rowidclient`=?,
+                                    `odbiorca_id`=?,
                                     `opis`=?,
                                     `rozliczenie`=?,
                                     `iloscstron_color`=?,
@@ -112,7 +114,7 @@ class agreement extends Model
                                     `jakczarne`=?,
                                     `rowid_type`=?
                                      where `rowid`=?"
-                    , 'sssiddssissidddddidiii',
+                    , 'sssiddssisssidddddidiii',
                     array
                     (
                         $this->nrumowy == '' ? "NULL" : $this->nrumowy,
@@ -124,6 +126,7 @@ class agreement extends Model
                         date('Y-m-d H:i:s'),
                         $this->serial == '' ? "NULL" : $this->serial,
                         $this->rowidclient == '' ? "NULL" : $this->rowidclient,
+                        $this->odbiorca_id == '' ? "NULL" : $this->odbiorca_id,
                         $this->opis == '' ? "NULL" : $this->opis,
                         $this->rozliczenie == '' ? "NULL" : $this->rozliczenie,
                         $this->iloscstron_kolor == '' ? "NULL" : str_replace(' ', '', str_replace(',', '.', $this->iloscstron_kolor)),
@@ -149,7 +152,7 @@ class agreement extends Model
                             `cenazastrone`,
                             `abonament`,
                             `serial`,
-                            `rowidclient`,`dateinsert`,`opis`,`rozliczenie`,
+                            `rowidclient`,`odbiorca_id`,`dateinsert`,`opis`,`rozliczenie`,
                              `iloscstron_color`,
                                     `cenazastrone_kolor`,
                                     `cenainstalacji`,
@@ -162,7 +165,7 @@ class agreement extends Model
                                     `rowid_type`
                             ";
                 $this->_table = 'agreements';
-                $result = $this->insert($columnList, 'sssiddsisssidddddidii',
+                $result = $this->insert($columnList, 'sssiddsissssidddddidii',
                     array(
                         $this->nrumowy == '' ? "NULL" : $this->nrumowy,
                         ($this->dataod == '' || $this->dataod == '0000-00-00') ? "NULL" : $this->dataod,
@@ -172,6 +175,7 @@ class agreement extends Model
                         $this->abonament == '' ? "NULL" : str_replace(' ', '', str_replace(',', '.', $this->abonament)),
                         $this->serial == '' ? "NULL" : $this->serial,
                         $this->rowidclient == '' ? "NULL" : $this->rowidclient,
+                        $this->odbiorca_id == '' ? "NULL" : $this->odbiorca_id,
                         date('Y-m-d H:i:s'), $this->opis == '' ? "NULL" : $this->opis, $this->rozliczenie == '' ? "NULL" : $this->rozliczenie,
                         $this->iloscstron_kolor == '' ? "NULL" : str_replace(' ', '', str_replace(',', '.', $this->iloscstron_kolor)),
                         $this->cenazastrone_kolor == '' ? "NULL" : str_replace(' ', '', str_replace(',', '.', $this->cenazastrone_kolor)),

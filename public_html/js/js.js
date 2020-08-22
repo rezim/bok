@@ -414,6 +414,7 @@ function zapiszUmowe(rowid) {
                 cenazastrone: doc.getElementById('txtcenazastrone').value,
                 abonament: doc.getElementById('txtabonament').value,
                 serial: doc.getElementById('txtdrukarka').value,
+                odbiorca_id: doc.getElementById('txtodbiorca_id').value,
                 rozliczenie: doc.getElementById('txtrozliczenie').value,
                 rowidclient: doc.getElementById('txtklient').value,
                 opis: doc.getElementById('txtopis').value,
@@ -688,12 +689,15 @@ function generujRaport(successCallback, errorCallback) {
 
             evalScript(objCenter);
 
-            successCallback(data, params);
+            //if (successCallback) {
+                successCallback(data, params);
+            //}
         },
         error: function (err) {
             objCenter.innerHTML = 'Problem z wygenerowaniem raportu';
-
-            errorCallback(err);
+            //if (errorCallback) {
+                errorCallback(err);
+            //}
         }
     }).done(function () {
         $("#tableReport").tablesorter();

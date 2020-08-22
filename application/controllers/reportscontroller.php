@@ -462,6 +462,7 @@ class reportsController extends InvoicesController
 
             $dataReports[$item['rowidclient']]['umowy'][$item['rowidumowa']]['typ_umowy'] = $item['typ_umowy'];
 
+            $dataReports[$item['rowidclient']]['umowy'][$item['rowidumowa']]['odbiorca_id'] = $item['odbiorca_id'];
         }
 
         foreach ($dataReportsRoczne as $key => $item) {

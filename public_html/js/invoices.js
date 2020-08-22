@@ -137,39 +137,35 @@ InvoiceManager = function (api_token, endpoint, company_name, invoice_number_len
 
         if (agreementIds && agreementIds.length > 0 && !lockAdd) {
 
-            if (invoice['fakturadlakazdejumowy'] && agreementIds.length > 1) {
-                var calls = [];
+            let errorMsg = '';
+            let groupedAgreementIds;
 
-                var id = agreementIds.splice(0, 1);
-                var params = getInvoiceParams(invoice, id);
-                lockAdd = true;
-                try {
-                    await post(invoicesUrl, params, function () {
-                        self.refreshInvoices(null, function () {
-                            lockAdd = false;
-                            self.add(invoice, agreementIds);
-                        });
-                    });
-                    this.showActionError(false);
-                } catch (e) {
-                    this.showActionError(true,`Błąd!, nie można wystawić FV dla '${invoice['nazwapelna']}', komunikat błędu: ${e.responseText}`);
-                } finally {
-                    lockAdd = false;
-                }
+            if (invoice['fakturadlakazdejumowy']) {
+                groupedAgreementIds = Object.values(agreementIds).map(agreementId => [agreementId]);
             } else {
-                var params = getInvoiceParams(invoice, agreementIds);
+                groupedAgreementIds = this.groupByRecipient(Object.values(invoice['umowy']), agreementIds);
+            }
+
+            lockAdd = true;
+
+            for (const agrIds of groupedAgreementIds) {
+                const params = getInvoiceParams(invoice, agrIds);
                 try {
-                    await post(invoicesUrl, params, function (data) {
-                        self.refreshInvoices();
-                        lockAdd = false;
-                    });
-                    this.showActionError(false);
+                    await post(invoicesUrl, params);
                 } catch (e) {
-                    this.showActionError(true,`Błąd!, nie można wystawić FV dla '${invoice['nazwapelna']}', komunikat błędu: ${e.responseText}`);
-                } finally {
-                    lockAdd = false;
+                    errorMsg += `Błąd!, nie można wystawić FV dla '${invoice['nazwapelna']}', komunikat błędu: ${e.responseText}! `;
                 }
             }
+            await this.refreshInvoices();
+
+            lockAdd = false;
+
+            if (errorMsg !== '') {
+                this.showActionError(true, errorMsg);
+            } else {
+                this.showActionError(false);
+            }
+
         } else {
             alert("Wybierz przynajmniej jedną umowę!");
         }
@@ -188,24 +184,23 @@ InvoiceManager = function (api_token, endpoint, company_name, invoice_number_len
 
                 if (agreementIds && agreementIds.length > 0 && !lockAdd) {
 
-                    if (report['fakturadlakazdejumowy'] && agreementIds.length > 1) {
-                        var calls = [];
+                    let groupedAgreementIds;
 
-                        var id = agreementIds.splice(0, 1);
-                        var params = getInvoiceParams(report, id);
-                        try {
-                            await post(invoicesUrl, params);
-                        } catch (e) {
-                            errorMsg += `Błąd!, nie można wystawić FV dla '${report['nazwapelna']}', komunikat błędu: ${e.responseText}! `;
-                        }
+                    if (report['fakturadlakazdejumowy']) {
+                        groupedAgreementIds = Object.values(agreementIds).map(agreementId => [agreementId]);
                     } else {
-                        var params = getInvoiceParams(report, agreementIds);
+                        groupedAgreementIds = this.groupByRecipient(Object.values(report['umowy']), agreementIds);
+                    }
+
+                    for (const agrIds of groupedAgreementIds) {
+                        const params = getInvoiceParams(report, agrIds);
                         try {
                             await post(invoicesUrl, params);
                         } catch (e) {
                             errorMsg += `Błąd!, nie można wystawić FV dla '${report['nazwapelna']}', komunikat błędu: ${e.responseText}! `;
                         }
                     }
+
                 }
 
             }
@@ -215,7 +210,24 @@ InvoiceManager = function (api_token, endpoint, company_name, invoice_number_len
 
         if (errorMsg !== '') {
             this.showActionError(true, errorMsg);
+        } else {
+            this.showActionError(false);
         }
+    };
+
+    this.groupByRecipient = function (agreements, agreementIds) {
+
+        const groupedAgreements = agreementIds.reduce(
+            (result, agreementId) => {
+                const agreement = agreements.find(agreement => agreement.nrumowy === agreementId);
+                if (agreement) {
+                    result[agreement.odbiorca_id] = result[agreement.odbiorca_id] || [];
+                    result[agreement.odbiorca_id].push(agreementId);
+                }
+                return result;
+            }, Object.create(null));
+
+        return Object.values(groupedAgreements);
     };
 
     /**
@@ -367,7 +379,7 @@ InvoiceManager = function (api_token, endpoint, company_name, invoice_number_len
             });
 
             if (self.getMissingInvoices().length > 0) {
-                this.showActionError(true,`Uwaga: występuje brak ciągłości numeracji faktur. Faktury powodujące problem [numer]-[ilosc]: ${self.getMissingInvoices().join(', ')}`);
+                this.showActionError(true, `Uwaga: występuje brak ciągłości numeracji faktur. Faktury powodujące problem [numer]-[ilosc]: ${self.getMissingInvoices().join(', ')}`);
             } else {
                 this.showActionError(false);
             }
@@ -381,7 +393,7 @@ InvoiceManager = function (api_token, endpoint, company_name, invoice_number_len
         }
     };
 
-    this.showActionError = function(show, message) {
+    this.showActionError = function (show, message) {
         const actionErrorSelector = '#actionerror';
 
         if (show) {
@@ -436,7 +448,7 @@ InvoiceManager = function (api_token, endpoint, company_name, invoice_number_len
         }
     };
 
-    this.showClientWithAllIssuedInvoices = function(show) {
+    this.showClientWithAllIssuedInvoices = function (show) {
         if (show) {
             $('.allInvoicesIssued').show();
         } else {
@@ -559,9 +571,13 @@ InvoiceManager = function (api_token, endpoint, company_name, invoice_number_len
 
         var positions = [];
 
+        var recipient_id = null;
+
         $.each(invoice["umowy"], function (key, agreement) {
 
-            if (agreementIds.indexOf(agreement["nrumowy"]) != -1) {
+            if (agreementIds.indexOf(agreement["nrumowy"]) !== -1) {
+
+                recipient_id = recipient_id || agreement["odbiorca_id"];
 
                 var title = '';
 
@@ -650,6 +666,7 @@ InvoiceManager = function (api_token, endpoint, company_name, invoice_number_len
                 "buyer_post_code": invoice["kodpocztowy"],
                 "buyer_city": invoice["miasto"],
                 "buyer_street": invoice["ulica"],
+                "recipient_id": recipient_id || '',
                 "positions": positions,
                 "show_discount": "0",
                 "internal_note": agreementIds.join(','),

@@ -74,7 +74,7 @@
 
                 <div class="form-group">
                     <button class="btn btn-info btn-block" type="submit"
-                            onClick='generujRaport(function(data, params){literal}{invMgr.refreshInvoices(params, () => invMgr.showClientWithAllIssuedInvoices(!$(`#checkShowClientWithAllIssuedInvoices`).prop(`checked`)));invMgr.showAgreementWarnings(params);}{/literal});return false;'>
+                            onClick='startReportGeneration();return false;'>
                         Generuj
                     </button>
                 </div>
@@ -128,19 +128,23 @@
         '{$smarty.const.FAKTUROWNIA_ENDPOINT}',
         '{$smarty.const.FAKTUROWNIA_COMPANYNAME}',
         '{$smarty.const.FAKTUROWNIA_INVOICE_NUMBER_LENGTH}');
+
+    function startReportGeneration() {
+        generujRaport(function(data, params){literal}{invMgr.refreshInvoices(params, () => invMgr.showClientWithAllIssuedInvoices(!$(`#checkShowClientWithAllIssuedInvoices`).prop(`checked`)));invMgr.showAgreementWarnings(params);}{/literal});
+    }
 </script>
 <script type="text/javascript">
     $('#txtklient').unbind("keypress");
     $('#txtklient').keypress(function (event) {
         if (event.keyCode == 13) {
-            generujRaport();
+            startReportGeneration();
             return false;
         }
     });
     $('#txtdrukarka').unbind("keypress");
     $('#txtdrukarka').keypress(function (event) {
         if (event.keyCode == 13) {
-            generujRaport();
+            startReportGeneration();
             return false;
         }
     });
@@ -163,23 +167,22 @@
     $('#txtdataod').unbind("keypress");
     $('#txtdataod').keypress(function (event) {
         if (event.keyCode == 13) {
-            generujRaport();
+            startReportGeneration();
             return false;
         }
     });
     $('#txtdatado').unbind("keypress");
     $('#txtdatado').keypress(function (event) {
         if (event.keyCode == 13) {
-            generujRaport();
+            startReportGeneration();
             return false;
         }
     });
     $('#txtmiesiac').unbind("keypress");
     $('#txtmiesiac').keypress(function (event) {
         if (event.keyCode == 13) {
-            generujRaport();
+            startReportGeneration();
             return false;
         }
     });
-
 </script>

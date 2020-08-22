@@ -289,6 +289,7 @@ class report extends Model
                 a.activity,
                 a.jakczarne,
                 a_t.description as 'typ_umowy',
+                a.odbiorca_id as 'odbiorca_id',
                 COALESCE (pp2.ilosc, pp3.ilosc, 0) as strony_black_start, 
                 COALESCE(pp2.datawiadomosci, pp3.datawiadomosci, '0000-00-00') as data_wiadomosci_black_start, 
                 IFNULL(pp1.ilosc, 0) as strony_black_koniec, 
