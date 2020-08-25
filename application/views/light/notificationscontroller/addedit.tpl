@@ -130,7 +130,7 @@
                                                 {if isset($item.iskey) && $item.iskey=='1'}iskey='1'{/if}
                                                 {if isset($item.wymaganylevel) && $item.wymaganylevel!=''}wymaganylevel='{$item.wymaganylevel}' wymaganyzrobiony='0' {/if}
                                                 {if isset($item.idzewnetrznespan) && $item.idzewnetrznespan !=''}zewnetrznyspan='{$item.idzewnetrznespan}'{/if}
-                                         >{if isset($item.value)  && $item.value!=''}
+                                         >{strip}{if isset($item.value)  && $item.value!=''}
                                                 {if isset($item.datatypeshow) && $item.datatypeshow=='datetime'}
                                                     {$item.value|date_format:"%Y-%m-%d %H:%M"|escape:'htmlall'}
                                                 {else if isset($item.datatypeshow) && $item.datatypeshow=='date'}
@@ -160,8 +160,7 @@
                                                 {else}
                                                     {$dane[0][$item.baza]|escape:'htmlall'}
                                                 {/if}
-                                            {/if}
-</textarea>
+                                            {/if}{/strip}</textarea>
                                     {/if}
                                     {if $item.type=='link' && $item.readonly=='0'}
                                         <span id='{$item.idzewnetrznespan}'
@@ -278,7 +277,7 @@
                                                 {if isset($item.iskey) && $item.iskey=='1'}iskey='1'{/if}
                                                 {if isset($item.wymaganylevel) && $item.wymaganylevel!=''}wymaganylevel='{$item.wymaganylevel}' wymaganyzrobiony='0' {/if}
                                                 {if isset($item.idzewnetrznespan) && $item.idzewnetrznespan !=''}zewnetrznyspan='{$item.idzewnetrznespan}'{/if}
-                                         >{if isset($item.value)  && $item.value!=''}
+                                         >{strip}{if isset($item.value)  && $item.value!=''}
                                                 {if isset($item.datatypeshow) && $item.datatypeshow=='datetime'}
                                                     {$item.value|date_format:"%Y-%m-%d %H:%M"|escape:'htmlall'}
                                                 {else if isset($item.datatypeshow) && $item.datatypeshow=='date'}
@@ -309,7 +308,7 @@
                                                     {$dane[0][$item.baza]|escape:'htmlall'}
                                                 {/if}
                                             {/if}
-                                    </textarea>
+                                    {/strip}</textarea>
                                     {/if}
                                     {if $item.type=='link' && $item.readonly=='0'}
                                         <span id='{$item.idzewnetrznespan}'
