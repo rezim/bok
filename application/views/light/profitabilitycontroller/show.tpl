@@ -92,6 +92,15 @@
                         klienta</small>
                 </div>
 
+                <div class="border-top my-4 otus-separator"></div>
+
+                <div class="form-group">
+                    <button class="btn btn-info btn-block" type="submit"
+                            ng-click='ctrl.loadData(date_from, date_to, show_inactive)'>
+                        Pokaż
+                    </button>
+                </div>
+
             </form>
         </div>
 
