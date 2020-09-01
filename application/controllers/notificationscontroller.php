@@ -163,6 +163,7 @@ class notificationsController extends InvoicesController
                     $adresip = '';
                     $firmware = '';
                     $lokalizacja = '';
+                    $clientName = $wynik['clientname'];
                 } else {
 
                     $printer = new printer();
@@ -179,6 +180,8 @@ class notificationsController extends InvoicesController
                     $lokalizacja .= ($dataPrinter[0]['miasto'] && $dataPrinter[0]['miasto'] !== '') ? ', ' . $dataPrinter[0]['miasto'] : '';
                     $lokalizacja .= ($dataPrinter[0]['kodpocztowy'] && $dataPrinter[0]['kodpocztowy'] !== '') ? ' ' . $dataPrinter[0]['kodpocztowy'] : '';
 
+                    $clientName = $dataPrinter[0]['nazwa'];
+
                     unset($printer);
 
                 }
@@ -192,8 +195,8 @@ class notificationsController extends InvoicesController
 
                 $mailing = new mailing();
                 $mailing->sendMailPrzydzielonoZlecenie($wynik['keyval'], $dataMail[0]['mail'], nl2br($this->$nameOfModel->_filedsToEdit['tresc_wiadomosci']['value']),
-                    $wynik['clientname'] . " [Ticket#{$wynik['keyval']}] " . $this->$nameOfModel->_filedsToEdit['temat']['value'] . " #Serwis",
-                    $wynik['clientname'],
+                    $clientName . " [Ticket#{$wynik['keyval']}] " . $this->$nameOfModel->_filedsToEdit['temat']['value'] . " #Serwis",
+                    $clientName,
                     $this->$nameOfModel->_filedsToEdit['osobazglaszajaca']['value'],
                     $this->$nameOfModel->_filedsToEdit['nr_telefonu']['value'], $priority,
                     $modelurzadzenia, $nrseryjny, $lokalizacja, $przebieg, $stantonera, $adresip, $firmware, $this->$nameOfModel->_filedsToEdit['data_planowana']['value'],
