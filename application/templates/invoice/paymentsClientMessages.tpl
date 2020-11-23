@@ -43,7 +43,7 @@
                     <div class="col-sm-1"></div>
                 </div>
                 <div class="row"
-                     ng-repeat="message in $ctrl.getMessages($ctrl.data.clientNip)">
+                     ng-repeat="message in $ctrl.getMessages($ctrl.data.clientNip) track by $index">
 
                     <div class="col-sm-2" role="button">[[message.message_date]]</div>
                     <div class="col-sm-6" role="button">[[message.message]]</div>
