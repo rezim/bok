@@ -511,6 +511,10 @@ input[type="checkbox"] {
     }
 }
 
+.modal {
+    z-index: 1100 !important;
+}
+
 @media (min-width: 1200px) {
     @supports (position: sticky) {
         .otus-sidebar {

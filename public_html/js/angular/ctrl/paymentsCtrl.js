@@ -1,4 +1,4 @@
-PaymentsCtrl = function($scope, rest, $q, $filter, $uibModal, $interpolate, appConf) {
+PaymentsCtrl = function ($scope, rest, $q, $filter, $uibModal, $interpolate, appConf) {
 
     $scope.date = new Date();
 
@@ -13,7 +13,7 @@ PaymentsCtrl = function($scope, rest, $q, $filter, $uibModal, $interpolate, appC
         reverse: false
     };
 
-    $scope.sortBy = function(propertyName) {
+    $scope.sortBy = function (propertyName) {
         $scope.orderBy.reverse = ($scope.orderBy.propertyName === propertyName) ? !$scope.orderBy.reverse : false;
         $scope.orderBy.propertyName = propertyName;
     };
@@ -27,14 +27,14 @@ PaymentsCtrl = function($scope, rest, $q, $filter, $uibModal, $interpolate, appC
 
     this.clientInvoicesFilter = function () {
 
-        return function(item) {
+        return function (item) {
 
             if (self.filters.invoiceNb !== '') {
                 if (item.invoices.list.some(
-                        function(invoice) {
-                           return invoice.number.indexOf(self.filters.invoiceNb) !== -1
-                        }
-                    )
+                    function (invoice) {
+                        return invoice.number.indexOf(self.filters.invoiceNb) !== -1
+                    }
+                )
                 ) {
                     return true;
                 } else {
@@ -52,8 +52,8 @@ PaymentsCtrl = function($scope, rest, $q, $filter, $uibModal, $interpolate, appC
         }
     };
 
-    this.notPaidInvoicesOnlyFilter = function() {
-        return function(item) {
+    this.notPaidInvoicesOnlyFilter = function () {
+        return function (item) {
             return !self.filters.show_paid_invoices ? !item.is_paid : true;
         }
     };
@@ -64,7 +64,7 @@ PaymentsCtrl = function($scope, rest, $q, $filter, $uibModal, $interpolate, appC
 
     $scope.date_to = $filter('date')(date_to, 'yyyy-MM-dd');
 
-    date_to.setFullYear(date_to.getFullYear()-1);
+    date_to.setFullYear(date_to.getFullYear() - 1);
 
     $scope.date_from = $filter('date')(date_to, 'yyyy-MM-01');
 
@@ -72,23 +72,24 @@ PaymentsCtrl = function($scope, rest, $q, $filter, $uibModal, $interpolate, appC
 
     let clientInvoices = [];
 
-    this.getToday = function() {
+    this.getToday = function () {
         return $filter('date')(new Date(), 'yyyy-MM-dd');
     };
 
-    this.getLastMonths = function(months) {
+    this.getLastMonths = function (months) {
         const today = new Date();
         today.setMonth(today.getMonth() - months);
 
-        return $filter('date')(today, 'yyyy-MM-01');;
+        return $filter('date')(today, 'yyyy-MM-01');
+        ;
     };
 
-    this.getClientInvoices = function() {
+    this.getClientInvoices = function () {
         return clientInvoices;
     };
 
 
-    this.getTotal = function(search, showPaidInvoices, showNonDeptors) {
+    this.getTotal = function (search, showPaidInvoices, showNonDeptors) {
         let total = 0;
 
         let filteredClientInvoices = ($filter('filter')($filter('filter')(clientInvoices, search), this.clientInvoicesFilter()));
@@ -100,13 +101,13 @@ PaymentsCtrl = function($scope, rest, $q, $filter, $uibModal, $interpolate, appC
         return total;
     };
 
-    this.invalidate = function() {
+    this.invalidate = function () {
         clientInvoices = [];
     };
 
     let invoices;
 
-    this.loadData = function(date_from, date_to) {
+    this.loadData = function (date_from, date_to) {
         if (date_from && date_to) {
             $scope.isPending = true;
             const invoicesPromise = rest.post('getinvoices', {
@@ -130,7 +131,7 @@ PaymentsCtrl = function($scope, rest, $q, $filter, $uibModal, $interpolate, appC
         }
     };
 
-    const initClientInvoice = function(name, nip) {
+    const initClientInvoice = function (name, nip) {
         return {
             name: name,
             nip: nip,
@@ -156,7 +157,7 @@ PaymentsCtrl = function($scope, rest, $q, $filter, $uibModal, $interpolate, appC
         };
     };
 
-    const calculate = function(invoices, agreements, overpaidpaymets) {
+    const calculate = function (invoices, agreements, overpaidpaymets) {
         let objClientInvoice = {};
 
         angular.forEach(agreements, function (agreement) {
@@ -197,10 +198,10 @@ PaymentsCtrl = function($scope, rest, $q, $filter, $uibModal, $interpolate, appC
                 invoice.is_paid = parseFloat(invoice.paid) >= parseFloat(invoice.price_gross);
                 invoice.is_partially_paid = !invoice.is_paid && (parseFloat(invoice.paid) > 0);
                 // if not paid late is today - paid_to, if paid paid_date - paid_to
-                const day_in_mls = 24*60*60*1000;
+                const day_in_mls = 24 * 60 * 60 * 1000;
                 invoice.is_late_days = !invoice.is_paid ?
                     Math.floor(((new Date()) - (new Date(invoice.payment_to))) / day_in_mls) :
-                    Math.floor(((new Date(invoice.paid_date)) - (new Date(invoice.payment_to))) / day_in_mls) ;
+                    Math.floor(((new Date(invoice.paid_date)) - (new Date(invoice.payment_to))) / day_in_mls);
                 // there is no late
                 if (invoice.is_late_days < 0) {
                     invoice.is_late_days = 0;
@@ -217,7 +218,7 @@ PaymentsCtrl = function($scope, rest, $q, $filter, $uibModal, $interpolate, appC
             }
         });
 
-        angular.forEach(objClientInvoice, function(clientInvoice) {
+        angular.forEach(objClientInvoice, function (clientInvoice) {
             clientInvoices.push(clientInvoice);
         });
 
@@ -240,11 +241,9 @@ PaymentsCtrl = function($scope, rest, $q, $filter, $uibModal, $interpolate, appC
         clientInvoices.forEach(clientInvoice => {
             clientInvoice.balance = clientInvoice.overpaid.sum - clientInvoice.invoices.sum.notPaid;
         });
-
-        console.log(clientInvoices);
     };
 
-    this.showDetails = function(clientInvoice) {
+    this.showDetails = function (clientInvoice) {
         this.show_details[clientInvoice.nip] = !this.show_details[clientInvoice.nip];
 
         // if (!clientInvoice.hasPaymentsLoaded) {
@@ -253,12 +252,12 @@ PaymentsCtrl = function($scope, rest, $q, $filter, $uibModal, $interpolate, appC
         // }
     };
 
-    this.loadPaymentsForClientInvoice = function(clientInvoice) {
+    this.loadPaymentsForClientInvoice = function (clientInvoice) {
         rest.post('getpayments', {
             client_id: clientInvoice.clientId,
             date_from: $scope.date_from
         }).then(function (arrPayments) {
-            arrPayments.forEach(function(payment) {
+            arrPayments.forEach(function (payment) {
                 let invoice = clientInvoice.invoices.list.find(inv => inv.id === payment.invoice_id);
                 if (invoice) {
                     if (!invoice.payments) {
@@ -270,90 +269,152 @@ PaymentsCtrl = function($scope, rest, $q, $filter, $uibModal, $interpolate, appC
         });
     };
 
-    this.paymentsList = function(clientInvoice, dateFrom, dateTo) {
+    this.paymentsClientMessages = function (clientInvoice) {
+        let modalInstance = $uibModal.open({
+            ariaLabelledBy: 'modal-title',
+            ariaDescribedBy: 'modal-body',
+            templateUrl: 'paymentsClientMessages.html',
+            size: 'xl',
+            controller: function () {
+                this.data = {
+                    clientNip: clientInvoice.nip,
+                    clientName: clientInvoice.name,
+                    form: {
+                        date: self.getToday(),
+                        message: ''
+                    }
+                };
+
+                let messages = null;
+                this.getMessages = function (nip) {
+                    if (!messages) {
+                        messages = rest.post('getpaymentclientmessages', {
+                            client_nip: nip
+                        }).then(function (result) {
+                            messages = result;
+                        });
+                    }
+
+                    return messages;
+                };
+
+                this.removeMessage = function (rowid) {
+                    if (confirm("Czy na pewno usnąć wiadomość?")) {
+                        rest.post('removeclientmessage', {rowid})
+                            .then(function () {
+                                const removedIndex = messages.findIndex((message) => message.rowid === rowid);
+                                if (removedIndex !== -1) {
+                                    messages.splice(removedIndex, 1);
+                                }
+                            });
+                    }
+                };
+
+                this.save = function () {
+                    rest.post('addpaymentclientmessage', {
+                        client_nip: this.data.clientNip,
+                        message_date: this.data.form.date,
+                        message: this.data.form.message
+                    }).then(function (message) {
+                        messages = message.concat(messages);
+                    });
+                };
+
+                this.cancel = function () {
+                    modalInstance.dismiss('cancel');
+                };
+            },
+            controllerAs: '$ctrl',
+            windowClass: 'show',
+            backdropClass: 'show'
+        });
+    };
+
+    this.paymentsList = function (clientInvoice, dateFrom, dateTo) {
 
         let invalidateListOfInvoices = false;
 
         let modalInstance = $uibModal.open({
-                ariaLabelledBy: 'modal-title',
-                ariaDescribedBy: 'modal-body',
-                templateUrl: 'paymentList.html',
-                size: 'lg',
-                controller: function () {
+            ariaLabelledBy: 'modal-title',
+            ariaDescribedBy: 'modal-body',
+            templateUrl: 'paymentList.html',
+            size: 'lg',
+            controller: function () {
 
-                    this.data = {
-                        dateFrom: dateFrom,
-                        dateTo: dateTo,
-                        clientId: clientInvoice.clientId,
-                        clientName: clientInvoice.name
-                    };
+                this.data = {
+                    dateFrom: dateFrom,
+                    dateTo: dateTo,
+                    clientId: clientInvoice.clientId,
+                    clientName: clientInvoice.name
+                };
 
-                    this.parseDate = function(dateStr) {
-                        return new Date(dateStr);
-                    };
+                this.parseDate = function (dateStr) {
+                    return new Date(dateStr);
+                };
 
-                    let payments = null;
-                    this.getPayments = function (clientId, dateFrom) {
-                        if (!payments) {
-                            payments = [];
-                            rest.post('getpayments', {
-                                client_id: clientId,
-                                date_from: dateFrom
-                            }).then(function (arrPayments) {
-                                payments = arrPayments.map(payment =>
-                                    Object.assign(payment, {
-                                        invoice: clientInvoice.invoices.list.find(
-                                            invoice => payment.invoice_id === invoice.id
-                                        )
-                                    })
-                                );
-                                // add also overpaid payments to the list
-                                const overpaidPayments = clientInvoice.overpaid.list.map(payment =>
-                                    Object.assign(payment, {
-                                        invoice: clientInvoice.invoices.list.find(
-                                            invoice => payment.invoice_id === invoice.id
-                                        )
-                                    })
-                                );
-                                overpaidPayments.forEach(overpaidPayment => {
-                                    // without duplicates
-                                     if (!payments.some(payment => payment.id === overpaidPayment.id)) {
-                                         payments.push(overpaidPayment);
-                                     }
-                                });
+                let payments = null;
+                this.getPayments = function (clientId, dateFrom) {
+                    if (!payments) {
+                        payments = [];
+                        rest.post('getpayments', {
+                            client_id: clientId,
+                            date_from: dateFrom
+                        }).then(function (arrPayments) {
+                            payments = arrPayments.map(payment =>
+                                Object.assign(payment, {
+                                    invoice: clientInvoice.invoices.list.find(
+                                        invoice => payment.invoice_id === invoice.id
+                                    )
+                                })
+                            );
+                            // add also overpaid payments to the list
+                            const overpaidPayments = clientInvoice.overpaid.list.map(payment =>
+                                Object.assign(payment, {
+                                    invoice: clientInvoice.invoices.list.find(
+                                        invoice => payment.invoice_id === invoice.id
+                                    )
+                                })
+                            );
+                            overpaidPayments.forEach(overpaidPayment => {
+                                // without duplicates
+                                if (!payments.some(payment => payment.id === overpaidPayment.id)) {
+                                    payments.push(overpaidPayment);
+                                }
                             });
-                        }
-                        return payments;
-                    };
-
-                    this.deletePayment = function(paymentId) {
-                        rest.post('deleteinvoicepayment', {
-                            payment_id: paymentId
-                        }).then(() => {
-                            const removedIdx = payments.findIndex(payment => payment.id === paymentId);
-
-                            if (removedIdx !== -1) {
-                                payments.splice(removedIdx, 1);
-                            }
-
-                            invalidateListOfInvoices = true;
                         });
-                    };
+                    }
+                    return payments;
+                };
 
-                    this.cancel = function () {
-                        modalInstance.dismiss('cancel');
-                        if (invalidateListOfInvoices) {
-                            invalidateListOfInvoices = false;
-                            self.loadData($scope.date_from, $scope.date_to);
+                this.deletePayment = function (paymentId) {
+                    rest.post('deleteinvoicepayment', {
+                        payment_id: paymentId
+                    }).then(() => {
+                        const removedIdx = payments.findIndex(payment => payment.id === paymentId);
+
+                        if (removedIdx !== -1) {
+                            payments.splice(removedIdx, 1);
                         }
-                     };
-                },
-                controllerAs: '$ctrl',
-                windowClass: 'show',
-                backdropClass: 'show'
-            });
 
-        modalInstance.result.then(function() {}, function() {
+                        invalidateListOfInvoices = true;
+                    });
+                };
+
+                this.cancel = function () {
+                    modalInstance.dismiss('cancel');
+                    if (invalidateListOfInvoices) {
+                        invalidateListOfInvoices = false;
+                        self.loadData($scope.date_from, $scope.date_to);
+                    }
+                };
+            },
+            controllerAs: '$ctrl',
+            windowClass: 'show',
+            backdropClass: 'show'
+        });
+
+        modalInstance.result.then(function () {
+        }, function () {
             if (invalidateListOfInvoices) {
                 invalidateListOfInvoices = false;
                 self.loadData($scope.date_from, $scope.date_to);
@@ -361,7 +422,7 @@ PaymentsCtrl = function($scope, rest, $q, $filter, $uibModal, $interpolate, appC
         });
     };
 
-    this.splitPayments = function(clientId) {
+    this.splitPayments = function (clientId) {
         rest.post('splitclientpayments', {
             client_id: clientId
         }).then(() => {
@@ -369,7 +430,7 @@ PaymentsCtrl = function($scope, rest, $q, $filter, $uibModal, $interpolate, appC
         });
     };
 
-    this.addPayment = function(clientId, invoiceTaxNo, invoice) {
+    this.addPayment = function (clientId, invoiceTaxNo, invoice) {
 
         let modalInstance = $uibModal.open({
             ariaLabelledBy: 'modal-title',
@@ -389,7 +450,7 @@ PaymentsCtrl = function($scope, rest, $q, $filter, $uibModal, $interpolate, appC
                     }
                 };
 
-                this.save = function() {
+                this.save = function () {
                     modalInstance.close(this.data);
                 };
 
@@ -435,7 +496,7 @@ PaymentsCtrl = function($scope, rest, $q, $filter, $uibModal, $interpolate, appC
      * @param taxNo
      * @returns {*}
      */
-    let mapTaxNo = function(taxNo) {
+    let mapTaxNo = function (taxNo) {
         let result = taxNo;
         if (result === "8992755868") {
             result = "9141528038";

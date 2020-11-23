@@ -69,6 +69,30 @@ class clientinvoicesController extends InvoicesController
         }
     }
 
+    function addpaymentclientmessage() {
+        if ($_POST['client_nip'] && $_POST['message_date'] && $_POST['message']) {
+            echo $this->clientinvoice->addPaymentMessage($_POST, 'payments_messages');
+        } else {
+            echo "błędne parametry wejściowe";
+        }
+    }
+
+    function removeclientmessage() {
+        if ($_POST['rowid']) {
+            echo $this->clientinvoice->removePaymentMessage($_POST['rowid']);
+        } else {
+            echo "błędne parametry wejściowe";
+        }
+    }
+
+    function getpaymentclientmessages() {
+        if ($_POST['client_nip']) {
+            echo $this->clientinvoice->getPaymentMessages($_POST['client_nip']);
+        } else {
+            echo "błędne parametry wejściowe";
+        }
+    }
+
     function splitclientpayments() {
         if (isset($_POST['client_id'])) {
             echo $this->splitPayments($_POST['client_id']);

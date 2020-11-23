@@ -122,38 +122,39 @@
 
         {include file="$templates/invoice/addPayment.tpl"}
         {include file="$templates/invoice/paymentList.tpl"}
+        {include file="$templates/invoice/paymentsClientMessages.tpl"}
 
         <main id='divRightCenter' class="col-12 col-md-12 col-xl">
             <div class="table-responsive-sm">
                 <table class='table table-hover table-sm tablesorter payments' id='tableReport'>
                     <thead class="thead-dark">
                     <tr>
-                        <th width="40%" ng-click="sortBy('name')" class="sortable">
+                        <th ng-click="sortBy('name')" class="sortable">
                             client
                             <span class="sortorder" ng-show="orderBy.propertyName === 'name'"
                                   ng-class="(orderBy.reverse) ? 'reverse': ''"></span>
                         </th>
-                        <th width="15%" style="text-align: right" ng-click="sortBy('invoices.count.notPaid')"
+                        <th ng-click="sortBy('invoices.count.notPaid')"
                             class="sortable">
                             faktur niezapłaconych
                             <span class="sortorder" ng-show="orderBy.propertyName === 'invoices.count.notPaid'"
                                   ng-class="(orderBy.reverse) ? 'reverse': ''"></span>
                         </th>
-                        <th width="15%" style="text-align: right" ng-click="sortBy('balance')" class="sortable">
+                        <th ng-click="sortBy('balance')" class="sortable text-right">
                             saldo
                             <span class="sortorder" ng-show="orderBy.propertyName === 'balance'"
                                   ng-class="(orderBy.reverse) ? 'reverse': ''"></span>
                         </th>
-                        <th width="15%" style="text-align: right" class="sortable">
+                        <th class="sortable text-right">
                             nadpłata
                         </th>
-                        <th width="15%" style="text-align: right">
+                        <th>
                             akcja
                         </th>
                     </tr>
                     <tr>
-                        <td colspan="2" align="right">suma:</td>
-                        <td align="right"
+                        <td colspan="2" class="text-right">suma:</td>
+                        <td class="text-right"
                             ng-class="(ctrl.getTotal(search, ctrl.filters.show_paid_invoices, ctrl.filters.show_non_deptors) < 0) ? 'underpaid' : (clientInvoice.balance > 0) ? 'overpaid' : 'paid'">
                             [[ctrl.getTotal(search, ctrl.filters.show_paid_invoices, ctrl.filters.show_non_deptors) |
                             currency : '']]
@@ -161,8 +162,7 @@
                         <td colspan="2"></td>
                     </tr>
                     </thead>
-                    <tbody ng-repeat="clientInvoice in ctrl.getClientInvoices() | filter:search | filter: ctrl.clientInvoicesFilter() | orderBy:orderBy.propertyName:orderBy.reverse"
-                           ng-click="ctrl.showDetails(clientInvoice)">
+                    <tbody ng-repeat="clientInvoice in ctrl.getClientInvoices() | filter:search | filter: ctrl.clientInvoicesFilter() | orderBy:orderBy.propertyName:orderBy.reverse">
 
                     <tr ng-if="!ctrl.filters.show_paid_invoices">
                         <td class='tdLink'
@@ -179,11 +179,22 @@
                             ng-class="(clientInvoice.overpaid.sum > 0) ? 'overpaid' : 'paid'">
                             [[clientInvoice.overpaid.sum.toFixed(2)]]
                         </td>
-                        <td align="right" class="profit">
-                            <button ng-if="clientInvoice.overpaid.sum > 0 && clientInvoice.invoices.count.notPaid > 0"
-                                    ng-click="ctrl.splitPayments(clientInvoice.clientId);$event.stopPropagation();"
-                                    class="btn btn-warning ng-scope" type="button" style="font-size: 10px">rozksięguj
-                            </button>
+                        <td class="profit">
+                            <div class="dropdown show">
+                                <button class="btn border border-secondary dropdown-toggle" type="button"
+                                        id="dropdownMenuButton" data-toggle="dropdown" aria-haspopup="true"
+                                        aria-expanded="false">
+                                    <i class="fas fa-cog"></i>
+                                    <span ng-if="clientInvoice.overpaid.sum > 0 && clientInvoice.invoices.count.notPaid > 0" class="badge badge-pill badge-danger" title="Rozksięgowanie!"><i class="fas fa-balance-scale"></i></span>
+                                </button>
+                                <div class="dropdown-menu dropdown-menu-right" aria-labelledby="dropdownMenuLink">
+
+                                    <a href="#" class="dropdown-item pointer" ng-click="ctrl.showDetails(clientInvoice);"><i class="fas fa-coins"></i>&nbsp;&nbsp;płatności</a>
+                                    <a href="#" class="dropdown-item" ng-click="ctrl.paymentsClientMessages(clientInvoice);$event.stopPropagation();"><i class="fas fa-comment-dots"></i>&nbsp;&nbsp;notatki</a>
+                                    <a href="#" class="dropdown-item" ng-if="clientInvoice.overpaid.sum > 0 && clientInvoice.invoices.count.notPaid > 0"
+                                       ng-click="ctrl.splitPayments(clientInvoice.clientId);$event.stopPropagation();"><i class="fas fa-balance-scale"></i>&nbsp;&nbsp;rozksięguj</a>
+                                </div>
+                            </div>
                         </td>
                     </tr>
                     <tr ng-if="ctrl.filters.show_paid_invoices">
@@ -200,11 +211,24 @@
                             ng-class="(clientInvoice.overpaid.sum > 0) ? 'overpaid' : 'paid'">
                             [[clientInvoice.overpaid.sum.toFixed(2)]]
                         </td>
-                        <td align="right" class="profit">
-                            <button ng-if="clientInvoice.overpaid.sum > 0 && clientInvoice.invoices.count.notPaid > 0"
-                                    ng-click="ctrl.splitPayments(clientInvoice.clientId);$event.stopPropagation();"
-                                    class="btn btn-warning ng-scope" type="button" style="font-size: 10px">rozksięguj
-                            </button>
+                        <td class="profit">
+
+
+                            <div class="dropdown show">
+                                <button class="btn border border-secondary dropdown-toggle" type="button"
+                                        id="dropdownMenuButton" data-toggle="dropdown" aria-haspopup="true"
+                                        aria-expanded="false">
+                                    <i class="fas fa-cog"></i>
+                                    <span ng-if="clientInvoice.overpaid.sum > 0 && clientInvoice.invoices.count.notPaid > 0" class="badge badge-pill badge-danger" title="Rozksięgowanie!"><i class="fas fa-balance-scale"></i></span>
+                                </button>
+                                <div class="dropdown-menu dropdown-menu-right" aria-labelledby="dropdownMenuLink">
+
+                                    <a href="#" class="dropdown-item pointer" ng-click="ctrl.showDetails(clientInvoice);"><i class="fas fa-coins"></i>&nbsp;&nbsp;płatności</a>
+                                    <a href="#" class="dropdown-item" ng-click="ctrl.paymentsClientMessages(clientInvoice);$event.stopPropagation();"><i class="fas fa-comment-dots"></i>&nbsp;&nbsp;notatki</a>
+                                    <a href="#" class="dropdown-item" ng-if="clientInvoice.overpaid.sum > 0 && clientInvoice.invoices.count.notPaid > 0"
+                                       ng-click="ctrl.splitPayments(clientInvoice.clientId);$event.stopPropagation();"><i class="fas fa-balance-scale"></i>&nbsp;&nbsp;rozksięguj</a>
+                                </div>
+                            </div>
                         </td>
                     </tr>
 
