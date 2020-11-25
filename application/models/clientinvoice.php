@@ -5,7 +5,7 @@ class clientinvoice extends Model
 
     function getAgreements() {
         $query =
-            "select c.rowid as client_id, c.nazwapelna as client_name, c.nip as client_nip, a.nrumowy as agreement_id,
+            "select c.rowid as client_id, c.nazwapelna as client_name, c.nip as client_nip, c.telefon as client_phone, a.nrumowy as agreement_id,
                     a.rowid as agreement_rowid, c.terminplatnosci as agreement_paymentdate,
                     a.activity as agreement_isactive
              from agreements a inner join clients c on a.rowidclient = c.rowid

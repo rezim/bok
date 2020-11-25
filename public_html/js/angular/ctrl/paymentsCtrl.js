@@ -131,10 +131,11 @@ PaymentsCtrl = function ($scope, rest, $q, $filter, $uibModal, $interpolate, app
         }
     };
 
-    const initClientInvoice = function (name, nip) {
+    const initClientInvoice = function (name, nip, phone) {
         return {
-            name: name,
-            nip: nip,
+            name,
+            nip,
+            phone,
             clientId: null,
             agreements: {},
             invoices: {
@@ -164,7 +165,7 @@ PaymentsCtrl = function ($scope, rest, $q, $filter, $uibModal, $interpolate, app
 
             if (!objClientInvoice[agreement['client_nip']]) {
                 objClientInvoice[agreement['client_nip']] =
-                    initClientInvoice(agreement['client_name'], agreement['client_nip']);
+                    initClientInvoice(agreement['client_name'], agreement['client_nip'], agreement['client_phone']);
 
                 let client = objClientInvoice[agreement['client_nip']];
 

@@ -134,6 +134,7 @@
                             <span class="sortorder" ng-show="orderBy.propertyName === 'name'"
                                   ng-class="(orderBy.reverse) ? 'reverse': ''"></span>
                         </th>
+                        <th>telefon</th>
                         <th ng-click="sortBy('invoices.count.notPaid')"
                             class="sortable">
                             faktur niezapłaconych
@@ -167,6 +168,7 @@
                     <tr ng-if="!ctrl.filters.show_paid_invoices">
                         <td class='tdLink'
                         ">[[clientInvoice.name]]</td>
+                        <td>[[clientInvoice.phone]]</td>
                         <td align="center" class="profit"
                             ng-class="(clientInvoice.balance < 0) ? 'underpaid' : (clientInvoice.balance > 0) ? 'overpaid' : 'paid'">
                             [[clientInvoice.invoices.count.notPaid]]
@@ -199,6 +201,7 @@
                     </tr>
                     <tr ng-if="ctrl.filters.show_paid_invoices">
                         <td class='tdLink' ng-click="ctrl.sortBy('name')">[[clientInvoice.name]]</td>
+                        <td>[[clientInvoice.phone]]</td>
                         <td align="center" ng-click="ctrl.sortBy('clientInvoice.invoices.count.notPaid')" class="profit"
                             ng-class="(clientInvoice.balance < 0) ? 'underpaid' : (clientInvoice.balance > 0) ? 'overpaid' : 'paid'">
                             [[clientInvoice.invoices.count.notPaid]]
