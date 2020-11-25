@@ -16,7 +16,7 @@ class clientinvoice extends Model
 
     function addPaymentMessage($postParams, $tableName) {
         $postParams['active'] = 1;
-        $postParams['owner'] = $_SESSION['user']['mail'];
+        $postParams['owner'] = $_SESSION['user']['imie'] . ' ' . $_SESSION['user']['nazwisko'];
         $result = $this->insertFromPostParams($postParams, $tableName);
 
         $query = "select * from {$tableName} where rowid={$result['rowid']}";
