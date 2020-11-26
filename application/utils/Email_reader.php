@@ -228,9 +228,7 @@ function email_pull()
             }
 
             // if there was no image, move the email to the Rejected folder on the server
-
-
-            if (!$found_img && false) {
+            if (!$found_img) {
 
                 $emailReader->move($email['index'], 'INBOX.Rejected');
                 continue;
