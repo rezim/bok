@@ -26,6 +26,16 @@ class clientinvoicesController extends InvoicesController
         }
     }
 
+    function getnotpaidinvoices() {
+        if ($_POST['period'] && $_POST['date_from'] && $_POST['date_to']) {
+            echo json_encode(
+                $this->getNotPaidInvoicesByDateRange($_POST['period'], $_POST['date_from'], $_POST['date_to'])
+            );
+        } else {
+            echo "błędne parametry wejściowe";
+        }
+    }
+
     function getinvoicesbyclientid() {
         if ($_POST['client_id'] && $_POST['is_paid']) {
             echo json_encode(

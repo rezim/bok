@@ -9,8 +9,8 @@ PaymentsCtrl = function ($scope, rest, $q, $filter, $uibModal, $interpolate, app
     };
 
     $scope.orderBy = {
-        propertyName: 'name',
-        reverse: false
+        propertyName: 'invoices.count.notPaid',
+        reverse: true
     };
 
     $scope.sortBy = function (propertyName) {
@@ -23,6 +23,12 @@ PaymentsCtrl = function ($scope, rest, $q, $filter, $uibModal, $interpolate, app
         show_overpaid_invoices: true,
         show_non_deptors: false,
         invoiceNb: ''
+    };
+
+    this.moreThenOneNotPaidFilter = function () {
+        return function (item) {
+            return item.invoices.count.notPaid >= 2;
+        }
     };
 
     this.clientInvoicesFilter = function () {
@@ -107,14 +113,16 @@ PaymentsCtrl = function ($scope, rest, $q, $filter, $uibModal, $interpolate, app
 
     let invoices;
 
-    this.loadData = function (date_from, date_to) {
+    this.loadData = function (date_from, date_to, notPaidInvoicesOnly) {
         if (date_from && date_to) {
             $scope.isPending = true;
-            const invoicesPromise = rest.post('getinvoices', {
-                period: 'more',
-                date_from: date_from,
-                date_to: date_to
-            });
+            const serviceName = !notPaidInvoicesOnly ? 'getinvoices' : 'getnotpaidinvoices';
+            const invoicesPromise =
+                rest.post(serviceName, {
+                    period: 'more',
+                    date_from: date_from,
+                    date_to: date_to
+                })
 
             const agreementsPromise = rest.post('getagreements', {});
 
@@ -516,7 +524,7 @@ PaymentsCtrl = function ($scope, rest, $q, $filter, $uibModal, $interpolate, app
     };
 
 
-    this.loadData($scope.date_from, $scope.date_to);
+    // this.loadData($scope.date_from, $scope.date_to);
 };
 
 app.controller('PaymentsCtrl', PaymentsCtrl);

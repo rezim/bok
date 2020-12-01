@@ -270,6 +270,7 @@
             {/if}
             {if
             isset($smarty.session.przypisanemenu['li_clientinvoicesshow']) ||
+            isset($smarty.session.przypisanemenu['li_clientinvoicesdeptors']) ||
             isset($smarty.session.przypisanemenu['li_profitabilityshow']) ||
             isset($smarty.session.przypisanemenu['li_reportsshow']) ||
             (
@@ -286,6 +287,9 @@
                     <div class="dropdown-menu" aria-labelledby="navbarDropdown">
                         {if isset($smarty.session.przypisanemenu['li_clientinvoicesshow'])}
                             <a href='{$smarty.const.SCIEZKA}/clientinvoices/show' class="dropdown-item">Płatności</a>
+                        {/if}
+                        {if isset($smarty.session.przypisanemenu['li_clientinvoicesdeptors'])}
+                            <a href='{$smarty.const.SCIEZKA}/clientinvoices/deptors' class="dropdown-item">Dłużnicy</a>
                         {/if}
                         {if isset($smarty.session.przypisanemenu['li_profitabilityshow'])}
                             <a href='{$smarty.const.SCIEZKA}/profitability/show' class="dropdown-item">Rentowność

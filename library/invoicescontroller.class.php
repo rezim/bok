@@ -1,20 +1,24 @@
 <?php
 
-class InvoicesController extends Controller {
+class InvoicesController extends Controller
+{
 
-	function __construct($model, $controller, $action, $queryString) {
-            parent::__construct($model, $controller, $action, $queryString);
-	}
+    function __construct($model, $controller, $action, $queryString)
+    {
+        parent::__construct($model, $controller, $action, $queryString);
+    }
 
-	function __destruct() {
+    function __destruct()
+    {
         parent::__destruct();
-	}
+    }
 
-	function getClientByTaxNo($clientTaxNo) {
+    function getClientByTaxNo($clientTaxNo)
+    {
         $ch = curl_init();
-        $url = FAKTUROWNIA_ENDPOINT .'/clients.json?'
-            .'tax_no='.$clientTaxNo
-            .'&api_token='.FAKTUROWNIA_APITOKEN;
+        $url = FAKTUROWNIA_ENDPOINT . '/clients.json?'
+            . 'tax_no=' . $clientTaxNo
+            . '&api_token=' . FAKTUROWNIA_APITOKEN;
 
         curl_setopt($ch, CURLOPT_URL, $url);
         curl_setopt($ch, CURLOPT_RETURNTRANSFER, TRUE);
@@ -23,21 +27,22 @@ class InvoicesController extends Controller {
         }
         $client = json_decode(curl_exec($ch), true);
 
-        curl_close ($ch);
+        curl_close($ch);
 
         return $client;
     }
 
-	function geInvoicesByClientId($clientId, $isPaid) {
+    function geInvoicesByClientId($clientId, $isPaid)
+    {
         $invoices = array();
 
         $ch = curl_init();
         $pageNb = 1;
-        $url = FAKTUROWNIA_ENDPOINT .'/invoices.json?'
-            .'client_id='.$clientId
-            .'&status='. (($isPaid) ? 'paid' : 'not_paid')
-            .'&order=issue_date'
-            .'&api_token='.FAKTUROWNIA_APITOKEN;
+        $url = FAKTUROWNIA_ENDPOINT . '/invoices.json?'
+            . 'client_id=' . $clientId
+            . '&status=' . (($isPaid) ? 'paid' : 'not_paid')
+            . '&order=issue_date'
+            . '&api_token=' . FAKTUROWNIA_APITOKEN;
         do {
             curl_setopt($ch, CURLOPT_URL, $url . '&page=' . $pageNb);
             curl_setopt($ch, CURLOPT_RETURNTRANSFER, TRUE);
@@ -48,16 +53,17 @@ class InvoicesController extends Controller {
 
             $invoices = array_merge($invoices, $data);
             $pageNb++;
-        } while(count($data) == 50);
+        } while (count($data) == 50);
 
-        curl_close ($ch);
+        curl_close($ch);
 
         return $invoices;
     }
 
-    function getInvoicesByDateRange($period, $dateFrom, $dateTo) {
+    function getInvoicesByDateRange($period, $dateFrom, $dateTo)
+    {
 
-	    $max_multi_calls_count = 50;
+        $max_multi_calls_count = 50;
 
         $invoices = array();
 
@@ -65,11 +71,11 @@ class InvoicesController extends Controller {
         $mh = curl_multi_init();
 
         $pageNb = 1;
-        $url = FAKTUROWNIA_ENDPOINT .'/invoices.json?'
-            .'period='.$period
-            .'&date_from='.$dateFrom
-            .'&date_to='.$dateTo
-            .'&api_token='.FAKTUROWNIA_APITOKEN;
+        $url = FAKTUROWNIA_ENDPOINT . '/invoices.json?'
+            . 'period=' . $period
+            . '&date_from=' . $dateFrom
+            . '&date_to=' . $dateTo
+            . '&api_token=' . FAKTUROWNIA_APITOKEN;
 
         do {
             for ($i = 0; $i < $max_multi_calls_count; $i++) {
@@ -96,17 +102,47 @@ class InvoicesController extends Controller {
                     curl_multi_remove_handle($mh, $curl_arr[$i]);
 
                     $data = json_decode(curl_multi_getcontent($curl_arr[$i]), true);
+
                     $invoices = array_merge($invoices, $data);
                 }
             }
-        } while (count($invoices) === ($pageNb-1)*50 && $status === CURLM_OK);
+        } while (count($invoices) === ($pageNb - 1) * 50 && $status === CURLM_OK);
 
         curl_multi_close($mh);
 
         return ($status === CURLM_OK) ? $invoices : $status;
     }
 
-    function addPayment($price, $invoiceId, $clientId, $invoiceTaxNo, $name, $paidDate, $description) {
+
+    function getNotPaidInvoicesByDateRange($period, $dateFrom, $dateTo)
+    {
+        $invoices = $this->getInvoicesByDateRange($period, $dateFrom, $dateTo);
+
+        if (!(is_array($invoices))) {
+            // $invoices is a status of error return from getInvoicesByDateRange()
+            return $invoices;
+        }
+
+        foreach ($invoices as $key => $element) {
+            // remove paid invoices
+            if ($element["paid"] === $element["price_gross"]) {
+                unset($invoices[$key]);
+            }
+        }
+
+        $keys_to_remove = ["view_url", "warehouse_id", "token"];
+        foreach ($keys_to_remove as $key) {
+            array_walk($invoices, function (&$v) use ($key) {
+                unset($v[$key]);
+            });
+        }
+
+        return $invoices;
+    }
+
+
+    function addPayment($price, $invoiceId, $clientId, $invoiceTaxNo, $name, $paidDate, $description)
+    {
 
         $ch = curl_init();
         $url = FAKTUROWNIA_ENDPOINT . '/banking/payments.json';
@@ -140,7 +176,7 @@ class InvoicesController extends Controller {
 
         $result = json_decode(curl_exec($ch), true);
 
-        curl_close ($ch);
+        curl_close($ch);
 
         if (floatval($result['overpaid']) > 0) {
             $this->splitPayments($clientId);
@@ -149,7 +185,8 @@ class InvoicesController extends Controller {
         return $result;
     }
 
-    function updatePaymentById($paymentId, $price) {
+    function updatePaymentById($paymentId, $price)
+    {
 
         $ch = curl_init();
         $url = FAKTUROWNIA_ENDPOINT . '/banking/payments/' . $paymentId . '.json?';
@@ -176,7 +213,7 @@ class InvoicesController extends Controller {
 
         $result = curl_exec($ch);
 
-        curl_close ($ch);
+        curl_close($ch);
 
         return $result;
     }
@@ -186,9 +223,9 @@ class InvoicesController extends Controller {
     {
         $ch = curl_init();
         $url = FAKTUROWNIA_ENDPOINT . '/banking/payments/' . $paymentId . '.json?'
-            .'api_token='.FAKTUROWNIA_APITOKEN;
+            . 'api_token=' . FAKTUROWNIA_APITOKEN;
 
-        curl_setopt($ch, CURLOPT_URL, $url );
+        curl_setopt($ch, CURLOPT_URL, $url);
         curl_setopt($ch, CURLOPT_CUSTOMREQUEST, "DELETE");
         curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
         if (USE_PROXY) {
@@ -202,15 +239,16 @@ class InvoicesController extends Controller {
         return $result;
     }
 
-    function getClientPayments($clientId, $dateFrom) {
+    function getClientPayments($clientId, $dateFrom)
+    {
         $payments = array();
 
         $ch = curl_init();
         $pageNb = 1;
-        $url = FAKTUROWNIA_ENDPOINT .'/banking/payments.json?'
-            .'client_id='.$clientId
-            .'&date_from='.$dateFrom
-            .'&api_token='.FAKTUROWNIA_APITOKEN;
+        $url = FAKTUROWNIA_ENDPOINT . '/banking/payments.json?'
+            . 'client_id=' . $clientId
+            . '&date_from=' . $dateFrom
+            . '&api_token=' . FAKTUROWNIA_APITOKEN;
         do {
             curl_setopt($ch, CURLOPT_URL, $url . '&page=' . $pageNb);
             curl_setopt($ch, CURLOPT_RETURNTRANSFER, TRUE);
@@ -221,23 +259,24 @@ class InvoicesController extends Controller {
 
             $payments = array_merge($payments, $data);
             $pageNb++;
-        } while(count($data) == 50);
+        } while (count($data) == 50);
 
-        curl_close ($ch);
+        curl_close($ch);
 
         return $payments;
     }
 
-    function getAllOverpaidPayments($clientId = null) {
+    function getAllOverpaidPayments($clientId = null)
+    {
         $payments = array();
 
         $ch = curl_init();
         $pageNb = 1;
-        $url = FAKTUROWNIA_ENDPOINT .'/banking/payments.json?'
-            .'status=overpaid'
-            .'&api_token='.FAKTUROWNIA_APITOKEN;
+        $url = FAKTUROWNIA_ENDPOINT . '/banking/payments.json?'
+            . 'status=overpaid'
+            . '&api_token=' . FAKTUROWNIA_APITOKEN;
         if ($clientId) {
-            $url .= '&client_id='.$clientId;
+            $url .= '&client_id=' . $clientId;
         }
         do {
             curl_setopt($ch, CURLOPT_URL, $url . '&page=' . $pageNb);
@@ -249,14 +288,15 @@ class InvoicesController extends Controller {
 
             $payments = array_merge($payments, $data);
             $pageNb++;
-        } while(count($data) == 50);
+        } while (count($data) == 50);
 
-        curl_close ($ch);
+        curl_close($ch);
 
         return $payments;
     }
 
-    function splitPayments($clientId) {
+    function splitPayments($clientId)
+    {
 
         $overPaidPayments = $this->getAllOverpaidPayments($clientId);
 
@@ -272,7 +312,8 @@ class InvoicesController extends Controller {
     }
 
     // split single payment
-    function splitPayment($invoices, $payment) {
+    function splitPayment($invoices, $payment)
+    {
         if (count($invoices) > 0 && $payment) {
             $overpaid = $payment['overpaid'];
             $paidDate = $payment['paid_date'];
@@ -305,11 +346,12 @@ class InvoicesController extends Controller {
                 $overpaid -= $leftToPay;
 
                 $idx++;
-            } while($overpaid > 0 && $idx < count($invoices));
+            } while ($overpaid > 0 && $idx < count($invoices));
         }
     }
 
-    function normalizeCurrencyValue($value) {
-        return str_replace(',', '.', $value );
+    function normalizeCurrencyValue($value)
+    {
+        return str_replace(',', '.', $value);
     }
 }
