@@ -127,6 +127,13 @@ class InvoicesController extends Controller
             // remove paid invoices
             if ($element["paid"] === $element["price_gross"]) {
                 unset($invoices[$key]);
+            } else {
+                // remove if paidTo date has not been exceeded
+                $today = new DateTime();
+                $paymentToDate = new DateTime($element["payment_to"]);
+                if ($paymentToDate > $today) {
+                    unset($invoices[$key]);
+                }
             }
         }
 
