@@ -969,8 +969,7 @@ function getDataDeviceMinolta($message)
         $dane[str_replace('[', '', trim($eks[0]))] = $eks[1];
     }
 
-
-    $dataDevice['system']['dd:SerialNumber'] = trim($dane['Serial Number']);
+    $dataDevice['system']['dd:SerialNumber'] = trim(strip_tags(html_entity_decode($dane['Serial Number'])));
 
     $dataDevice['system']['dd:MakeAndModel'] = trim($dane['Model Name']);
     $dataDevice['system']['dd:ProductNumber'] = "Minolta";
