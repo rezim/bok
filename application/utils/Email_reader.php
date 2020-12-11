@@ -966,7 +966,9 @@ function getDataDeviceMinolta($message)
     $dataDevice = array();
     foreach ($podz as $key => $item) {
         $eks = explode("],", $item);
-        $dane[str_replace('[', '', trim($eks[0]))] = $eks[1];
+        if (count($eks) >= 2) {
+            $dane[str_replace('[', '', trim($eks[0]))] = $eks[1];
+        }
     }
 
     $dataDevice['system']['dd:SerialNumber'] = trim(strip_tags(html_entity_decode($dane['Serial Number'])));
@@ -977,13 +979,13 @@ function getDataDeviceMinolta($message)
     $dataDevice['system']['dd:Version']['dd:Date'] = "";
     $dataDevice['system']['ip'] = "";
     if ($dane['Total Color Counter'] != null) {
-        $dataDevice['system']['wydruk'] = $dane['Total Black Counter'];
-        $dataDevice['system']['wydrukkolor'] = $dane['Total Color Counter'];
-        $dataDevice['system']['wydruktotal'] = $dane['Total Counter'];
+        $dataDevice['system']['wydruk'] = trim(strip_tags(html_entity_decode($dane['Total Black Counter'])));
+        $dataDevice['system']['wydrukkolor'] = trim(strip_tags(html_entity_decode($dane['Total Color Counter'])));
+        $dataDevice['system']['wydruktotal'] = trim(strip_tags(html_entity_decode($dane['Total Counter'])));
     } else {
-        $dataDevice['system']['wydruk'] = $dane['Total Counter'];
+        $dataDevice['system']['wydruk'] = trim(strip_tags(html_entity_decode($dane['Total Counter'])));
         $dataDevice['system']['wydrukkolor'] = 0;
-        $dataDevice['system']['wydruktotal'] = $dane['Total Counter'];
+        $dataDevice['system']['wydruktotal'] = trim(strip_tags(html_entity_decode($dane['Total Counter'])));
     }
     $dataDevice['system']['black_toner'] = "";
     $dataDevice['system']['cyan_toner'] = "";
