@@ -595,7 +595,7 @@ InvoiceManager = function (api_token, endpoint, company_name, invoice_number_len
                         title = getPositionDesc("Wynajem niszczarki", agreement, invoice['pokaznumerseryjny'], invoice['pokazstanlicznika']);
                         break;
                     default:
-                        title = getPositionDesc("Wynajem urządzenia", agreement, invoice['pokaznumerseryjny'], invoice['pokazstanlicznika']);
+                        title = getPositionDesc(`${agreement["typ_umowy"][0].toUpperCase()}${agreement["typ_umowy"].slice(1)}`, agreement, invoice['pokaznumerseryjny']);
                 }
 
                 positions.push({
