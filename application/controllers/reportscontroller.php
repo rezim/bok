@@ -85,6 +85,14 @@ class reportsController extends InvoicesController
                     $reports[$agr_id]['serials'][] = $replacement['new_serial'];
                 }
 
+                if ($indexSerial !== false && $indexNewSerial !== false) {
+                    $reports[$agr_id]['strony_black_sum'] =
+                        $reports[$agr_id]['strony_black_koniec'][$indexSerial] - $reports[$agr_id]['strony_black_start'][$indexSerial] +
+                        $reports[$agr_id]['strony_black_koniec'][$indexNewSerial] - $reports[$agr_id]['strony_black_start'][$indexNewSerial];
+                    $reports[$agr_id]['strony_kolor_sum'] =
+                        $reports[$agr_id]['strony_kolor_koniec'][$indexSerial] - $reports[$agr_id]['strony_kolor_start'][$indexSerial] +
+                        $reports[$agr_id]['strony_kolor_koniec'][$indexNewSerial] - $reports[$agr_id]['strony_kolor_start'][$indexNewSerial];
+                }
             }
         }
 
