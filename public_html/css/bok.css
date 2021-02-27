@@ -552,18 +552,22 @@ input[type="checkbox"] {
     margin-left: auto;
 }
 
-.bok-edit-notification.table td {
+.bok-two-column-layout.table td {
     border-top: none;
 }
 
-.bok-edit-notification.table th {
+.bok-two-column-layout.table th {
     background-color: #8d8f8f;
     color: #FFFFFF;
     border: solid 3px;
 }
 
-.bok-edit-notification.table th {
+.bok-two-column-layout.table th {
     text-align: right;
+}
+
+.bok-two-column-layout.table-sm th {
+    vertical-align: middle;
 }
 
 [data-toggle="collapse"] .fa:before {

@@ -17,7 +17,7 @@
         </div>
         <div class="col">
             <div id="divNotiWykonanie">
-                <table class='table bok-edit-notification'>
+                <table class='table bok-two-column-layout'>
                     <tbody>
 
                     {foreach from=$filedsToEdit item=item key=key}

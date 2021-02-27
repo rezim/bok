@@ -1,210 +1,361 @@
-<table id='tableform' class='tableform' cellspacing=0 cellpadding=0>
-                          <tr>
-                               <td class='tdOpis' >
-                                   Nazwa krótka
-                               </td>
-                               <td class='tdWartosc'>
-                                   <input type="text" id='txtnazwakrotka' autofocus 
-                                          class='textBoxForm' maxlength="40" style='width:250px;min-width:250px;' 
-                                          {if $rowid!=0}value="{$dataClient[0].nazwakrotka|escape:'htmlall'}"{/if}>  
-                               </td>
-                           </tr>
-                           <tr><td style='height:3px;min-height: 3px;' colspan=2></td></tr>
-                           <tr>
-                               <td class='tdOpis' style='height:50px;min-height: 50px;max-height: 50px;'>
-                                   Nazwa pełna
-                               </td>
-                               <td class='tdWartosc'>
-                                   <textarea id="txtnazwapelna" class="textareaForm" style='height:50px;min-height: 50px;'  maxlength="200" >{if $rowid!=0}{$dataClient[0].nazwapelna}{/if}</textarea>
-                               </td>
-                           </tr>
-                           <tr><td style='height:3px;min-height: 3px;' colspan=2></td></tr>
-                             <tr>
-                               <td class='tdOpis' >
-                                   adres
-                               </td>
-                               <td class='tdWartosc'>
-                                   <input type="text" id='txtulica'
-                                          class='textBoxForm' maxlength="100" style='width:300px;min-width:300px;'
-                                          {if $rowid!=0}value="{$dataClient[0].ulica|escape:'htmlall'}"{/if}>  
-                               </td>
-                           </tr>
-                           <tr><td style='height:5px;min-height: 5px;' colspan=2></td></tr>
-                           
-                             <tr>
-                               <td class='tdOpis' >
-                                   Miasto
-                               </td>
-                               <td class='tdWartosc'>
-                                   <input type="text" id='txtmiasto'
-                                          class='textBoxForm' maxlength="70" style='width:200px;min-width:200px;'
-                                          {if $rowid!=0}value="{$dataClient[0].miasto|escape:'htmlall'}"{/if}>  
-                               </td>
-                           </tr>
-                           <tr><td style='height:3px;min-height: 3px;' colspan=2></td></tr>
-                           
-                             <tr>
-                               <td class='tdOpis' >
-                                   Kod pocztowy
-                               </td>
-                               <td class='tdWartosc'>
-                                   <input type="text" id='txtkodpocztowy'
-                                          class='textBoxForm' maxlength="10" style='width:90px;min-width:90px;'
-                                          {if $rowid!=0}value="{$dataClient[0].kodpocztowy|escape:'htmlall'}"{/if}>  
-                               </td>
-                           </tr>
-                           <tr><td style='height:3px;min-height: 3px;' colspan=2></td></tr>
-                           
-                           <tr>
-                               <td class='tdOpis' >
-                                   NIP
-                               </td>
-                               <td class='tdWartosc'>
-                                   <input type="text" id='txtknip'
-                                          class='textBoxForm' maxlength="20" style='width:150px;min-width:150px;'
-                                          {if $rowid!=0}value="{$dataClient[0].nip|escape:'htmlall'}"{/if}>  
-                               </td>
-                           </tr>
-                           <tr><td style='height:3px;min-height: 3px;' colspan=2></td></tr>
-                           
-                          <tr>
-                               <td class='tdOpis' >
-                                   telefon
-                               </td>
-                               <td class='tdWartosc'>
-                                   <input type="text" id='txttelefon'
-                                          class='textBoxForm' maxlength="50" style='width:150px;min-width:150px;'
-                                          {if $rowid!=0}value="{$dataClient[0].telefon|escape:'htmlall'}"{/if}>  
-                               </td>
-                           </tr>
-                           <tr><td style='height:3px;min-height: 3px;' colspan=2></td></tr>
-                           
-                           <tr>
-                               <td class='tdOpis' >
-                                   mail
-                               </td>
-                               <td class='tdWartosc'>
-                                   <input type="text" id='txtmail'
-                                          class='textBoxForm' maxlength="50" style='width:150px;min-width:150px;'
-                                          {if $rowid!=0}value="{$dataClient[0].mail|escape:'htmlall'}"{/if}>  
-                               </td>
-                           </tr>
-                             <tr><td style='height:3px;min-height: 3px;' colspan=2></td></tr>
-                             <tr>
-                               <td class='tdOpis' >
-                                   mail faktury
-                               </td>
-                               <td class='tdWartosc'>
-                                   <input type="text" id='txtmailfaktury'
-                                          class='textBoxForm' maxlength="100" style='width:150px;min-width:150px;'
-                                          {if $rowid!=0}value="{$dataClient[0].mailfaktury|escape:'htmlall'}"{/if}>  
-                               </td>
-                           </tr>
-                             <tr><td style='height:3px;min-height: 3px;' colspan=2></td></tr>
-                            <tr>
-                               <td class='tdOpis' >
-                                   termin płatności
-                               </td>
-                               <td class='tdWartosc'>
-                                   <input type="text" id='txtterminplatnosci' 
-                                          class='textBoxForm' maxlength="10" style='width:70px;min-width:70px;text-align: right;padding-right: 10px;'
-                                          {if $rowid!=0 && !empty($dataClient[0].terminplatnosci)}value="{$dataClient[0].terminplatnosci|number_format:0:",":" "|escape:'htmlall'}"{/if}>  
-                                   dni
-                               </td>
-                           </tr>
-                           
-                           
-                           <tr><td style='height:3px;min-height: 3px;' colspan=2></td></tr>
-                            <tr>
-                               <td class='tdOpis' style='height:50px;min-height: 50px;max-height: 50px;'>
-                                   krótki opis
-                               </td>
-                               <td class='tdWartosc'>
-                                   <textarea id="txtopis" class="textareaForm" style='height:80px;min-height: 80px;'  
-                                             maxlength="500" >{if $rowid!=0}{$dataClient[0].opis|escape:'htmlall'}{/if}</textarea>
-                               </td>
-                           </tr>
-                           <tr><td style='height:3px;min-height: 3px;' colspan=2></td></tr>
-                           <tr>
-                               <td class='tdOpis' >
-                                   REGON
-                               </td>
-                               <td class='tdWartosc'>
-                                   <input type="text" id='txtregon'
-                                          class='textBoxForm' maxlength="20" style='width:150px;min-width:150px;'
-                                          {if $rowid!=0}value="{$dataClient[0].regon|escape:'htmlall'}"{/if}>  
-                               </td>
-                           </tr>
-                           <tr><td style='height:3px;min-height: 3px;' colspan=2></td></tr>
+<div class="container mt-3">
+    <div class="container">
+        <div id='actionok' class="actionok alert alert-success" role="alert">
+            <strong>Dane zapisane poprawnie</strong>
+        </div>
+        <div id='actionerror' class="actionerror alert alert-danger" role="alert">
+            <strong>Błąd zapisu danych.</strong>
+        </div>
+    </div>
+    <div class="row container">
+        <div class="col">
+            <table class='table table-sm bok-two-column-layout small'>
+                <tr>
+                    <th>
+                        Nazwa krótka
+                    </th>
+                    <td>
+                        <input class="form-control form-control-md" type="text" id='txtNazwaKrotka' autofocus
+                               {if $rowid!=0}value="{$dataClient[0].nazwakrotka|escape:'htmlall'}"{/if}>
+                    </td>
+                </tr>
+                <tr>
+                    <th>
+                        Nazwa pełna
+                    </th>
+                    <td>
+                        <textarea id="txtNazwaPelna"
+                                  class="form-control form-control-md">{if $rowid!=0}{$dataClient[0].nazwapelna}{/if}</textarea>
+                    </td>
+                </tr>
+                <tr>
+                    <th>
+                        Ulica
+                    </th>
+                    <td>
+                        <input class="form-control form-control-md" id='txtUlica'
+                               {if $rowid!=0}value="{$dataClient[0].ulica|escape:'htmlall'}"{/if}>
+                    </td>
+                </tr>
+                <tr>
+                    <th>
+                        Miasto
+                    </th>
+                    <td>
+                        <input class="form-control form-control-md" id='txtMiasto'
+                               {if $rowid!=0}value="{$dataClient[0].miasto|escape:'htmlall'}"{/if}>
+                    </td>
+                </tr>
+                <tr>
+                    <th>
+                        Kod pocztowy
+                    </th>
+                    <td>
+                        <input class="form-control form-control-md" id='txtKodPocztowy'
+                               {if $rowid!=0}value="{$dataClient[0].kodpocztowy|escape:'htmlall'}"{/if}>
+                    </td>
+                </tr>
 
-                            <!-- invoice options -->
-                            <tr>
-                                <td class='tdOpis' colspan="4" >
-                                    Opcje Faktury
-                                </td>
-                            </tr>
-                            <tr><td style='height:3px;min-height: 3px;' colspan=2></td></tr>
-                            <!-- show serial number -->
-                            <tr>
-                                <td class='tdOpis' style="width:170px;min-width:170px;max-width:170px;" >
-                                    pokaż numer seryjny
-                                </td>
-                                <td class='tdWartosc' colspan="3">
-                                    <input type="checkbox" id='checkPokazNumerSeryjny' class='checkBoxNormal'
-                                           {if $rowid!=0 && !empty($dataClient[0].pokaznumerseryjny) &&  $dataClient[0].pokaznumerseryjny==1}checked{/if}
-                                    />
-                                </td>
-                            </tr>
-                            <tr><td style='height:3px;min-height: 3px;' colspan=2></td></tr>
-                            <!-- show device counter state -->
-                            <tr>
-                                <td class='tdOpis' style="width:170px;min-width:170px;max-width:170px;" >
-                                    pokaż stan licznika
-                                </td>
-                                <td class='tdWartosc' colspan="3">
-                                    <input type="checkbox" id='checkPokazStanLicznika' class='checkBoxNormal'
-                                           {if $rowid!=0 && !empty($dataClient[0].pokazstanlicznika) &&  $dataClient[0].pokazstanlicznika==1}checked{/if}
-                                    />
-                                </td>
-                            </tr>
-                            <tr><td style='height:3px;min-height: 3px;' colspan=2></td></tr>
-                            <!-- separate invoice for each agreement -->
-                            <tr>
-                                <td class='tdOpis' style="width:170px;min-width:170px;max-width:170px;" >
-                                    faktura dla każdej umowy
-                                </td>
-                                <td class='tdWartosc' colspan="3">
-                                    <input type="checkbox" id='checkFakturaDlaKazdejUmowy' class='checkBoxNormal'
-                                           {if $rowid!=0 && !empty($dataClient[0].fakturadlakazdejumowy) &&  $dataClient[0].fakturadlakazdejumowy==1}checked{/if}
-                                    />
-                                </td>
-                            </tr>
-                            <tr><td style='height:3px;min-height: 3px;' colspan=2></td></tr>
-                            <!-- end -->
-                           
-                            <tr>
-                                <td style='text-align: right;' colspan="2">
-                                    <div class='divSave'>
-                                        <div id='actionerror' class='actionerror'><span>Błąd zapisu danych.</span></div>
-                                        <div id='actionok' class='actionok' ><span style='margin-top:6px;'>Dane zapisane poprawnie</span></div>
-                                         <div id='actionbuttonclick2' class="buttonDeclin" onmousedown='usunKlienta("{$rowid}");return false;'>
+                <tr>
+                    <th>
+                        NIP
+                    </th>
+                    <td>
+                        <input class="form-control form-control-md" id='txtNip'
+                               {if $rowid!=0}value="{$dataClient[0].nip|escape:'htmlall'}"{/if}>
+                    </td>
+                </tr>
+                <tr>
+                    <th>
+                        Termin płatności (dni)
+                    </th>
+                    <td>
+                        <input class="form-control form-control-md" id='txtTerminPlatnosci'
+                               {if $rowid!=0 && !empty($dataClient[0].terminplatnosci)}value="{$dataClient[0].terminplatnosci|number_format:0:",":" "|escape:'htmlall'}"{/if}>
+                    </td>
+                </tr>
+                <tr>
+                    <th>
+                        Bank
+                    </th>
+                    <td>
+                        <input class="form-control form-control-md" id='txtBank'
+                               {if $rowid!=0}value="{$dataClient[0].bank|escape:'htmlall'}"{/if}
+                        />
+                    </td>
+                </tr>
+                <tr>
+                    <th>
+                        Numer rachunku bankowego
+                    </th>
+                    <td>
+                        <input class="form-control form-control-sm" id='txtNumerRachunku'
+                               {if $rowid!=0}value="{$dataClient[0].numerrachunku|escape:'htmlall'}"{/if}
+                        />
+                    </td>
+                </tr>
+                <tr>
+                    <th>
+                        Dodatkowy opis
+                    </th>
+                    <td>
+                        <textarea id="txtDodatkowyOpis" rows="5"
+                                  class="form-control form-control-xl">{if $rowid!=0}{$dataClient[0].opis|escape:'htmlall'}{/if}</textarea>
+                    </td>
+                </tr>
+                <tr>
+                    <th>
+                        Opiekun klienta
+                    </th>
+                    <td>
+                        <input class="form-control form-control-md" id='txtOpiekunKlienta'
+                               {if $rowid!=0}value="{$dataClient[0].opiekunklienta|escape:'htmlall'}"{/if}
+                        />
+                    </td>
+                </tr>
+                <tr>
+                    <th>
+                        Branża
+                    </th>
+                    <td>
+                        <input class="form-control form-control-md" id='txtBranza'
+                               {if $rowid!=0}value="{$dataClient[0].branza|escape:'htmlall'}"{/if}
+                        />
+                    </td>
+                </tr>
 
-                                            <span >X Usuń</span>
-                                        </div>
-                                         
-                                            <div id='actionbuttonclick' class="actionbuttonZapisz" onmousedown='zapiszKlienta("{$rowid}");return false;'>
-                                            <span >Zapisz >></span>
-                                        </div>
-                                        <div id='actionloader' class="actionloader">
-                                            <img src="{$smarty.const.SCIEZKA}/{$smarty.const.SMARTVERSION}/img/smallLoader.GIF" style='display:inline;'/>przetwarzanie
-                                        </div>
-                                        <div style='clear:both'></div>
-                                    </div> 
-                                </td>
-                            </tr>
-                        </table>
-                    <script type="text/javascript">
-                      
-                    </script>
-    
-</table>
+                <!-- invoice options -->
+                <tr>
+                    <td colspan="2" class="font-weight-bold">
+                        Opcje Faktury
+                    </td>
+                </tr>
+
+                <!-- show serial number -->
+                <tr>
+                    <th>
+                        pokaż numer seryjny
+                    </th>
+                    <td>
+                        <input type="checkbox" id='checkPokazNumerSeryjny' class="form-control form-control-sm"
+                               {if $rowid!=0 && !empty($dataClient[0].pokaznumerseryjny) &&  $dataClient[0].pokaznumerseryjny==1}checked{/if}
+                        />
+                    </td>
+                </tr>
+                <!-- show device counter state -->
+                <tr>
+                    <th>
+                        Pokaż stan licznika
+                    </th>
+                    <td>
+                        <input type="checkbox" id='checkPokazStanLicznika' class="form-control form-control-sm"
+                               {if $rowid!=0 && !empty($dataClient[0].pokazstanlicznika) &&  $dataClient[0].pokazstanlicznika==1}checked{/if}
+                        />
+                    </td>
+                </tr>
+                <!-- separate invoice for each agreement -->
+                <tr>
+                    <th>
+                        Faktura dla każdej umowy
+                    </th>
+                    <td>
+                        <input type="checkbox" id='checkFakturaDlaKazdejUmowy' class="form-control form-control-sm"
+                               {if $rowid!=0 && !empty($dataClient[0].fakturadlakazdejumowy) && $dataClient[0].fakturadlakazdejumowy==1}checked{/if}
+                        />
+                    </td>
+                </tr>
+                <tr>
+                    <th>
+                        Umowa zbiorcza
+                    </th>
+                    <td>
+                        <input type="checkbox" id='checkUmowaZbiorcza' class="form-control form-control-sm"
+                               {if $rowid!=0 && !empty($dataClient[0].umowazbiorcza) && $dataClient[0].umowazbiorcza==1}checked{/if}
+                        />
+                    </td>
+                </tr>
+                <!-- end -->
+            </table>
+        </div>
+        <div class="col">
+            <table class='table table-sm bok-two-column-layout small'>
+                <tr>
+                    <td colspan="2" class="font-weight-bold">Osoba kontaktowa</td>
+                </tr>
+                <tr>
+                    <th>
+                        Numer telefonu
+                    </th>
+                    <td>
+                        <input class="form-control form-control-md" id='txtKontaktTelefon'
+                               {if $rowid!=0}value="{$dataClient[0].telefon|escape:'htmlall'}"{/if}
+                        />
+                    </td>
+                </tr>
+                <tr>
+                    <th>
+                        Adres email
+                    </th>
+                    <td>
+                        <input class="form-control form-control-md" id='txtKontaktEmail'
+                               {if $rowid!=0}value="{$dataClient[0].mail|escape:'htmlall'}"{/if}
+                    </td>
+                </tr>
+                <tr>
+                    <th>
+                        Stanowisko
+                    </th>
+                    <td>
+                        <input class="form-control form-control-md" id='txtKontaktStanowisko'
+                               {if $rowid!=0}value="{$dataClient[0].stanowisko|escape:'htmlall'}"{/if}
+                        />
+                    </td>
+                </tr>
+
+                <tr>
+                    <td colspan="2" class="font-weight-bold">Osoba odpowiedzialna za zamówienia</td>
+                </tr>
+                <tr>
+                    <td colspan="2" class="text-right small">kopiuj dane osoby kontaktowej <input type="checkbox"
+                                                                                                  onclick="copyToValuesForPerson('Kontakt', 'Zamowienia', this.checked)"/>
+                    </td>
+                </tr>
+                <tr>
+                    <th>
+                        Numer telefonu
+                    </th>
+                    <td>
+                        <input class="form-control form-control-md" id='txtZamowieniaTelefon'
+                               {if $rowid!=0}value="{$dataClient[0].zamowieniatelefon|escape:'htmlall'}"{/if}
+                        />
+                    </td>
+                </tr>
+                <tr>
+                    <th>
+                        Adres email
+                    </th>
+                    <td>
+                        <input class="form-control form-control-md" id="txtZamowieniaEmail"
+                               {if $rowid!=0}value="{$dataClient[0].zamowieniaemail|escape:'htmlall'}"{/if}
+                        />
+                    </td>
+                </tr>
+                <tr>
+                    <th>
+                        Stanowisko
+                    </th>
+                    <td>
+                        <input class="form-control form-control-md" id='txtZamowieniaStanowisko'
+                               {if $rowid!=0}value="{$dataClient[0].zamowieniastanowisko|escape:'htmlall'}"{/if}
+                        />
+                    </td>
+                </tr>
+
+                <tr>
+                    <td colspan="2" class="font-weight-bold">Osoba odpowiedzialna za płatności</td>
+                </tr>
+                <tr>
+                    <td colspan="2" class="text-right small">kopiuj dane osoby kontaktowej <input type="checkbox"
+                                                                                                  onclick="copyToValuesForPerson('Kontakt', 'Faktury', this.checked)"/>
+                    </td>
+                </tr>
+                <tr>
+                    <th>
+                        Imię i nazwisko
+                    </th>
+                    <td>
+                        <input class="form-control form-control-md" id='txtFakturyImieNazwisko'
+                               {if $rowid!=0}value="{$dataClient[0].fakturyimienazwisko|escape:'htmlall'}"{/if}
+                        />
+                    </td>
+                </tr>
+                <tr>
+                    <th>
+                        Adres email
+                    </th>
+                    <td>
+                        <input class="form-control form-control-md" id='txtFakturyEmail'
+                               {if $rowid!=0}value="{$dataClient[0].mailfaktury|escape:'htmlall'}"{/if}
+                        />
+                    </td>
+                </tr>
+                <tr>
+                    <th>
+                        Telefon komórkowy
+                    </th>
+                    <td>
+                        <input class="form-control form-control-md" id='txtFakturyKomorka'
+                               {if $rowid!=0}value="{$dataClient[0].fakturykomorka|escape:'htmlall'}"{/if}
+                        />
+                    </td>
+                </tr>
+                <tr>
+                    <th>
+                        Telefon stacjonarny
+                    </th>
+                    <td>
+                        <input class="form-control form-control-md" id='txtFakturyTelefon'
+                               {if $rowid!=0}value="{$dataClient[0].fakturytelefon|escape:'htmlall'}"{/if}
+                        />
+                    </td>
+                </tr>
+                <tr>
+                    <th>
+                        Stanowisko
+                    </th>
+                    <td>
+                        <input class="form-control form-control-md" id='txtFakturyStanowisko'
+                               {if $rowid!=0}value="{$dataClient[0].fakturystanowisko|escape:'htmlall'}"{/if}
+                        />
+                    </td>
+                </tr>
+                <tr>
+                    <th>
+                        Uwagi / notatki
+                    </th>
+                    <td>
+                        <textarea id="txtFakturyUwagi" rows="2" class="form-control form-control-xl">
+                            {if $rowid!=0}{$dataClient[0].fakturyuwagi|escape:'htmlall'}{/if}
+                        </textarea>
+                    </td>
+                </tr>
+                <tr>
+                    <th>
+                        Monitoring płatności
+                    </th>
+                    <td>
+                        <input type="checkbox" id='checkMonitoringPlatnosci' class="form-control form-control-sm"
+                               {if $rowid!=0 && !empty($dataClient[0].monitoringplatnosci) && $dataClient[0].monitoringplatnosci==1}checked{/if}
+                        />
+                    </td>
+                </tr>
+                <tr>
+                    <th>
+                        Naliczać odsetki
+                    </th>
+                    <td class="text-left">
+                        <input type="checkbox" id='checkNaliczacOdsetki' class="form-control form-control-sm" class="text-left"
+                               {if $rowid!=0 && !empty($dataClient[0].naliczacodsetki) && $dataClient[0].naliczacodsetki==1}checked{/if}
+                        />
+                    </td>
+                </tr>
+            </table>
+        </div>
+    </div>
+
+    <div class="container text-right" wymaganylevel='w' wymaganyzrobiony='0'>
+        <a href="#" class="btn btn-outline-success active" role="button" aria-pressed="true"
+           onmousedown='zapiszKlienta("{$rowid}");return false;'><i class="fas fa-save"></i>&nbsp; Zapisz</a>
+        <a href="#" class="btn btn-outline-secondary" role="button" onclick="$.colorbox.close();">Anuluj</a>
+    </div>
+</div>
+
+<script type="text/javascript">
+    copyToValuesForPerson = function (fromPerson, toPerson, checked) {
+        const fields = ["Telefon", "Email", "Stanowisko"];
+        fields.forEach((field) => {
+            const newValue = checked ? $("#txt" + fromPerson + field).val() : '';
+            $("#txt" + toPerson + field).val(newValue);
+        });
+    };
+</script>

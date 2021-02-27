@@ -43,9 +43,9 @@ function showNewClientAdd(rowid) {
 
     $.colorbox
     ({
-        height: 800 + 'px',
-        width: 600 + 'px',
-        title: "Dodawanie/Edycja klienta",
+        height: 870 + 'px',
+        width: 985 + 'px',
+        title: rowid ? "Karta Klienta" : "",
         data:
             {
                 rowid: rowid
@@ -57,7 +57,7 @@ function showNewClientAdd(rowid) {
         },
         onComplete: function () {
 
-            $("#txtnazwakrotka").focus();
+            $("#txtNazwaKrotka").focus();
             uprawnienia();
         }
     });
@@ -317,21 +317,36 @@ function zapiszKlienta(rowid) {
         data:
             {
                 rowid: rowid,
-                nazwakrotka: doc.getElementById('txtnazwakrotka').value,
-                nazwapelna: doc.getElementById('txtnazwapelna').value,
-                ulica: doc.getElementById('txtulica').value,
-                miasto: doc.getElementById('txtmiasto').value,
-                kodpocztowy: doc.getElementById('txtkodpocztowy').value,
-                nip: doc.getElementById('txtknip').value,
-                regon: doc.getElementById('txtregon').value,
-                telefon: doc.getElementById('txttelefon').value,
-                mail: doc.getElementById('txtmail').value,
-                mailfaktury: doc.getElementById('txtmailfaktury').value,
-                terminplatnosci: doc.getElementById('txtterminplatnosci').value,
-                opis: doc.getElementById('txtopis').value,
+                nazwakrotka: doc.getElementById('txtNazwaKrotka').value,
+                nazwapelna: doc.getElementById('txtNazwaPelna').value,
+                ulica: doc.getElementById('txtUlica').value,
+                miasto: doc.getElementById('txtMiasto').value,
+                kodpocztowy: doc.getElementById('txtKodPocztowy').value,
+                nip: doc.getElementById('txtNip').value,
+                terminplatnosci: doc.getElementById('txtTerminPlatnosci').value,
+                bank: doc.getElementById('txtBank').value,
+                numerrachunku: doc.getElementById('txtNumerRachunku').value,
+                opis: doc.getElementById('txtDodatkowyOpis').value,
+                opiekunklienta: doc.getElementById('txtOpiekunKlienta').value,
+                branza: doc.getElementById('txtBranza').value,
                 pokaznumerseryjny: doc.getElementById("checkPokazNumerSeryjny").checked ? 1 : 0,
                 pokazstanlicznika: doc.getElementById("checkPokazStanLicznika").checked ? 1 : 0,
-                fakturadlakazdejumowy: doc.getElementById("checkFakturaDlaKazdejUmowy").checked ? 1 : 0
+                fakturadlakazdejumowy: doc.getElementById("checkFakturaDlaKazdejUmowy").checked ? 1 : 0,
+                umowazbiorcza: doc.getElementById("checkUmowaZbiorcza").checked ? 1 : 0,
+                telefon: doc.getElementById('txtKontaktTelefon').value,
+                mail: doc.getElementById('txtKontaktEmail').value,
+                stanowisko: doc.getElementById('txtKontaktStanowisko').value,
+                zamowieniatelefon: doc.getElementById('txtZamowieniaTelefon').value,
+                zamowieniaemail: doc.getElementById('txtZamowieniaEmail').value,
+                zamowieniastanowisko: doc.getElementById('txtZamowieniaStanowisko').value,
+                fakturyimienazwisko: doc.getElementById('txtFakturyImieNazwisko').value,
+                mailfaktury: doc.getElementById('txtFakturyEmail').value,
+                fakturykomorka: doc.getElementById('txtFakturyKomorka').value,
+                fakturytelefon: doc.getElementById('txtFakturyTelefon').value,
+                fakturystanowisko: doc.getElementById('txtFakturyStanowisko').value,
+                fakturyuwagi: doc.getElementById('txtFakturyUwagi').value,
+                monitoringplatnosci: doc.getElementById('checkMonitoringPlatnosci').checked ? 1 : 0,
+                naliczacodsetki: doc.getElementById('checkNaliczacOdsetki').checked ? 1 : 0,
             },
         success: function (dane) {
             checkReplay(objError, objLoad, null, objClick, dane, objOk, 1, 3000, null);
@@ -339,7 +354,7 @@ function zapiszKlienta(rowid) {
         },
         error: function () {
 
-            showError(objError, objLoad, null, objClick, 3000);
+            showError(objError, objLoad, null, objClick, 10000);
             return false;
         }
     });

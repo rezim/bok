@@ -21,7 +21,7 @@
     <div class="row container">
         <div class="col">
             <div id="divNotiGlowne">
-                <table class="table bok-edit-notification">
+                <table class="table bok-two-column-layout">
                     <tbody>
                     {foreach from=$filedsToEdit item=item key=key}
                         {if $item.activity=='1' && $item.divek=='divNotiGlowne'}
@@ -179,7 +179,7 @@
         </div>
         <div class="col">
             <div id="divNotiWykonanie">
-                <table class='table bok-edit-notification'>
+                <table class='table bok-two-column-layout'>
                     <tbody>
 
                     {foreach from=$filedsToEdit item=item key=key}
@@ -359,7 +359,7 @@
                 <div class="card-body">
                     <div class="row">
                         <div class="col">
-                            <table class="table bok-edit-notification">
+                            <table class="table bok-two-column-layout">
                                 <tr>
                                     <th class='tdOpis thead-dark' scope="row"><span>C/B Koniec:</span></th>
                                     <td class='tdWartosc'><input class="form-control" id="counterEnd" type="text"/></td>
@@ -382,7 +382,7 @@
                         </div>
 
                         <div class="col">
-                            <table class="table bok-edit-notification">
+                            <table class="table bok-two-column-layout">
                                 <tr>
                                     <th class='tdOpis'><span>C/B Start:</span></th>
                                     <td class='tdWartosc'><input class="form-control" id="counterStart" type="text"/></td>
