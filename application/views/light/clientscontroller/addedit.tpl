@@ -9,7 +9,7 @@
     </div>
     <div class="row container">
         <div class="col">
-            <table class='table table-sm bok-two-column-layout small'>
+            <table class='table table-sm bok-two-column-layout'>
                 <tr>
                     <th>
                         Nazwa krótka
