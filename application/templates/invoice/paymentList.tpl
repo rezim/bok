@@ -18,7 +18,7 @@
                     <div class="col-sm-2">Wpłata</div>
                     <div class="col-sm-1">akcja</div>
                 </div>
-                <div class="row" ng-repeat="payment in $ctrl.getPayments($ctrl.data.clientId, $ctrl.data.dateFrom) track by $index">
+                <div class="row" ng-repeat="payment in $ctrl.getPayments($ctrl.data.clientId, $ctrl.data.dateFrom) | orderBy: '-paid_date' track by $index ">
                     <div class="col-sm-2" role="button">[[$ctrl.parseDate(payment.paid_date) | date : 'y-MM-dd']]</div>
                     <div class="col-sm-3" role="button">[[payment.name]]</div>
                     <div class="col-sm-2" role="button">[[payment.price | currency: '']]</div>
