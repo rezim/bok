@@ -7,7 +7,7 @@
 <div class="container-fluid" ng-app="app" ng-controller="PaymentsCtrl as ctrl" ng-cloak ng-init="ctrl.loadData(date_from, date_to)">
 
     <div class="row">
-        <div class="otus-sidebar col-12 col-md-12 col-xl-auto">
+        <div class="otus-sidebar col-12 col-xl-auto">
             <form>
                 <div class="form-group">
                     <label for="txtfilterserial">okres (miesięcy)</label>
@@ -124,7 +124,7 @@
         {include file="$templates/invoice/paymentList.tpl"}
         {include file="$templates/invoice/paymentsClientMessages.tpl"}
 
-        <main id='divRightCenter' class="col-12 col-md-12 col-xl">
+        <main id='divRightCenter' class="col-12 col-xl">
             <div class="table-responsive-sm">
                 <table class='table table-hover table-sm tablesorter payments' id='tableReport'>
                     <thead class="thead-dark">

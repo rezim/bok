@@ -61,7 +61,7 @@
                         NIP
                     </th>
                     <td>
-                        <input class="form-control form-control-md" id='txtNip'
+                        <input class="form-control form-control-md" id='txtNip' {if !$show_payment_options}disabled{/if}
                                {if $rowid!=0}value="{$dataClient[0].nip|escape:'htmlall'}"{/if}>
                     </td>
                 </tr>
@@ -70,7 +70,7 @@
                         Termin płatności (dni)
                     </th>
                     <td>
-                        <input class="form-control form-control-md" id='txtTerminPlatnosci'
+                        <input class="form-control form-control-md" id='txtTerminPlatnosci' {if !$show_payment_options}disabled{/if}
                                {if $rowid!=0 && !empty($dataClient[0].terminplatnosci)}value="{$dataClient[0].terminplatnosci|number_format:0:",":" "|escape:'htmlall'}"{/if}>
                     </td>
                 </tr>
@@ -79,7 +79,7 @@
                         Bank
                     </th>
                     <td>
-                        <input class="form-control form-control-md" id='txtBank'
+                        <input class="form-control form-control-md" id='txtBank' {if !$show_payment_options}disabled{/if}
                                {if $rowid!=0}value="{$dataClient[0].bank|escape:'htmlall'}"{/if}
                         />
                     </td>
@@ -89,7 +89,7 @@
                         Numer rachunku bankowego
                     </th>
                     <td>
-                        <input class="form-control form-control-sm" id='txtNumerRachunku'
+                        <input class="form-control form-control-sm" id='txtNumerRachunku' {if !$show_payment_options}disabled{/if}
                                {if $rowid!=0}value="{$dataClient[0].numerrachunku|escape:'htmlall'}"{/if}
                         />
                     </td>
@@ -123,7 +123,7 @@
                         />
                     </td>
                 </tr>
-
+                {if $show_payment_options}
                 <!-- invoice options -->
                 <tr>
                     <td colspan="2" class="font-weight-bold">
@@ -174,11 +174,12 @@
                         />
                     </td>
                 </tr>
+                {/if}
                 <!-- end -->
             </table>
         </div>
         <div class="col">
-            <table class='table table-sm bok-two-column-layout small'>
+            <table class='table table-sm bok-two-column-layout'>
                 <tr>
                     <td colspan="2" class="font-weight-bold">Osoba kontaktowa</td>
                 </tr>
@@ -319,6 +320,7 @@
                         </textarea>
                     </td>
                 </tr>
+                {if $show_payment_options}
                 <tr>
                     <th>
                         Monitoring płatności
@@ -339,10 +341,13 @@
                         />
                     </td>
                 </tr>
+                {/if}
             </table>
         </div>
     </div>
-
+    {if !$show_payment_options}
+        <div class="h-50">&nbsp;{*placeholder*}</div>
+    {/if}
     <div class="container text-right" wymaganylevel='w' wymaganyzrobiony='0'>
         <a href="#" class="btn btn-outline-success active" role="button" aria-pressed="true"
            onmousedown='zapiszKlienta("{$rowid}");return false;'><i class="fas fa-save"></i>&nbsp; Zapisz</a>

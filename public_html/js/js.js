@@ -310,44 +310,71 @@ function zapiszKlienta(rowid) {
     $(objClick).hide();
     $(objLoad).show();
 
+
+    let data ={
+        rowid: rowid,
+        nazwakrotka: doc.getElementById('txtNazwaKrotka').value,
+        nazwapelna: doc.getElementById('txtNazwaPelna').value,
+        ulica: doc.getElementById('txtUlica').value,
+        miasto: doc.getElementById('txtMiasto').value,
+        kodpocztowy: doc.getElementById('txtKodPocztowy').value,
+        opis: doc.getElementById('txtDodatkowyOpis').value,
+        opiekunklienta: doc.getElementById('txtOpiekunKlienta').value,
+        branza: doc.getElementById('txtBranza').value,
+        telefon: doc.getElementById('txtKontaktTelefon').value,
+        mail: doc.getElementById('txtKontaktEmail').value,
+        stanowisko: doc.getElementById('txtKontaktStanowisko').value,
+        zamowieniatelefon: doc.getElementById('txtZamowieniaTelefon').value,
+        zamowieniaemail: doc.getElementById('txtZamowieniaEmail').value,
+        zamowieniastanowisko: doc.getElementById('txtZamowieniaStanowisko').value,
+        fakturyimienazwisko: doc.getElementById('txtFakturyImieNazwisko').value,
+        mailfaktury: doc.getElementById('txtFakturyEmail').value,
+        fakturykomorka: doc.getElementById('txtFakturyKomorka').value,
+        fakturytelefon: doc.getElementById('txtFakturyTelefon').value,
+        fakturystanowisko: doc.getElementById('txtFakturyStanowisko').value,
+        fakturyuwagi: doc.getElementById('txtFakturyUwagi').value
+    };
+
+    if (doc.getElementById("checkPokazNumerSeryjny")) {
+        data['pokaznumerseryjny'] = doc.getElementById("checkPokazNumerSeryjny").checked ? 1 : 0
+    }
+    if (doc.getElementById("checkPokazStanLicznika")) {
+        data['pokazstanlicznika'] = doc.getElementById("checkPokazStanLicznika").checked ? 1 : 0
+    }
+    if (doc.getElementById("checkFakturaDlaKazdejUmowy")) {
+        data['fakturadlakazdejumowy'] = doc.getElementById("checkFakturaDlaKazdejUmowy").checked ? 1 : 0
+    }
+    if (doc.getElementById("checkUmowaZbiorcza")) {
+        data['umowazbiorcza'] = doc.getElementById("checkUmowaZbiorcza").checked ? 1 : 0
+    }
+    if (doc.getElementById("checkMonitoringPlatnosci")) {
+        data['monitoringplatnosci'] = doc.getElementById("checkMonitoringPlatnosci").checked ? 1 : 0
+    }
+    if (doc.getElementById("checkNaliczacOdsetki")) {
+        data['naliczacodsetki'] = doc.getElementById("checkNaliczacOdsetki").checked ? 1 : 0
+    }
+
+    if (!doc.getElementById('txtNip').disabled) {
+        data['nip'] = doc.getElementById('txtNip').value;
+    }
+
+    if (!doc.getElementById('txtTerminPlatnosci').disabled) {
+        data['terminplatnosci'] = doc.getElementById('txtTerminPlatnosci').value;
+    }
+
+    if (!doc.getElementById('txtBank').disabled) {
+        data['bank'] = doc.getElementById('txtBank').value;
+    }
+
+    if (!doc.getElementById('txtNumerRachunku').disabled) {
+        data['numerrachunku'] = doc.getElementById('txtNumerRachunku').value;
+    }
+
     $.ajax({
         type: 'POST',
         url: sciezka + "/clients/saveupdate/notemplate",
         async: true,
-        data:
-            {
-                rowid: rowid,
-                nazwakrotka: doc.getElementById('txtNazwaKrotka').value,
-                nazwapelna: doc.getElementById('txtNazwaPelna').value,
-                ulica: doc.getElementById('txtUlica').value,
-                miasto: doc.getElementById('txtMiasto').value,
-                kodpocztowy: doc.getElementById('txtKodPocztowy').value,
-                nip: doc.getElementById('txtNip').value,
-                terminplatnosci: doc.getElementById('txtTerminPlatnosci').value,
-                bank: doc.getElementById('txtBank').value,
-                numerrachunku: doc.getElementById('txtNumerRachunku').value,
-                opis: doc.getElementById('txtDodatkowyOpis').value,
-                opiekunklienta: doc.getElementById('txtOpiekunKlienta').value,
-                branza: doc.getElementById('txtBranza').value,
-                pokaznumerseryjny: doc.getElementById("checkPokazNumerSeryjny").checked ? 1 : 0,
-                pokazstanlicznika: doc.getElementById("checkPokazStanLicznika").checked ? 1 : 0,
-                fakturadlakazdejumowy: doc.getElementById("checkFakturaDlaKazdejUmowy").checked ? 1 : 0,
-                umowazbiorcza: doc.getElementById("checkUmowaZbiorcza").checked ? 1 : 0,
-                telefon: doc.getElementById('txtKontaktTelefon').value,
-                mail: doc.getElementById('txtKontaktEmail').value,
-                stanowisko: doc.getElementById('txtKontaktStanowisko').value,
-                zamowieniatelefon: doc.getElementById('txtZamowieniaTelefon').value,
-                zamowieniaemail: doc.getElementById('txtZamowieniaEmail').value,
-                zamowieniastanowisko: doc.getElementById('txtZamowieniaStanowisko').value,
-                fakturyimienazwisko: doc.getElementById('txtFakturyImieNazwisko').value,
-                mailfaktury: doc.getElementById('txtFakturyEmail').value,
-                fakturykomorka: doc.getElementById('txtFakturyKomorka').value,
-                fakturytelefon: doc.getElementById('txtFakturyTelefon').value,
-                fakturystanowisko: doc.getElementById('txtFakturyStanowisko').value,
-                fakturyuwagi: doc.getElementById('txtFakturyUwagi').value,
-                monitoringplatnosci: doc.getElementById('checkMonitoringPlatnosci').checked ? 1 : 0,
-                naliczacodsetki: doc.getElementById('checkNaliczacOdsetki').checked ? 1 : 0,
-            },
+        data,
         success: function (dane) {
             checkReplay(objError, objLoad, null, objClick, dane, objOk, 1, 3000, null);
             return false;

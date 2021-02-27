@@ -28,9 +28,19 @@ class clientinvoicesController extends InvoicesController
 
     function getnotpaidinvoices() {
         if ($_POST['period'] && $_POST['date_from'] && $_POST['date_to']) {
-            echo json_encode(
-                $this->getNotPaidInvoicesByDateRange($_POST['period'], $_POST['date_from'], $_POST['date_to'])
-            );
+
+            $trackedDeptors = $this->clientinvoice->getTrackedDeptors();
+
+            $invoices = $this->getNotPaidInvoicesByDateRange($_POST['period'], $_POST['date_from'], $_POST['date_to']);
+
+            foreach ($invoices as $key => $element) {
+                // remove invoices for not tracked clients
+                if ( array_search($element["buyer_tax_no"], array_column($trackedDeptors, 'nip')) === false ) {
+                    unset($invoices[$key]);
+                }
+            }
+
+            echo json_encode($invoices);
         } else {
             echo "błędne parametry wejściowe";
         }

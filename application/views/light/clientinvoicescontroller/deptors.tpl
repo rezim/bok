@@ -1,9 +1,3 @@
-<script type="text/javascript">
-    app.constant('appConf', {
-        API_TOKEN: '{$smarty.const.FAKTUROWNIA_APITOKEN}',
-        ENDPOINT: '{$smarty.const.FAKTUROWNIA_ENDPOINT}'
-    });
-</script>
 <div class="container-fluid" ng-app="app" ng-controller="PaymentsCtrl as ctrl" ng-cloak ng-init="ctrl.loadData(date_from, date_to, true)">
 
     <div class="row">

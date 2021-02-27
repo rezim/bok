@@ -41,4 +41,9 @@ class clientinvoice extends Model
         $query = "select * from payments_messages where client_nip='{$client_nip}' and active = 1 order by message_date, created desc";
         return json_encode($this->query($query, null, false));
     }
+
+    function getTrackedDeptors() {
+        $query = "select nip from clients where monitoringplatnosci=1";
+        return $this->query($query, null, false);
+    }
 }
