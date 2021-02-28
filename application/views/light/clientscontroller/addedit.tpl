@@ -61,7 +61,7 @@
                         NIP
                     </th>
                     <td>
-                        <input class="form-control form-control-md" id='txtNip' {if !$show_payment_options}disabled{/if}
+                        <input class="form-control form-control-md" id='txtNip' {if !$show_payment_options && $rowid!=0}disabled{/if}
                                {if $rowid!=0}value="{$dataClient[0].nip|escape:'htmlall'}"{/if}>
                     </td>
                 </tr>
@@ -70,7 +70,7 @@
                         Termin płatności (dni)
                     </th>
                     <td>
-                        <input class="form-control form-control-md" id='txtTerminPlatnosci' {if !$show_payment_options}disabled{/if}
+                        <input class="form-control form-control-md" id='txtTerminPlatnosci' {if !$show_payment_options && $rowid!=0}disabled{/if}
                                {if $rowid!=0 && !empty($dataClient[0].terminplatnosci)}value="{$dataClient[0].terminplatnosci|number_format:0:",":" "|escape:'htmlall'}"{/if}>
                     </td>
                 </tr>
@@ -79,7 +79,7 @@
                         Bank
                     </th>
                     <td>
-                        <input class="form-control form-control-md" id='txtBank' {if !$show_payment_options}disabled{/if}
+                        <input class="form-control form-control-md" id='txtBank' {if !$show_payment_options && $rowid!=0}disabled{/if}
                                {if $rowid!=0}value="{$dataClient[0].bank|escape:'htmlall'}"{/if}
                         />
                     </td>
@@ -89,7 +89,7 @@
                         Numer rachunku bankowego
                     </th>
                     <td>
-                        <input class="form-control form-control-sm" id='txtNumerRachunku' {if !$show_payment_options}disabled{/if}
+                        <input class="form-control form-control-sm" id='txtNumerRachunku' {if !$show_payment_options && $rowid!=0}disabled{/if}
                                {if $rowid!=0}value="{$dataClient[0].numerrachunku|escape:'htmlall'}"{/if}
                         />
                     </td>

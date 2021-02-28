@@ -3,6 +3,18 @@
 class clientsController extends Controller
 {
 
+    protected $areClientPaymentOptionsPermitted = false;
+
+    function __construct($model, $controller, $action, $queryString)
+    {
+        parent::__construct($model, $controller, $action, $queryString);
+        // only some group could see payment options on addedit view,
+        // TODO: probably we should not use 'przypisanemenu' :)
+        $this->areClientPaymentOptionsPermitted = isset($_SESSION['przypisanemenu']) &&
+            isset($_SESSION['przypisanemenu']['clientspayments_options']) &&
+            isset($_SESSION['przypisanemenu']['clientspayments_options']['permission']) &&
+            $_SESSION['przypisanemenu']['clientspayments_options']['permission'] === 'rw';
+    }
 
     function addedit()
     {
@@ -14,15 +26,7 @@ class clientsController extends Controller
             unset($dataClient);
         }
         $smarty->assign('rowid', $_POST['rowid']);
-
-        // only some group could see payment options on addedit view,
-        // TODO: probably we should not use 'przypisanemenu' :)
-        $smarty->assign('show_payment_options',
-            isset($_SESSION['przypisanemenu']) &&
-            isset($_SESSION['przypisanemenu']['clientspayments_options']) &&
-            isset($_SESSION['przypisanemenu']['clientspayments_options']['permission']) &&
-            $_SESSION['przypisanemenu']['clientspayments_options']['permission'] === 'rw');
-
+        $smarty->assign('show_payment_options', $this->areClientPaymentOptionsPermitted);
     }
 
     function delete()
@@ -39,62 +43,69 @@ class clientsController extends Controller
 
     function saveupdate()
     {
-
         if (isset($_SERVER['HTTP_X_REQUESTED_WITH']) && ($_SERVER['HTTP_X_REQUESTED_WITH'] == 'XMLHttpRequest')) {
 
+            if ($_POST['nazwakrotka'] == '')
+                die('Uzupełnij nazwę krótką');
+            if ($_POST['nazwapelna'] == '')
+                die('Uzupełnij nazwę pełną');
 
-
-            if (!(isset($_SESSION['przypisanemenu']) &&
-            isset($_SESSION['przypisanemenu']['clientspayments_options']) &&
-            isset($_SESSION['przypisanemenu']['clientspayments_options']['permission']) &&
-            $_SESSION['przypisanemenu']['clientspayments_options']['permission'] === 'rw')
-            ){
-                if ($_POST['nazwakrotka'] == '')
-                    die('Uzupełnij nazwę krótką');
-                if ($_POST['nazwapelna'] == '')
-                    die('Uzupełnij nazwę pełną');
-
-                if (isset($_POST['pokaznumerseryjny']) || isset($_POST['pokazstanlicznika']) ||
-                    isset($_POST['fakturadlakazdejumowy']) || isset($_POST['umowazbiorcza']) ||
-                    isset($_POST['monitoringplatnosci']) || isset($_POST['naliczacodsetki']) ||
-                    isset($_POST['nip']) || isset($_POST['terminplatnosci']) ||
-                    isset($_POST['bank']) || isset($_POST['numerrachunku']))
-                    die('Nie masz prawa do zapisu tych wartości');
-            } else {
-                if ($_POST['nazwakrotka'] == '')
-                    die('Uzupełnij nazwę krótką');
-                if ($_POST['nazwapelna'] == '')
-                    die('Uzupełnij nazwę pełną');
-                if ($_POST['nip'] == '')
+            if ($this->areClientPaymentOptionsPermitted) {
+                if (!isset($_POST['nip']) || $_POST['nip'] == '')
                     die('Uzupełnij NIP');
-            }
-
-            $this->client->populateWithPost();
-            echo(json_encode($this->client->saveupdate()));
-        } else {
-            echo('Błędne wywołanie');
+            } else {
+                // check if user is trying to store values without permission
+                if (
+                    isset($_POST['pokaznumerseryjny']) || isset($_POST['pokazstanlicznika']) ||
+                    isset($_POST['fakturadlakazdejumowy']) || isset($_POST['umowazbiorcza']) ||
+                    isset($_POST['monitoringplatnosci']) || isset($_POST['naliczacodsetki'])
+                ) {
+                    die('Nie masz prawa do zapisu tych wartości');
+                }
+                // if edit, also other values are not permitted
+                if ($_POST['rowid'] !== '0') {
+                    if (
+                        isset($_POST['nip']) || isset($_POST['terminplatnosci']) ||
+                        isset($_POST['bank']) || isset($_POST['numerrachunku'])
+                    ) {
+                        die('Nie masz prawa do zapisu tych wartości');
+                    }
+                }
+                // id add new nip is required
+                else {
+                    if (!isset($_POST['nip']) || $_POST['nip'] == '') {
+                        die('Uzupełnij NIP');
+                    }
+                }
         }
-    }
 
-    function show()
-    {
-        global $smarty;
-
-        if (isset($_POST['czycolorbox'])) {
-            $smarty->assign('czycolorbox', $_POST['czycolorbox']);
-            $smarty->assign('serial', $_POST['serial']);
-        } else
-            $smarty->assign('czycolorbox', '');
-    }
-
-    function showdane()
-    {
-        global $smarty;
         $this->client->populateWithPost();
-        $dataClient = $this->client->getClients();
-        $smarty->assign('dataClient', $dataClient);
-        $smarty->assign('czycolorbox', isset($_POST['czycolorbox']) ? $_POST['czycolorbox'] : '');
-        $smarty->assign('modalselector', isset($_POST['modalselector']) ? $_POST['modalselector'] : '');
-        unset($dataClient);
-    }
+        echo(json_encode($this->client->saveupdate()));
+    } else
+{
+echo ('Błędne wywołanie');
+}
+}
+
+function show()
+{
+    global $smarty;
+
+    if (isset($_POST['czycolorbox'])) {
+        $smarty->assign('czycolorbox', $_POST['czycolorbox']);
+        $smarty->assign('serial', $_POST['serial']);
+    } else
+        $smarty->assign('czycolorbox', '');
+}
+
+function showdane()
+{
+    global $smarty;
+    $this->client->populateWithPost();
+    $dataClient = $this->client->getClients();
+    $smarty->assign('dataClient', $dataClient);
+    $smarty->assign('czycolorbox', isset($_POST['czycolorbox']) ? $_POST['czycolorbox'] : '');
+    $smarty->assign('modalselector', isset($_POST['modalselector']) ? $_POST['modalselector'] : '');
+    unset($dataClient);
+}
 }

@@ -354,19 +354,21 @@ function zapiszKlienta(rowid) {
         data['naliczacodsetki'] = doc.getElementById("checkNaliczacOdsetki").checked ? 1 : 0
     }
 
-    if (!doc.getElementById('txtNip').disabled) {
+    const protectDisabledValues = true;
+
+    if (!doc.getElementById('txtNip').disabled || !protectDisabledValues) {
         data['nip'] = doc.getElementById('txtNip').value;
     }
 
-    if (!doc.getElementById('txtTerminPlatnosci').disabled) {
+    if (!doc.getElementById('txtTerminPlatnosci').disabled || !protectDisabledValues) {
         data['terminplatnosci'] = doc.getElementById('txtTerminPlatnosci').value;
     }
 
-    if (!doc.getElementById('txtBank').disabled) {
+    if (!doc.getElementById('txtBank').disabled || !protectDisabledValues) {
         data['bank'] = doc.getElementById('txtBank').value;
     }
 
-    if (!doc.getElementById('txtNumerRachunku').disabled) {
+    if (!doc.getElementById('txtNumerRachunku').disabled || !protectDisabledValues) {
         data['numerrachunku'] = doc.getElementById('txtNumerRachunku').value;
     }
 

@@ -3,12 +3,12 @@
 class client extends Model
 {
     protected $rowid = 0,
-        $nazwakrotka = '', $nazwapelna = '', $ulica = '', $miasto = '', $kodpocztowy = '',
-        $nip = '', $terminplatnosci = '', $bank = '', $numerrachunku = '', $opis = '',
-        $opiekunklienta = '', $branza = '', $pokaznumerseryjny = false, $pokazstanlicznika = false, $fakturadlakazdejumowy = false,
-        $umowazbiorcza = false, $telefon = '', $mail = '', $stanowisko = '', $zamowieniatelefon = '',
-        $zamowieniaemail = '', $zamowieniastanowisko = '', $fakturyimienazwisko = '', $mailfaktury = '', $fakturykomorka = '',
-        $fakturytelefon = '', $fakturystanowisko = '', $fakturyuwagi = '', $monitoringplatnosci = '', $naliczacodsetki = false;
+        $nazwakrotka = null, $nazwapelna = null, $ulica = null, $miasto = null, $kodpocztowy = null,
+        $nip = null, $terminplatnosci = null, $bank = null, $numerrachunku = null, $opis = null,
+        $opiekunklienta = null, $branza = null, $pokaznumerseryjny = null, $pokazstanlicznika = null, $fakturadlakazdejumowy = null,
+        $umowazbiorcza = null, $telefon = null, $mail = null, $stanowisko = null, $zamowieniatelefon = null,
+        $zamowieniaemail = null, $zamowieniastanowisko = null, $fakturyimienazwisko = null, $mailfaktury = null, $fakturykomorka = null,
+        $fakturytelefon = null, $fakturystanowisko = null, $fakturyuwagi = null, $monitoringplatnosci = null, $naliczacodsetki = null;
 
     protected $filternazwa = '', $filternip = '', $filtermiasto = '', $filterserial = '';
 
@@ -29,104 +29,90 @@ class client extends Model
 
     function saveupdate()
     {
+        $columnList = array();
+
+        if ($this->nazwakrotka !== null)
+            array_push($columnList, array('name' => '`nazwakrotka`', 'type' => 's', 'value' => $this->nazwakrotka));
+        if ($this->nazwapelna !== null)
+            array_push($columnList, array('name' => '`nazwapelna`', 'type' => 's', 'value' => $this->nazwapelna));
+        if ($this->ulica !== null)
+            array_push($columnList, array('name' => '`ulica`', 'type' => 's', 'value' => $this->ulica));
+        if ($this->miasto !== null)
+            array_push($columnList, array('name' => '`miasto`', 'type' => 's', 'value' => $this->miasto));
+        if ($this->kodpocztowy !== null)
+            array_push($columnList, array('name' => '`kodpocztowy`', 'type' => 's', 'value' => $this->kodpocztowy));
+
+        if ($this->nip !== null)
+            array_push($columnList, array('name' => '`nip`', 'type' => 's', 'value' => $this->nip));
+        if ($this->terminplatnosci !== null)
+            array_push($columnList, array('name' => '`terminplatnosci`', 'type' => 'd', 'value' => $this->terminplatnosci));
+        if ($this->bank !== null)
+            array_push($columnList, array('name' => '`bank`', 'type' => 's', 'value' => $this->bank));
+        if ($this->numerrachunku !== null)
+            array_push($columnList, array('name' => '`numerrachunku`', 'type' => 's', 'value' => $this->numerrachunku));
+        if ($this->opis !== null)
+            array_push($columnList, array('name' => '`opis`', 'type' => 's', 'value' => $this->opis));
+
+        if ($this->opiekunklienta !== null)
+            array_push($columnList, array('name' => '`opiekunklienta`', 'type' => 's', 'value' => $this->opiekunklienta));
+        if ($this->branza !== null)
+            array_push($columnList, array('name' => '`branza`', 'type' => 's', 'value' => $this->branza));
+        if ($this->pokaznumerseryjny !== null)
+            array_push($columnList, array('name' => '`pokaznumerseryjny`', 'type' => 'i', 'value' => $this->pokaznumerseryjny));
+        if ($this->pokazstanlicznika !== null)
+            array_push($columnList, array('name' => '`pokazstanlicznika`', 'type' => 'i', 'value' => $this->pokazstanlicznika));
+        if ($this->fakturadlakazdejumowy !== null)
+            array_push($columnList, array('name' => '`fakturadlakazdejumowy`', 'type' => 'i', 'value' => $this->fakturadlakazdejumowy));
+
+        if ($this->umowazbiorcza !== null)
+            array_push($columnList, array('name' => '`umowazbiorcza`', 'type' => 'i', 'value' => $this->umowazbiorcza));
+        if ($this->telefon !== null)
+            array_push($columnList, array('name' => '`telefon`', 'type' => 's', 'value' => $this->telefon));
+        if ($this->mail !== null)
+            array_push($columnList, array('name' => '`mail`', 'type' => 's', 'value' => $this->mail));
+        if ($this->stanowisko !== null)
+            array_push($columnList, array('name' => '`stanowisko`', 'type' => 's', 'value' => $this->stanowisko));
+        if ($this->zamowieniatelefon !== null)
+            array_push($columnList, array('name' => '`zamowieniatelefon`', 'type' => 's', 'value' => $this->zamowieniatelefon));
+
+        if ($this->zamowieniaemail !== null)
+            array_push($columnList, array('name' => '`zamowieniaemail`', 'type' => 's', 'value' => $this->zamowieniaemail));
+        if ($this->zamowieniastanowisko !== null)
+            array_push($columnList, array('name' => '`zamowieniastanowisko`', 'type' => 's', 'value' => $this->zamowieniastanowisko));
+        if ($this->fakturyimienazwisko !== null)
+            array_push($columnList, array('name' => '`fakturyimienazwisko`', 'type' => 's', 'value' => $this->fakturyimienazwisko));
+        if ($this->mailfaktury !== null)
+            array_push($columnList, array('name' => '`mailfaktury`', 'type' => 's', 'value' => $this->mailfaktury));
+        if ($this->fakturykomorka !== null)
+            array_push($columnList, array('name' => '`fakturykomorka`', 'type' => 's', 'value' => $this->fakturykomorka));
+
+        if ($this->fakturytelefon !== null)
+            array_push($columnList, array('name' => '`fakturytelefon`', 'type' => 's', 'value' => $this->fakturytelefon));
+        if ($this->fakturystanowisko !== null)
+            array_push($columnList, array('name' => '`fakturystanowisko`', 'type' => 's', 'value' => $this->fakturystanowisko));
+        if ($this->fakturyuwagi !== null)
+            array_push($columnList, array('name' => '`fakturyuwagi`', 'type' => 's', 'value' => $this->fakturyuwagi));
+        if ($this->monitoringplatnosci !== null)
+            array_push($columnList, array('name' => '`monitoringplatnosci`', 'type' => 'i', 'value' => $this->monitoringplatnosci));
+        if ($this->naliczacodsetki !== null)
+            array_push($columnList, array('name' => '`naliczacodsetki`', 'type' => 'i', 'value' => $this->naliczacodsetki));
+
         if ($this->rowid == 0) {
-            $columnList = "
-              `nazwakrotka`,`nazwapelna`,`ulica`,`miasto`,`kodpocztowy`,
-              `nip`,`terminplatnosci`,`bank`,`numerrachunku`,`opis`,
-              `opiekunklienta`,`branza`,`pokaznumerseryjny`,`pokazstanlicznika`,`fakturadlakazdejumowy`,
-              `umowazbiorcza`,`telefon`,`mail`,`stanowisko`,`zamowieniatelefon`,
-              `zamowieniaemail`,`zamowieniastanowisko`,`fakturyimienazwisko`,`mailfaktury`,`fakturykomorka`,
-              `fakturytelefon`,`fakturystanowisko`,`fakturyuwagi`,`monitoringplatnosci`,`naliczacodsetki`";
-            return $this->insert($columnList, 'ssssssdsssssiiiissssssssssssii', array(
-                $this->nazwakrotka,
-                $this->nazwapelna,
-                $this->ulica == '' ? "NULL" : $this->ulica,
-                $this->miasto == '' ? "NULL" : $this->miasto,
-                $this->kodpocztowy == '' ? "NULL" : $this->kodpocztowy,
+            $names = implode(',', array_column($columnList, 'name'));
+            $types = implode('', array_column($columnList, 'type'));
+            $values = array_column($columnList, 'value');
 
-                $this->nip == '' ? "NULL" : $this->nip,
-                $this->terminplatnosci == '' ? "NULL" : $this->terminplatnosci,
-                $this->bank == '' ? "NULL" : $this->bank,
-                $this->numerrachunku == '' ? "NULL" : $this->numerrachunku,
-                $this->opis == '' ? "NULL" : $this->opis,
-
-                $this->opiekunklienta == '' ? "NULL" : $this->opiekunklienta,
-                $this->branza == '' ? "NULL" : $this->branza,
-                $this->pokaznumerseryjny,
-                $this->pokazstanlicznika,
-                $this->fakturadlakazdejumowy,
-
-                $this->umowazbiorcza,
-                $this->telefon == '' ? "NULL" : $this->telefon,
-                $this->mail == '' ? "NULL" : $this->mail,
-                $this->stanowisko == '' ? "NULL" : $this->stanowisko,
-                $this->zamowieniatelefon == '' ? "NULL" : $this->zamowieniatelefon,
-
-                $this->zamowieniaemail == '' ? "NULL" : $this->zamowieniaemail,
-                $this->zamowieniastanowisko == '' ? "NULL" : $this->zamowieniastanowisko,
-                $this->fakturyimienazwisko == '' ? "NULL" : $this->fakturyimienazwisko,
-                $this->mailfaktury == '' ? "NULL" : $this->mailfaktury,
-                $this->fakturykomorka == '' ? "NULL" : $this->fakturykomorka,
-
-                $this->fakturytelefon == '' ? "NULL" : $this->fakturytelefon,
-                $this->fakturystanowisko == '' ? "NULL" : $this->fakturystanowisko,
-                $this->fakturyuwagi == '' ? "NULL" : $this->fakturyuwagi,
-                $this->monitoringplatnosci,
-                $this->naliczacodsetki
-            ));
+            return $this->insert($names, $types, $values);
         } else {
-            return $this->update
-            (
-                "update clients set 
-                    `nazwakrotka`=?,`nazwapelna`=?,`ulica`=?,`miasto`=?,`kodpocztowy`=?,                                                         
-                    `nip`=?,`terminplatnosci`=?,`bank`=?,`numerrachunku`=?,`opis`=?,                                                         
-                    `opiekunklienta`=?,`branza`=?,`pokaznumerseryjny`=?,`pokazstanlicznika`=?,`fakturadlakazdejumowy`=?,                                  
-                    `umowazbiorcza`=?,`telefon`=?,`mail`=?,`stanowisko`=?,`zamowieniatelefon`=?,                                  
-                    `zamowieniaemail`=?,`zamowieniastanowisko`=?,`fakturyimienazwisko`=?,`mailfaktury`=?,`fakturykomorka`=?,                                  
-                    `fakturytelefon`=?,`fakturystanowisko`=?,`fakturyuwagi`=?,`monitoringplatnosci`=?,`naliczacodsetki`=?              
-                                     where `rowid`=?"
-                , 'ssssssdsssssiiiissssssssssssiii',
-                array
-                (
-                    $this->nazwakrotka,
-                    $this->nazwapelna,
-                    $this->ulica == '' ? "NULL" : $this->ulica,
-                    $this->miasto == '' ? "NULL" : $this->miasto,
-                    $this->kodpocztowy == '' ? "NULL" : $this->kodpocztowy,
+            $names = implode(',', array_map(function ($name) {
+                return $name . '=?';
+            }, array_column($columnList, 'name')));
+            // additional element for rowid, used in where phrase
+            array_push($columnList, array('type' => 'i', 'value' => $this->rowid));
+            $types = implode('', array_column($columnList, 'type'));
+            $values = array_column($columnList, 'value');
 
-                    $this->nip == '' ? "NULL" : $this->nip,
-                    $this->terminplatnosci == '' ? "NULL" : $this->terminplatnosci,
-                    $this->bank == '' ? "NULL" : $this->bank,
-                    $this->numerrachunku == '' ? "NULL" : $this->numerrachunku,
-                    $this->opis == '' ? "NULL" : $this->opis,
-
-                    $this->opiekunklienta == '' ? "NULL" : $this->opiekunklienta,
-                    $this->branza == '' ? "NULL" : $this->branza,
-                    $this->pokaznumerseryjny,
-                    $this->pokazstanlicznika,
-                    $this->fakturadlakazdejumowy,
-
-                    $this->umowazbiorcza,
-                    $this->telefon == '' ? "NULL" : $this->telefon,
-                    $this->mail == '' ? "NULL" : $this->mail,
-                    $this->stanowisko == '' ? "NULL" : $this->stanowisko,
-                    $this->zamowieniatelefon == '' ? "NULL" : $this->zamowieniatelefon,
-
-                    $this->zamowieniaemail == '' ? "NULL" : $this->zamowieniaemail,
-                    $this->zamowieniastanowisko == '' ? "NULL" : $this->zamowieniastanowisko,
-                    $this->fakturyimienazwisko == '' ? "NULL" : $this->fakturyimienazwisko,
-                    $this->mailfaktury == '' ? "NULL" : $this->mailfaktury,
-                    $this->fakturykomorka == '' ? "NULL" : $this->fakturykomorka,
-
-                    $this->fakturytelefon == '' ? "NULL" : $this->fakturytelefon,
-                    $this->fakturystanowisko == '' ? "NULL" : $this->fakturystanowisko,
-                    $this->fakturyuwagi == '' ? "NULL" : $this->fakturyuwagi,
-                    $this->monitoringplatnosci,
-                    $this->naliczacodsetki,
-                    $this->rowid
-                )
-            );
-
+            return $this->update("update clients set " . $names . "  where `rowid`=?", $types, $values);
         }
     }
 
