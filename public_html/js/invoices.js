@@ -1,3 +1,9 @@
+const yesterday = function(strDate) {
+    const d = new Date(strDate);
+    d.setDate(d.getDate() - 1);
+    return d.toISOString().slice(0, 10);
+};
+
 InvoiceManager = function (api_token, endpoint, company_name, invoice_number_length) {
     var invoicesUrl = [endpoint, 'invoices.json'].join('/');
     var invoiceViewUrl = [endpoint, 'invoice'].join('/');
@@ -260,7 +266,7 @@ InvoiceManager = function (api_token, endpoint, company_name, invoice_number_len
             let loadedInvoices = await loadAsyncData('/reports/getinvoices/notemplate', {
                 period: 'more',
                 date_from: currentPeriodInvoices.period.dateFrom,
-                date_to: currentPeriodInvoices.period.dateTo
+                date_to: yesterday(currentPeriodInvoices.period.dateTo)
             });
 
             loadedInvoices = JSON.parse(loadedInvoices);
