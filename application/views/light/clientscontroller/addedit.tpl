@@ -185,11 +185,11 @@
                 </tr>
                 <tr>
                     <th>
-                        Numer telefonu
+                       Imię i nazwisko
                     </th>
                     <td>
-                        <input class="form-control form-control-md" id='txtKontaktTelefon'
-                               {if $rowid!=0}value="{$dataClient[0].telefon|escape:'htmlall'}"{/if}
+                        <input class="form-control form-control-md" id='txtKontaktImieNazwisko'
+                               {if $rowid!=0}value="{$dataClient[0].imienazwisko|escape:'htmlall'}"{/if}
                         />
                     </td>
                 </tr>
@@ -200,6 +200,16 @@
                     <td>
                         <input class="form-control form-control-md" id='txtKontaktEmail'
                                {if $rowid!=0}value="{$dataClient[0].mail|escape:'htmlall'}"{/if}
+                    </td>
+                </tr>
+                <tr>
+                    <th>
+                        Numer telefonu
+                    </th>
+                    <td>
+                        <input class="form-control form-control-md" id='txtKontaktTelefon'
+                               {if $rowid!=0}value="{$dataClient[0].telefon|escape:'htmlall'}"{/if}
+                        />
                     </td>
                 </tr>
                 <tr>
@@ -223,11 +233,11 @@
                 </tr>
                 <tr>
                     <th>
-                        Numer telefonu
+                        Imię i nazwisko
                     </th>
                     <td>
-                        <input class="form-control form-control-md" id='txtZamowieniaTelefon'
-                               {if $rowid!=0}value="{$dataClient[0].zamowieniatelefon|escape:'htmlall'}"{/if}
+                        <input class="form-control form-control-md" id='txtZamowieniaImieNazwisko'
+                               {if $rowid!=0}value="{$dataClient[0].zamowieniaimienazwisko|escape:'htmlall'}"{/if}
                         />
                     </td>
                 </tr>
@@ -238,6 +248,16 @@
                     <td>
                         <input class="form-control form-control-md" id="txtZamowieniaEmail"
                                {if $rowid!=0}value="{$dataClient[0].zamowieniaemail|escape:'htmlall'}"{/if}
+                        />
+                    </td>
+                </tr>
+                <tr>
+                    <th>
+                        Numer telefonu
+                    </th>
+                    <td>
+                        <input class="form-control form-control-md" id='txtZamowieniaTelefon'
+                               {if $rowid!=0}value="{$dataClient[0].zamowieniatelefon|escape:'htmlall'}"{/if}
                         />
                     </td>
                 </tr>
@@ -357,7 +377,7 @@
 
 <script type="text/javascript">
     copyToValuesForPerson = function (fromPerson, toPerson, checked) {
-        const fields = ["Telefon", "Email", "Stanowisko"];
+        const fields = ["ImieNazwisko", "Telefon", "Email", "Stanowisko"];
         fields.forEach((field) => {
             const newValue = checked ? $("#txt" + fromPerson + field).val() : '';
             $("#txt" + toPerson + field).val(newValue);

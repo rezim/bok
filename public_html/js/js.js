@@ -43,7 +43,7 @@ function showNewClientAdd(rowid) {
 
     $.colorbox
     ({
-        height: 870 + 'px',
+        height: 905 + 'px',
         width: 985 + 'px',
         title: rowid ? "Karta Klienta" : "",
         data:
@@ -310,7 +310,6 @@ function zapiszKlienta(rowid) {
     $(objClick).hide();
     $(objLoad).show();
 
-
     let data ={
         rowid: rowid,
         nazwakrotka: doc.getElementById('txtNazwaKrotka').value,
@@ -332,7 +331,9 @@ function zapiszKlienta(rowid) {
         fakturykomorka: doc.getElementById('txtFakturyKomorka').value,
         fakturytelefon: doc.getElementById('txtFakturyTelefon').value,
         fakturystanowisko: doc.getElementById('txtFakturyStanowisko').value,
-        fakturyuwagi: doc.getElementById('txtFakturyUwagi').value
+        fakturyuwagi: doc.getElementById('txtFakturyUwagi').value,
+        imienazwisko: doc.getElementById('txtKontaktImieNazwisko').value,
+        zamowieniaimienazwisko: doc.getElementById('txtZamowieniaImieNazwisko').value
     };
 
     if (doc.getElementById("checkPokazNumerSeryjny")) {

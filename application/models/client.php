@@ -8,7 +8,8 @@ class client extends Model
         $opiekunklienta = null, $branza = null, $pokaznumerseryjny = null, $pokazstanlicznika = null, $fakturadlakazdejumowy = null,
         $umowazbiorcza = null, $telefon = null, $mail = null, $stanowisko = null, $zamowieniatelefon = null,
         $zamowieniaemail = null, $zamowieniastanowisko = null, $fakturyimienazwisko = null, $mailfaktury = null, $fakturykomorka = null,
-        $fakturytelefon = null, $fakturystanowisko = null, $fakturyuwagi = null, $monitoringplatnosci = null, $naliczacodsetki = null;
+        $fakturytelefon = null, $fakturystanowisko = null, $fakturyuwagi = null, $monitoringplatnosci = null, $naliczacodsetki = null,
+        $imienazwisko = null, $zamowieniaimienazwisko = null;
 
     protected $filternazwa = '', $filternip = '', $filtermiasto = '', $filterserial = '';
 
@@ -96,6 +97,10 @@ class client extends Model
             array_push($columnList, array('name' => '`monitoringplatnosci`', 'type' => 'i', 'value' => $this->monitoringplatnosci));
         if ($this->naliczacodsetki !== null)
             array_push($columnList, array('name' => '`naliczacodsetki`', 'type' => 'i', 'value' => $this->naliczacodsetki));
+        if ($this->imienazwisko !== null)
+            array_push($columnList, array('name' => '`imienazwisko`', 'type' => 's', 'value' => $this->imienazwisko));
+        if ($this->zamowieniaimienazwisko !== null)
+            array_push($columnList, array('name' => '`zamowieniaimienazwisko`', 'type' => 's', 'value' => $this->zamowieniaimienazwisko));
 
         if ($this->rowid == 0) {
             $names = implode(',', array_column($columnList, 'name'));
