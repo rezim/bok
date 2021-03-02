@@ -327,13 +327,14 @@ function zapiszKlienta(rowid) {
         zamowieniaemail: doc.getElementById('txtZamowieniaEmail').value,
         zamowieniastanowisko: doc.getElementById('txtZamowieniaStanowisko').value,
         fakturyimienazwisko: doc.getElementById('txtFakturyImieNazwisko').value,
-        mailfaktury: doc.getElementById('txtFakturyEmail').value,
+        fakturyemail: doc.getElementById('txtFakturyEmail').value,
         fakturykomorka: doc.getElementById('txtFakturyKomorka').value,
         fakturytelefon: doc.getElementById('txtFakturyTelefon').value,
         fakturystanowisko: doc.getElementById('txtFakturyStanowisko').value,
         fakturyuwagi: doc.getElementById('txtFakturyUwagi').value,
         imienazwisko: doc.getElementById('txtKontaktImieNazwisko').value,
-        zamowieniaimienazwisko: doc.getElementById('txtZamowieniaImieNazwisko').value
+        zamowieniaimienazwisko: doc.getElementById('txtZamowieniaImieNazwisko').value,
+        mailfaktury: doc.getElementById('txtMailFaktury').value
     };
 
     if (doc.getElementById("checkPokazNumerSeryjny")) {

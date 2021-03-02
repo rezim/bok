@@ -76,6 +76,16 @@
                 </tr>
                 <tr>
                     <th>
+                        Email faktury
+                    </th>
+                    <td>
+                        <input class="form-control form-control-md" id='txtMailFaktury'
+                               {if $rowid!=0}value="{$dataClient[0].mailfaktury|escape:'htmlall'}"{/if}
+                        />
+                    </td>
+                </tr>
+                <tr>
+                    <th>
                         Bank
                     </th>
                     <td>
@@ -296,7 +306,7 @@
                     </th>
                     <td>
                         <input class="form-control form-control-md" id='txtFakturyEmail'
-                               {if $rowid!=0}value="{$dataClient[0].mailfaktury|escape:'htmlall'}"{/if}
+                               {if $rowid!=0}value="{$dataClient[0].fakturyemail|escape:'htmlall'}"{/if}
                         />
                     </td>
                 </tr>

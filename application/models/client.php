@@ -9,7 +9,7 @@ class client extends Model
         $umowazbiorcza = null, $telefon = null, $mail = null, $stanowisko = null, $zamowieniatelefon = null,
         $zamowieniaemail = null, $zamowieniastanowisko = null, $fakturyimienazwisko = null, $mailfaktury = null, $fakturykomorka = null,
         $fakturytelefon = null, $fakturystanowisko = null, $fakturyuwagi = null, $monitoringplatnosci = null, $naliczacodsetki = null,
-        $imienazwisko = null, $zamowieniaimienazwisko = null;
+        $imienazwisko = null, $zamowieniaimienazwisko = null, $fakturyemail = null;
 
     protected $filternazwa = '', $filternip = '', $filtermiasto = '', $filterserial = '';
 
@@ -101,6 +101,11 @@ class client extends Model
             array_push($columnList, array('name' => '`imienazwisko`', 'type' => 's', 'value' => $this->imienazwisko));
         if ($this->zamowieniaimienazwisko !== null)
             array_push($columnList, array('name' => '`zamowieniaimienazwisko`', 'type' => 's', 'value' => $this->zamowieniaimienazwisko));
+        if ($this->fakturyemail !== null)
+            array_push($columnList, array('name' => '`fakturyemail`', 'type' => 's', 'value' => $this->fakturyemail));
+
+
+
 
         if ($this->rowid == 0) {
             $names = implode(',', array_column($columnList, 'name'));
