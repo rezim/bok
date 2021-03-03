@@ -126,7 +126,7 @@ PaymentsCtrl = function ($scope, rest, $q, $filter, $uibModal, $interpolate, app
 
             const agreementsPromise = rest.post('getagreements', {});
 
-            const overpaidPaymentsPromise = rest.post('getoverpaidpayments', {});
+            const overpaidPaymentsPromise = !notPaidInvoicesOnly ? rest.post('getoverpaidpayments', {}) : [];
 
             $q.all([invoicesPromise, agreementsPromise, overpaidPaymentsPromise]).then(result => {
 

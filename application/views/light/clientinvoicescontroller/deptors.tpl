@@ -121,7 +121,7 @@
                         </th>
                     </tr>
                     </thead>
-                    <tbody ng-repeat="clientInvoice in ctrl.getClientInvoices() | filter:search | filter: ctrl.clientInvoicesFilter() | filter: ctrl.moreThenOneNotPaidFilter() | orderBy:orderBy.propertyName:orderBy.reverse">
+                    <tbody ng-repeat="clientInvoice in ctrl.getClientInvoices() | filter:search | filter: ctrl.clientInvoicesFilter() | orderBy:orderBy.propertyName:orderBy.reverse">
 
                     <tr>
                         <td class='tdLink' ng-click="ctrl.sortBy('name')">[[clientInvoice.name]]</td>
