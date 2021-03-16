@@ -38,7 +38,7 @@ class clientinvoice extends Model
     }
 
     function getPaymentMessages($client_nip) {
-        $query = "select * from payments_messages where client_nip='{$client_nip}' and active = 1 order by message_date, created desc";
+        $query = "select * from payments_messages where client_nip='{$client_nip}' and active = 1 order by message_date desc, created desc";
         return json_encode($this->query($query, null, false));
     }
 
