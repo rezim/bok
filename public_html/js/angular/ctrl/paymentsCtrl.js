@@ -139,12 +139,12 @@ PaymentsCtrl = function ($scope, rest, $q, $filter, $uibModal, $interpolate, app
         }
     };
 
-    const initClientInvoice = function (name, nip, phone) {
+    const initClientInvoice = function (name, nip, phone, id) {
         return {
             name,
             nip,
             phone,
-            clientId: null,
+            clientId: id,
             agreements: {},
             invoices: {
                 nip: nip,
@@ -173,7 +173,7 @@ PaymentsCtrl = function ($scope, rest, $q, $filter, $uibModal, $interpolate, app
 
             if (!objClientInvoice[agreement['client_nip']]) {
                 objClientInvoice[agreement['client_nip']] =
-                    initClientInvoice(agreement['client_name'], agreement['client_nip'], agreement['client_phone']);
+                    initClientInvoice(agreement['client_name'], agreement['client_nip'], agreement['client_phone'], agreement['client_id']);
 
                 let client = objClientInvoice[agreement['client_nip']];
 
@@ -185,6 +185,8 @@ PaymentsCtrl = function ($scope, rest, $q, $filter, $uibModal, $interpolate, app
                         agreementPaymentDate: agreement['agreement_paymentdate']
                     };
                 }
+
+
             }
         });
 
@@ -523,6 +525,10 @@ PaymentsCtrl = function ($scope, rest, $q, $filter, $uibModal, $interpolate, app
         return result;
     };
 
+
+    this.showClientCard = function (clientId) {
+        showNewClientAdd(clientId);
+    }
 
     // this.loadData($scope.date_from, $scope.date_to);
 };

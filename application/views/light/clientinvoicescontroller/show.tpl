@@ -126,7 +126,7 @@
 
         <main id='divRightCenter' class="col-12 col-xl">
             <div class="table-responsive-sm">
-                <table class='table table-hover table-sm tablesorter payments' id='tableReport'>
+                <table class='table table-hover table-sm tablesorter payments' id='tablePayments'>
                     <thead class="thead-dark">
                     <tr>
                         <th ng-click="sortBy('name')" class="sortable">
@@ -166,7 +166,7 @@
                     <tbody ng-repeat="clientInvoice in ctrl.getClientInvoices() | filter:search | filter: ctrl.clientInvoicesFilter() | orderBy:orderBy.propertyName:orderBy.reverse">
 
                     <tr ng-if="!ctrl.filters.show_paid_invoices">
-                        <td class='tdLink'
+                        <td class='tdLink' onclick="ctrl.showClientCard(clientInvoice.clientId)"
                         ">[[clientInvoice.name]]</td>
                         <td>[[clientInvoice.phone]]</td>
                         <td align="center" class="profit"
@@ -200,7 +200,7 @@
                         </td>
                     </tr>
                     <tr ng-if="ctrl.filters.show_paid_invoices">
-                        <td class='tdLink' ng-click="ctrl.sortBy('name')">[[clientInvoice.name]]</td>
+                        <td class='tdLink' ng-click="ctrl.showClientCard(clientInvoice.clientId)">[[clientInvoice.name]]</td>
                         <td>[[clientInvoice.phone]]</td>
                         <td align="center" ng-click="ctrl.sortBy('clientInvoice.invoices.count.notPaid')" class="profit"
                             ng-class="(clientInvoice.balance < 0) ? 'underpaid' : (clientInvoice.balance > 0) ? 'overpaid' : 'paid'">
@@ -237,7 +237,7 @@
 
                     <tr ng-if="(ctrl.show_details[clientInvoice.nip] ) && clientInvoice.invoices.list.length">
                         <td colspan="6" class="inner-table">
-                            <table class='tablesorter displaytable invoices' id='tableReport' cellspacing=0 cellpadding=0>
+                            <table class='tablesorter displaytable invoices' id='tablePayments' cellspacing=0 cellpadding=0>
                                 <thead>
                                 <tr>
                                     <th width="200px">

@@ -43,7 +43,7 @@ function showNewClientAdd(rowid) {
 
     $.colorbox
     ({
-        height: 905 + 'px',
+        height: 945 + 'px',
         width: 985 + 'px',
         title: rowid ? "Karta Klienta" : "",
         data:
@@ -725,8 +725,8 @@ function generujRaport(successCallback, errorCallback) {
         data: {
             dataod: params.dateFrom,
             datado: params.dateTo,
-            filterklient: doc.getElementById('txtklient').value,
-            filterdrukarka: doc.getElementById('txtdrukarka').value
+            filterklient: doc.getElementById('txtklient')?.value,
+            filterdrukarka: doc.getElementById('txtdrukarka')?.value
         },
         success: function (data) {
             objCenter.innerHTML = '';
