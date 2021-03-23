@@ -372,7 +372,7 @@
                         {if isset($smarty.session.przypisanemenu['li_sharesshow'])}
                             <a class="dropdown-item" href='{$smarty.const.SCIEZKA}/shares/show'>Uprawnienia</a>
                         {/if}
-                        <a class="dropdown-item" href='#'>Konfiguracja</a>
+                        <a class="dropdown-item" href='#' onclick="showConfiguration()">Konfiguracja</a>
                         {if
                         isset($smarty.session.przypisanemenu['li_externallinks']) &&
                         $smarty.session.przypisanemenu['li_externallinks']['permission'] === 'rw'

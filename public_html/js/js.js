@@ -39,6 +39,84 @@ function showSzczegolyRaportRozwin(tr) {
     }
 }
 
+function saveConfiguration() {
+    var
+        doc = document,
+        objOk = doc.getElementById('actionok'),
+        objError = doc.getElementById('actionerror');
+
+    const data = {
+        stawkakilometrowa: doc.getElementById('txtStawkaKilometrowa').value,
+        stawkagodzinowa: doc.getElementById('txtStawkaGodzinowa').value
+    };
+
+    $.ajax({
+        type: 'POST',
+        url: sciezka + "/config/saveconfiguration/notemplate",
+        async: true,
+        data,
+        success: function (dane) {
+            checkReplay(objError, null, null, null, dane, objOk, 1, 3000, null);
+            return false;
+        },
+        error: function () {
+
+            showError(objError, null, null, null, 10000);
+            return false;
+        }
+    });
+}
+
+function clearPaymentMonitoring() {
+    if (confirm("Czy na pewno chcesz wyczyścić monitoring płatności swoich klientów?")) {
+
+        var
+            doc = document,
+            objLoad = doc.getElementById('actionloader'),
+            objOk = doc.getElementById('actionok'),
+            objError = doc.getElementById('actionerror'),
+            objClick = doc.getElementById('actionbuttonclick');
+
+        $.ajax({
+            type: 'POST',
+            url: sciezka + "/config/clearpaymentsmonitoring/notemplate",
+            async: true,
+            data: {},
+            success: function (dane) {
+                checkReplay(objError, objLoad, null, objClick, dane, objOk, 1, 3000, null);
+                return false;
+            },
+            error: function () {
+
+                showError(objError, objLoad, null, objClick, 10000);
+                return false;
+            }
+        });
+    }
+}
+
+function showConfiguration() {
+    $.colorbox
+    ({
+        height: 250 + 'px',
+        width: 500 + 'px',
+        title: "Konfiguracja",
+        data:
+            {
+            },
+
+        href: sciezka + "/config/show/todiv",
+        onClosed: function () {
+
+        },
+        onComplete: function () {
+
+            $("txtStawkaKilometrowa").focus();
+            uprawnienia();
+        }
+    });
+}
+
 function showNewClientAdd(rowid) {
 
     $.colorbox
@@ -201,7 +279,7 @@ function checkReplay(objError, objLoad, info, objClick, dane, objOk, czyreload, 
         showError(objError, objLoad, dane.info, objClick, showtime);
         return false;
     } else {
-        showOk(objOk, objLoad, info, objClick, czyreload, showtime, adtrestoredirect);
+        showOk(objOk, objLoad, dane.info, objClick, czyreload, showtime, adtrestoredirect);
         return false;
     }
 }

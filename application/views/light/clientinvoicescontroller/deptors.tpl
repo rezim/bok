@@ -93,7 +93,7 @@
 
         <main id='divRightCenter' class="col-12 col-md-12 col-xl">
             <div class="table-responsive-sm">
-                <table class='table table-hover table-sm tablesorter payments' id='tableReport'>
+                <table class='table table-hover table-sm tablesorter payments' id='tableDeptors'>
                     <thead class="thead-dark">
                     <tr>
                         <th ng-click="sortBy('name')" class="sortable">

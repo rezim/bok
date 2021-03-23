@@ -81,11 +81,13 @@ class SQLQuery {
                     
                     if($stmt->execute())
                     {
-                       $stmt->close(); 
+
                        $dane['status']=1;
                        $dane['info'] = 'Dane zapisane poprawnie';
-                       
-                       return $dane;
+                       $dane['rows_affected'] = $stmt->affected_rows;
+
+                        $stmt->close();
+                        return $dane;
                     }
                     else 
                     {
