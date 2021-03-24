@@ -166,7 +166,7 @@
                     <tbody ng-repeat="clientInvoice in ctrl.getClientInvoices() | filter:search | filter: ctrl.clientInvoicesFilter() | orderBy:orderBy.propertyName:orderBy.reverse">
 
                     <tr ng-if="!ctrl.filters.show_paid_invoices">
-                        <td class='tdLink' onclick="ctrl.showClientCard(clientInvoice.clientId)"
+                        <td class='tdLink' onclick="ctrl.showClientCard(clientInvoice.agreementClientId)"
                         ">[[clientInvoice.name]]</td>
                         <td>[[clientInvoice.phone]]</td>
                         <td align="center" class="profit"
@@ -200,7 +200,7 @@
                         </td>
                     </tr>
                     <tr ng-if="ctrl.filters.show_paid_invoices">
-                        <td class='tdLink' ng-click="ctrl.showClientCard(clientInvoice.clientId)">[[clientInvoice.name]]</td>
+                        <td class='tdLink' ng-click="ctrl.showClientCard(clientInvoice.agreementClientId)">[[clientInvoice.name]]</td>
                         <td>[[clientInvoice.phone]]</td>
                         <td align="center" ng-click="ctrl.sortBy('clientInvoice.invoices.count.notPaid')" class="profit"
                             ng-class="(clientInvoice.balance < 0) ? 'underpaid' : (clientInvoice.balance > 0) ? 'overpaid' : 'paid'">

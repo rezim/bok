@@ -139,12 +139,13 @@ PaymentsCtrl = function ($scope, rest, $q, $filter, $uibModal, $interpolate, app
         }
     };
 
-    const initClientInvoice = function (name, nip, phone, id) {
+    const initClientInvoice = function (name, nip, phone, agreementClientId) {
         return {
             name,
             nip,
             phone,
-            clientId: id,
+            agreementClientId,
+            clientId: null,
             agreements: {},
             invoices: {
                 nip: nip,
