@@ -13,9 +13,9 @@
                 <div class="row header">
                     <div class="col-sm-2">Data</div>
                     <div class="col-sm-3">Tytułem</div>
-                    <div class="col-sm-2">Kwota</div>
+                    <div class="col-sm-2">Kwota FV</div>
                     <div class="col-sm-2">Faktura</div>
-                    <div class="col-sm-2">Wpłata</div>
+                    <div class="col-sm-2">Wpłata klienta</div>
                     <div class="col-sm-1">akcja</div>
                 </div>
                 <div class="row" ng-repeat="payment in $ctrl.getPayments($ctrl.data.clientId, $ctrl.data.dateFrom) | orderBy: '-paid_date' track by $index ">
@@ -27,7 +27,7 @@
                             [[payment.invoice.number]]
                         </a>
                     </div>
-                    <div class="col-sm-2" role="button">[[payment.description.replace(',', '.') | currency: '']]</div>
+                    <div class="col-sm-2 font-weight-bold" role="button">[[payment.description.replace(',', '.') | currency: '']]</div>
                     <div class="col-sm-1" role="button">
                         <span class="action fa fa-times fa-3" ng-click="$ctrl.deletePayment(payment.id)"></span>
                     </div>

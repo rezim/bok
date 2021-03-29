@@ -257,11 +257,6 @@ PaymentsCtrl = function ($scope, rest, $q, $filter, $uibModal, $interpolate, app
 
     this.showDetails = function (clientInvoice) {
         this.show_details[clientInvoice.nip] = !this.show_details[clientInvoice.nip];
-
-        // if (!clientInvoice.hasPaymentsLoaded) {
-        //     this.loadPaymentsForClientInvoice(clientInvoice);
-        //     clientInvoice.hasPaymentsLoaded = true;
-        // }
     };
 
     this.loadPaymentsForClientInvoice = function (clientInvoice) {
