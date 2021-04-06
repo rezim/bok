@@ -99,60 +99,55 @@
                     <td colspan="10">
 
                         <div class="divRep">
-                            <table class='tablesorter displaytable' cellspacing=0 cellpadding=0>
+                            <table class='table table-hover table-sm' style="font-size: 13px;">
                                 <thead>
                                 <tr>
-                                    <th style='min-width: 50px;width:50px;'>
+                                    <th>
                                         Lp
                                     </th>
-                                    <th style='min-width: 70px;width:70px;display:none;'>
+                                    <th style="display: none">
                                         rowid
                                     </th>
-                                    <th style='min-width: 80px;width:80px;'>
+                                    <th>
                                         nr umowy
                                     </th>
-                                    <th style='min-width: 115px;width:115px;'>
+                                    <th>
                                         drukarka
                                     </th>
-
-                                    <th style='min-width: 70px;width:70px;'>
-                                        rozliczenie
-                                    </th>
-                                    <th style='min-width: 90px;width:90px;'>
+                                    <th>
                                         abonament
                                     </th>
-                                    <th style='min-width: 55px;width:55px;'>
+                                    <th>
                                         stron black w abonam.
                                     </th>
-                                    <th style='min-width: 55px;width:55px;'>
+                                    <th>
                                         cena za strone black
                                     </th>
-                                    <th style='min-width: 55px;width:55px;'>
+                                    <th>
                                         stron kolor w abonam.
                                     </th>
-                                    <th style='min-width: 55px;width:55px;'>
+                                    <th>
                                         cena za strone kolor
                                     </th>
-                                    <th style='min-width: 70px;width:70px;'>
+                                    <th>
                                         black powyżej
                                     </th>
-                                    <th style='min-width: 70px;width:70px;'>
+                                    <th>
                                         wartość black
                                     </th>
-                                    <th style='min-width: 70px;width:70px;'>
+                                    <th>
                                         kolor powyżej
                                     </th>
-                                    <th style='min-width: 70px;width:70px;'>
+                                    <th>
                                         wartość kolor
                                     </th>
-                                    <th style='min-width: 70px;width:70px;'>
+                                    <th>
                                         opłata instalacyjna
                                     </th>
-                                    <th style='min-width: 70px;width:70px'>
+                                    <th>
                                         kwota
                                     </th>
-                                    <th style='min-width: 70px;width:70px'>
-                                        wybierz do faktury
+                                    <th>
                                     </th>
                                 </tr>
                                 </thead>
@@ -175,7 +170,6 @@
                                         {$item2.serial|escape:'htmlall'}<br/>
                                         <font style='color:blue'>{$item2.model|escape:'htmlall'}</font>
                                     </td>
-                                    <td class='tdWartosc'>{$item2.rozliczenie}</td>
                                     <td class='tdNumber' style='padding-right:20px;'>
                                         {if isset($item2.wartoscabonament)} {$item2.wartoscabonament|number_format:2:",":" "|escape:'htmlall'}{/if}
                                     </td>
