@@ -1125,8 +1125,9 @@ function saveDataDevice($dataDevice, $dataWiadomosci, $ip)
 {
 
     global $mysqli;
-    $query = "select serial,dateupdate  from printers where serial='{$dataDevice['system']['dd:SerialNumber']}'";
+    $query = "select serial,dateupdate,deleted from printers where serial='{$dataDevice['system']['dd:SerialNumber']}'";
     $dateupdate = '';
+    $deleted = 0;
 
     if ($result = mysqli_query($mysqli, $query)) {
 
@@ -1168,9 +1169,14 @@ function saveDataDevice($dataDevice, $dataWiadomosci, $ip)
 
             while ($row = $result->fetch_object()) {
                 $dateupdate = $row->dateupdate;
+                $deleted = $row->deleted;
                 break;
             }
 
+            if ($deleted === 1) {
+                $result->close();
+                return;
+            }
 
             $query = "update printers set
                                   model = '{$dataDevice['system']['dd:MakeAndModel']}'
