@@ -111,10 +111,10 @@ function email_pull()
 
         $email = $emailReader->get();
 
-
         if (count($email) <= 0) {
             break;
         }
+
         $attachments = array();
 
         if (isset($email['structure']->parts) && count($email['structure']->parts)) {
@@ -1173,7 +1173,9 @@ function saveDataDevice($dataDevice, $dataWiadomosci, $ip)
                 break;
             }
 
-            if ($deleted === 1) {
+            // printer was deleted,
+            // no action required
+            if ($deleted === '1') {
                 $result->close();
                 return;
             }
