@@ -113,6 +113,8 @@
                                 Tonerów</a>
                             <a class="dropdown-item" href="#" onClick='historiaTonerow("{$item.serial}")'>Historia
                                 Serwisu</a>
+                            <a wymaganylevel='w' wymaganyzrobiony='0' class="dropdown-item text-danger" href="#" onClick='usunDrukarke("{$item.serial}")'>
+                                <i class="fas fa-print"></i><span class="font-weight-bold f">x</span>&nbsp;Usuń Urządzenie</a>
                         </div>
                     </div>
                 </td>

@@ -13,28 +13,28 @@ class printer extends Model
     {
           return $this->update
                              (
-                                 "delete from printers
-                                     
+                                 "update `printers`
+                                 set `deleted`=1                                     
                                      where `serial`=?"
                                 ,'s', 
                                  array
                                  (
                                      $serial
                                  )
-                             );         
+                             );
     }
     function getPrinters()
     {
         
-        $where = " where a.serial!=''";
+        $where = " where p.serial!='' and p.deleted=0";
         
         if($this->filterserial!='')
         {
-            $where.=" and ( a.serial like '%{$this->filterserial}%')   ";
+            $where.=" and ( p.serial like '%{$this->filterserial}%')   ";
         }
         if($this->filtermodel!='')
         {
-            $where.=" and ( a.model like '%{$this->filtermodel}%')";
+            $where.=" and ( p.model like '%{$this->filtermodel}%')";
         }
         if($this->clientrowid!='')
         {
@@ -46,12 +46,12 @@ class printer extends Model
         }
         
         $query = "
-            select a.*,b.nrumowy,b.sla,b.rowid as 'rowidumowa',c.rowid as 'rowidclient',c.nazwakrotka as 'nazwaklient',
-            (select d.rowid from logs d where d.serial=a.serial and d.przeczytany=0 limit 1) as `blad`
+            select p.*,a.nrumowy,a.sla,a.rowid as 'rowidumowa',c.rowid as 'rowidclient',c.nazwakrotka as 'nazwaklient',
+            (select d.rowid from logs d where d.serial=p.serial and d.przeczytany=0 limit 1) as `blad`
             from 
-            (printers a left outer join agreements b on a.serial=b.serial and b.activity=1)
-                left outer join clients c on b.rowidclient=c.rowid and c.activity=1
-            {$where} order by a.date_insert desc
+            (printers p left outer join agreements a on p.serial=a.serial and a.activity=1)
+                left outer join clients c on a.rowidclient=c.rowid and c.activity=1
+            {$where} order by p.date_insert desc
             ";
         return $this->query($query,null,false); 
 

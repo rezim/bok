@@ -357,11 +357,6 @@
             <div class='divSave'>
                 <div id='actionerror' class='actionerror'><span>Błąd zapisu danych.</span></div>
                 <div id='actionok' class='actionok'><span style='margin-top:6px;'>Dane zapisane poprawnie</span></div>
-                <div wymaganylevel='w' wymaganyzrobiony='0' id='actionbuttonclick2' style="float: left"
-                     class="buttonDeclin" onmousedown='usunDrukarke("{$serial}");return false;'>
-
-                    <span>X Usuń</span>
-                </div>
                 <div wymaganylevel='r' wymaganyzrobiony='0' id='actionbuttonclick' class="actionbuttonZapisz"
                      onmousedown='zapiszDrukarke("{$serial}");return false;'>
                     <span>Zapisz >></span>
@@ -374,6 +369,8 @@
             </div>
         </td>
     </tr>
+    {*    placeholder , TODO: introduce bootstrap *}
+    <tr><td>&nbsp;</td></tr>
 </table>
 <script type="text/javascript">
 
