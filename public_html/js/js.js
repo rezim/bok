@@ -773,7 +773,7 @@ function usunDrukarke(serial) {
                     alert('Błąd usunięcia drukarki -' + dane.info);
                     return false;
                 } else {
-                    alert('Drukarka usunięty poprawnie');
+                    alert('Drukarka usunięta poprawnie');
                     $.colorbox.close();
                     showPrinters();
                     return false;
