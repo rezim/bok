@@ -94,21 +94,18 @@ class printer extends Model
         
         
         $query = "select a.* from printers a
-            where not exists(select b.rowid from agreements b where b.serial=a.serial and b.activity=1)
+            where not exists(select b.rowid from agreements b where b.serial=a.serial and b.activity=1) and deleted = 0
             order by a.date_insert desc";
         return $this->query($query,null,false); 
 
     }   
     function getPrintersUmowaBezSerialu($serial)
     {
-        
-        
         $query = "select a.* from printers a
-            where not exists(select b.rowid from agreements b where b.serial=a.serial and b.activity=1)
-            or a.serial='{$serial}'
+            where (not exists(select b.rowid from agreements b where b.serial=a.serial and b.activity=1)
+            or a.serial='{$serial}') and a.deleted = 0
             order by a.date_insert desc";
-        return $this->query($query,null,false); 
-
+        return $this->query($query,null,false);
     } 
      function getPrinterBySerial($serial)
     {
