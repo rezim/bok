@@ -289,6 +289,13 @@ class printer extends Model
         // printer replacement, update pages
         if ($serial != $newSerial) {
             $this->update("UPDATE pages SET `rowid_agreement`=? WHERE `serial`=? AND `datawiadomosci` >= ?", 'iss', array($rowidAgreement, $newSerial, $replacementDate));
+
+            // copy contact information from p2 (old) to p1
+            $this->update("UPDATE `printers` AS p1 JOIN `printers` AS p2 ON p2.serial = ?
+                            SET p1.nazwa = p2.nazwa, p1.ulica = p2.ulica, p1.miasto = p2.miasto,
+                                p1.kodpocztowy = p2.kodpocztowy, p1.osobakontaktowa = p2.osobakontaktowa,
+                                p1.telefon = p2.telefon,  p1.mail = p2.mail 
+                            WHERE  p1.serial = ?", 'ss', array($serial, $newSerial));
         }
 
         return $result;
