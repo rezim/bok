@@ -13,28 +13,28 @@
             <th>
                 #
             </th>
-            <th>
+            <th class="text-center">
                 klient
             </th>
-            <th>
-                nazwa pełna
-            </th>
-            <th>
+            <th class="text-center">
                 umowy
             </th>
-            <th>
+            <th class="text-center">
                 drukarki
             </th>
-            <th>
+            <th class="text-center">
                 abonament
             </th>
-            <th>
+            <th class="text-center">
+                kwota w abonamencie
+            </th>
+            <th class="text-center">
                 wart. black
             </th>
-            <th>
+            <th class="text-center">
                 wart. kolor
             </th>
-            <th>
+            <th class="text-center">
                 netto
             </th>
             <th>
@@ -53,16 +53,22 @@
                     <tr class="tr_{$key} clientRow" style='border-bottom:none;border-top:1px solid lightgrey'>
                 {/if}
                 <td>{$turns}</td>
-                <td class='tdLink' onClick='showNewClientAdd("{$item.rowidclient}")'><span
-                            class="fas fa-exclamation-triangle"></span>{$item.nazwakrotka|escape:'htmlall'}</td>
-                <td class='tdLink'
-                    onClick='showNewClientAdd("{$item.rowidclient}")'>{$item.nazwapelna|escape:'htmlall'}</td>
-                <td class='tdLink' style='text-align:center;'
+                <td  onClick='showNewClientAdd("{$item.rowidclient}")'><span
+                            class="fas fa-exclamation-triangle"></span>{$item.nazwakrotka|escape:'htmlall'}
+
+                    <div class="small">({$item.nazwapelna|escape:'htmlall'})</div>
+                </td>
+{*                <td *}
+{*                    onClick='showNewClientAdd("{$item.rowidclient}")'>{$item.nazwapelna|escape:'htmlall'}</td>*}
+                <td  style='text-align:center;'
                     onClick='showUmowyDoKlienta("{$item.rowidclient}")'>{$item.drukumowy|escape:'htmlall'}</td>
-                <td class='tdLink' style='text-align:center;'
+                <td  style='text-align:center;'
                     onClick='showDrukarkiDoKlienta("{$item.rowidclient}")'>{$item.drukumowy|escape:'htmlall'}</td>
                 <td class='tdNumber' style='padding-right:20px;'>
                     {if !empty($item.wartoscabonament)} {$item.wartoscabonament|number_format:2:",":" "|escape:'htmlall'}{/if}
+                </td>
+                <td class='tdNumber' style='padding-right:20px;'>
+                    {$item.kwotadowykorzystania|number_format:2:",":" "|escape:'htmlall'}
                 </td>
                 <td class='tdNumber' style='padding-right:20px;white-space: nowrap'>
                     {if isset($item.wartoscblack)} {$item.wartoscblack|number_format:2:",":" "|escape:'htmlall'}{/if}
@@ -98,53 +104,67 @@
                 <tr id='tr_{$key}' class="agreements-list {$item.nip}" stan='0' style='display:none'>
                     <td colspan="10">
 
-                        <div class="divRep">
-                            <table class='table table-hover table-sm' style="font-size: 13px;">
+                        <div class="border border-secondary rounded p-1" style="border-width: 2px !important;">
+                            <table class='table table-hover table-sm mt-2' style="font-size: 13px;">
                                 <thead>
+                                <tr class="pt-1">
+                                    <th colspan="5" class="border-top-0">
+                                    </th>
+                                    <th class="text-center border-left border-top-0" colspan="4">
+                                        czarne
+                                    </th>
+                                    <th class="text-center border-left border-right border-top-0" colspan="4">
+                                        kolor
+                                    </th>
+                                    <th colspan="3" class="border-top-0">
+                                    </th>
+                                </tr>
                                 <tr>
                                     <th>
-                                        Lp
                                     </th>
-                                    <th style="display: none">
+                                    <th class="d-none">
                                         rowid
                                     </th>
                                     <th>
-                                        nr umowy
+                                        umowa
                                     </th>
                                     <th>
                                         drukarka
                                     </th>
-                                    <th>
+                                    <th class="text-right pr-3">
                                         abonament
                                     </th>
-                                    <th>
-                                        stron black w abonam.
+                                    <th class="text-right pr-3">
+                                        kwota w abon.
                                     </th>
-                                    <th>
-                                        cena za strone black
+                                    <th class="text-right pr-3 border-left">
+                                        szt/abon.
                                     </th>
-                                    <th>
-                                        stron kolor w abonam.
+                                    <th class="text-right pr-3">
+                                        sztuk
                                     </th>
-                                    <th>
-                                        cena za strone kolor
+                                    <th class="text-right pr-3">
+                                        cena
                                     </th>
-                                    <th>
-                                        black powyżej
+                                    <th class="text-right pr-3">
+                                        wartość
                                     </th>
-                                    <th>
-                                        wartość black
+                                    <th class="text-right pr-3 border-left">
+                                        szt/abon.
                                     </th>
-                                    <th>
-                                        kolor powyżej
+                                    <th class="text-right pr-3">
+                                        sztuk
                                     </th>
-                                    <th>
-                                        wartość kolor
+                                    <th class="text-right pr-3">
+                                        cena
                                     </th>
-                                    <th>
-                                        opłata instalacyjna
+                                    <th class="text-right pr-3 border-right">
+                                        wartość
                                     </th>
-                                    <th>
+                                    <th class="text-right pr-3">
+                                        instalacja
+                                    </th>
+                                    <th class="text-right pr-3">
                                         kwota
                                     </th>
                                     <th>
@@ -159,48 +179,53 @@
                                             {else}
                                         <tr class="{$item2.nrumowy|replace:'/':'-'}">
                                     {/if}
-                                    <td style="text-align: center">{$smarty.foreach.loopek.index+1}</td>
-                                    <td class='tdWartosc' style='display: none;'>{$key2}</td>
-                                    <td class='tdWartosc agreement-nb'
+                                    <td class="text-left">{$smarty.foreach.loopek.index+1}</td>
+                                    <td class="d-none">{$key2}</td>
+                                    <td class="cursor-pointer"
                                         onClick="showNewAgreementAdd('{if isset($item2.rowidumowa)}{$item2.rowidumowa}{/if}')">
                                         <span class="fas fa-exclamation-triangle"></span>{$item2.nrumowy}
                                     </td>
-                                    <td class='tdLink' style='vertical-align: top;'
+                                    <td class="cursor-pointer"
                                         onClick='showNewPrinterAdd("{$item2.serial}")'>
                                         {$item2.serial|escape:'htmlall'}<br/>
                                         <font style='color:blue'>{$item2.model|escape:'htmlall'}</font>
                                     </td>
-                                    <td class='tdNumber' style='padding-right:20px;'>
+                                    <td class="text-right pr-3">
                                         {if isset($item2.wartoscabonament)} {$item2.wartoscabonament|number_format:2:",":" "|escape:'htmlall'}{/if}
                                     </td>
-                                    <td class='tdNumber' style='padding-right:20px;'>
+                                    <td class="text-right pr-3">
+                                        {if isset($item2.kwotadowykorzystania)} {$item2.kwotadowykorzystania|number_format:2:",":" "|escape:'htmlall'}{/if}
+                                    </td>
+                                    <td class='text-right border-left pr-3'>
                                         {if isset($item2.stronwabonamencie)} {$item2.stronwabonamencie|number_format:0:",":" "|escape:'htmlall'}{/if}
                                     </td>
-                                    <td class='tdNumber' style='padding-right:20px;'>
-                                        {if isset($item2.cenazastrone)} {$item2.cenazastrone|number_format:3:",":" "|escape:'htmlall'}{/if}
-                                    </td>
-                                    <td class='tdNumber' style='padding-right:20px;'>
-                                        {if isset($item2.iloscstron_kolor)} {$item2.iloscstron_kolor|number_format:0:",":" "|escape:'htmlall'}{/if}
-                                    </td>
-                                    <td class='tdNumber' style='padding-right:20px;'>
-                                        {if isset($item2.cenazastrone_kolor)} {$item2.cenazastrone_kolor|number_format:3:",":" "|escape:'htmlall'}{/if}
-                                    </td>
-                                    <td class='tdNumber' style='padding-right:20px;'>
+                                    <td class='text-right pr-3'>
                                         {if isset($item2.stronblackpowyzej)} {$item2.stronblackpowyzej|number_format:0:",":" "|escape:'htmlall'}{/if}
                                     </td>
-                                    <td class='tdNumber' style='padding-right:20px;white-space: nowrap'>
+                                    <td class='text-right pr-3'>
+                                        {if isset($item2.cenazastrone)} {$item2.cenazastrone|number_format:3:",":" "|escape:'htmlall'}{/if}
+                                    </td>
+
+                                    <td class='text-right pr-3'>
                                         {if isset($item2.wartoscblack)} {$item2.wartoscblack|number_format:3:",":" "|escape:'htmlall'}{/if}
                                     </td>
-                                    <td class='tdNumber' style='padding-right:20px;'>
+                                    <td class='text-right pr-3 border-left'>
+                                        {if isset($item2.stronwabonamencie_kolor)} {$item2.stronwabonamencie_kolor|number_format:0:",":" "|escape:'htmlall'}{/if}
+                                    </td>
+                                    <td class='text-right pr-3'>
                                         {if isset($item2.stronkolorpowyzej)} {$item2.stronkolorpowyzej|number_format:0:",":" "|escape:'htmlall'}{/if}
                                     </td>
-                                    <td class='tdNumber' style='padding-right:20px;white-space: nowrap'>
+                                    <td class='text-right pr-3'>
+                                        {if isset($item2.cenazastrone_kolor)} {$item2.cenazastrone_kolor|number_format:3:",":" "|escape:'htmlall'}{/if}
+                                    </td>
+
+                                    <td class='text-right pr-3 border-right'>
                                         {if isset($item2.wartosckolor)} {$item2.wartosckolor|number_format:3:",":" "|escape:'htmlall'}{/if}
                                     </td>
-                                    <td class='tdNumber' style='padding-right:20px;'>
+                                    <td class='text-right pr-3'>
                                         {if isset($item2.oplatainstalacyjna)} {$item2.oplatainstalacyjna|number_format:2:",":" "|escape:'htmlall'}{/if}
                                     </td>
-                                    <td class='tdNumber' style='padding-right:20px;color:blue;white-space: nowrap'
+                                    <td class='text-right pr-3'
                                             {if !($item2.rozliczenie === 'roczne')}{* no need to show counters for by year agreements*}
                                                 onclick='showPrinterCounters({$item2.data_wiadomosci_black_start|json_encode},
                                                 {$item2.data_wiadomosci_black_koniec|json_encode}, {$item2.data_wiadomosci_kolor_start|json_encode},
@@ -233,11 +258,11 @@
 
         {/foreach}
         <tr>
-            <td class='tdLink'></td>
-            <td class='tdLink'></td>
-            <td class='tdLink'></td>
-            <td class='tdLink' style='text-align:center;'></td>
-            <td class='tdLink' style='text-align:center;'></td>
+            <td ></td>
+            <td ></td>
+            <td ></td>
+            <td  style='text-align:center;'></td>
+            <td  style='text-align:center;'></td>
             <td class='tdNumber' style='padding-right:20px;'>
 
             </td>

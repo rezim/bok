@@ -2,7 +2,7 @@
 class agreement extends Model 
 {
      protected $rowid=0,$nrumowy='',$dataod='',$datado='',$stronwabonamencie='',$cenazastrone='',$serial='',
-             $rowidclient='',$opis='',$rozliczenie='',$abonament='',$odbiorca_id,
+             $rowidclient='',$opis='',$rozliczenie='',$abonament='',$kwotawabonamencie='',$odbiorca_id,
             $iloscstron_kolor='',
             $cenazastrone_kolor='',
             $cenainstalacji='',
@@ -72,14 +72,18 @@ class agreement extends Model
                 a.rowidclient as 'rowidclient',
                 a.rozliczenie as `rozliczenie`,
                 a.abonament as 'abonament',
+                a.kwotawabonamencie as 'kwotawabonamencie',
                 a.sla as 'sla',
+                t.description as 'type',
+                aa.nrumowy as 'umowazbiorcza',
                 a.activity,
                 (select d.rowid from logs d where d.serial=a.serial and d.przeczytany=0 limit 1) as `blad`,a.abonament
                 from
-                (agreements a left outer join printers b on a.`serial`=b.`serial`)
+                (agreements a left outer join printers b on a.`serial`=b.`serial` left outer join agreement_type t on a.rowid_type=t.rowid
+                 left outer join agreements aa on a.rowidumowazbiorcza = aa.rowid)
                 left outer join clients c on a.rowidclient=c.rowid  and c.activity=1  
                 {$where}
-                order by a.datado desc
+                order by c.nazwakrotka asc
         ";
         return $this->query($query,null,false); 
      }   
@@ -97,6 +101,7 @@ class agreement extends Model
                                     `stronwabonamencie`=?,
                                     `cenazastrone`=?,
                                     `abonament`=?,
+                                    `kwotawabonamencie`=?,
                                     `dateinsert`=?,
                                     `serial`=?,
                                     `rowidclient`=?,
@@ -114,7 +119,7 @@ class agreement extends Model
                                     `jakczarne`=?,
                                     `rowid_type`=?
                                      where `rowid`=?"
-                    , 'sssiddssisssidddddidiii',
+                    , 'sssidddssisssidddddidiii',
                     array
                     (
                         $this->nrumowy == '' ? "NULL" : $this->nrumowy,
@@ -123,6 +128,7 @@ class agreement extends Model
                         $this->stronwabonamencie == '' ? "NULL" : str_replace(' ', '', str_replace(',', '.', $this->stronwabonamencie)),
                         $this->cenazastrone == '' ? "NULL" : str_replace(' ', '', str_replace(',', '.', $this->cenazastrone)),
                         $this->abonament == '' ? "NULL" : str_replace(' ', '', str_replace(',', '.', $this->abonament)),
+                        $this->kwotawabonamencie == '' ? "NULL" : str_replace(' ', '', str_replace(',', '.', $this->kwotawabonamencie)),
                         date('Y-m-d H:i:s'),
                         $this->serial == '' ? "NULL" : $this->serial,
                         $this->rowidclient == '' ? "NULL" : $this->rowidclient,
@@ -151,6 +157,7 @@ class agreement extends Model
                             `stronwabonamencie`,
                             `cenazastrone`,
                             `abonament`,
+                            `kwotawabonamencie`,
                             `serial`,
                             `rowidclient`,`odbiorca_id`,`dateinsert`,`opis`,`rozliczenie`,
                              `iloscstron_color`,
@@ -165,7 +172,7 @@ class agreement extends Model
                                     `rowid_type`
                             ";
                 $this->_table = 'agreements';
-                $result = $this->insert($columnList, 'sssiddsissssidddddidii',
+                $result = $this->insert($columnList, 'sssidddsissssidddddidii',
                     array(
                         $this->nrumowy == '' ? "NULL" : $this->nrumowy,
                         ($this->dataod == '' || $this->dataod == '0000-00-00') ? "NULL" : $this->dataod,
@@ -173,6 +180,7 @@ class agreement extends Model
                         $this->stronwabonamencie == '' ? "NULL" : str_replace(' ', '', str_replace(',', '.', $this->stronwabonamencie)),
                         $this->cenazastrone == '' ? "NULL" : str_replace(' ', '', str_replace(',', '.', $this->cenazastrone)),
                         $this->abonament == '' ? "NULL" : str_replace(' ', '', str_replace(',', '.', $this->abonament)),
+                        $this->kwotawabonamencie == '' ? "NULL" : str_replace(' ', '', str_replace(',', '.', $this->kwotawabonamencie)),
                         $this->serial == '' ? "NULL" : $this->serial,
                         $this->rowidclient == '' ? "NULL" : $this->rowidclient,
                         $this->odbiorca_id == '' ? "NULL" : $this->odbiorca_id,
@@ -229,7 +237,7 @@ class agreement extends Model
                                              `ilosc_start`=?,
                                              `ilosc_koniec`=?,
                                              `ilosckolor_start`=?,
-                                             `ilosckolor_koniec`=?
+                                             `ilosckolor_koniec`=? 
                                          where `rowid`=?",
                     'ssiiiii',
                     array(

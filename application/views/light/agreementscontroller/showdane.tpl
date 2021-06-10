@@ -9,6 +9,12 @@
                 nr umowy
             </th>
             <th>
+                typ
+            </th>
+            <th>
+                umowa zbiorcza
+            </th>
+            <th>
                 klient
             </th>
             <th>
@@ -21,17 +27,20 @@
                 <th wymaganylevel='w' wymaganyzrobiony='0'>
                     data do
                 </th>
-                <th wymaganylevel='w' wymaganyzrobiony='0'>
+                <th wymaganylevel='w' wymaganyzrobiony='0' class="text-right pr-3">
                     stron <br/> abonam.
                 </th>
-                <th wymaganylevel='w' wymaganyzrobiony='0'>
+                <th wymaganylevel='w' wymaganyzrobiony='0' class="text-right pr-3">
                     cena <br/> strona
                 </th>
-                <th wymaganylevel='w' wymaganyzrobiony='0'>
+                <th wymaganylevel='w' wymaganyzrobiony='0' class="text-right pr-3">
                     rozliczenie
                 </th>
-                <th wymaganylevel='w' wymaganyzrobiony='0'>
-                    abonament
+                <th wymaganylevel='w' wymaganyzrobiony='0' class="text-right pr-3">
+                    kwota w abon.
+                </th>
+                <th wymaganylevel='w' wymaganyzrobiony='0' class="text-right pr-3">
+                    abon.
                 </th>
             {/if}
             <th>
@@ -57,7 +66,8 @@
                 {/if}>
                 <th scope="row">{$smarty.foreach.loopek.index+1}</th>
                 <td>{$item.nrumowy|escape:'htmlall'}</td>
-
+                <td>{$item.type|escape:'htmlall'}</td>
+                <td>{$item.umowazbiorcza|escape:'htmlall'}</td>
                 <td
                         {if !$czycolorbox}onClick='showNewClientAdd("{$item.rowidclient}")'{/if}>{$item.nazwakrotka|escape:'htmlall'}</td>
                 <td
@@ -70,17 +80,20 @@
                         {$item.datado|escape:'htmlall'}
                     </td>
                     <td wymaganylevel='w'
-                        wymaganyzrobiony='0'>{$item.stronwabonamencie|number_format:2:",":" "|replace:',00':''}
+                        wymaganyzrobiony='0' class="text-right pr-3">{$item.stronwabonamencie|number_format:2:",":" "|replace:',00':''}
                     </td>
                     <td wymaganylevel='w'
-                        wymaganyzrobiony='0'>{$item.cenazastrone|number_format:3:",":" "|replace:',00':''|escape:'htmlall'}
+                        wymaganyzrobiony='0' class="text-right pr-3">{$item.cenazastrone|number_format:3:",":" "|escape:'htmlall'}
                     </td>
-                    <td wymaganylevel='w' wymaganyzrobiony='0'>{$item.rozliczenie|escape:'htmlall'}</td>
+                    <td wymaganylevel='w' wymaganyzrobiony='0' class="text-right pr-3">{$item.rozliczenie|escape:'htmlall'}</td>
                     <td wymaganylevel='w'
-                        wymaganyzrobiony='0'>{if !empty($item.abonament)}{$item.abonament|number_format:2:",":" "|replace:',00':''|escape:'htmlall'}{/if}
+                        wymaganyzrobiony='0' class="text-right pr-3">{if !empty($item.kwotawabonamencie)}{$item.kwotawabonamencie|number_format:2:",":" "|escape:'htmlall'}{/if}
+                    </td>
+                    <td wymaganylevel='w'
+                        wymaganyzrobiony='0' class="text-right pr-3">{if !empty($item.abonament)}{$item.abonament|number_format:2:",":" "|escape:'htmlall'}{/if}
                     </td>
                 {/if}
-                <td>{$item.activity}</td>
+                <td class="text-center">{if $item.activity === 1}tak{else}nie{/if}</td>
                 {if $czycolorbox==''}
                     <td>
                         <div class="dropdown show">

@@ -109,6 +109,9 @@
 <!-- Angular UI bootstrap  -->
 <script type="text/javascript" src="{$smarty.const.SCIEZKA}/js/lib/ui-bootstrap-2.5.0.min.js"></script>
 <script type="text/javascript" src="{$smarty.const.SCIEZKA}/js/lib/ui-bootstrap-tpls-2.5.0.min.js"></script>
+
+<script type="text/javascript" src="{$smarty.const.SCIEZKA}/js/test/e2e.js?{$smarty.now}"></script>
+
 </head>
 <?php flush(); ?>
 <body>

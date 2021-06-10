@@ -2,6 +2,18 @@
 
 class reportsController extends InvoicesController
 {
+    private $REPORT_FIELD_NAMES = array('strony_black_koniec', 'strony_black_start', 'strony_kolor_koniec', 'strony_kolor_start',
+        'data_wiadomosci_black_koniec', 'data_wiadomosci_black_start', 'data_wiadomosci_kolor_koniec', 'data_wiadomosci_kolor_start', 'serials');
+
+    private $CLIENT_FIELD_NAMES = array('rowidclient', 'nazwapelna', 'nazwakrotka', 'terminplatnosci', 'nip',
+        'mailfaktury', 'ulica', 'miasto', 'kodpocztowy', 'pokaznumerseryjny',
+        'pokazstanlicznika', 'fakturadlakazdejumowy');
+
+    private $AGREEMENT_FIELDS = array('rowidumowa', 'nrumowy', 'serial', 'model', 'rozliczenie', 'strony_black_start', 'data_wiadomosci_black_start', 'strony_black_koniec',
+        'data_wiadomosci_black_koniec', 'strony_kolor_start', 'data_wiadomosci_kolor_start', 'strony_kolor_koniec', 'data_wiadomosci_kolor_koniec', 'strony_black_sum',
+        'strony_kolor_sum', 'serials', 'lokalizacja_ulica', 'lokalizacja_miasto', 'lokalizacja_kodpocztowy', 'lokalizacja_telefon', 'lokalizacja_mail', 'lokalizacja_nazwa',
+        'typ_umowy', 'odbiorca_id');
+
     function show()
     {
         global $smarty;
@@ -10,6 +22,43 @@ class reportsController extends InvoicesController
         $smarty->assign('rok', date("Y"));
 
         $smarty->assign('fakturownia_conf_file_path', ROOT . DS . 'config' . DS . 'fakturownia.conf');
+    }
+
+    function groupByCollectiveAgreements($reports)
+    {
+        $result = array();
+
+        foreach ($reports as $key => $report) {
+
+            $collectiveAgreementId = $report['rowidumowazbiorcza'];
+            if ($collectiveAgreementId !== null && isset($reports[$collectiveAgreementId])) {
+                // we need it now, to add agreements belongs to collective agreement
+                if (!isset($result[$collectiveAgreementId])) {
+                    $result[$collectiveAgreementId] = $reports[$collectiveAgreementId];
+                }
+
+                $collectiveAgreement = &$result[$collectiveAgreementId];
+
+                if (!isset($collectiveAgreement['lista_umow'])) {
+                    clearArray($collectiveAgreement, $this->REPORT_FIELD_NAMES);
+                    $collectiveAgreement['lista_umow'] = array();
+                    $collectiveAgreement['strony_black_sum'] = 0;
+                    $collectiveAgreement['strony_kolor_sum'] = 0;
+                }
+                mergeArrays($collectiveAgreement, $report, $this->REPORT_FIELD_NAMES);
+                $collectiveAgreement['lista_umow'][$key] = $report;
+                $collectiveAgreement['strony_black_sum'] += sumOfArrayRanges($report, 'strony_black_koniec', 'strony_black_start');
+                $collectiveAgreement['strony_kolor_sum'] += sumOfArrayRanges($report, 'strony_kolor_koniec', 'strony_kolor_start');
+            } else {
+                // it could happen it was already added
+                if (!isset($result[$key])) {
+
+                    $result[$key] = $report;
+                }
+            }
+        }
+
+        return $result;
     }
 
     function groupByAgreement($reports)
@@ -28,15 +77,8 @@ class reportsController extends InvoicesController
                     $result[$report['rowidumowa']]['serials'] = array($result[$report['rowidumowa']]['serial']);
 
                 }
-                $result[$report['rowidumowa']]['strony_black_koniec'] = array_merge($result[$report['rowidumowa']]['strony_black_koniec'], $report['strony_black_koniec']);
-                $result[$report['rowidumowa']]['strony_black_start'] = array_merge($result[$report['rowidumowa']]['strony_black_start'], $report['strony_black_start']);
-                $result[$report['rowidumowa']]['strony_kolor_koniec'] = array_merge($result[$report['rowidumowa']]['strony_kolor_koniec'], $report['strony_kolor_koniec']);
-                $result[$report['rowidumowa']]['strony_kolor_start'] = array_merge($result[$report['rowidumowa']]['strony_kolor_start'], $report['strony_kolor_start']);
 
-                $result[$report['rowidumowa']]['data_wiadomosci_black_koniec'] = array_merge($result[$report['rowidumowa']]['data_wiadomosci_black_koniec'], $report['data_wiadomosci_black_koniec']);
-                $result[$report['rowidumowa']]['data_wiadomosci_black_start'] = array_merge($result[$report['rowidumowa']]['data_wiadomosci_black_start'], $report['data_wiadomosci_black_start']);
-                $result[$report['rowidumowa']]['data_wiadomosci_kolor_koniec'] = array_merge($result[$report['rowidumowa']]['data_wiadomosci_kolor_koniec'], $report['data_wiadomosci_kolor_koniec']);
-                $result[$report['rowidumowa']]['data_wiadomosci_kolor_start'] = array_merge($result[$report['rowidumowa']]['data_wiadomosci_kolor_start'], $report['data_wiadomosci_kolor_start']);
+                mergeArrays($result[$report['rowidumowa']], $report, $this->REPORT_FIELD_NAMES);
 
                 $result[$report['rowidumowa']]['strony_black_sum'] += ($report['strony_black_sum']);
                 $result[$report['rowidumowa']]['strony_kolor_sum'] += ($report['strony_kolor_sum']);
@@ -50,7 +92,6 @@ class reportsController extends InvoicesController
 
     function applyReplacement($reports, $replacements)
     {
-
         foreach ($replacements as $replacement) {
             $agr_id = $replacement['rowid_agreement'];
             if (isset($reports[$agr_id])) {
@@ -98,7 +139,6 @@ class reportsController extends InvoicesController
 
         return $reports;
     }
-
 
     function applyAgreementPrinters($reports, $agreementPrintersStart, $agreementPrintersEnd)
     {
@@ -215,7 +255,6 @@ class reportsController extends InvoicesController
         return $result;
     }
 
-
     function getAgreementPrintersMap($arrAgreementPrinters)
     {
         $result = array();
@@ -242,13 +281,43 @@ class reportsController extends InvoicesController
         return $result;
     }
 
+    function hasError($agreement)
+    {
+
+        for ($idx = 0; $idx < count($agreement['strony_black_koniec']); $idx++) {
+            if ($agreement['strony_black_koniec'][$idx] == 0 && $agreement['strony_black_start'][$idx] == 0) {
+                return 1;
+            }
+            if (($agreement['strony_black_koniec'][$idx] - $agreement['strony_black_start'][$idx]) < 0) {
+                return 1;
+            }
+            if (($agreement['strony_kolor_koniec'][$idx] - $agreement['strony_kolor_start'][$idx]) < 0) {
+                return 1;
+            }
+        }
+
+        // check for date for black and color,
+        if ($this->isDateIncorrect($agreement['data_wiadomosci_black_koniec'][count($agreement['data_wiadomosci_black_koniec']) - 1], $this->report->getDateTo())) {
+            return 1;
+        }
+        // check for date for color,
+        if ($this->isDateIncorrect($agreement['data_wiadomosci_kolor_koniec'][count($agreement['data_wiadomosci_kolor_koniec']) - 1], $this->report->getDateTo())) {
+            return 1;
+        }
+
+        if ($agreement['strony_black_sum'] == 0) {
+            return 1;
+        }
+
+        return 0;
+    }
+
     function showdaneklient()
     {
 
         $this->report->populateWithPost();
         $dataReportsMiesieczne = $this->report->getReportsMiesieczne();
         $dataReportsRoczne = $this->report->getReportsRoczne();
-
 
         $agreementPrintersStart = $this->getAgreementPrintersMap($this->report->getAgreementPrintersStart());
         $agreementPrintersEnd = $this->getAgreementPrintersMap($this->report->getAgreementPrintersEnd());
@@ -265,241 +334,178 @@ class reportsController extends InvoicesController
 
         $dataReportsMiesieczne = $this->applyReplacement($dataReportsMiesieczne, $dataPrinterReplacement);
 
-
-        // $dataReportsMiesieczne = $this->groupByAgreement($dataReportsMiesieczne);
+        $dataReportsMiesieczne = $this->groupByCollectiveAgreements($dataReportsMiesieczne);
 
         foreach ($dataReportsMiesieczne as $key => $item) {
-            $dzien = 0;
-            $oplatainstalacyjna = 0;
-            $iloscDni = date("t", strtotime($item['dataod']));
+
+            $dayOfDateRange = 0;
+            $setupFee = 0;
+            $daysAmount = date("t", strtotime($item['dataod']));
+
+            $clientId = $item['rowidclient'];
 
             if (
                 date("m", strtotime($item['dataod'])) == date("m", strtotime($item['dacik'])) &&
                 date("Y", strtotime($item['dataod'])) == date("Y", strtotime($item['dacik']))) {
-                $dzien = date("j", strtotime($item['dataod'])) - 1;
-                $oplatainstalacyjna = $item['cenainstalacji'];
+                $dayOfDateRange = date("j", strtotime($item['dataod'])) - 1;
+                $setupFee = $item['cenainstalacji'];
             }
-            if (!isset($dataReports[$item['rowidclient']]['drukumowy']))
-                $dataReports[$item['rowidclient']]['drukumowy'] = 1;
-            else
-                $dataReports[$item['rowidclient']]['drukumowy'] += 1;
 
-            $dataReports[$item['rowidclient']]['rowidclient'] = $item['rowidclient'];
-            $dataReports[$item['rowidclient']]['nazwapelna'] = $item['nazwapelna'];
-            $dataReports[$item['rowidclient']]['nazwakrotka'] = $item['nazwakrotka'];
-            $dataReports[$item['rowidclient']]['terminplatnosci'] = $item['terminplatnosci'];
-            $dataReports[$item['rowidclient']]['nip'] = $item['nip'];
-            $dataReports[$item['rowidclient']]['mailfaktury'] = $item['mailfaktury'];
-            $dataReports[$item['rowidclient']]['ulica'] = $item['ulica'];
-            $dataReports[$item['rowidclient']]['miasto'] = $item['miasto'];
-            $dataReports[$item['rowidclient']]['kodpocztowy'] = $item['kodpocztowy'];
-            $dataReports[$item['rowidclient']]['pokaznumerseryjny'] = $item['pokaznumerseryjny'];
-            $dataReports[$item['rowidclient']]['pokazstanlicznika'] = $item['pokazstanlicznika'];
-            $dataReports[$item['rowidclient']]['fakturadlakazdejumowy'] = $item['fakturadlakazdejumowy'];
+            if (!isset($dataReports[$clientId])) {
+                $dataReports[$clientId] = array();
+            }
+
+            $client = &$dataReports[$clientId];
+
+            $agreement = &$client['umowy'][$item['rowidumowa']];
+
+            if (!isset($client['drukumowy'])) {
+                $client['drukumowy'] = 1;
+            } else {
+                $client['drukumowy'] += 1;
+            }
+
+            copyArrays($client, $item, $this->CLIENT_FIELD_NAMES);
+
+            // add collective agreements
+            if (isset($item['lista_umow'])) {
+                $client['umowy'][$item['rowidumowa']]['lista_umow'] = $item['lista_umow'];
+            }
 
             // only for printers check for errors
             if ($item['typ_umowy'] === 'wynajem drukarki') {
-                for ($i = 0; $i < count($item['strony_black_koniec']); $i++) {
-
-                    if ($item['strony_black_koniec'][$i] == 0 && $item['strony_black_start'][$i] == 0) {
-                        $dataReports[$item['rowidclient']]['blad'] = 1;
-                        $dataReports[$item['rowidclient']]['umowy'][$item['rowidumowa']]['blad'] = 1;
+                $hasError = $this->hasError($item);
+                if ($hasError === 1) {
+                    $client['blad'] = $hasError;
+                    $agreement['blad'] = $hasError;
+                }
+            }
+            // check for error for collective agreements
+            if ($item['typ_umowy'] === 'umowa zbiorcza' && isset($item['lista_umow'])) {
+                foreach ($item['lista_umow'] as $agrKey => $agr) {
+                    $hasError = $this->hasError($agr);
+                    if ($hasError === 1) {
+                        $client['blad'] = $hasError;
+                        $agreement['blad'] = $hasError;
+                        $agreement['lista_umow'][$agrKey]['blad'] = $hasError;
                     }
-                    if (($item['strony_black_koniec'][$i] - $item['strony_black_start'][$i]) < 0) {
-                        $dataReports[$item['rowidclient']]['blad'] = 1;
-                        $dataReports[$item['rowidclient']]['umowy'][$item['rowidumowa']]['blad'] = 1;
-                    }
-                    if (($item['strony_kolor_koniec'][$i] - $item['strony_kolor_start'][$i]) < 0) {
-                        $dataReports[$item['rowidclient']]['blad'] = 1;
-                        $dataReports[$item['rowidclient']]['umowy'][$item['rowidumowa']]['blad'] = 1;
-                    }
-
-                }
-
-                // check for date for black and color,
-                if ($this->isDateIncorrect($item['data_wiadomosci_black_koniec'][count($item['data_wiadomosci_black_koniec']) - 1], $this->report->getDateTo())) {
-                    $dataReports[$item['rowidclient']]['blad'] = 1;
-                    $dataReports[$item['rowidclient']]['umowy'][$item['rowidumowa']]['blad'] = 1;
-                }
-                // check for date for color,
-                if ($this->isDateIncorrect($item['data_wiadomosci_kolor_koniec'][count($item['data_wiadomosci_kolor_koniec']) - 1], $this->report->getDateTo())) {
-                    $dataReports[$item['rowidclient']]['blad'] = 1;
-                    $dataReports[$item['rowidclient']]['umowy'][$item['rowidumowa']]['blad'] = 1;
-                }
-
-                if ($item['strony_black_sum'] == 0) {
-                    $dataReports[$item['rowidclient']]['blad'] = 1;
-                    $dataReports[$item['rowidclient']]['umowy'][$item['rowidumowa']]['blad'] = 1;
                 }
             }
 
-            if (!isset($dataReports['suma'])) {
-                $dataReports['suma'] = 0;
+            $dataReports['suma'] = isset($dataReports['suma']) ? $dataReports['suma'] : 0;
+            $client['wartosc'] = isset($client['wartosc']) ? $client['wartosc'] : 0;
+            $client['wartoscblack'] = isset($client['wartoscblack']) ? $client['wartoscblack'] : 0;
+            $client['wartosckolor'] = isset($client['wartosckolor']) ? $client['wartosckolor'] : 0;
+            $client['wartoscabonament'] = isset($client['wartoscabonament']) ? $client['wartoscabonament'] : 0;
+            $client['kwotadowykorzystania'] = isset($client['kwotadowykorzystania']) ? $client['kwotadowykorzystania'] : 0;
+
+            $item['rabatdoabonamentu'] = (empty($item['rabatdoabonamentu']) || $item['rabatdoabonamentu'] == '') ? 0 : $item['rabatdoabonamentu'];
+            $item['rabatdowydrukow'] = (empty($item['rabatdowydrukow']) || $item['rabatdowydrukow'] == '') ? 0 : $item['rabatdowydrukow'];
+
+            $subscription = (float)$item['abonament'];
+            $amountInSubscription = (float)$item['kwotawabonamencie'];
+            $hasAmountInSubscription = $amountInSubscription > 0;
+            if ($dayOfDateRange != 0) {
+                $subscription = $subscription - ($dayOfDateRange * ($subscription / $daysAmount));
+            }
+            $subscription = $subscription - ($subscription * ($item['rabatdoabonamentu'] / 100));
+
+            $client['wartoscabonament'] += $subscription;
+
+            if ($dayOfDateRange != 0) {
+                $item['stronwabonamencie'] = $item['stronwabonamencie'] - ($dayOfDateRange * ($item['stronwabonamencie'] / $daysAmount));
+                $item['iloscstron_kolor'] = $item['iloscstron_kolor'] - ($dayOfDateRange * ($item['iloscstron_kolor'] / $daysAmount));
             }
 
-            if (!isset($dataReports[$item['rowidclient']]['wartosc'])) {
-                $dataReports[$item['rowidclient']]['wartosc'] = 0;
-            }
-            if (!isset($dataReports[$item['rowidclient']]['wartoscblack'])) {
-                $dataReports[$item['rowidclient']]['wartoscblack'] = 0;
-            }
-            if (!isset($dataReports[$item['rowidclient']]['wartosckolor'])) {
-                $dataReports[$item['rowidclient']]['wartosckolor'] = 0;
-            }
-            if (!isset($dataReports[$item['rowidclient']]['wartoscabonament'])) {
-                $dataReports[$item['rowidclient']]['wartoscabonament'] = 0;
-            }
+            $blackPagesNb = (int)$item['strony_black_sum'];
+            $colorPagesNb = (int)$item['strony_kolor_sum'];
+            $allPagesNb = $blackPagesNb + $colorPagesNb;
 
-            if (empty($item['rabatdoabonamentu']) || $item['rabatdoabonamentu'] == '') {
-                $item['rabatdoabonamentu'] = 0;
-            }
-            if (empty($item['rabatdowydrukow']) || $item['rabatdowydrukow'] == '') {
-                $item['rabatdowydrukow'] = 0;
-            }
-            $abonament = (empty($item['abonament']) == true ? 0 : $item['abonament']);
-            if ($dzien != 0) {
+            $blackPrice = (float)$item['cenazastrone'];
+            $colorPrice = (float)$item['cenazastrone_kolor'];
+            $discount = $item['rabatdowydrukow'] / 100;
 
-                $abonament = $abonament - ($dzien * ($abonament / $iloscDni));
+            $allPagesValue = ($blackPagesNb * $blackPrice + $colorPagesNb * $colorPrice);
 
-            }
-            $abonament = $abonament - ($abonament * ($item['rabatdoabonamentu'] / 100));
-            $dataReports[$item['rowidclient']]['wartoscabonament'] = $dataReports[$item['rowidclient']]['wartoscabonament'] + $abonament;
+            $client['kwotadowykorzystania'] += $hasAmountInSubscription ? max($allPagesValue - $amountInSubscription, 0) : 0;
 
-
-            if ($dzien != 0) {
-                $item['stronwabonamencie'] = $item['stronwabonamencie'] - ($dzien * ($item['stronwabonamencie'] / $iloscDni));
-                $item['iloscstron_kolor'] = $item['iloscstron_kolor'] - ($dzien * ($item['iloscstron_kolor'] / $iloscDni));
-            }
-
+            $contract = array("black" => !$hasAmountInSubscription ? $item['stronwabonamencie'] : 0, "color" => !$hasAmountInSubscription ? $item['iloscstron_kolor'] : 0);
 
             if (isset($item['jakczarne']) && !empty($item['jakczarne']) && $item['jakczarne'] == 1) {
-                $stronwsumie = 0;
-                $stronwsumie = ($item['strony_black_sum']) + ($item['strony_kolor_sum']);
-                $stronblackpowyzej = ($stronwsumie - $item['stronwabonamencie']) < 0 ? 0 : ($stronwsumie - $item['stronwabonamencie']);
-                $stronblackpowyzej = round($stronblackpowyzej);
-                $wartoscblacktemp = $stronblackpowyzej * (empty($item['cenazastrone']) ? 0 : $item['cenazastrone']);
-                $wartoscblack = ($wartoscblacktemp - ($wartoscblacktemp * ($item['rabatdowydrukow'] / 100)));
-                $dataReports[$item['rowidclient']]['wartoscblack'] = $dataReports[$item['rowidclient']]['wartoscblack'] + $wartoscblack;
-
-
-                $stronkolorpowyzej = 0;
-                $wartosckolortemp = $stronkolorpowyzej * (empty($item['cenazastrone_kolor']) ? 0 : $item['cenazastrone_kolor']);
-                $wartosckolor = ($wartosckolortemp - ($wartosckolortemp * ($item['rabatdowydrukow'] / 100)));
-
-                $dataReports[$item['rowidclient']]['wartosckolor'] = $dataReports[$item['rowidclient']]['wartosckolor'] + $wartosckolor;
+                // black
+                $blackExceeded = round(max($allPagesNb - $contract["black"], 0));
+                $blackValue = $blackExceeded * $blackPrice;
+                $blackValue = $blackValue - ($blackValue * $discount);
+                $client['wartoscblack'] += !$hasAmountInSubscription ? $blackValue : 0;
+                // color
+                $colorValue = 0;
+                $client['wartosckolor'] = !$hasAmountInSubscription ? $colorValue : 0;
             } else {
-                $stronblackpowyzej = $item['strony_black_sum'] - $item['stronwabonamencie'];
-                $stronblackpowyzej = $stronblackpowyzej < 0 ? 0 : $stronblackpowyzej;
-                $stronblackpowyzej = round($stronblackpowyzej);
-                $wartoscblacktemp = $stronblackpowyzej * (empty($item['cenazastrone']) ? 0 : $item['cenazastrone']);
-                $wartoscblack = ($wartoscblacktemp - ($wartoscblacktemp * ($item['rabatdowydrukow'] / 100)));
-                $dataReports[$item['rowidclient']]['wartoscblack'] = $dataReports[$item['rowidclient']]['wartoscblack'] + $wartoscblack;
-
-                $stronkolorpowyzej = (($item['strony_kolor_sum']) - $item['iloscstron_kolor']) < 0 ? 0 : (($item['strony_kolor_sum']) - $item['iloscstron_kolor']);
-                $stronkolorpowyzej = $stronkolorpowyzej < 0 ? 0 : $stronkolorpowyzej;
-
-                $stronkolorpowyzej = round($stronkolorpowyzej);
-
-
-                $wartosckolortemp = $stronkolorpowyzej * (empty($item['cenazastrone_kolor']) ? 0 : $item['cenazastrone_kolor']);
-
-                $wartosckolor = ($wartosckolortemp - ($wartosckolortemp * ($item['rabatdowydrukow'] / 100)));
-
-                $dataReports[$item['rowidclient']]['wartosckolor'] = $dataReports[$item['rowidclient']]['wartosckolor'] + $wartosckolor;
+                // black
+                $blackExceeded = round(max($blackPagesNb - $contract["black"], 0));
+                $blackValue = $blackExceeded * $blackPrice;
+                $blackValue = ($blackValue - ($blackValue * $discount));
+                $client['wartoscblack'] += !$hasAmountInSubscription ? $blackValue : 0;
+                // color
+                $colorExceeded = round(max($colorPagesNb - $contract["color"], 0));
+                $colorValue = $colorExceeded * $colorPrice;
+                $colorValue = $colorValue - ($colorValue * $discount);
+                $client['wartosckolor'] += !$hasAmountInSubscription ? $colorValue : 0;
             }
-            $wartosc = $abonament +
-                $wartoscblack +
-                $wartosckolor +
-                $oplatainstalacyjna;
-            $dataReports[$item['rowidclient']]['wartosc'] =
-                $dataReports[$item['rowidclient']]['wartosc'] +
-                $abonament +
-                $wartoscblack +
-                $wartosckolor
-                + $oplatainstalacyjna;
-            $dataReports['suma'] =
-                $dataReports['suma'] +
-                $abonament +
-                $wartoscblack +
-                $wartosckolor +
-                $oplatainstalacyjna;
+
+            $totalValue = $hasAmountInSubscription ?
+                $subscription + max($allPagesValue - $amountInSubscription, 0) :
+                $subscription + $blackValue + $colorValue + $setupFee;
+            $client['wartosc'] += $totalValue;
+
+            $dataReports['suma'] += $totalValue;
+
+            $agreement['stronwabonamencie'] = $contract["black"];
+            $agreement['stronwabonamencie_kolor'] = $contract["color"];
+
+            $agreement['wartoscblack'] = $blackValue;
+            $agreement['wartosckolor'] = $colorValue;
+
+            $agreement['stronblackpowyzej'] = $blackPagesNb;
+            $agreement['stronkolorpowyzej'] = $colorPagesNb;
+
+            $agreement['cenazastrone'] = $blackPrice;
+            $agreement['cenazastrone_kolor'] = $colorPrice;
+            $agreement['wartoscabonament'] = $subscription;
+            $agreement['kwotadowykorzystania'] = $amountInSubscription;
+
+            $agreement['oplatainstalacyjna'] = $setupFee;
 
 
-            $dataReports[$item['rowidclient']]['umowy'][$item['rowidumowa']]['nrumowy'] = $item['nrumowy'];
-            $dataReports[$item['rowidclient']]['umowy'][$item['rowidumowa']]['rowidumowa'] = $item['rowidumowa'];
+            $agreement['wartosc'] = $totalValue;
 
-            $dataReports[$item['rowidclient']]['umowy'][$item['rowidumowa']]['model'] = $item['model'];
-            $dataReports[$item['rowidclient']]['umowy'][$item['rowidumowa']]['stronwabonamencie'] = $item['stronwabonamencie'];
-            $dataReports[$item['rowidclient']]['umowy'][$item['rowidumowa']]['cenazastrone'] = $item['cenazastrone'];
-
-            $dataReports[$item['rowidclient']]['umowy'][$item['rowidumowa']]['iloscstron_kolor'] = $item['iloscstron_kolor'];
-            $dataReports[$item['rowidclient']]['umowy'][$item['rowidumowa']]['cenazastrone_kolor'] = $item['cenazastrone_kolor'];
-            $dataReports[$item['rowidclient']]['umowy'][$item['rowidumowa']]['rozliczenie'] = $item['rozliczenie'];
-
-            $dataReports[$item['rowidclient']]['umowy'][$item['rowidumowa']]['wartoscabonament'] = $abonament;
-            $dataReports[$item['rowidclient']]['umowy'][$item['rowidumowa']]['serial'] = $item['serial'];
-            $dataReports[$item['rowidclient']]['umowy'][$item['rowidumowa']]['oplatainstalacyjna'] = $oplatainstalacyjna;
-            $dataReports[$item['rowidclient']]['umowy'][$item['rowidumowa']]['wartoscblack'] = $wartoscblack;
-            $dataReports[$item['rowidclient']]['umowy'][$item['rowidumowa']]['wartosckolor'] = $wartosckolor;
-            $dataReports[$item['rowidclient']]['umowy'][$item['rowidumowa']]['stronblackpowyzej'] = $stronblackpowyzej;
-            $dataReports[$item['rowidclient']]['umowy'][$item['rowidumowa']]['stronkolorpowyzej'] = $stronkolorpowyzej;
-            $dataReports[$item['rowidclient']]['umowy'][$item['rowidumowa']]['wartosc'] = $wartosc;
-
-            $dataReports[$item['rowidclient']]['umowy'][$item['rowidumowa']]['strony_black_start'] = $item['strony_black_start'];
-            $dataReports[$item['rowidclient']]['umowy'][$item['rowidumowa']]['data_wiadomosci_black_start'] = $item['data_wiadomosci_black_start'];
-            $dataReports[$item['rowidclient']]['umowy'][$item['rowidumowa']]['strony_black_koniec'] = $item['strony_black_koniec'];
-            $dataReports[$item['rowidclient']]['umowy'][$item['rowidumowa']]['data_wiadomosci_black_koniec'] = $item['data_wiadomosci_black_koniec'];
-
-            $dataReports[$item['rowidclient']]['umowy'][$item['rowidumowa']]['strony_kolor_start'] = $item['strony_kolor_start'];
-            $dataReports[$item['rowidclient']]['umowy'][$item['rowidumowa']]['data_wiadomosci_kolor_start'] = $item['data_wiadomosci_kolor_start'];
-            $dataReports[$item['rowidclient']]['umowy'][$item['rowidumowa']]['strony_kolor_koniec'] = $item['strony_kolor_koniec'];
-            $dataReports[$item['rowidclient']]['umowy'][$item['rowidumowa']]['data_wiadomosci_kolor_koniec'] = $item['data_wiadomosci_kolor_koniec'];
-
-            $dataReports[$item['rowidclient']]['umowy'][$item['rowidumowa']]['strony_black_sum'] = $item['strony_black_sum'];
-            $dataReports[$item['rowidclient']]['umowy'][$item['rowidumowa']]['strony_kolor_sum'] = $item['strony_kolor_sum'];
-            $dataReports[$item['rowidclient']]['umowy'][$item['rowidumowa']]['serials'] = $item['serials'];
-
-            // device localization
-            $dataReports[$item['rowidclient']]['umowy'][$item['rowidumowa']]['lokalizacja_ulica'] = $item['lokalizacja_ulica'];
-            $dataReports[$item['rowidclient']]['umowy'][$item['rowidumowa']]['lokalizacja_miasto'] = $item['lokalizacja_miasto'];
-            $dataReports[$item['rowidclient']]['umowy'][$item['rowidumowa']]['lokalizacja_kodpocztowy'] = $item['lokalizacja_kodpocztowy'];
-            $dataReports[$item['rowidclient']]['umowy'][$item['rowidumowa']]['lokalizacja_telefon'] = $item['lokalizacja_telefon'];
-            $dataReports[$item['rowidclient']]['umowy'][$item['rowidumowa']]['lokalizacja_mail'] = $item['lokalizacja_mail'];
-            $dataReports[$item['rowidclient']]['umowy'][$item['rowidumowa']]['lokalizacja_nazwa'] = $item['lokalizacja_nazwa'];
-
-
-            $dataReports[$item['rowidclient']]['umowy'][$item['rowidumowa']]['typ_umowy'] = $item['typ_umowy'];
-
-            $dataReports[$item['rowidclient']]['umowy'][$item['rowidumowa']]['odbiorca_id'] = $item['odbiorca_id'];
+            copyArrays($agreement, $item, $this->AGREEMENT_FIELDS);
         }
 
         foreach ($dataReportsRoczne as $key => $item) {
 
-            if (!isset($dataReports[$item['rowidclient']]['drukumowy']))
-                $dataReports[$item['rowidclient']]['drukumowy'] = 1;
+            if (!isset($dataReports[$clientId])) {
+                $dataReports[$clientId] = array();
+            }
+
+            $client = &$dataReports[$clientId];
+
+            $agreement = &$client['umowy'][$item['rowidumowa']];
+
+            if (!isset($client['drukumowy']))
+                $client['drukumowy'] = 1;
             else
-                $dataReports[$item['rowidclient']]['drukumowy'] += 1;
+                $client['drukumowy'] += 1;
 
-            $dataReports[$item['rowidclient']]['rowidclient'] = $item['rowidclient'];
-            $dataReports[$item['rowidclient']]['nazwapelna'] = $item['nazwapelna'];
-            $dataReports[$item['rowidclient']]['nazwakrotka'] = $item['nazwakrotka'];
-            $dataReports[$item['rowidclient']]['terminplatnosci'] = $item['terminplatnosci'];
-            $dataReports[$item['rowidclient']]['nip'] = $item['nip'];
-            $dataReports[$item['rowidclient']]['mailfaktury'] = $item['mailfaktury'];
-            $dataReports[$item['rowidclient']]['ulica'] = $item['ulica'];
-            $dataReports[$item['rowidclient']]['miasto'] = $item['miasto'];
-            $dataReports[$item['rowidclient']]['kodpocztowy'] = $item['kodpocztowy'];
-            $dataReports[$item['rowidclient']]['pokaznumerseryjny'] = $item['pokaznumerseryjny'];
-            $dataReports[$item['rowidclient']]['pokazstanlicznika'] = $item['pokazstanlicznika'];
-            $dataReports[$item['rowidclient']]['fakturadlakazdejumowy'] = $item['fakturadlakazdejumowy'];
+            copyArrays($client, $item, $this->CLIENT_FIELD_NAMES);
 
-            $oplatainstalacyjna = 0;
+            $setupFee = 0;
 
 
             if (
                 (date("Y", strtotime($item['dataod']))) == date("Y", strtotime($item['dacik']))) {
 
-                $oplatainstalacyjna = $item['cenainstalacji'];
+                $setupFee = $item['cenainstalacji'];
             }
 
 
@@ -507,17 +513,17 @@ class reportsController extends InvoicesController
                 $dataReports['suma'] = 0;
             }
 
-            if (!isset($dataReports[$item['rowidclient']]['wartosc'])) {
-                $dataReports[$item['rowidclient']]['wartosc'] = 0;
+            if (!isset($client['wartosc'])) {
+                $client['wartosc'] = 0;
             }
-            if (!isset($dataReports[$item['rowidclient']]['wartoscblack'])) {
-                $dataReports[$item['rowidclient']]['wartoscblack'] = 0;
+            if (!isset($client['wartoscblack'])) {
+                $client['wartoscblack'] = 0;
             }
-            if (!isset($dataReports[$item['rowidclient']]['wartosckolor'])) {
-                $dataReports[$item['rowidclient']]['wartosckolor'] = 0;
+            if (!isset($client['wartosckolor'])) {
+                $client['wartosckolor'] = 0;
             }
-            if (!isset($dataReports[$item['rowidclient']]['wartoscabonament'])) {
-                $dataReports[$item['rowidclient']]['wartoscabonament'] = 0;
+            if (!isset($client['wartoscabonament'])) {
+                $client['wartoscabonament'] = 0;
             }
 
             if (empty($item['rabatdoabonamentu']) || $item['rabatdoabonamentu'] == '') {
@@ -526,85 +532,62 @@ class reportsController extends InvoicesController
             if (empty($item['rabatdowydrukow']) || $item['rabatdowydrukow'] == '') {
                 $item['rabatdowydrukow'] = 0;
             }
-            $abonament = (empty($item['abonament']) == true ? 0 : $item['abonament']);
+            $subscription = (float)$item['abonament'];
 
-            $dataReports[$item['rowidclient']]['wartoscabonament'] = $dataReports[$item['rowidclient']]['wartoscabonament'] + $abonament;
+            $client['wartoscabonament'] = $client['wartoscabonament'] + $subscription;
 
 
-            $stronblackpowyzej = 0;
+            $blackPrice = (float)$item['cenazastrone'];
+            $colorPrice = (float)$item['cenazastrone_kolor'];
+            $contract = array("black" => $item['stronwabonamencie'], "color" => $item['iloscstron_kolor']);
+
+            $blackExceeded = 0;
             $wartoscblacktemp = 0;
             $wartoscblack = 0;
-            $dataReports[$item['rowidclient']]['wartoscblack'] = $dataReports[$item['rowidclient']]['wartoscblack'] + $wartoscblack;
+            $client['wartoscblack'] = $client['wartoscblack'] + $wartoscblack;
 
-            $stronkolorpowyzej = 0;
-            $wartosckolortemp = 0;
+            $colorExceeded = 0;
+            $colorValue = 0;
             $wartosckolor = 0;
-            $dataReports[$item['rowidclient']]['wartosckolor'] = 0;
-            $wartosc = $abonament +
-                $wartoscblack +
-                $wartosckolor +
-                $oplatainstalacyjna;;
-            $dataReports[$item['rowidclient']]['wartosc'] =
-                $dataReports[$item['rowidclient']]['wartosc'] +
-                $abonament +
-                $wartoscblack +
-                $wartosckolor +
-                $oplatainstalacyjna;;
-            $dataReports['suma'] =
-                $dataReports['suma'] +
-                $abonament +
-                $wartoscblack +
-                $wartosckolor +
-                $oplatainstalacyjna;;
+            $client['wartosckolor'] = 0;
+
+            $totalValue = $wartoscblack + $wartosckolor + $setupFee;
+
+            $client['wartosc'] += $totalValue;
+
+            $dataReports['suma'] += $totalValue;
+
+            $agreement['oplatainstalacyjna'] = $setupFee;
+
+            $agreement['wartoscabonament'] = $subscription;
+            $agreement['kwotawabonamencie'] = $amountInSubscription;
+            $agreement['wartoscblack'] = $wartoscblack;
+            $agreement['wartosckolor'] = $wartosckolor;
+            $agreement['stronblackpowyzej'] = $blackExceeded;
+            $agreement['stronkolorpowyzej'] = $colorExceeded;
+            $agreement['wartosc'] = $totalValue;
 
 
-            $dataReports[$item['rowidclient']]['umowy'][$item['rowidumowa']]['nrumowy'] = $item['nrumowy'];
-            $dataReports[$item['rowidclient']]['umowy'][$item['rowidumowa']]['serial'] = $item['serial'];
-            $dataReports[$item['rowidclient']]['umowy'][$item['rowidumowa']]['model'] = $item['model'];
-            $dataReports[$item['rowidclient']]['umowy'][$item['rowidumowa']]['stronwabonamencie'] = $item['stronwabonamencie'];
-            $dataReports[$item['rowidclient']]['umowy'][$item['rowidumowa']]['cenazastrone'] = $item['cenazastrone'];
-            $dataReports[$item['rowidclient']]['umowy'][$item['rowidumowa']]['oplatainstalacyjna'] = $oplatainstalacyjna;
-            $dataReports[$item['rowidclient']]['umowy'][$item['rowidumowa']]['iloscstron_kolor'] = $item['iloscstron_kolor'];
-            $dataReports[$item['rowidclient']]['umowy'][$item['rowidumowa']]['cenazastrone_kolor'] = $item['cenazastrone_kolor'];
-            $dataReports[$item['rowidclient']]['umowy'][$item['rowidumowa']]['rozliczenie'] = $item['rozliczenie'];
-            $dataReports[$item['rowidclient']]['umowy'][$item['rowidumowa']]['wartoscabonament'] = $abonament;
-            $dataReports[$item['rowidclient']]['umowy'][$item['rowidumowa']]['wartoscblack'] = $wartoscblack;
-            $dataReports[$item['rowidclient']]['umowy'][$item['rowidumowa']]['wartosckolor'] = $wartosckolor;
-            $dataReports[$item['rowidclient']]['umowy'][$item['rowidumowa']]['stronblackpowyzej'] = $stronblackpowyzej;
-            $dataReports[$item['rowidclient']]['umowy'][$item['rowidumowa']]['stronkolorpowyzej'] = $stronkolorpowyzej;
-            $dataReports[$item['rowidclient']]['umowy'][$item['rowidumowa']]['wartosc'] = $wartosc;
-            $dataReports[$item['rowidclient']]['umowy'][$item['rowidumowa']]['strony_black_start'] = $item['strony_black_start'];
-            $dataReports[$item['rowidclient']]['umowy'][$item['rowidumowa']]['data_wiadomosci_black_start'] = $item['data_wiadomosci_black_start'];
-            $dataReports[$item['rowidclient']]['umowy'][$item['rowidumowa']]['strony_black_koniec'] = $item['strony_black_koniec'];
-            $dataReports[$item['rowidclient']]['umowy'][$item['rowidumowa']]['data_wiadomosci_black_koniec'] = $item['data_wiadomosci_black_koniec'];
+            $agreement['stronwabonamencie'] = $contract["black"];
+            $agreement['cenazastrone'] = $blackPrice;
+            $agreement['stronwabonamencie_kolor'] = $contract["color"];
+            $agreement['cenazastrone_kolor'] = $colorPrice;
 
-            $dataReports[$item['rowidclient']]['umowy'][$item['rowidumowa']]['strony_kolor_start'] = $item['strony_kolor_start'];
-            $dataReports[$item['rowidclient']]['umowy'][$item['rowidumowa']]['data_wiadomosci_kolor_start'] = $item['data_wiadomosci_kolor_start'];
-            $dataReports[$item['rowidclient']]['umowy'][$item['rowidumowa']]['strony_kolor_koniec'] = $item['strony_kolor_koniec'];
-            $dataReports[$item['rowidclient']]['umowy'][$item['rowidumowa']]['data_wiadomosci_kolor_koniec'] = $item['data_wiadomosci_kolor_koniec'];
 
+            copyArrays($agreement, $item, $this->AGREEMENT_FIELDS);
+
+            // TODO: overriding some fields, to check if it is really needed
             // TODO: this is temporary solution, this should be also updated with the same code as for month agreements
-            $dataReports[$item['rowidclient']]['umowy'][$item['rowidumowa']]['strony_black_sum'] = $item['strony_black_koniec'] - $item['strony_black_start'];
-            $dataReports[$item['rowidclient']]['umowy'][$item['rowidumowa']]['strony_kolor_sum'] = $item['strony_kolor_koniec'] - $item['strony_kolor_start'];
+            $agreement['strony_black_sum'] = $item['strony_black_koniec'] - $item['strony_black_start'];
+            $agreement['strony_kolor_sum'] = $item['strony_kolor_koniec'] - $item['strony_kolor_start'];
             // TODO: this probably wont work
-            $dataReports[$item['rowidclient']]['umowy'][$item['rowidumowa']]['serials'] = array($item['serial']);
+            $agreement['serials'] = array($item['serial']);
 
-            // device localization
-            $dataReports[$item['rowidclient']]['umowy'][$item['rowidumowa']]['lokalizacja_ulica'] = $item['lokalizacja_ulica'];
-            $dataReports[$item['rowidclient']]['umowy'][$item['rowidumowa']]['lokalizacja_miasto'] = $item['lokalizacja_miasto'];
-            $dataReports[$item['rowidclient']]['umowy'][$item['rowidumowa']]['lokalizacja_kodpocztowy'] = $item['lokalizacja_kodpocztowy'];
-            $dataReports[$item['rowidclient']]['umowy'][$item['rowidumowa']]['lokalizacja_telefon'] = $item['lokalizacja_telefon'];
-            $dataReports[$item['rowidclient']]['umowy'][$item['rowidumowa']]['lokalizacja_mail'] = $item['lokalizacja_mail'];
-            $dataReports[$item['rowidclient']]['umowy'][$item['rowidumowa']]['lokalizacja_nazwa'] = $item['lokalizacja_nazwa'];
-
-            $dataReports[$item['rowidclient']]['umowy'][$item['rowidumowa']]['typ_umowy'] = $item['typ_umowy'];
         }
 
         global $smarty;
         $smarty->assign('dataReports', $dataReports);
         unset($dataReports);
-
-
     }
 
     function isDateIncorrect($strDateToCheck, $strDateTo)
@@ -624,5 +607,37 @@ class reportsController extends InvoicesController
         } else {
             echo "błędne parametry wejściowe";
         }
+    }
+}
+
+
+function sumOfArrayRanges(array $array, $rightRangeFieldName, $leftRangeFieldName)
+{
+    $sum = 0;
+    for ($i = 0; $i < count($array[$rightRangeFieldName]); $i++) {
+        $sum += $array[$rightRangeFieldName][$i] - $array[$leftRangeFieldName][$i];
+    }
+
+    return $sum;
+}
+
+function clearArray(array &$array, array $fields)
+{
+    foreach ($fields as $field) {
+        $array[$field] = array();
+    }
+}
+
+function mergeArrays(array &$destination, array $source, array $fields)
+{
+    foreach ($fields as $field) {
+        $destination[$field] = array_merge($destination[$field], $source[$field]);
+    }
+}
+
+function copyArrays(array &$destination, array $source, array $fields)
+{
+    foreach ($fields as $field) {
+        $destination[$field] = $source[$field];
     }
 }

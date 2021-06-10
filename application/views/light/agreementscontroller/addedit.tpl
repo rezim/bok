@@ -117,7 +117,20 @@
     <tr>
         <td style='height:3px;min-height: 3px;' colspan=2></td>
     </tr>
-
+    <tr id="trtxtabonament">
+        <td class='tdOpis'>
+            kwota w abonamencie
+        </td>
+        <td class='tdWartosc' colspan="3">
+            <input type="text" id='txtkwotawabonamencie'
+                   class='textBoxForm' maxlength="10"
+                   style='width:70px;min-width:70px;text-align: right;padding-right: 10px;'
+                   {if $rowid!=0}value="{$dataUmowa[0].kwotawabonamencie|number_format:2:",":" "|escape:'htmlall'}"{/if}>
+        </td>
+    </tr>
+    <tr>
+        <td style='height:3px;min-height: 3px;' colspan=2></td>
+    </tr>
     <tr id="trtxtdataod">
         <td class='tdOpis'>
             Data od
