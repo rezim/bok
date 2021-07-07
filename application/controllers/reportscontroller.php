@@ -466,8 +466,8 @@ class reportsController extends InvoicesController
             $agreement['wartoscblack'] = $blackValue;
             $agreement['wartosckolor'] = $colorValue;
 
-            $agreement['stronblackpowyzej'] = $blackPagesNb;
-            $agreement['stronkolorpowyzej'] = $colorPagesNb;
+            $agreement['stronblackpowyzej'] = $blackExceeded;
+            $agreement['stronkolorpowyzej'] = $colorExceeded;
 
             $agreement['cenazastrone'] = $blackPrice;
             $agreement['cenazastrone_kolor'] = $colorPrice;
