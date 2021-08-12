@@ -22,7 +22,8 @@ PaymentsCtrl = function ($scope, rest, $q, $filter, $uibModal, $interpolate, app
         show_paid_invoices: true,
         show_overpaid_invoices: true,
         show_non_deptors: false,
-        invoiceNb: ''
+        invoiceNb: '',
+        days_late: ''
     };
 
     this.moreThenOneNotPaidFilter = function () {
@@ -194,19 +195,6 @@ PaymentsCtrl = function ($scope, rest, $q, $filter, $uibModal, $interpolate, app
         angular.forEach(invoices, function (invoice) {
             if (invoice.kind == 'vat' || invoice.kind == 'correction') {
 
-                // 8992755868 <- 9141528038 ->
-                invoice.buyer_tax_no = mapTaxNo(invoice.buyer_tax_no);
-
-                if (!objClientInvoice[invoice.buyer_tax_no]) {
-                    const noAgreementClientName = ['# - (brak umowy)', invoice.buyer_name].join(' ');
-                    objClientInvoice[invoice.buyer_tax_no] =
-                        initClientInvoice(noAgreementClientName, invoice.buyer_tax_no);
-                }
-
-                if (!objClientInvoice[invoice.buyer_tax_no].clientId) {
-                    objClientInvoice[invoice.buyer_tax_no].clientId = invoice.client_id;
-                }
-
                 invoice.is_paid = parseFloat(invoice.paid) >= parseFloat(invoice.price_gross);
                 invoice.is_partially_paid = !invoice.is_paid && (parseFloat(invoice.paid) > 0);
                 // if not paid late is today - paid_to, if paid paid_date - paid_to
@@ -219,14 +207,30 @@ PaymentsCtrl = function ($scope, rest, $q, $filter, $uibModal, $interpolate, app
                     invoice.is_late_days = 0;
                 }
 
-                objClientInvoice[invoice.buyer_tax_no]['invoices'].sum.all += parseFloat(invoice.price_gross);
-                objClientInvoice[invoice.buyer_tax_no]['invoices'].count.all++;
-                if (!invoice.is_paid) {
-                    objClientInvoice[invoice.buyer_tax_no]['invoices'].sum.notPaid +=
-                        parseFloat(invoice.price_gross) - parseFloat(invoice.paid);
-                    objClientInvoice[invoice.buyer_tax_no]['invoices'].count.notPaid++;
+                if (self.filters.days_late === '' || isNaN(self.filters.days_late) || invoice.is_late_days >= self.filters.days_late) {
+
+                    // 8992755868 <- 9141528038 ->
+                    invoice.buyer_tax_no = mapTaxNo(invoice.buyer_tax_no);
+
+                    if (!objClientInvoice[invoice.buyer_tax_no]) {
+                        const noAgreementClientName = ['# - (brak umowy)', invoice.buyer_name].join(' ');
+                        objClientInvoice[invoice.buyer_tax_no] =
+                            initClientInvoice(noAgreementClientName, invoice.buyer_tax_no);
+                    }
+
+                    if (!objClientInvoice[invoice.buyer_tax_no].clientId) {
+                        objClientInvoice[invoice.buyer_tax_no].clientId = invoice.client_id;
+                    }
+
+                    objClientInvoice[invoice.buyer_tax_no]['invoices'].sum.all += parseFloat(invoice.price_gross);
+                    objClientInvoice[invoice.buyer_tax_no]['invoices'].count.all++;
+                    if (!invoice.is_paid) {
+                        objClientInvoice[invoice.buyer_tax_no]['invoices'].sum.notPaid +=
+                            parseFloat(invoice.price_gross) - parseFloat(invoice.paid);
+                        objClientInvoice[invoice.buyer_tax_no]['invoices'].count.notPaid++;
+                    }
+                    objClientInvoice[invoice.buyer_tax_no]['invoices'].list.push(invoice);
                 }
-                objClientInvoice[invoice.buyer_tax_no]['invoices'].list.push(invoice);
             }
         });
 

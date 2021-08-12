@@ -59,6 +59,16 @@
                         końcową.</small>
                 </div>
 
+
+                <div class="form-group">
+                    <label for="txtDaysLate">Ilość dni spóźnienia</label>
+                </div>
+                <div class="form-group">
+                    <input type="text" id="txtDaysLate" class="form-control"
+                           aria-describedby="txtDaysLateHelp" ng-model="ctrl.filters.days_late">
+                    <small id="txtDaysLateHelp" class="form-text text-muted"><i class="fas fa-info-circle"></i> Podaj ilość dni opóźnienia w płatności</small>
+                </div>
+
                 <div class="border-top my-4 otus-separator"></div>
 
                 <div class="w-100"></div>
