@@ -18,7 +18,7 @@ class custom extends Model
         {
             echo('Wybierz zakres dat');die();
         }
-        $where = " where a.rowid!=0 and a.activity=1 and a.rozliczenie='miesieczne' and c.activity = 1 and
+        $where = " where a.rowid!=0 and a.activity=1 and a.rozliczenie='miesieczne' and c.activity = 1 and a_t.description = 'wynajem drukarki'  and
                   DATE_FORMAT(a.dataod, '%Y-%m') <= DATE_FORMAT('{$this->dataod}', '%Y-%m')
                 ";
         if($this->filterklient!='')
