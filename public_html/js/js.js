@@ -536,7 +536,7 @@ function zapiszUmowe(rowid) {
                 stronwabonamencie: doc.getElementById('txtiloscstron').value,
                 cenazastrone: doc.getElementById('txtcenazastrone').value,
                 abonament: doc.getElementById('txtabonament').value,
-                kwotawabonamencie: doc.getElementById('txtkwotawabonamencie').value,
+                kwotawabonamencie: doc.getElementById('txtkwotawabonamencie').value || 0,
                 serial: doc.getElementById('txtdrukarka').value,
                 odbiorca_id: doc.getElementById('txtodbiorca_id').value,
                 rozliczenie: doc.getElementById('txtrozliczenie').value,
