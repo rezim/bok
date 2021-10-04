@@ -61,6 +61,10 @@ InvoiceManager = function (api_token, endpoint, company_name, invoice_number_len
         this.reportData = data;
     };
 
+    this.getReportData = function () {
+        return this.reportData;
+    };
+
     this.getInvoices = function () {
         return currentPeriodInvoices.invoices;
     };

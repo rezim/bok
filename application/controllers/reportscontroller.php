@@ -11,7 +11,7 @@ class reportsController extends InvoicesController
 
     private $AGREEMENT_FIELDS = array('rowidumowa', 'nrumowy', 'serial', 'model', 'rozliczenie', 'strony_black_start', 'data_wiadomosci_black_start', 'strony_black_koniec',
         'data_wiadomosci_black_koniec', 'strony_kolor_start', 'data_wiadomosci_kolor_start', 'strony_kolor_koniec', 'data_wiadomosci_kolor_koniec', 'strony_black_sum',
-        'strony_kolor_sum', 'serials', 'lokalizacja_ulica', 'lokalizacja_miasto', 'lokalizacja_kodpocztowy', 'lokalizacja_telefon', 'lokalizacja_mail', 'lokalizacja_nazwa',
+        'strony_kolor_sum', 'serials', 'nazwakrotka', 'lokalizacja_ulica', 'lokalizacja_miasto', 'lokalizacja_kodpocztowy', 'lokalizacja_telefon', 'lokalizacja_mail', 'lokalizacja_nazwa',
         'typ_umowy', 'odbiorca_id');
 
     function show()
@@ -297,12 +297,12 @@ class reportsController extends InvoicesController
         }
 
         // check for date for black and color,
-        if ($this->isDateIncorrect($agreement['data_wiadomosci_black_koniec'][count($agreement['data_wiadomosci_black_koniec']) - 1], $this->report->getDateTo())) {
-            return 1;
+        if ($this->isDateIncorrect($agreement['data_wiadomosci_black_koniec'][0], $this->report->getDateTo())) {
+            return 2;
         }
         // check for date for color,
-        if ($this->isDateIncorrect($agreement['data_wiadomosci_kolor_koniec'][count($agreement['data_wiadomosci_kolor_koniec']) - 1], $this->report->getDateTo())) {
-            return 1;
+        if ($this->isDateIncorrect($agreement['data_wiadomosci_kolor_koniec'][0], $this->report->getDateTo())) {
+            return 2;
         }
 
         if ($agreement['strony_black_sum'] == 0) {
@@ -335,6 +335,7 @@ class reportsController extends InvoicesController
         $dataReportsMiesieczne = $this->applyReplacement($dataReportsMiesieczne, $dataPrinterReplacement);
 
         $dataReportsMiesieczne = $this->groupByCollectiveAgreements($dataReportsMiesieczne);
+
 
         foreach ($dataReportsMiesieczne as $key => $item) {
 
@@ -374,20 +375,43 @@ class reportsController extends InvoicesController
 
             // only for printers check for errors
             if ($item['typ_umowy'] === 'wynajem drukarki') {
+
                 $hasError = $this->hasError($item);
-                if ($hasError === 1) {
-                    $client['blad'] = $hasError;
-                    $agreement['blad'] = $hasError;
+
+                if ($hasError > 0) {
+                    $client['blad'] = 1;
+                    $agreement['blad'] = 1;
+                }
+                if ($hasError === 2) {
+                    if ($item['strony_black_koniec'][0] > $item['strony_black_start'][0] ||
+                        $item['strony_kolor_koniec'][0] > $item['strony_kolor_start'][0]) {
+
+                        $agreement['fix'] = array(
+                            "dateTo" => $this->report->getDateTo(),
+                            "black" => $item['strony_black_koniec'][0],
+                            "color" => $item['strony_kolor_koniec'][0],
+                            "serial" => $item['currentserial']);
+                    }
                 }
             }
             // check for error for collective agreements
             if ($item['typ_umowy'] === 'umowa zbiorcza' && isset($item['lista_umow'])) {
                 foreach ($item['lista_umow'] as $agrKey => $agr) {
                     $hasError = $this->hasError($agr);
-                    if ($hasError === 1) {
-                        $client['blad'] = $hasError;
-                        $agreement['blad'] = $hasError;
-                        $agreement['lista_umow'][$agrKey]['blad'] = $hasError;
+                    if ($hasError > 0) {
+                        $client['blad'] = 1;
+                        $agreement['blad'] = 1;
+                        $agreement['lista_umow'][$agrKey]['blad'] = 1;
+                    }
+                    if ($hasError === 2) {
+                        if ($agr['strony_black_koniec'][0] > $agr['strony_black_start'][0] ||
+                            $agr['strony_kolor_koniec'][0] > $agr['strony_kolor_start'][0]) {
+                            $agreement['lista_umow'][$agrKey]['fix'] = array(
+                                "dateTo" => $this->report->getDateTo(),
+                                "black" => $agr['strony_black_koniec'][0],
+                                "color" => $agr['strony_kolor_koniec'][0],
+                                "serial" => $agr['currentserial']);
+                        }
                     }
                 }
             }

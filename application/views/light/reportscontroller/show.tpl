@@ -88,7 +88,11 @@
                     </button>
                 </div>
 
-
+                <div class="form-group">
+                    <button class="btn btn-danger btn-block" type="button" onclick="fixDeviceCounters(invMgr.getReportData())">
+                        Popraw Liczniki Urządzeń
+                    </button>
+                </div>
             </form>
         </div>
 
@@ -186,3 +190,5 @@
         }
     });
 </script>
+
+<script type="text/javascript" src="{$smarty.const.SCIEZKA}/js/printer_counters.js?{$smarty.now}"></script>
