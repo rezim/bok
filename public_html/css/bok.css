@@ -528,6 +528,11 @@ input[type="checkbox"] {
         .otus-sidebar .otus-separator, .otus-sidebar .otus-addnew button, .otus-sidebar .form-group, .otus-sidebar .form-group small {
             display: block;
         }
+        .reports .otus-sidebar {
+            position: static;
+            top: 0.5rem;
+            padding-top: 0.5rem;
+        }
     }
 }
 
