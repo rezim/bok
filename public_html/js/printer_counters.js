@@ -40,15 +40,15 @@ const renderAgreementRows = (agreement, withCheckbox) => {
         const agreementBlackPagesLastMessageInMillis = (new Date(agreement['data_wiadomosci_black_koniec'])).getTime();
 
         const diff = dateToMillis - agreementBlackPagesLastMessageInMillis;
-        const oneDayInMillis = 1000*60*60*24;
+        const oneDayInMillis = 1000 * 60 * 60 * 24;
 
 
-        const checked =  diff < (MAX_DAYS_OLD * oneDayInMillis) ? 'checked' : '';
+        const checked = diff < (MAX_DAYS_OLD * oneDayInMillis) ? 'checked' : '';
         const alertMessage = !checked ? `<span class="text-warning"><i class="fas fa-exclamation-triangle "></i> > ${MAX_DAYS_OLD} dni</span>&nbsp;` : '';
 
 
         agreementCells = renderTableCells([`umowa: ${agreement['nrumowy']}, klient: ${agreement['nazwakrotka']}`], 5, ['bg-secondary text-white']) +
-                         renderTableCells([`${alertMessage}<input type="checkbox" value="${agreement?.fix?.serial}" ${checked} />`], 1, ['bg-secondary text-white text-right']);
+            renderTableCells([`${alertMessage}<input type="checkbox" value="${agreement?.fix?.serial}" ${checked} />`], 1, ['bg-secondary text-white text-right']);
     }
 
     const agreementRow = renderTableRows([agreementCells]);
@@ -99,6 +99,11 @@ let fixes = [];
 function fixDeviceCounters(data) {
 
     if (!data) {
+        let html = `<div class="container alert alert-warning mt-5 mb-5" role="alert"><span class="text-warning"><i class="fas fa-exclamation-triangle"></i> Musisz wygenerować raporty!</span></div>`;
+        html += `<div class="container mt-3 mb-3"><div class="container text-right">
+                <a href="#" class="btn btn-outline-secondary" role="button" onclick="$.colorbox.close();">Zamknij</a>
+            </div></div>`;
+        $.colorbox({html});
         return;
     }
 
@@ -121,6 +126,16 @@ function fixDeviceCounters(data) {
     );
 
     fixes = agreementsToFix.map(agreement => agreement.fix);
+
+
+    if (!fixes?.length) {
+        let html = `<div class="container alert alert-success mt-5 mb-5" role="alert"><span class="text-success"><i class="fas fa-info-circle "></i> Nie znaleziono raportów do poprawienia.</span></div>`;
+        html += `<div class="container mt-3 mb-3"><div class="container text-right">
+                <a href="#" class="btn btn-outline-secondary" role="button" onclick="$.colorbox.close();">Zamknij</a>
+            </div></div>`;
+        $.colorbox({html});
+        return;
+    }
 
     let html = renderTable(agreementsToFix.map(agreement => renderAgreementRows(agreement, true)).join(''), ['printerCounters']);
 
