@@ -66,15 +66,15 @@
                 {/if}>
                 <th scope="row">{$smarty.foreach.loopek.index+1}</th>
                 <td>{$item.nrumowy|escape:'htmlall'}</td>
-                <td>{$item.type|escape:'htmlall'}</td>
-                <td>{$item.umowazbiorcza|escape:'htmlall'}</td>
-                <td
+                <td class="small">{$item.type|escape:'htmlall'}</td>
+                <td class="small">{$item.umowazbiorcza|escape:'htmlall'}</td>
+                <td class="small"
                         {if !$czycolorbox}onClick='showNewClientAdd("{$item.rowidclient}")'{/if}>{$item.nazwakrotka|escape:'htmlall'}</td>
-                <td
+                <td class="small"
                         {if !$czycolorbox}onClick='showNewPrinterAdd("{$item.serial}")'{/if}>{$item.serial|escape:'htmlall'}</td>
                 {if !$czycolorbox}
-                    <td wymaganylevel='w' wymaganyzrobiony='0'>{$item.dataod|escape:'htmlall'}</td>
-                    <td wymaganylevel='w' wymaganyzrobiony='0'
+                    <td wymaganylevel='w' wymaganyzrobiony='0' class="small">{$item.dataod|escape:'htmlall'}</td>
+                    <td wymaganylevel='w' wymaganyzrobiony='0' class="small"
                             {if ($item.datado|date_format:"%Y-%m")==($smarty.now|date_format:"%Y-%m")}{/if}
                     >
                         {$item.datado|escape:'htmlall'}
