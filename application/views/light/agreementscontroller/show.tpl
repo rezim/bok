@@ -1,4 +1,4 @@
-<div class="container-fluid">
+<div class="container-fluid agreements">
     <div class="row">
         <div class="otus-sidebar col-12 col-md-12 col-xl-auto">
             <form>

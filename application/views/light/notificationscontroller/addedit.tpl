@@ -339,113 +339,127 @@
 
     {else}
         <div class="container text-right" wymaganylevel='w' wymaganyzrobiony='0'>
-            <a href="#" class="btn btn-outline-success active" role="button" aria-pressed="true" onclick="zapiszNoti('0','{$smarty.const.SCIEZKA}/notifications/save/notemplate');return false;"><i class="fas fa-save"></i>&nbsp; Zapisz</a>
+            <a href="#" class="btn btn-outline-success active" role="button" aria-pressed="true"
+               onclick="zapiszNoti('0','{$smarty.const.SCIEZKA}/notifications/save/notemplate');return false;"><i
+                        class="fas fa-save"></i>&nbsp; Zapisz</a>
             <a href="#" class="btn btn-outline-secondary" role="button" onclick="$.colorbox.close();">Anuluj</a>
         </div>
     {/if}
 
     <div id="accordion" class="mt-5 mb-3 container">
         {if isset($dane) }
-        <div class="card">
-            <div class="card-header" id="headingOne">
-                <h5 class="mb-0">
-                    <button class="btn collapsed" data-toggle="collapse" data-target="#collapseOne" aria-expanded="false" aria-controls="collapseOne" onclick="gotoBottom('headingOne')">
-                        <i class="fa" aria-hidden="true"></i>&nbsp;Wymiana {if $dane[0]['serial'] != $agreementSerial}Drukarki{else}Formatera{/if}
-                    </button>
-                </h5>
-            </div>
+            <div class="card">
+                <div class="card-header" id="headingOne">
+                    <h5 class="mb-0">
+                        <button class="btn collapsed" data-toggle="collapse" data-target="#collapseOne"
+                                aria-expanded="false" aria-controls="collapseOne" onclick="gotoBottom('headingOne')">
+                            <i class="fa"
+                               aria-hidden="true"></i>&nbsp;Wymiana {if $dane[0]['serial'] != $agreementSerial}Drukarki{else}Formatera{/if}
+                        </button>
+                    </h5>
+                </div>
 
-            <div id="collapseOne" class="collapse" aria-labelledby="headingOne" data-parent="#accordion">
-                <div class="card-body">
-                    <div class="row">
-                        <div class="col">
-                            <table class="table bok-two-column-layout">
-                                <tr>
-                                    <th class='tdOpis thead-dark' scope="row"><span>C/B Koniec:</span></th>
-                                    <td class='tdWartosc'><input class="form-control" id="counterEnd" type="text"/></td>
-                                </tr>
-                                <tr>
-                                    <th class='tdOpis thead-dark'><span>Kolor Koniec:</span></th>
-                                    <td class='tdWartosc'><input class="form-control" id="counterColorEnd" type="text"/></td>
-                                </tr>
-                                <tr>
-                                    <th class='tdOpis thead-dark'><span>Serial (stara)</span></th>
-                                    <td class='tdWartosc'><input class="form-control" type="text" disabled
-                                                                 value="{$dane[0]['serial']}"/>
-                                    </td>
-                                </tr>
-                                <tr>
-                                    <th class='tdOpis thead-dark'><span>Data:</span></th>
-                                    <td class='tdWartosc'><input class="form-control" id="replacementDate" type="text"/></td>
-                                </tr>
-                            </table>
-                        </div>
-
-                        <div class="col">
-                            <table class="table bok-two-column-layout">
-                                <tr>
-                                    <th class='tdOpis'><span>C/B Start:</span></th>
-                                    <td class='tdWartosc'><input class="form-control" id="counterStart" type="text"/></td>
-                                </tr>
-                                <tr>
-                                    <th class='tdOpis'><span>Kolor Start:</span></th>
-                                    <td class='tdWartosc'><input class="form-control" id="counterColorStart" type="text"/></td>
-                                </tr>
-                                {if $dane[0]['serial'] != $agreementSerial}
+                <div id="collapseOne" class="collapse" aria-labelledby="headingOne" data-parent="#accordion">
+                    <div class="card-body">
+                        <div class="row">
+                            <div class="col">
+                                <table class="table bok-two-column-layout">
                                     <tr>
-                                        <th class='tdOpis'>Serial (nowa)</th>
-                                        <td class='tdWartosc'><input class="form-control" type="text" disabled
-                                                                     value="{$agreementSerial}"/>
+                                        <th class='tdOpis thead-dark' scope="row"><span>C/B Koniec:</span></th>
+                                        <td class='tdWartosc'><input class="form-control" id="counterEnd" type="text"/>
                                         </td>
                                     </tr>
-                                {else}
                                     <tr>
-                                        <td colspan="2">&nbsp;</td>
+                                        <th class='tdOpis thead-dark'><span>Kolor Koniec:</span></th>
+                                        <td class='tdWartosc'><input class="form-control" id="counterColorEnd"
+                                                                     type="text"/></td>
                                     </tr>
-                                {/if}
-                                <tr>
-                                    <td colspan="2" style="text-align: right">
-                                        <a href="#" class="btn btn-outline-success active" role="button" aria-pressed="true"
-                                           onclick='replacePrinter("{$dane[0]['serial']}", "{$agreementSerial}", {$dane[0]['rowid_agreements']})'>
-                                            <i class="fas fa-save"></i>&nbsp; Zapisz</a>
-                                        <a href="#" class="btn btn-outline-warning" role="button" aria-pressed="true"
-                                           onclick='showPrinterService("{$dane[0]['umowadane']}", "{$dane[0]['rowid_agreements']}")'><i class="fas fa-history"></i>&nbsp;Historia</a>
-                                    </td>
-                                </tr>
+                                    <tr>
+                                        <th class='tdOpis thead-dark'><span>Serial (stara)</span></th>
+                                        <td class='tdWartosc'><input class="form-control" type="text" disabled
+                                                                     value="{$dane[0]['serial']}"/>
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <th class='tdOpis thead-dark'><span>Data:</span></th>
+                                        <td class='tdWartosc'><input class="form-control" id="replacementDate"
+                                                                     type="text"/></td>
+                                    </tr>
+                                </table>
+                            </div>
 
-                            </table>
+                            <div class="col">
+                                <table class="table bok-two-column-layout">
+                                    <tr>
+                                        <th class='tdOpis'><span>C/B Start:</span></th>
+                                        <td class='tdWartosc'><input class="form-control" id="counterStart"
+                                                                     type="text"/></td>
+                                    </tr>
+                                    <tr>
+                                        <th class='tdOpis'><span>Kolor Start:</span></th>
+                                        <td class='tdWartosc'><input class="form-control" id="counterColorStart"
+                                                                     type="text"/></td>
+                                    </tr>
+                                    {if $dane[0]['serial'] != $agreementSerial}
+                                        <tr>
+                                            <th class='tdOpis'>Serial (nowa)</th>
+                                            <td class='tdWartosc'><input class="form-control" type="text" disabled
+                                                                         value="{$agreementSerial}"/>
+                                            </td>
+                                        </tr>
+                                    {else}
+                                        <tr>
+                                            <td colspan="2">&nbsp;</td>
+                                        </tr>
+                                    {/if}
+                                    <tr>
+                                        <td colspan="2" style="text-align: right">
+                                            <a href="#" class="btn btn-outline-success active" role="button"
+                                               aria-pressed="true"
+                                               onclick='replacePrinter("{$dane[0]['serial']}", "{$agreementSerial}", {$dane[0]['rowid_agreements']})'>
+                                                <i class="fas fa-save"></i>&nbsp; Zapisz</a>
+                                            <a href="#" class="btn btn-outline-warning" role="button"
+                                               aria-pressed="true"
+                                               onclick='showPrinterService("{$dane[0]['umowadane']}", "{$dane[0]['rowid_agreements']}")'><i
+                                                        class="fas fa-history"></i>&nbsp;Historia</a>
+                                        </td>
+                                    </tr>
+
+                                </table>
+                            </div>
+
                         </div>
-
                     </div>
                 </div>
             </div>
-        </div>
         {/if}
         {if isset($keyVal) && $keyVal!=0}
-        <div class="card">
-            <div class="card-header" id="headingTwo">
-                <h5 class="mb-0">
-                    <button class="btn collapsed" data-toggle="collapse" data-target="#collapseTwo" aria-expanded="false" aria-controls="collapseTwo">
-                        <i class="fa" aria-hidden="true"></i>&nbsp;Dodaj pliki
-                    </button>
-                </h5>
-            </div>
-            <div id="collapseTwo" class="collapse" aria-labelledby="headingTwo" data-parent="#accordion">
-                <div class="card-body">
-                    <div class="dropzone" id="divdropzone">
+            <div class="card">
+                <div class="card-header" id="headingTwo">
+                    <h5 class="mb-0">
+                        <button class="btn collapsed" data-toggle="collapse" data-target="#collapseTwo"
+                                aria-expanded="false" aria-controls="collapseTwo">
+                            <i class="fa" aria-hidden="true"></i>&nbsp;Dodaj pliki
+                        </button>
+                    </h5>
+                </div>
+                <div id="collapseTwo" class="collapse" aria-labelledby="headingTwo" data-parent="#accordion">
+                    <div class="card-body">
+                        <div class="dropzone" id="divdropzone">
 
+                        </div>
+                        <script type="text/javascript">
+                            createDropZone('div#divdropzone', '{$keyVal}', 'notifications', '{$smarty.const.ADRESHTTPS}/public_html', '{$smarty.const.SCIEZKA}');
+                        </script>
                     </div>
-                    <script type="text/javascript">
-                        createDropZone('div#divdropzone', '{$keyVal}', 'notifications', '{$smarty.const.ADRESHTTPS}/public_html', '{$smarty.const.SCIEZKA}');
-                    </script>
                 </div>
             </div>
-        </div>
         {/if}
         <div class="card">
             <div class="card-header" id="headingThree">
                 <h5 class="mb-0">
-                    <button class="btn collapsed" data-toggle="collapse" data-target="#collapseThree" aria-expanded="false" aria-controls="collapseThree">
+                    <button class="btn collapsed" data-toggle="collapse" data-target="#collapseThree"
+                            aria-expanded="false" aria-controls="collapseThree">
                         <i class="fa" aria-hidden="true"></i>&nbsp;Maile powiązane
                     </button>
                 </h5>
@@ -488,7 +502,7 @@
 
     showMaile();
 
-    $("#replacementDate").focus(function() {
+    $("#replacementDate").focus(function () {
         window.scrollTo(0, 0);
     });
 
@@ -500,5 +514,21 @@
         dateFormat: "yy-mm-dd", changeMonth: true, timeFormat: 'HH:mm', stepMinute: 10,
         changeYear: true
     });
+
+    const toners = ["black", "cyan", "yellow", "magenta"].map(color => '#trtoner_' + color).join(',');
+
+    const updateTonersVisibility = () => {
+        const selectedType = $("#rowid_type").find(":selected").text();
+        if (selectedType === "Materiały eksploatacyjne") {
+            $(toners).show();
+        } else {
+            $(toners).hide();
+        }
+    };
+
+    $("#rowid_type").change(updateTonersVisibility);
+
+    updateTonersVisibility();
+
 </script>
 
