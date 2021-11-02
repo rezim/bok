@@ -1,7 +1,12 @@
 const yesterday = function(strDate) {
     const d = new Date(strDate);
     d.setDate(d.getDate() - 1);
-    return d.toISOString().slice(0, 10);
+
+    const year = d.getFullYear();
+    const month = d.getMonth()+1 >=10 ? d.getMonth()+1 : `0${d.getMonth()+1}`;
+    const day = d.getDate() >=10 ? d.getDate() : `0${d.getDate()}`;
+
+    return `${year}-${month}-${day}`;
 };
 
 InvoiceManager = function (api_token, endpoint, company_name, invoice_number_length) {
