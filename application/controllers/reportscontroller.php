@@ -662,6 +662,8 @@ function mergeArrays(array &$destination, array $source, array $fields)
 function copyArrays(array &$destination, array $source, array $fields)
 {
     foreach ($fields as $field) {
-        $destination[$field] = $source[$field];
+        if (isset($source[$field])) {
+            $destination[$field] = $source[$field];
+        }
     }
 }
