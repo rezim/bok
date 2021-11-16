@@ -255,7 +255,9 @@
                         {if isset($smarty.session.przypisanemenu['li_tonersshow'])}
                             <a href='{$smarty.const.SCIEZKA}/toners/show' class="dropdown-item">Tonery</a>
                         {/if}
-
+                        {if isset($smarty.session.przypisanemenu['li_consumables'])}
+                            <a href='{$smarty.const.SCIEZKA}/consumables/show' class="dropdown-item">Materiały Eksploatacyjne</a>
+                        {/if}
                         {if
                         isset($smarty.session.przypisanemenu['but_addcase']) &&
                         $smarty.session.przypisanemenu['but_addcase']['permission'] === 'rw'

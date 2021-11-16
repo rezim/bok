@@ -163,6 +163,24 @@ function showNewTonerAdd(rowid, typ) {
     });
 }
 
+function showNewConsumablesAdd(rowid) {
+
+    $.colorbox
+    ({
+        height: 350 + 'px',
+        width: 600 + 'px',
+        title: "Dodawanie/Edycja materiału eksploatacyjnego",
+        data: { rowid },
+        href: sciezka + "/consumables/addedit/todiv",
+        onClosed: function () {
+
+        },
+        onComplete: function () {
+            uprawnienia();
+        }
+    });
+}
+
 function pokazLogi(serial) {
 
     $.colorbox
@@ -356,6 +374,9 @@ function showOk(objOk, objLoad, info, objClick, czyreload, showtime, adtrestored
                     }
                     if (document.getElementById("tableMessages") !== null) {
                         showMessages();
+                    }
+                    if (document.getElementById("tableConsumables") !== null) {
+                        showConsumables();
                     }
                 } else {
                     $(objOk).hide();
@@ -1068,8 +1089,73 @@ function usunToner(rowid, typ) {
             alert("Musisz podać wartość");
         }
     }
+}
 
 
+function saveConsumable(rowid) {
+    let
+        doc = document,
+        objLoad = doc.getElementById('actionloader'),
+        objOk = doc.getElementById('actionok'),
+        objError = doc.getElementById('actionerror'),
+        objClick = doc.getElementById('actionbuttonclick');
+
+    $.ajax({
+        type: 'POST',
+        url: sciezka + "/consumables/saveupdate/notemplate",
+        async: true,
+        data:
+            {
+                rowid,
+                name: $('#txtname').val(),
+                model: $('#txtmodel').val(),
+                yield: $('#txtyield').val(),
+                price: $('#txtprice').val().replace(',', '.'),
+            },
+        success: function (dane) {
+            checkReplay(objError, objLoad, null, objClick, dane, objOk, 1, 1000, null);
+            return false;
+        },
+        error: function () {
+            showError(objError, objLoad, null, objClick, 3000);
+            return false;
+        }
+    });
+}
+
+function deleteConsumable(rowid) {
+    if (confirm("Czy na pewno chcesz usunąć ten materiał eksploatacyjny ? ")) {
+        $.ajax({
+            type: 'POST',
+            url: sciezka + "/consumables/delete/notemplate",
+            async: true,
+            data:
+                {
+                    rowid: rowid
+                },
+            success: function (dane) {
+                try {
+                    dane = $.parseJSON(dane);
+                } catch (e) {
+
+                    alert('Błąd usunięcia materiału ekspoatacyjnego -' + dane);
+                    return false;
+                }
+                if (dane.status === 0) {
+                    alert('Błąd usunięcia materiału ekspoatacyjnego -' + dane.info);
+                    return false;
+                } else {
+                    alert('Materiał eksploatacyjny usunięty poprawnie');
+                    showConsumables();
+                    return false;
+                }
+            },
+            error: function () {
+                alert('Problem z usunięciem tego materiału ekspoatacyjnego');
+                return false;
+            }
+        });
+    }
 }
 
 function hideshowReportRow(nazwakrotka) {
@@ -1829,6 +1915,32 @@ function pokazTonery() {
 }
 
 
+function showConsumables() {
+    const doc = document;
+    const objCenterId = 'divRightCenter';
+    const objCenter = doc.getElementById(objCenterId);
+
+    $.ajax({
+        url: sciezka + "/consumables/showdane/todiv",
+        type: 'POST',
+        data: {
+            filtername: doc.getElementById('txtfiltername').value,
+            filtermodel: doc.getElementById('txtfiltermodel').value,
+        },
+        success: function (data) {
+            objCenter.innerHTML = data;
+            $(objCenter).animate({opacity: 1}, 1500);
+        },
+        error: function () {
+            objCenter.innerHTML = 'Problem z pobraniem materiałów eksploatacyjnych';
+        }
+    }).done(function () {
+        $("#tableConsumables").tablesorter();
+        uprawnienia();
+    });
+    return false;
+}
+
 function showClients(czycolorbox) {
     const doc = document;
     const objCenterId = czycolorbox ? 'divRightCenter' + czycolorbox : 'divRightCenter';
@@ -2022,7 +2134,7 @@ function dataRowSelectedHandler(targetElement) {
             break;
         case "devices":
             $('#idserialspan').html(targetObj.attr('data-serial'));
-            $('#serial').val(targetObj.attr('data-serial'));
+            $('#serial').val(targetObj.attr('data-serial')).change();
 
             $('#rowid_client').val(targetObj.attr('data-clientname'));
             $('#idclientspan').html(targetObj.attr('data-clientid'));
