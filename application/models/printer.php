@@ -66,7 +66,7 @@ class printer extends Model
     }
 
     function getPrinterModels() {
-        $query = "SELECT model FROM `printers` where model <> '' group by model order by model";
+        $query = "SELECT model FROM `printers` p inner join `agreements` a on p.serial = a.serial where a.rowid_type = 1 group by model order by model";
 
         return $this->query($query, null, false);
     }
