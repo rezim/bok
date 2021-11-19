@@ -6,17 +6,17 @@ class consumable extends Model
 
     function delete($rowid)
     {
-        return $this->update("DELETE FROM `notifications_consumables` WHERE rowid = ?", 'd', array($rowid));
+        return $this->update("DELETE FROM `consumables` WHERE rowid = ?", 'd', array($rowid));
     }
 
     function saveupdate($rowid, $name, $model, $yield, $price)
     {
 
         if ($rowid == '0') {
-            $query = "select * from notifications_consumables where name='{$name}' and model='{$model}'";
+            $query = "select * from consumables where name='{$name}' and model='{$model}'";
 
             if (empty($this->query($query, null, false))) {
-                $this->_table = 'notifications_consumables';
+                $this->_table = 'consumables';
                 return $this->insert("`name`, `model`, `yield`, `price`", 'ssdd', array($name, $model, $yield, $price));
             } else {
                 return array('status' => 0, 'info' => 'Taki materiał już istnieje');
@@ -24,7 +24,7 @@ class consumable extends Model
         } else {
             return $this->update
             (
-                "update `notifications_consumables` 
+                "update `consumables` 
                    set 
                    `name`=?, 
                    `model`=?,
@@ -47,14 +47,14 @@ class consumable extends Model
     function getConsumableByRowid($rowid)
     {
         $query = "select *
-            from notifications_consumables
+            from consumables
             where rowid={$rowid}";
         return $this->query($query, null, false);
     }
 
     function getConsumables()
     {
-        $query = "select * from notifications_consumables";
+        $query = "select * from consumables";
 
         $where = '';
 
