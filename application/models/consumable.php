@@ -9,52 +9,70 @@ class consumable extends Model
         return $this->update("DELETE FROM `consumables` WHERE rowid = ?", 'd', array($rowid));
     }
 
-    function saveupdate($rowid, $name, $model, $yield, $price)
+    function saveupdate($rowid, $code, $name, $model, $yield, $price)
     {
 
-        if ($rowid == '0') {
-            $query = "select * from consumables where name='{$name}' and model='{$model}'";
+        if ($rowid == '') {
+            $query = "select * from consumables where name='{$name}' and code='{$code}'";
 
             if (empty($this->query($query, null, false))) {
                 $this->_table = 'consumables';
-                return $this->insert("`name`, `model`, `yield`, `price`", 'ssdd', array($name, $model, $yield, $price));
+                $result = $this->insert("`code`, `name`, `yield`, `price`", 'ssdd', array($code, $name, $yield, $price));
+
+                if ($result['status'] === 1) {
+                    $this->_table = 'consumables_model';
+                    foreach ($model as &$mdl) {
+                        $this->insert("`rowid_consumables`,`model`", 'ds', array((int) $result['rowid'], $mdl));
+                    }
+                }
+                return $result;
             } else {
                 return array('status' => 0, 'info' => 'Taki materiał już istnieje');
             }
         } else {
-            return $this->update
+            $result = $this->update
             (
                 "update `consumables` 
-                   set 
-                   `name`=?, 
-                   `model`=?,
+                   set
+                   `code`=?,
+                   `name`=?,
                    `yield`=?,
                    `price`=?
                    where `rowid`=?"
-                ,'ssddi',
+                , 'ssddi',
                 array
                 (
-                    $name=='' ? "NULL":$name,
-                    $model=='' ? "NULL":$model,
-                    $yield=='' ? "NULL":$yield,
-                    $price=='' ? "NULL":$price,
+                    $code == '' ? "NULL" : $code,
+                    $name == '' ? "NULL" : $name,
+                    $yield == '' ? "NULL" : $yield,
+                    $price == '' ? "NULL" : $price,
                     $rowid
                 )
             );
+
+            $this->update("DELETE FROM `consumables_model` WHERE rowid_consumables = ?", 'd', array($rowid));
+            $this->_table = 'consumables_model';
+            foreach ($model as &$mdl) {
+                $this->insert("`rowid_consumables`,`model`", 'ds', array($rowid, $mdl));
+            }
+
+            return $result;
         }
     }
 
     function getConsumableByRowid($rowid)
     {
-        $query = "select *
-            from consumables
-            where rowid={$rowid}";
+        $query = "SELECT c.*, GROUP_CONCAT(cm.model SEPARATOR ',') AS models
+                  FROM `consumables` as c inner join `consumables_model` as cm on c.rowid = cm.rowid_consumables
+                  WHERE c.rowid={$rowid}";
+
         return $this->query($query, null, false);
     }
 
     function getConsumables()
     {
-        $query = "select * from consumables";
+
+        $query = "SELECT c.*, GROUP_CONCAT(cm.model SEPARATOR ',') AS models FROM `consumables` as c inner join `consumables_model` as cm on c.rowid = cm.rowid_consumables";
 
         $where = '';
 
@@ -63,19 +81,21 @@ class consumable extends Model
                 $where .= ' and ';
             }
 
-            $where .= "(name like '%{$this->filtername}%')";
+            $where .= "(c.name like '%{$this->filtername}%')";
         }
         if ($this->filtermodel != '') {
             if ($where !== '') {
                 $where .= ' and ';
             }
 
-            $where .= "(model like '%{$this->filtermodel}%')";
+            $where .= "(cm.model like '%{$this->filtermodel}%')";
         }
 
         if ($where !== '') {
             $query .= ' where ' . $where;
         }
+
+        $query .= ' group by c.rowid';
 
         return $this->query($query, null, false);
 

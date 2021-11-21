@@ -6,6 +6,9 @@
                 #
             </th>
             <th>
+                kod materiału
+            </th>
+            <th>
                 nazwa materiału
             </th>
             <th>
@@ -25,8 +28,9 @@
         {foreach from=$dataConsumables item=item key=key name=consumablesLoop}
             <tr>
                 <th scope="row">{$smarty.foreach.consumablesLoop.index+1}</th>
+                <td>{$item.code|escape:'htmlall'} </td>
                 <td>{$item.name|escape:'htmlall'} </td>
-                <td>{$item.model|escape:'htmlall'} </td>
+                <td>{$item.models|escape:'htmlall'} </td>
                 <td>{if $item.price}{$item.price|escape:'htmlall'}{else}-{/if} </td>
                 <td>{if $item.yield}{$item.yield|escape:'htmlall'}{else}n/a{/if} </td>
                 <td>

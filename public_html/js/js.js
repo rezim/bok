@@ -167,7 +167,7 @@ function showNewConsumablesAdd(rowid) {
 
     $.colorbox
     ({
-        height: 350 + 'px',
+        height: 640 + 'px',
         width: 600 + 'px',
         title: "Dodawanie/Edycja materiału eksploatacyjnego",
         data: { rowid },
@@ -1107,8 +1107,9 @@ function saveConsumable(rowid) {
         data:
             {
                 rowid,
+                code: $('#txtcode').val(),
                 name: $('#txtname').val(),
-                model: $('#txtmodel').val(),
+                model: $('#txtmodel').val().filter(val => val !== ''),
                 yield: $('#txtyield').val(),
                 price: $('#txtprice').val().replace(',', '.'),
             },

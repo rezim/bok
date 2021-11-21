@@ -52,6 +52,10 @@
 <!-- modules -->
 <link rel="stylesheet" type="text/css" href="{$smarty.const.SCIEZKA}/css/service.css?{$smarty.const.APPVERSION}"/>
 
+
+<!-- Latest compiled and minified CSS -->
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-select@1.13.18/dist/css/bootstrap-select.min.css">
+
 <script type="text/javascript">
     function loadScript(src, callback) {
         var head = document.getElementsByTagName('head')[0],
@@ -102,6 +106,8 @@
         src="{$smarty.const.SCIEZKA}/js/angular/ctrl/userSharesCtrl.js?{$smarty.now}"></script>
 <script type="text/javascript" src="{$smarty.const.SCIEZKA}/js/angular/ctrl/serviceCtrl.js?{$smarty.now}"></script>
 
+<script type="text/javascript"
+        src="{$smarty.const.SCIEZKA}/js/angular/ctrl/notificationCtrl.js?{$smarty.now}"></script>
 
 <script type="text/javascript"
         src="{$smarty.const.SCIEZKA}/js/angular/common/dropdownCtrl.js?{$smarty.now}"></script>

@@ -11,13 +11,13 @@ class consumablesController extends Controller
     {
 
         if (isset($_SERVER['HTTP_X_REQUESTED_WITH']) && ($_SERVER['HTTP_X_REQUESTED_WITH'] == 'XMLHttpRequest')) {
-            if ($_POST['rowid'] == '')
-                die('rowid jest wymagane, dla nowego rekordu podaj \'0\'');
+            if ($_POST['code'] == '')
+                die('Dodaj kod materiału');
             if ($_POST['name'] == '')
                 die('Dodaj nazwę materiału');
-            if ($_POST['model'] == '')
+            if (!is_array($_POST['model']) || empty($_POST['model']))
                 die('Dodaj model drukarki');
-            echo(json_encode($this->consumable->saveupdate($_POST['rowid'], $_POST['name'], $_POST['model'], $_POST['yield'], $_POST['price'])));
+            echo(json_encode($this->consumable->saveupdate($_POST['rowid'], $_POST['code'], $_POST['name'], $_POST['model'], $_POST['yield'], $_POST['price'])));
         } else {
             echo('Błędne wywołanie');
         }
@@ -29,7 +29,8 @@ class consumablesController extends Controller
         global $smarty;
         if ($_POST['rowid'] != '') {
             $dataConsumable = $this->consumable->getConsumableByRowid($_POST['rowid']);
-            $smarty->assign('dataConsumables', $dataConsumable);
+            $dataConsumable[0]['models'] = explode(",", $dataConsumable[0]['models']);
+            $smarty->assign('dataConsumables', $dataConsumable[0]);
             unset($dataConsumable);
             $smarty->assign('rowid', $_POST['rowid']);
         }
