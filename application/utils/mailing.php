@@ -362,7 +362,7 @@ class mailing
             "
                                Informujemy , że zlecenie o numerze {$rowid} zostało zakończone.<br/>
                                 Państwa doświadczenie związane z realizacją tego zlecenia jest dla nas bardzo ważne i może być pomocne w ciągłym podnoszeniu jakości naszych usług.<br/>
-                                Bardzo prosimy o wypełnienie krótkiej <a href='http://www.otus.pl/formularz/'>ankiety tutaj</a>.<br/>
+                                Bardzo prosimy o wypełnienie krótkiej <a href='https://docs.google.com/forms/d/1zfEzgypY9bEAKs6BMstXnHsjMQX-2W5lpiodRQZSxrA/edit'>ankiety tutaj</a>.<br/>
                                 Zależy nam na Państwa opinii. 
                                 <br/>
                                 Dziękujemy za poświęcenie czasu na podzielenie się z nami swoimi przemyśleniami.
