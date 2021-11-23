@@ -193,6 +193,18 @@ class notificationsController extends InvoicesController
                 $priority = $this->notification->getPriorityById($this->$nameOfModel->_filedsToEdit['rowid_priority']['value']);
                 $priority = (!empty($priority) && $priority[0]['nazwa'] != '') ? $priority[0]['nazwa'] : '';
 
+                $printerLogs = '';
+                if (!empty($nrseryjny)) {
+                    $printer = new printer();
+                    $dataPrinterLogs = $printer->getPrinterLogs($nrseryjny);
+                    if (!empty($dataPrinterLogs)) {
+                        $printerLogs = implode('<br/>', array_map(function ($value) {
+                            return $value['timestamp'] . ' - ' . $value['eventcode'];
+                        }, $dataPrinterLogs));
+                    }
+                    unset($printer);
+                }
+
                 $mailing = new mailing();
                 $mailing->sendMailPrzydzielonoZlecenie($wynik['keyval'], $dataMail[0]['mail'], nl2br($this->$nameOfModel->_filedsToEdit['tresc_wiadomosci']['value']),
                     $clientName . " [Ticket#{$wynik['keyval']}] " . $this->$nameOfModel->_filedsToEdit['temat']['value'] . " #Serwis",
@@ -200,6 +212,7 @@ class notificationsController extends InvoicesController
                     $this->$nameOfModel->_filedsToEdit['osobazglaszajaca']['value'],
                     $this->$nameOfModel->_filedsToEdit['nr_telefonu']['value'], $priority,
                     $modelurzadzenia, $nrseryjny, $lokalizacja, $przebieg, $stantonera, $adresip, $firmware, $this->$nameOfModel->_filedsToEdit['data_planowana']['value'],
+                    $printerLogs,
                     $dataZalacznikiFirst
                 );
                 unset($mailing);

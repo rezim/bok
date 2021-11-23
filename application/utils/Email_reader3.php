@@ -46,8 +46,6 @@ function check_ceses()
                     $printer = new printer();
                     $dataPrinter = $printer->getPrinterBySerial($item['serial']);
 
-                    $dataPrinterLogs = $printer->getPrinterLogs($item['serial']);
-
                     if(!empty($dataPrinter))
                     {
                           $modelurzadzenia=$dataPrinter[0]['model'];
@@ -58,6 +56,7 @@ function check_ceses()
                           $firmware=$dataPrinter[0]['nr_firmware'];
                     }
 
+                    $dataPrinterLogs = $printer->getPrinterLogs($item['serial']);
                     if (!empty($dataPrinterLogs)) {
                         $printerLogs = implode('<br/>', array_map(function ($value) {return $value['timestamp'] . ' - ' . $value['eventcode'];}, $dataPrinterLogs));
                     }

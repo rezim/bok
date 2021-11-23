@@ -83,7 +83,7 @@ class mailing
 
     function sendMailPrzydzielonoZlecenie($rowid, $mail, $tresc, $temat, $clientname,
                                           $osobazglaszajaca = '', $nrkontaktowy = '', $priority = '', $modelurzadzenia = '', $nrseryjny = '', $lokalizacja = '', $przebieg = '', $stantonera = '', $adresip = '', $firmware = '', $terminwykonania = '',
-                                          $dataZalacznikiFirst
+                                          $printerLogs, $dataZalacznikiFirst
     )
     {
 
@@ -142,7 +142,7 @@ class mailing
                                 -Stan tonera:{$stantonera}<br/>
                                 -Adres IP:{$adresip}<br/>
                                 -Firmware:{$firmware}
-                                
+                                -Logi: <br/>{$printerLogs}
                             ";
 
         $mailek->AltBody =
