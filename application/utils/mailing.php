@@ -162,7 +162,7 @@ class mailing
     }
 
     function sendMailPrzypomnienie($rowid, $mail, $tresc, $temat, $clientname,
-                                   $osobazglaszajaca = '', $nrkontaktowy = '', $modelurzadzenia = '', $nrseryjny = '', $przebieg = '', $stantonera = '', $adresip = '', $firmware = '', $pozostalo_godzin = 0
+                                   $osobazglaszajaca = '', $nrkontaktowy = '', $modelurzadzenia = '', $nrseryjny = '', $przebieg = '', $stantonera = '', $adresip = '', $firmware = '', $printerLogs = '', $pozostalo_godzin = 0
     )
     {
 
@@ -207,6 +207,7 @@ class mailing
                                 -Stan tonera:{$stantonera}<br/>
                                 -Adres IP:{$adresip}<br/>
                                 -Firmware:{$firmware}
+                                -Logi: <br/>{$printerLogs}                                
                                 
                                 <br/><br/>
                                 <b>Oryginalna wiadomość :</b><br/><br/>
@@ -230,7 +231,7 @@ class mailing
                                 -Stan tonera:{$stantonera}
                                 -Adres IP:{$adresip}
                                 -Firmware:{$firmware}
-                                
+                                -Logi: {$printerLogs}         
                                 
                             ";
 

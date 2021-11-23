@@ -132,6 +132,13 @@ class printer extends Model
         return $this->query($query, null, false);
     }
 
+    function getPrinterLogs($serial)
+    {
+        $query = "select eventcode, timestamp from logs where serial='{$serial}' and dateinsert > DATE_ADD(NOW(),INTERVAL -3 MONTH) ORDER BY `logs`.`timestamp` DESC LIMIT 50";
+
+        return $this->query($query, null, false);
+    }
+
     function saveupdate()
     {
         $print = $this->selectWhere(null, true, 's', array($this->serial), ' serial=?', '*');

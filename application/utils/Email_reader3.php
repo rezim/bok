@@ -22,7 +22,7 @@ function check_ceses()
 
     $noti = new notification();
     $dataNotiKonczace = $noti->getNotiKonczace();
-  
+
     if(!empty($dataNotiKonczace))
     {
         $mailing = new mailing();
@@ -38,12 +38,16 @@ function check_ceses()
                           $stantonera='';
                           $adresip='';
                           $firmware='';
+                          $printerLogs='';
                           
                 if((string)$item['serial']!='')
                 {
 
                     $printer = new printer();
                     $dataPrinter = $printer->getPrinterBySerial($item['serial']);
+
+                    $dataPrinterLogs = $printer->getPrinterLogs($item['serial']);
+
                     if(!empty($dataPrinter))
                     {
                           $modelurzadzenia=$dataPrinter[0]['model'];
@@ -53,6 +57,11 @@ function check_ceses()
                           $adresip=$dataPrinter[0]['ip'];
                           $firmware=$dataPrinter[0]['nr_firmware'];
                     }
+
+                    if (!empty($dataPrinterLogs)) {
+                        $printerLogs = implode('<br/>', array_map(function ($value) {return $value['timestamp'] . ' - ' . $value['eventcode'];}, $dataPrinterLogs));
+                    }
+
                     unset($printer);
 
                 }
@@ -65,7 +74,7 @@ function check_ceses()
                       $item['nazwakrotka'],
                       $item['osobazglaszajaca'],
                       $item['nr_telefonu'],
-                      $modelurzadzenia,$nrseryjny,$przebieg,$stantonera,$adresip,$firmware,$item['pozostalo_godzin']
+                      $modelurzadzenia,$nrseryjny,$przebieg,$stantonera,$adresip,$firmware,$printerLogs,$item['pozostalo_godzin']
                       );
                 
             }
