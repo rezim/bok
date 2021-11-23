@@ -141,7 +141,6 @@ class mailing
                                 -Przebieg:{$przebieg}<br/>
                                 -Stan tonera:{$stantonera}<br/>
                                 -Adres IP:{$adresip}<br/>
-                                -Firmware:{$firmware}
                                 -Logi: <br/>{$printerLogs}
                             ";
 
@@ -206,7 +205,6 @@ class mailing
                                 -Przebieg:{$przebieg}<br/>
                                 -Stan tonera:{$stantonera}<br/>
                                 -Adres IP:{$adresip}<br/>
-                                -Firmware:{$firmware}
                                 -Logi: <br/>{$printerLogs}                                
                                 
                                 <br/><br/>
