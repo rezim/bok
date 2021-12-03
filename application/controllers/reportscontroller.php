@@ -508,6 +508,8 @@ class reportsController extends InvoicesController
 
         foreach ($dataReportsRoczne as $key => $item) {
 
+            $clientId = $item['rowidclient'];
+
             if (!isset($dataReports[$clientId])) {
                 $dataReports[$clientId] = array();
             }
