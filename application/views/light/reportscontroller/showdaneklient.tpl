@@ -68,7 +68,7 @@
                     {if !empty($item.wartoscabonament)} {$item.wartoscabonament|number_format:2:",":" "|escape:'htmlall'}{/if}
                 </td>
                 <td class='tdNumber' style='padding-right:20px;'>
-                    {$item.kwotadowykorzystania|number_format:2:",":" "|escape:'htmlall'}
+                    {if isset($item.kwotadowykorzystania)}{$item.kwotadowykorzystania|number_format:2:",":" "|escape:'htmlall'}{else}0,00{/if}
                 </td>
                 <td class='tdNumber' style='padding-right:20px;white-space: nowrap'>
                     {if isset($item.wartoscblack)} {$item.wartoscblack|number_format:2:",":" "|escape:'htmlall'}{/if}
