@@ -510,6 +510,14 @@ input[type="checkbox"] {
             margin-bottom: 0.7rem;
         }
     }
+
+    .modal-xl {
+        max-width: 1440px;
+    }
+
+    .modal-xl .otus-sidebar {
+        height: calc(80vh - 4rem);
+    }
 }
 
 .modal {
@@ -594,4 +602,10 @@ input[type="checkbox"] {
 
 #consumableAddEdit .dropdown.bootstrap-select {
     margin-left: 10px;
+}
+
+#notificationsAddEdit table th {
+    padding: 0.2rem;
+    vertical-align: middle;
+    border-width: 1px;
 }
