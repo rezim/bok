@@ -14,7 +14,7 @@
     </tr>
     <tr>
         <td class='tdOpis'>
-            Type umowy
+            Typ umowy
         </td>
         <td class='tdWartosc' colspan="3">
             <select id='txttypumowy' class="comboboxForm" style='width:200px;min-width:200px;'>
@@ -34,7 +34,13 @@
             Klient
         </td>
         <td class='tdWartosc' colspan="3">
-            <select id='txtklient' class="comboboxForm" style='width:200px;min-width:200px;'>
+            <select id='txtklient' class="selectpicker"
+                    data-size="10"
+                    data-width="340px"
+                    data-none-selected-text="Nie wybrano żadnego klient"
+                    data-none-results-text="Nie znaleziono wyników dla podanego filtra"
+                    data-live-search-placeholder="Wpisz filtr aby zawęzić liste klientów"
+                    data-live-search="true">
                 <option value="" selected></option>
                 {foreach from=$dataClients item=item key=key}
                     <option value="{$key}"
@@ -69,7 +75,13 @@
         </td>
         <td class='tdWartosc' colspan="3">
 
-            <select id='txtdrukarka' class="comboboxForm" style='width:300px;min-width:300px;' onchange="updateAgreementWithPrinter({$rowid}, this.value)">
+            <select id='txtdrukarka' class="selectpicker" onchange="updateAgreementWithPrinter({$rowid}, this.value)"
+                    data-size="10"
+                    data-width="340px"
+                    data-none-selected-text="Nie wybrano żadnej drukarki"
+                    data-none-results-text="Nie znaleziono wyników dla podanego filtra"
+                    data-live-search-placeholder="Wpisz filtr aby zawęzić list drukarek"
+                    data-live-search="true">
                 <option value="" selected></option>
 
                 {foreach from=$dataPrinters item=item key=key}
@@ -432,6 +444,8 @@
         changeYear: true
     });
 
+    $('.selectpicker').selectpicker();
+
+
 </script>
 
-</table>
