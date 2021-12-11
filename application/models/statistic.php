@@ -12,7 +12,7 @@ class statistic extends Model
             $where .= " and date_zakonczenia is not null";
         }
 
-        if ($dateFrom != '' && isset($dateTo) != '') {
+        if ($dateFrom != '' && $dateTo != '') {
             $where .= " and (date_zakonczenia <= '{$dateTo}' and date_zakonczenia >= '{$dateFrom}')";
             if ($showNotClosed) {
                 $where .= " or (date_zakonczenia is null and date_insert <= '{$dateTo}' and date_insert > '{$dateFrom}') ";
