@@ -2040,6 +2040,32 @@ function showListOfNotifications() {
     return false;
 }
 
+function showStatistics() {
+    const objCenter = getElementById('divRightCenter');
+
+    $.ajax({
+        url: sciezka + "/statistics/showdane/todiv",
+        type: 'POST',
+        data: {
+            dateFrom: getElementById('txtfilterdataod').value,
+            dateTo: getElementById('txtfilterdatado').value,
+            showNotClosed: getElementById('checkStatus').checked ? 1 : 0,
+        },
+        success: function (data) {
+            objCenter.innerHTML = '';
+            objCenter.innerHTML = data;
+            $(objCenter).animate({opacity: 1}, 1500);
+        },
+        error: function () {
+            objCenter.innerHTML = 'Problem z pobraniem statystyk';
+        }
+    }).done(function () {
+        $("#tableStatistics").tablesorter();
+        uprawnienia();
+    });
+    return false;
+}
+
 function showNewNotiAdd(rowid, serial, tonertype) {
     $.colorbox
     ({

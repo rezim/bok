@@ -309,6 +309,9 @@
                         {if isset($smarty.session.przypisanemenu['li_reportsshow'])}
                             <a href='{$smarty.const.SCIEZKA}/reports/show' class="dropdown-item">Wystaw faktury</a>
                         {/if}
+                        {if isset($smarty.session.przypisanemenu['li_statisticsshow'])}
+                            <a href='{$smarty.const.SCIEZKA}/statistics/show' class="dropdown-item">Statystyki Zgłoszeń</a>
+                        {/if}
                         {if
                         isset($smarty.session.przypisanemenu['li_externallinks']) &&
                         $smarty.session.przypisanemenu['li_externallinks']['permission'] === 'rw'
