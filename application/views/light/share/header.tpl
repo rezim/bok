@@ -107,9 +107,6 @@
 <script type="text/javascript" src="{$smarty.const.SCIEZKA}/js/angular/ctrl/serviceCtrl.js?{$smarty.now}"></script>
 
 <script type="text/javascript"
-        src="{$smarty.const.SCIEZKA}/js/angular/ctrl/notificationCtrl.js?{$smarty.now}"></script>
-
-<script type="text/javascript"
         src="{$smarty.const.SCIEZKA}/js/angular/common/dropdownCtrl.js?{$smarty.now}"></script>
 
 <!-- Angular UI bootstrap  -->
