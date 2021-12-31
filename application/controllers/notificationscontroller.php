@@ -116,10 +116,14 @@ class notificationsController extends InvoicesController
             $this->$nameOfModel->_filedsToEdit['user_podjecia']['value'] = $_SESSION['user']['rowid'];
             $this->$nameOfModel->_filedsToEdit['data_podjecia']['value'] = date('Y-m-d H:i:s');
         }
-        if ($this->$nameOfModel->_filedsToEdit['status']['value'] == '3' &&
+
+        $returnOfConsumables = $this->$nameOfModel->_filedsToEdit['rowid_type']['value'] == '7';
+
+        $closingTheNotification = $this->$nameOfModel->_filedsToEdit['status']['value'] == '3';
+
+        if (!$returnOfConsumables && $closingTheNotification &&
             ($this->$nameOfModel->_filedsToEdit['ilosc_km']['value'] == '' || $this->$nameOfModel->_filedsToEdit['czas_pracy']['value'] == '' || $this->$nameOfModel->_filedsToEdit['wartosc_materialow']['value'] == '')
         ) {
-
             echo('Aby zamknąć zleceni muszą być uzupełnione wszystkie pola ( ilość km, czas pracy, wartość materiałów )');
             die();
 
@@ -277,7 +281,8 @@ class notificationsController extends InvoicesController
         echo(json_encode($wynik));
     }
 
-    function shownotpaidinvoices() {
+    function shownotpaidinvoices()
+    {
         $clientId = isset($_POST['client_id']) ? $_POST['client_id'] : null;
         if ($clientId) {
             // BOK client
@@ -293,17 +298,17 @@ class notificationsController extends InvoicesController
 
                     $notPaidInvoices = $this->geInvoicesByClientId($client[0]['id'], false);
 
-                    $notPaidInvoices = array_map(function($inv) {
+                    $notPaidInvoices = array_map(function ($inv) {
                         $today = new DateTime();
                         $payment_to = new DateTime($inv['payment_to']);
-                        $daysDiff =  $today > $payment_to ?
+                        $daysDiff = $today > $payment_to ?
                             $today->diff($payment_to)->format('%a') : 0;
 
                         return (
-                            array(
-                                'number' => $inv['number'],
-                                'payment_to' => $inv['payment_to'],
-                                'late_days' => $daysDiff)
+                        array(
+                            'number' => $inv['number'],
+                            'payment_to' => $inv['payment_to'],
+                            'late_days' => $daysDiff)
                         );
                     }, $notPaidInvoices);
 
