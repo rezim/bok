@@ -519,7 +519,7 @@
 
     const updateTonersVisibility = () => {
         const selectedType = $("#rowid_type").find(":selected").text();
-        if (selectedType === "Materiały eksploatacyjne") {
+        if (selectedType === "Materiały eksploatacyjne" || selectedType === "Zwrot Materiałów") {
             $(toners).show();
         } else {
             $(toners).hide();
