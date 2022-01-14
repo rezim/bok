@@ -56,18 +56,18 @@
                                     aria-expanded="false">
                                 <i class="fas fa-cog"></i>
                             </button>
-                            <div class="dropdown-menu dropdown-menu-right" aria-labelledby="dropdownMenuLink">
-                                <a class="dropdown-item" href="#" onClick='showNewClientAdd("{$item.rowid}")'><i
-                                            class="fas fa-edit"></i>&nbsp;&nbsp;Edycja</a>
-                                <div class="border-top my-1"></div>
-                                <a class="dropdown-item" href="#" onClick='showDrukarkiDoKlienta("{$item.rowid}")'><i
-                                            class="fas fa-print"></i>&nbsp;&nbsp;&nbsp;Urządzenia klienta</a>
-                                <a class="dropdown-item" href="#" onClick='showUmowyDoKlienta("{$item.rowid}")'><i
-                                            class="far fa-handshake"></i>&nbsp;&nbsp;Umowy klienta</a>
-                                <div class="border-top my-1"></div>
-                                <a class="dropdown-item text-danger" href="#" onClick='usunKlienta("{$item.rowid}")'>
-                                    <i class="fas fa-user-times"></i>&nbsp;&nbsp;Usuń Klienta</a>
-                            </div>
+{*                            <div class="dropdown-menu dropdown-menu-right" aria-labelledby="dropdownMenuLink">*}
+{*                                <a class="dropdown-item" href="#" onClick='showNewClientAdd("{$item.rowid}")'><i*}
+{*                                            class="fas fa-edit"></i>&nbsp;&nbsp;Edycja</a>*}
+{*                                <div class="border-top my-1"></div>*}
+{*                                <a class="dropdown-item" href="#" onClick='showDrukarkiDoKlienta("{$item.rowid}")'><i*}
+{*                                            class="fas fa-print"></i>&nbsp;&nbsp;&nbsp;Urządzenia klienta</a>*}
+{*                                <a class="dropdown-item" href="#" onClick='showUmowyDoKlienta("{$item.rowid}")'><i*}
+{*                                            class="far fa-handshake"></i>&nbsp;&nbsp;Umowy klienta</a>*}
+{*                                <div class="border-top my-1"></div>*}
+{*                                <a class="dropdown-item text-danger" href="#" onClick='usunKlienta("{$item.rowid}")'>*}
+{*                                    <i class="fas fa-user-times"></i>&nbsp;&nbsp;Usuń Klienta</a>*}
+{*                            </div>*}
                         </div>
                     </td>
 
