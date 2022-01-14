@@ -35,18 +35,24 @@ class notificationsController extends InvoicesController
             $daneStatus = $this->notification->getStatusy();
             $danePriority = $this->notification->getPriority();
             $daneType = $this->notification->getTypy();
+            // $daneConsumables = isset($_POST['keyVal']) ? $this->notification->getConsumables($_POST['keyVal']) : [];
 
             global $smarty;
             $smarty->assign('daneWykonuje', $daneWykonuje);
             $smarty->assign('daneStatus', $daneStatus);
             $smarty->assign('danePriority', $danePriority);
             $smarty->assign('daneType', $daneType);
+            // $smarty->assign('daneConsumables', $daneConsumables);
 
             if (isset($_POST['serial']) && $_POST['serial']) {
 
                 $printerData = $this->notification->getPrinterDataBySerial($_POST['serial']);
 
                 $smarty->assign('agreementSerial', $_POST['serial']);
+
+                // $consumablesData = $this->notification->getConsumablesByPrinterId($_POST['serial']);
+
+                // $smarty->assign('consumablesData', $consumablesData);
 
                 $this->notification->_filedsToEdit['temat']['readonly'] = 1;
 
@@ -108,6 +114,8 @@ class notificationsController extends InvoicesController
     function save()
     {
         $nameOfModel = ($this->_model);
+
+        $myNameOfModel = &$this->$nameOfModel;
 
         $this->$nameOfModel->populateFieldsToSave('_filedsToEdit', '1');
         $this->$nameOfModel->set('czydelete', $_POST['czydelete']);

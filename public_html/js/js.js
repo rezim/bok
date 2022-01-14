@@ -1971,6 +1971,33 @@ function showClients(czycolorbox) {
     return false;
 }
 
+function showMaterials() {
+    const doc = document;
+    const objCenterId = 'divRightCenter';
+    const objCenter = doc.getElementById(objCenterId);
+
+    $.ajax({
+        url: sciezka + "/materials/showdane/todiv",
+        type: 'POST',
+        data: {
+            date_from: getElementById('txtfilterdataod').value,
+            date_to: getElementById('txtfilterdatado').value,
+        },
+        success: function (data) {
+            objCenter.innerHTML = data;
+            $(objCenter).animate({opacity: 1}, 1500);
+        },
+        error: function () {
+            objCenter.innerHTML = 'Problem z pobraniem materiałów';
+        }
+    }).done(function () {
+        // $("#tableClient").tablesorter();
+        // uprawnienia();
+    });
+    return false;
+}
+
+
 function showAgreements(isPopup) {
     const objCenter = getElementById('divRightCenter', isPopup);
 

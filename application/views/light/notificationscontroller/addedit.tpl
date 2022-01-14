@@ -3,7 +3,11 @@
     val2 = '{$uprawnienia}';
     {/if}
 </script>
-<div class="container mt-3">
+
+<div class="container mt-3" id="notificationsAddEdit">
+
+{*    {include file="$templates/notification/manageConsumables.tpl"}*}
+
     <span id="keyval" style='display:none;'>{$keyVal}</span>
 
     <div id="invoicesContainer" class="container">
@@ -96,6 +100,49 @@
 
                                         </script>
                                     {/if}
+                                    {/if}
+                                    {if $item.type=='number'}
+                                        <input class="form-control form-control-md" type="number" min="0" max="20" step="1" onkeydown="return false" id='{$key}'
+                                               baza='{$item.baza}' name='editobj'
+                                               {if isset($item.focus) && $item.focus=='1'}autofocus="true"{/if}
+                                                {if isset($item.wymagane) && $item.wymagane=='1'}wymagane="{$item.wymagane}"{/if}
+                                                {if isset($item.readonly) && $item.readonly=='1'}disabled='true'{/if}
+                                                {if isset($item.iskey) && $item.iskey=='1'}iskey='1'{/if}
+                                                {if isset($item.idzewnetrznespan) && $item.idzewnetrznespan!=''}zewnetrznyspan='{$item.idzewnetrznespan}'{/if}
+                                                {if isset($item.wymaganylevel) && $item.wymaganylevel!=''}wymaganylevel='{$item.wymaganylevel}' wymaganyzrobiony='0' {/if}
+                                                {if isset($item.value) && $item.value!=''}
+                                                    {if isset($item.datatypeshow) && $item.datatypeshow=='datetime'}
+                                                        value='{$item.value|date_format:"%Y-%m-%d %H:%M"|escape:'htmlall'}'
+                                                    {else if isset($item.datatypeshow) && $item.datatypeshow=='date'}
+                                                        value='{$item.value|date_format:"%Y-%m-%d"|escape:'htmlall'}'
+                                                    {else if isset($item.datatypeshow) && $item.datatypeshow=='decimal'}
+                                                        value='{$item.value|number_format:2:",":" "|replace:",00":""|escape:'htmlall'}'
+                                                    {else}
+                                                        value='{$item.value|escape:'htmlall'}'
+                                                    {/if}
+                                                {else if isset($item.sqldanebaza) && isset($dane[0][$item.sqldanebaza]) && (string)$dane[0][$item.sqldanebaza]!=''}
+                                                    {if isset($item.datatypeshow) && $item.datatypeshow=='datetime'}
+                                                        value='{$dane[0][$item.sqldanebaza]|date_format:"%Y-%m-%d %H:%M"|escape:'htmlall'}'
+                                                    {else if isset($item.datatypeshow) && $item.datatypeshow=='date'}
+                                                        value='{$dane[0][$item.sqldanebaza]|date_format:"%Y-%m-%d"|escape:'htmlall'}'
+                                                    {else if isset($item.datatypeshow) && $item.datatypeshow=='decimal'}
+                                                        value='{$dane[0][$item.sqldanebaza]|number_format:2:",":" "|replace:",00":""|escape:'htmlall'}'
+                                                    {else}
+                                                        value='{$dane[0][$item.sqldanebaza]|escape:'htmlall'}'
+                                                    {/if}
+                                                {else if isset($item.baza) && isset($dane[0][$item.baza]) && (string)$dane[0][$item.baza]!=''}
+                                                    {if isset($item.datatypeshow) && $item.datatypeshow=='datetime'}
+                                                        value='{$dane[0][$item.baza]|date_format:"%Y-%m-%d %H:%M"|escape:'htmlall'}'
+                                                    {else if isset($item.datatypeshow) && $item.datatypeshow=='date'}
+                                                        value='{$dane[0][$item.baza]|date_format:"%Y-%m-%d"|escape:'htmlall'}'
+                                                    {else if isset($item.datatypeshow) && $item.datatypeshow=='decimal'}
+                                                        value='{$dane[0][$item.baza]|number_format:2:",":" "|replace:",00":""|escape:'htmlall'}'
+                                                    {else}
+                                                        value='{$dane[0][$item.baza]|escape:'htmlall'}'
+                                                    {/if}
+
+                                                {/if}
+                                        />
                                     {/if}
                                     {if $item.type=='combobox'}
                                         <select name='editobj' id='{$key}' baza='{$item.baza}'
@@ -242,6 +289,49 @@
                                         </script>
                                     {/if}
                                     {/if}
+                                    {if $item.type=='number'}
+                                        <input class="form-control form-control-md" type="number" min="0" max="20" step="1" onkeydown="return false" id='{$key}'
+                                               baza='{$item.baza}' name='editobj'
+                                               {if isset($item.focus) && $item.focus=='1'}autofocus="true"{/if}
+                                                {if isset($item.wymagane) && $item.wymagane=='1'}wymagane="{$item.wymagane}"{/if}
+                                                {if isset($item.readonly) && $item.readonly=='1'}disabled='true'{/if}
+                                                {if isset($item.iskey) && $item.iskey=='1'}iskey='1'{/if}
+                                                {if isset($item.idzewnetrznespan) && $item.idzewnetrznespan!=''}zewnetrznyspan='{$item.idzewnetrznespan}'{/if}
+                                                {if isset($item.wymaganylevel) && $item.wymaganylevel!=''}wymaganylevel='{$item.wymaganylevel}' wymaganyzrobiony='0' {/if}
+                                                {if isset($item.value) && $item.value!=''}
+                                                    {if isset($item.datatypeshow) && $item.datatypeshow=='datetime'}
+                                                        value='{$item.value|date_format:"%Y-%m-%d %H:%M"|escape:'htmlall'}'
+                                                    {else if isset($item.datatypeshow) && $item.datatypeshow=='date'}
+                                                        value='{$item.value|date_format:"%Y-%m-%d"|escape:'htmlall'}'
+                                                    {else if isset($item.datatypeshow) && $item.datatypeshow=='decimal'}
+                                                        value='{$item.value|number_format:2:",":" "|replace:",00":""|escape:'htmlall'}'
+                                                    {else}
+                                                        value='{$item.value|escape:'htmlall'}'
+                                                    {/if}
+                                                {else if isset($item.sqldanebaza) && isset($dane[0][$item.sqldanebaza]) && (string)$dane[0][$item.sqldanebaza]!=''}
+                                                    {if isset($item.datatypeshow) && $item.datatypeshow=='datetime'}
+                                                        value='{$dane[0][$item.sqldanebaza]|date_format:"%Y-%m-%d %H:%M"|escape:'htmlall'}'
+                                                    {else if isset($item.datatypeshow) && $item.datatypeshow=='date'}
+                                                        value='{$dane[0][$item.sqldanebaza]|date_format:"%Y-%m-%d"|escape:'htmlall'}'
+                                                    {else if isset($item.datatypeshow) && $item.datatypeshow=='decimal'}
+                                                        value='{$dane[0][$item.sqldanebaza]|number_format:2:",":" "|replace:",00":""|escape:'htmlall'}'
+                                                    {else}
+                                                        value='{$dane[0][$item.sqldanebaza]|escape:'htmlall'}'
+                                                    {/if}
+                                                {else if isset($item.baza) && isset($dane[0][$item.baza]) && (string)$dane[0][$item.baza]!=''}
+                                                    {if isset($item.datatypeshow) && $item.datatypeshow=='datetime'}
+                                                        value='{$dane[0][$item.baza]|date_format:"%Y-%m-%d %H:%M"|escape:'htmlall'}'
+                                                    {else if isset($item.datatypeshow) && $item.datatypeshow=='date'}
+                                                        value='{$dane[0][$item.baza]|date_format:"%Y-%m-%d"|escape:'htmlall'}'
+                                                    {else if isset($item.datatypeshow) && $item.datatypeshow=='decimal'}
+                                                        value='{$dane[0][$item.baza]|number_format:2:",":" "|replace:",00":""|escape:'htmlall'}'
+                                                    {else}
+                                                        value='{$dane[0][$item.baza]|escape:'htmlall'}'
+                                                    {/if}
+
+                                                {/if}
+                                        />
+                                    {/if}
                                     {if $item.type=='combobox'}
                                         <select class="custom-select form-control-md" name='editobj' id='{$key}'
                                                 baza='{$item.baza}'
@@ -310,6 +400,18 @@
                                             {/if}
                                     {/strip}</textarea>
                                     {/if}
+{*                                    {if $item.type=='consumables'}*}
+{*                                        {if isset($consumablesData)}*}
+{*                                            {$consumablesData|print_r}*}
+{*                                        {/if}*}
+
+{*                                        {if isset($item.arr)}*}
+{*                                            {${$item.arr}|print_r}*}
+{*                                        {/if}*}
+{*                                            {foreach from=${$item.arr} item=consumable}*}
+{*                                                <div>{$consumable.quantity} x {$consumable.name}</div>*}
+{*                                            {/foreach}*}
+{*                                    {/if}*}
                                     {if $item.type=='link' && $item.readonly=='0'}
                                         <span id='{$item.idzewnetrznespan}'
                                               style="display:none;">{if isset($dane[0][$item.baza]) && (string)$dane[0][$item.baza]!=''}{$dane[0][$item.baza]}{/if}</span>
@@ -327,6 +429,14 @@
                             </tr>
                         {/if}
                     {/foreach}
+
+{*                    <tr>*}
+{*                        <td colspan="2">*}
+{*                            <div ng-controller="NotificationCtrl as ctrl" ng-cloak>*}
+{*                                <button ng-click="ctrl.openManageConsumablesModal('{$agreementSerial}')">MATERIALY</button>*}
+{*                            </div>*}
+{*                        </td>*}
+{*                    </tr>*}
 
                     </tbody>
                 </table>
@@ -492,7 +602,6 @@
     </div>
 </div>
 
-
 <script type="text/javascript">
     const clientIdSelector = "#idclientspan";
     const clientIdHolder = $(clientIdSelector);
@@ -529,6 +638,12 @@
     $("#rowid_type").change(updateTonersVisibility);
 
     updateTonersVisibility();
-
 </script>
+
+{*<script type="text/javascript">*}
+{*    angular.module('notificationsAddEditApp', [])*}
+{*        .factory("rest", ['$http', '$q', rest])*}
+{*        .controller('NotificationCtrl', NotificationCtrl);*}
+{*    angular.bootstrap(document.getElementById('notificationsAddEdit'), ['notificationsAddEditApp', 'ui.bootstrap']);*}
+{*</script>*}
 

@@ -296,7 +296,7 @@ class notification extends Model
             'sql' => '`toner_black` as `toner_black`',
             'datatype' => 'd',
             'activity' => '1',
-            'type' => 'text',
+            'type' => 'number',
             'label' => 'Toner Black',
             'class' => 'textBoxForm liczba',
             'style' => 'width:120px;min-width:120px;max-width:120px;',
@@ -309,7 +309,7 @@ class notification extends Model
             'sql' => '`toner_cyan` as `toner_cyan`',
             'datatype' => 'd',
             'activity' => '1',
-            'type' => 'text',
+            'type' => 'number',
             'label' => 'Toner Cyan',
             'class' => 'textBoxForm liczba',
             'style' => 'width:120px;min-width:120px;max-width:120px;',
@@ -322,7 +322,7 @@ class notification extends Model
             'sql' => '`toner_magenta` as `toner_magenta`',
             'datatype' => 'd',
             'activity' => '1',
-            'type' => 'text',
+            'type' => 'number',
             'label' => 'Toner Magenta',
             'class' => 'textBoxForm liczba',
             'style' => 'width:120px;min-width:120px;max-width:120px;',
@@ -335,7 +335,7 @@ class notification extends Model
             'sql' => '`toner_yellow` as `toner_yellow`',
             'datatype' => 'd',
             'activity' => '1',
-            'type' => 'text',
+            'type' => 'number',
             'label' => 'Toner Yellow',
             'class' => 'textBoxForm liczba',
             'style' => 'width:120px;min-width:120px;max-width:120px;',
@@ -343,6 +343,14 @@ class notification extends Model
             'divek' => 'divNotiWykonanie',
             'value' => '',
         ),
+//        'consumables' => array(
+//            'activity' => '1',
+//            'label' => 'Materiały Eksploatacyjne',
+//            'type' => 'consumables',
+//            'style' => 'width:120px;min-width:120px;max-width:120px;',
+//            'arr' => 'daneConsumables',
+//            'divek' => 'divNotiWykonanie',
+//        ),
         'user_podjecia' => array(
             'baza' => 'user_podjecia',
             'sql' => '`user_podjecia` as `user_podjecia`',
@@ -740,9 +748,25 @@ a.SLA-(( unix_timestamp(now())
         return $this->query($query, null, false);
     }
 
-    function getClientById($clientId) {
+    function getClientById($clientId)
+    {
         $query = "select * from clients where rowid = '" . $clientId . "'";
         return $this->query($query, null, false);
     }
 
+    function getConsumables($notificationsRowId)
+    {
+        $query = "select * from `notifications_consumables` where rowid_notifications = " . $notificationsRowId;
+
+        return $this->query($query, null, false);
+    }
+
+    function getConsumablesByPrinterId($printerId) {
+        $query = "SELECT c.*, cm.model, p.serial
+                  FROM `consumables` c inner join `consumables_model` cm on c.rowid = cm.rowid_consumables
+                                       inner join `printers` p on cm.model = p.model 
+                  WHERE p.serial = '{$printerId}'";
+
+        return $this->query($query, null, false);
+    }
 }
