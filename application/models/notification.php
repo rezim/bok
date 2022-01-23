@@ -192,6 +192,7 @@ class notification extends Model
         'data_planowana' => array(
             'baza' => 'data_planowana',
             'sql' => '`data_planowana` as `data_planowana`',
+            'sql' => '`data_planowana` as `data_planowana`',
             'datatype' => 's',
             'activity' => '1',
             'type' => 'text',
