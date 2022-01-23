@@ -1,5 +1,5 @@
 <div class="table-responsive-sm">
-    <table class='table table-hover table-sm' id='tableClient'>
+    <table class='table table-hover table-sm' id='materialsTable'>
         <thead class="thead-dark">
         <tr>
             <th>
@@ -64,9 +64,9 @@
                 </td>
 
             </tr>
-            <tr id="agreementsRow_{$key}" style="display: none">
+            <tr id="agreementsRow_{$key}" class="agreementsRow bg-light" style="display: none">
                 <td colspan="8" class="p-5">
-                    <table class='table table-hover table-sm pt-3 pb-3 pl-5 pr-5'>
+                    <table class='table table-hover table-sm pt-1 pb-1 pl-5 pr-5'>
                         <thead class="thead-light">
                         <tr>
                             <th>
@@ -109,9 +109,9 @@
                             </tr>
                             <tr id="eventRow_{$key}_{$agreementKey}" style="display: none">
 
-                                <td colspan="8" class="p-5">
-                                    <table class='table table-hover table-sm pt-3 pb-3 pl-5 pr-5'>
-                                        <thead class="thead-light">
+                                <td colspan="8" class="p-3">
+                                    <table class='table inner-table table-hover table-sm pt-3 pb-3 pl-5 pr-5'>
+                                        <thead>
                                         <tr>
                                             <th>
                                                 #
@@ -141,7 +141,7 @@
                                         </thead>
                                         <tbody>
                                         {foreach from=$agreement.events item=event key=eventKey name=eventsLoop}
-                                            <tr class="{if $event.eventType === 2}text-danger{else}text-success{/if}">
+                                            <tr class="{if $event.eventType === 2}text-danger{else}text-success{/if}" onclick="editNotification('{$event.eventId}')" style="cursor: pointer">
                                                 <td>{$smarty.foreach.eventsLoop.index+1}</td>
                                                 <td>{$event.eventDate|escape:'htmlall'}</td>
                                                 <td>{$event.deviceId|escape:'htmlall'}</td>

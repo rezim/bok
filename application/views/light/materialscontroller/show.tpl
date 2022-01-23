@@ -28,6 +28,46 @@
 
                 <div class="border-top my-4 otus-separator"></div>
 
+                <div class="w-100"></div>
+
+                <div class="form-group">
+                    <label for="txtklient">klient</label>
+                </div>
+
+                <div class="form-group">
+                    <input type="text" id="txtklient" class="form-control"
+                           aria-describedby="clientHelp" ng-model="search.name">
+                    <small id="clientHelp" class="form-text text-muted"><i class="fas fa-info-circle"></i> Podaj nazwę
+                        klienta</small>
+                </div>
+
+                <div class="form-group">
+                    <label for="txtfilternrumowy">Nr umowy</label>
+                </div>
+                <div class="form-group">
+                    <input type="text" id='txtfilternrumowy' class="form-control"
+                           aria-describedby="agreementNbHelp">
+                    <small id="agreementNbHelp" class="form-text text-muted"><i class="fas fa-info-circle"></i> Podaj numer umowy.</small>
+                </div>
+
+                <div class="form-group mt-4">
+                    <input id="chkReturns" type="checkbox" aria-describedby="returnsHelp">
+                    <label for='returnsHelp'>
+                        tylko zwroty
+                    </label>
+                    <small id="returnsHelp" class="form-text text-muted"><i class="fa fa-info-circle"></i> pokaż tylko zwroty materiału</small>
+                </div>
+
+                <div class="form-group mt-4">
+                    <input id="chkSend" type="checkbox" aria-describedby="sendHelp">
+                    <label for='sendHelp'>
+                        tylko wysłane
+                    </label>
+                    <small id="sendHelp" class="form-text text-muted"><i class="fa fa-info-circle"></i> pokaż tylko wysłane</small>
+                </div>
+
+                <div class="border-top my-4 otus-separator"></div>
+
                 <div class="form-group">
                     <button class="btn btn-info btn-block" type="submit"
                             onClick="showMaterials();return false;"

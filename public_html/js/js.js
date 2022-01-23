@@ -1982,6 +1982,10 @@ function showMaterials() {
         data: {
             date_from: getElementById('txtfilterdataod').value,
             date_to: getElementById('txtfilterdatado').value,
+            client_name: getElementById('txtklient').value,
+            agreement_id: getElementById('txtfilternrumowy').value,
+            returns_only: getElementById('chkReturns').checked,
+            send_only: getElementById('chkSend').checked,
         },
         success: function (data) {
             objCenter.innerHTML = data;
@@ -1991,8 +1995,8 @@ function showMaterials() {
             objCenter.innerHTML = 'Problem z pobraniem materiałów';
         }
     }).done(function () {
-        // $("#tableClient").tablesorter();
-        // uprawnienia();
+        // $("#materialsTable").tablesorter();
+        uprawnienia();
     });
     return false;
 }
