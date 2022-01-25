@@ -101,6 +101,9 @@
         showOtherMonths: true,
         selectOtherMonths: true
     });
+    const firstJanuaryOfCurrentYear = new Date(new Date().getFullYear(), 0, 1);
+    $('#txtfilterdataod').val($.datepicker.formatDate('yy-mm-dd', firstJanuaryOfCurrentYear));
+    $('#txtfilterdatado').val($.datepicker.formatDate('yy-mm-dd', new Date()));
 
     showMaterials();
 </script>
