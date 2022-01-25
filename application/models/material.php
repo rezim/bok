@@ -7,7 +7,7 @@ class material extends Model
 
     function getMaterialsReport()
     {
-        $filters = "and n.date_zakonczenia <= '{$this->date_to}' and n.date_zakonczenia >= '{$this->date_from} 23:59:59'";
+        $filters = "and n.date_zakonczenia <= '{$this->date_to} 23:59:59' and n.date_zakonczenia >= '{$this->date_from}'";
 
         if ($this->client_name != '') {
             $filters .= " and c.nazwakrotka like '%{$this->client_name}%'";
