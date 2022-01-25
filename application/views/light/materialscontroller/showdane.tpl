@@ -141,15 +141,15 @@
                                         </thead>
                                         <tbody>
                                         {foreach from=$agreement.events item=event key=eventKey name=eventsLoop}
-                                            <tr class="{if $event.eventType === 2}text-danger{else}text-success{/if}" onclick="editNotification('{$event.eventId}')" style="cursor: pointer">
-                                                <td>{$smarty.foreach.eventsLoop.index+1}</td>
-                                                <td>{$event.eventDate|escape:'htmlall'}</td>
-                                                <td>{$event.deviceId|escape:'htmlall'}</td>
+                                            <tr class="{if $event.eventType === 2}text-danger{else}text-success{/if}">
+                                                <td onclick="editNotification('{$event.eventId}')" style="cursor: pointer">{$smarty.foreach.eventsLoop.index+1}</td>
+                                                <td onclick="editNotification('{$event.eventId}')" style="cursor: pointer">{$event.eventDate|escape:'htmlall'}</td>
+                                                <td onclick="showNewPrinterAdd('{$event.deviceId}')" style="cursor: pointer">{$event.deviceId|escape:'htmlall'}</td>
                                                 <td>{$event.blackCount|escape:'htmlall'}</td>
                                                 <td>{$event.magentaCount|escape:'htmlall'}</td>
                                                 <td>{$event.cyanCount|escape:'htmlall'}</td>
                                                 <td>{$event.yellowCount|escape:'htmlall'}</td>
-                                                <td>{if $event.eventType === 2}wysyłka{else}zwrot{/if}</td>
+                                                <td onclick="editNotification('{$event.eventId}')" style="cursor: pointer">{if $event.eventType === 2}wysyłka{else}zwrot{/if}</td>
                                             </tr>
                                         {/foreach}
                                         </tbody>
