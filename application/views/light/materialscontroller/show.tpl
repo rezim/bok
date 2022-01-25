@@ -101,8 +101,10 @@
         showOtherMonths: true,
         selectOtherMonths: true
     });
-    const firstJanuaryOfCurrentYear = new Date(new Date().getFullYear(), 0, 1);
-    $('#txtfilterdataod').val($.datepicker.formatDate('yy-mm-dd', firstJanuaryOfCurrentYear));
+    const threeMonthPriorToToday = new Date();
+    threeMonthPriorToToday.setMonth(threeMonthPriorToToday.getMonth()-3);
+    threeMonthPriorToToday.setDate(1);
+    $('#txtfilterdataod').val($.datepicker.formatDate('yy-mm-dd', threeMonthPriorToToday));
     $('#txtfilterdatado').val($.datepicker.formatDate('yy-mm-dd', new Date()));
 
     showMaterials();

@@ -4,7 +4,7 @@ class materialsController extends Controller
 {
     protected $countableColumns = array('blackCount', 'magentaCount', 'cyanCount', 'yellowCount');
     protected $eventTypeColumnName = 'eventType';
-    protected $materialReturnEventId = 7;
+    protected $materialSendEventId = 2;
 
     function showdane()
     {
@@ -41,7 +41,7 @@ class materialsController extends Controller
     function get_countable_from_events($arrEvents) {
         return array_map(function($event) {
             $intersection = array_intersect_key($event, array_flip($this->countableColumns));
-            if (isset($event[$this->eventTypeColumnName]) && $event[$this->eventTypeColumnName] === $this->materialReturnEventId) {
+            if (isset($event[$this->eventTypeColumnName]) && $event[$this->eventTypeColumnName] === $this->materialSendEventId) {
                 foreach ($this->countableColumns as $countableColumn) {
                     $intersection[$countableColumn] *= -1;
                 }
