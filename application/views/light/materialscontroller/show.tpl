@@ -66,6 +66,14 @@
                     <small id="sendHelp" class="form-text text-muted"><i class="fa fa-info-circle"></i> pokaż tylko wysłane</small>
                 </div>
 
+                <div class="form-group mt-4">
+                    <input id="chkIncludeZeroValues" type="checkbox" aria-describedby="includeZeroValuesHelp">
+                    <label for='includeZeroValuesHelp'>
+                        pokaż zerowy bilans
+                    </label>
+                    <small id="sendHelp" class="form-text text-muted"><i class="fa fa-info-circle"></i> pokaż klientów z zerowym bilansem</small>
+                </div>
+
                 <div class="border-top my-4 otus-separator"></div>
 
                 <div class="form-group">

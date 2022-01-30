@@ -1986,6 +1986,7 @@ function showMaterials() {
             agreement_id: getElementById('txtfilternrumowy').value,
             returns_only: getElementById('chkReturns').checked,
             send_only: getElementById('chkSend').checked,
+            include_zero_values: getElementById('chkIncludeZeroValues').checked,
         },
         success: function (data) {
             objCenter.innerHTML = data;

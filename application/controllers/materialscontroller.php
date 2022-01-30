@@ -27,19 +27,26 @@ class materialsController extends Controller
 
             $client = array('clientName' => $clientKey, 'agreements' => $arrAgreementReport, 'agreementCount' => count($arrAgreementReport));
             $sumOfCountable = $this->sum_countable($this->get_countable_from_events($arrAgreementReport));
+            $zeroValuesOnly = $_POST['include_zero_values'] === 'true' ? false : true;
             foreach ($sumOfCountable as $key => $value) {
+                if ($zeroValuesOnly && $value !== 0) {
+                    $zeroValuesOnly = false;
+                }
                 $client[$key] = $value;
             }
 
-            array_push($arrClientReport, $client);
+            if (!$zeroValuesOnly) {
+                array_push($arrClientReport, $client);
+            }
         }
 
         $smarty->assign('dataMaterials', $arrClientReport);
         unset($dataMaterials);
     }
 
-    function get_countable_from_events($arrEvents) {
-        return array_map(function($event) {
+    function get_countable_from_events($arrEvents)
+    {
+        return array_map(function ($event) {
             $intersection = array_intersect_key($event, array_flip($this->countableColumns));
             if (isset($event[$this->eventTypeColumnName]) && $event[$this->eventTypeColumnName] === $this->materialSendEventId) {
                 foreach ($this->countableColumns as $countableColumn) {

@@ -8,9 +8,9 @@
             <th>
                 nazwa krótka
             </th>
-            <th>
-                ilość umów
-            </th>
+{*            <th>*}
+{*                ilość umów*}
+{*            </th>*}
             <th>
                 bilans czarny
             </th>
@@ -35,7 +35,7 @@
                 <td scope="row">
                     {$smarty.foreach.loopek.index+1}</td>
                 <td>{$item.clientName|escape:'htmlall'}</td>
-                <td>{$item.agreementCount|escape:'htmlall'}</td>
+{*                <td>{$item.agreementCount|escape:'htmlall'}</td>*}
                 <td>{$item.blackCount|escape:'htmlall'}</td>
                 <td>{$item.cyanCount|escape:'htmlall'}</td>
                 <td>{$item.magentaCount|escape:'htmlall'}</td>
