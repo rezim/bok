@@ -1242,6 +1242,9 @@ function zapiszNoti(czydelete, savelink) {
 
     });
 
+    const self = $("#saveNotification");
+    self.off('click');
+
     $.ajax({
         type: 'POST',
         url: savelink,
@@ -1252,12 +1255,12 @@ function zapiszNoti(czydelete, savelink) {
                 czydelete: czydelete,
             },
         success: function (dane) {
-
+            $("#saveNotification").hide();
             if (czydelete === '1') {
                 checkReplay(objError, objLoad, null, objClick, dane, objOk, -1, 1000, null, 1);
             } else {
 
-                checkReplay(objError, objLoad, null, objClick, dane, objOk, 0, -1, null, 1);
+                checkReplay(objError, objLoad, null, objClick, dane, objOk, 1, 1000, null, 1);
                 try {
                     dane = $.parseJSON(dane);
                     // przypisaneni rowid do tetboca
@@ -1282,8 +1285,6 @@ function zapiszNoti(czydelete, savelink) {
             return false;
         }
     });
-
-
 }
 
 function showNotPaidInvoices(clientId, uiContainerSelector) {
