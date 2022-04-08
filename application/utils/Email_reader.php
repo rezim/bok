@@ -1017,7 +1017,7 @@ function getDataDeviceKyocera($message, $dataWiadomosci, $ip) {
             $propertyName = trim($property[0]);
             $propertyValue = trim($property[1]);
 
-            if (strpos($propertyName, 'Counters') !== false) {
+            if (strpos($propertyName, 'Counters') !== false || strpos($propertyName, 'Usage by Color Mode') !== false) {
                 $data[$propertyName] = array();
                 $counterArray = &$data[$propertyName];
                 unset($counterPropertyArray);
@@ -1061,9 +1061,16 @@ function getDataDeviceKyocera($message, $dataWiadomosci, $ip) {
     $dataDevice['system']['dd:Version']['dd:Date'] = "";
     $dataDevice['system']['ip'] = "";
 
-    $dataDevice['system']['wydruk'] = $data['Counters by Function']['Printed Pages']['Total'];
-    $dataDevice['system']['wydrukkolor'] = 0;
-    $dataDevice['system']['wydruktotal'] = $data['Counters by Function']['Printed Pages']['Total'];
+    if (isset($data['Usage by Color Mode (Pages)'])) {
+        $usageByColorMode = $data['Usage by Color Mode (Pages)'];
+        $dataDevice['system']['wydruk'] = $usageByColorMode['Black & White']['Copier'] + $usageByColorMode['Black & White']['Printer'];
+        $dataDevice['system']['wydrukkolor'] = $usageByColorMode['Full Color']['Copier'] + $usageByColorMode['Full Color']['Printer'];
+        $dataDevice['system']['wydruktotal'] = $dataDevice['system']['wydruk']+$dataDevice['system']['wydrukkolor'];
+    } else {
+        $dataDevice['system']['wydruk'] = $data['Counters by Function']['Printed Pages']['Total'];
+        $dataDevice['system']['wydrukkolor'] = 0;
+        $dataDevice['system']['wydruktotal'] = $data['Counters by Function']['Printed Pages']['Total'];
+    }
 
     $dataDevice['system']['black_toner'] = str_replace('%', '', $data['black']);
     $dataDevice['system']['cyan_toner'] = "";
