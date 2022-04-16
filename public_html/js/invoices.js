@@ -9,6 +9,8 @@ const yesterday = function(strDate) {
     return `${year}-${month}-${day}`;
 };
 
+const MY_BENEFIT_NIP = "8971736512";
+
 InvoiceManager = function (api_token, endpoint, company_name, invoice_number_length) {
     var invoicesUrl = [endpoint, 'invoices.json'].join('/');
     var invoiceViewUrl = [endpoint, 'invoice'].join('/');
@@ -157,6 +159,8 @@ InvoiceManager = function (api_token, endpoint, company_name, invoice_number_len
 
             if (invoice['fakturadlakazdejumowy']) {
                 groupedAgreementIds = Object.values(agreementIds).map(agreementId => [agreementId]);
+            } else if (invoice['nip'] === MY_BENEFIT_NIP) {
+                groupedAgreementIds = this.groupByDeviceType(Object.values(invoice['umowy']), agreementIds);
             } else {
                 groupedAgreementIds = this.groupByRecipient(Object.values(invoice['umowy']), agreementIds);
             }
@@ -203,6 +207,8 @@ InvoiceManager = function (api_token, endpoint, company_name, invoice_number_len
 
                     if (report['fakturadlakazdejumowy']) {
                         groupedAgreementIds = Object.values(agreementIds).map(agreementId => [agreementId]);
+                    } else if (report['nip'] === MY_BENEFIT_NIP) {
+                        groupedAgreementIds = this.groupByDeviceType(Object.values(report['umowy']), agreementIds);
                     } else {
                         groupedAgreementIds = this.groupByRecipient(Object.values(report['umowy']), agreementIds);
                     }
@@ -243,6 +249,26 @@ InvoiceManager = function (api_token, endpoint, company_name, invoice_number_len
             }, Object.create(null));
 
         return Object.values(groupedAgreements);
+    };
+
+    this.groupByDeviceType = function (agreements, agreementIds) {
+
+        const allAgreements = agreements.filter(agreement => agreementIds.indexOf(agreement.nrumowy) !== -1);
+
+        const printers = allAgreements.filter(agreement => agreement['typ_umowy'] === "wynajem drukarki");
+
+        const nonPrinters = allAgreements.filter(agreement => agreement['typ_umowy'] !== "wynajem drukarki");
+
+        const result = [];
+
+        if (printers.length) {
+            result.push(printers.map(printer => printer.nrumowy));
+        }
+        if (nonPrinters.length) {
+            result.push(nonPrinters.map(nonPrinter => nonPrinter.nrumowy));
+        }
+
+        return result;
     };
 
     /**
