@@ -89,6 +89,14 @@ class clientinvoicesController extends InvoicesController
         }
     }
 
+    function generateinterestnote() {
+        if ($_POST['invoice_id'] && $_POST['nip']) {
+            echo json_encode($this->issueInterestNote($_POST['invoice_id'], $_POST['nip']));
+        } else {
+            echo "błędne parametry wejściowe";
+        }
+    }
+
     function addpaymentclientmessage() {
         if ($_POST['client_nip'] && $_POST['message_date'] && $_POST['message']) {
             echo $this->clientinvoice->addPaymentMessage($_POST, 'payments_messages');

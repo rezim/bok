@@ -441,6 +441,10 @@ PaymentsCtrl = function ($scope, rest, $q, $filter, $uibModal, $interpolate, app
         });
     };
 
+    this.generateInterestNote = function(invoice_id, nip) {
+        rest.post('generateinterestnote', {invoice_id, nip});
+    };
+
     this.addPayment = function (clientId, invoiceTaxNo, invoice) {
 
         let modalInstance = $uibModal.open({
@@ -489,7 +493,7 @@ PaymentsCtrl = function ($scope, rest, $q, $filter, $uibModal, $interpolate, app
                 paid_date: data.form.paymentdate
             }).then(function (payment) {
                 self.loadData($scope.date_from, $scope.date_to);
-            });
+        });
 
         }, function () {
             // nop

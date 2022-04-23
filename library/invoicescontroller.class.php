@@ -151,7 +151,6 @@ class InvoicesController extends Controller
 
     function addPayment($price, $invoiceId, $clientId, $invoiceTaxNo, $name, $paidDate, $description)
     {
-
         $ch = curl_init();
         $url = FAKTUROWNIA_ENDPOINT . '/banking/payments.json';
 
@@ -362,4 +361,51 @@ class InvoicesController extends Controller
     {
         return str_replace(',', '.', $value);
     }
+
+    function getInterestNoteUrl($invoiceNb) {
+        $today = date("Y-m-d");
+        $payment_days = 7;
+        $due_date = date('Y-m-d', strtotime($today. " + {$payment_days} days"));
+        $host = preg_replace("/^http:/i", "https:", FAKTUROWNIA_ENDPOINT);
+        $token = FAKTUROWNIA_APITOKEN;
+        return "{$host}/invoices/{$invoiceNb}.pdf?api_token={$token}&print_option=interest_note&interest_rate=&interest_type=legal&forced_payment_to={$due_date}";
+    }
+
+    function issueInterestNote($invoiceNb, $nip) {
+        // Initialize a file URL to the variable
+        $url = $this->getInterestNoteUrl($invoiceNb);
+
+        // Initialize directory name where
+        // file will be save
+        $dir = "./noty/{$nip}/";
+
+        if( !is_dir( $dir ) ) {
+            mkdir($dir, 0777, true);
+        }
+
+        // Use basename() function to return
+        // the base name of file
+        $file_name = "{$invoiceNb}.pdf";
+
+        $file_path = "{$dir}{$file_name}";
+
+        $result = array('status' => 0, 'path' => $file_path, 'file_name' => $file_name);
+
+        if (file_exists($file_path)) {
+            return array_merge($result, array('status' => -1, 'message' => 'file already exists'));
+        }
+
+        // Use file_get_contents() function to get the file
+        // from url and use file_put_contents() function to
+        // save the file by using base name
+        if (file_put_contents($file_path, file_get_contents($url)))
+        {
+            return array_merge($result, array('message' => 'file created successful'));
+        }
+        else
+        {
+            return array_merge($result, array('status' => -1, 'message' => 'file download failed'));
+        }
+    }
+
 }
