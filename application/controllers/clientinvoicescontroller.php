@@ -1,22 +1,25 @@
 <?php
+
 class clientinvoicesController extends InvoicesController
-{  
+{
     function show()
     {
         global $smarty;
         global $months;
-        $smarty->assign('months',$months );
-        $smarty->assign('rok',date("Y"));
+        $smarty->assign('months', $months);
+        $smarty->assign('rok', date("Y"));
 
         $smarty->assign('fakturownia_conf_file_path', ROOT . DS . 'config' . DS . 'fakturownia.conf');
     }
 
-    function getagreements() {
+    function getagreements()
+    {
         echo $this->clientinvoice->getAgreements();
     }
 
 
-    function getinvoices() {
+    function getinvoices()
+    {
         if ($_POST['period'] && $_POST['date_from'] && $_POST['date_to']) {
             echo json_encode(
                 $this->getInvoicesByDateRange($_POST['period'], $_POST['date_from'], $_POST['date_to'])
@@ -26,7 +29,8 @@ class clientinvoicesController extends InvoicesController
         }
     }
 
-    function getnotpaidinvoices() {
+    function getnotpaidinvoices()
+    {
         if ($_POST['period'] && $_POST['date_from'] && $_POST['date_to']) {
 
             $trackedDeptors = $this->clientinvoice->getTrackedDeptors();
@@ -35,7 +39,7 @@ class clientinvoicesController extends InvoicesController
 
             foreach ($invoices as $key => $element) {
                 // remove invoices for not tracked clients
-                if ( array_search($element["buyer_tax_no"], array_column($trackedDeptors, 'nip')) === false ) {
+                if (array_search($element["buyer_tax_no"], array_column($trackedDeptors, 'nip')) === false) {
                     unset($invoices[$key]);
                 }
             }
@@ -46,7 +50,8 @@ class clientinvoicesController extends InvoicesController
         }
     }
 
-    function getinvoicesbyclientid() {
+    function getinvoicesbyclientid()
+    {
         if ($_POST['client_id'] && $_POST['is_paid']) {
             echo json_encode(
                 $this->geInvoicesByClientId($_POST['client_id'], ($_POST['is_paid'] === 'true') ? true : false)
@@ -56,14 +61,17 @@ class clientinvoicesController extends InvoicesController
         }
     }
 
-    function getpayments() {
+    function getpayments()
+    {
         if ($_POST['client_id'] && $_POST['date_from']) {
             echo json_encode($this->getClientPayments($_POST['client_id'], $_POST['date_from']));
         } else {
             echo "błędne parametry wejściowe";
         }
     }
-    function getoverpaidpayments() {
+
+    function getoverpaidpayments()
+    {
         if (isset($_POST['client_id'])) {
             echo json_encode($this->getAllOverpaidPayments($_POST['client_id']));
         } else {
@@ -71,7 +79,8 @@ class clientinvoicesController extends InvoicesController
         }
     }
 
-    function addinvoicepayment() {
+    function addinvoicepayment()
+    {
         if ($_POST['price'] && $_POST['invoice_id'] && $_POST['invoice_tax_no'] && $_POST['client_id'] && $_POST['paid_name'] && $_POST['paid_date']) {
             echo json_encode(
                 $this->addPayment(
@@ -89,15 +98,17 @@ class clientinvoicesController extends InvoicesController
         }
     }
 
-    function generateinterestnote() {
-        if ($_POST['invoice_id'] && $_POST['nip']) {
-            echo json_encode($this->issueInterestNote($_POST['invoice_id'], $_POST['nip']));
+    function generateinterestnote()
+    {
+        if ($_POST['id'] && $_POST['number'] && $_POST['buyer_tax_no'] && $_POST['sell_date'] && $_POST['payment_to'] && $_POST['is_late_days']) {
+            echo json_encode($this->issueInterestNote($_POST['id'], $_POST['number'], $_POST['buyer_tax_no'], $_POST['buyer_email'], $_POST['sell_date'], $_POST['payment_to'], $_POST['paid_date'], $_POST['is_late_days']));
         } else {
             echo "błędne parametry wejściowe";
         }
     }
 
-    function addpaymentclientmessage() {
+    function addpaymentclientmessage()
+    {
         if ($_POST['client_nip'] && $_POST['message_date'] && $_POST['message']) {
             echo $this->clientinvoice->addPaymentMessage($_POST, 'payments_messages');
         } else {
@@ -105,7 +116,8 @@ class clientinvoicesController extends InvoicesController
         }
     }
 
-    function removeclientmessage() {
+    function removeclientmessage()
+    {
         if ($_POST['rowid']) {
             echo $this->clientinvoice->removePaymentMessage($_POST['rowid']);
         } else {
@@ -113,7 +125,8 @@ class clientinvoicesController extends InvoicesController
         }
     }
 
-    function getpaymentclientmessages() {
+    function getpaymentclientmessages()
+    {
         if ($_POST['client_nip']) {
             echo $this->clientinvoice->getPaymentMessages($_POST['client_nip']);
         } else {
@@ -121,7 +134,8 @@ class clientinvoicesController extends InvoicesController
         }
     }
 
-    function splitclientpayments() {
+    function splitclientpayments()
+    {
         if (isset($_POST['client_id'])) {
             echo $this->splitPayments($_POST['client_id']);
         } else {
@@ -129,7 +143,8 @@ class clientinvoicesController extends InvoicesController
         }
     }
 
-    function deleteinvoicepayment() {
+    function deleteinvoicepayment()
+    {
         if ($_POST['payment_id']) {
             echo json_encode($this->deletePaymentById($_POST['payment_id']));
         } else {
@@ -137,7 +152,8 @@ class clientinvoicesController extends InvoicesController
         }
     }
 
-    function updateinvoicepayment() {
+    function updateinvoicepayment()
+    {
         if ($_POST['payment_id'] && $_POST['price']) {
             echo json_encode($this->updatePaymentById($_POST['payment_id'], $_POST['price']));
         } else {

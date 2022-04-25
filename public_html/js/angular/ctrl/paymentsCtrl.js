@@ -441,8 +441,9 @@ PaymentsCtrl = function ($scope, rest, $q, $filter, $uibModal, $interpolate, app
         });
     };
 
-    this.generateInterestNote = function(invoice_id, nip) {
-        rest.post('generateinterestnote', {invoice_id, nip});
+    this.generateInterestNote = function(invoice) {
+        const {id, number, buyer_tax_no, buyer_email, sell_date, payment_to, paid_date, is_late_days} = invoice;
+        rest.post('generateinterestnote', {id, number, buyer_tax_no, buyer_email, sell_date, payment_to, paid_date, is_late_days});
     };
 
     this.addPayment = function (clientId, invoiceTaxNo, invoice) {

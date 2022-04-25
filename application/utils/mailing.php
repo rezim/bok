@@ -1,8 +1,9 @@
 <?php
-// if (file_exists("//bok/library/phpmailer/PHPMailerAutoload.php"))
-//      require_once "//bok/library/phpmailer/PHPMailerAutoload.php";
-//  else
-require_once "/volume1/web/bok/library/phpmailer/PHPMailerAutoload.php";
+if (file_exists("../library/phpmailer/PHPMailerAutoload.php")) {
+    require_once "../library/phpmailer/PHPMailerAutoload.php";
+} else {
+    require_once "/volume1/web/bok/library/phpmailer/PHPMailerAutoload.php";
+}
 
 class mailing
 {
@@ -441,6 +442,62 @@ class mailing
         $mailek->CharSet = 'UTF-8';
         $mailek->WordWrap = 50;                                 // Set word wrap to 50 characters
         $mailek->addReplyTo(FROM_CASE, NAME_CASE);
+        $mailek->isHTML(true);
+        $mailek->addAddress($mailto);     // Add a recipient
+
+
+        $mailek->Subject = $temat;
+
+        if (isset($zalaczniki) && !empty($zalaczniki)) {
+
+            foreach ($zalaczniki as $key => $item) {
+                $mailek->AddAttachment($item['path'], $item['filename']);
+            }
+
+        }
+
+
+        $mailek->Body = $tresc;
+
+        $mailek->AltBody = $tresc .
+            "
+                                 
+                                Pozdrawiamy,
+                                Otus Sp. z o.o.
+                                +48 71 321 19 06
+                                www.otus.pl
+                            ";
+
+        $result = $mailek->send();
+        if (!$result) {
+            echo 'Błąd wysłania wiadomości.';
+            echo 'Mailer Error: ' . $mailek->ErrorInfo;
+        } else {
+
+        }
+
+        return $result;
+    }
+
+    function sendInterestNoteEmail($mailto, $tresc, $temat, $zalaczniki)
+    {
+        if (empty($mailto) || $mailto == '')
+            return;
+        $mailek = new PHPMailer;
+
+        $mailek->isSMTP(); // Set mailer to use SMTP
+        $mailek->Host = SERWER_OTUS; // Specify main and backup SMTP servers
+        $mailek->SMTPAuth = true; // Enable SMTP authentication
+        $mailek->Username = LOGIN_INVOICES; // LOGIN_CASE;                 // SMTP username
+        $mailek->Password = HASLO_INVOICES; // HASLO_CASE;                           // SMTP password
+        $mailek->SMTPSecure = 'tls';                            // Enable TLS encryption, `ssl` also accepted
+        $mailek->Port = 587;                                    // TCP port to connect to
+
+        $mailek->From = LOGIN_INVOICES; // FROM_CASE;
+        $mailek->FromName = NAME_INVOICES;
+        $mailek->CharSet = 'UTF-8';
+        $mailek->WordWrap = 50;                                 // Set word wrap to 50 characters
+        $mailek->addReplyTo(LOGIN_INVOICES, NAME_INVOICES);
         $mailek->isHTML(true);
         $mailek->addAddress($mailto);     // Add a recipient
 
