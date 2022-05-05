@@ -9,7 +9,7 @@ const yesterday = function(strDate) {
     return `${year}-${month}-${day}`;
 };
 
-const MY_BENEFIT_NIP = "8971736512";
+const MY_BENEFIT_NIP = "8361676510";
 
 InvoiceManager = function (api_token, endpoint, company_name, invoice_number_length) {
     var invoicesUrl = [endpoint, 'invoices.json'].join('/');
