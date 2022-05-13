@@ -148,6 +148,7 @@
 
         {include file="$templates/invoice/addPayment.tpl"}
         {include file="$templates/invoice/paymentList.tpl"}
+        {include file="$templates/invoice/interestNoteList.tpl"}
         {include file="$templates/invoice/paymentsClientMessages.tpl"}
 
         <main id='divRightCenter' class="col-12 col-xl">
@@ -231,6 +232,9 @@
                                     <a href="#" class="dropdown-item"
                                        ng-click="ctrl.paymentsList(clientInvoice, date_from, date_to); $event.stopPropagation();"><i
                                                 class="fas fa-coins"></i>&nbsp;&nbsp;płatności klienta</a>
+                                    <a href="#" class="dropdown-item"
+                                       ng-click="ctrl.interestNoteList(clientInvoice); $event.stopPropagation();"><i
+                                                class="fas fa-file-invoice"></i>&nbsp;&nbsp;noty odsetkowe</a>
                                 </div>
                             </div>
                         </td>
@@ -280,6 +284,9 @@
                                     <a href="#" class="dropdown-item"
                                        ng-click="ctrl.paymentsList(clientInvoice, date_from, date_to); $event.stopPropagation();"><i
                                                 class="fas fa-coins"></i>&nbsp;&nbsp;płatności klienta</a>
+                                    <a href="#" class="dropdown-item"
+                                       ng-click="ctrl.interestNoteList(clientInvoice); $event.stopPropagation();"><i
+                                                class="fas fa-file-invoice"></i>&nbsp;&nbsp;noty odsetkowe</a>
                                 </div>
                             </div>
                         </td>

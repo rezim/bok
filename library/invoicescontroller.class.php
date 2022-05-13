@@ -362,6 +362,32 @@ class InvoicesController extends Controller
         return str_replace(',', '.', $value);
     }
 
+    function markInterestNoteAsPaid($buyerTaxNo, $fileName, $invoiceNb) {
+        $interestNoteFolderName = INTEREST_NOTE_FOLDER_NAME;
+        $dir = "./{$interestNoteFolderName}/{$buyerTaxNo}/";
+        $filePath = "{$dir}{$fileName}";
+        if (file_exists($filePath)) {
+            $interestNotePaidFolderName = INTEREST_NOTE_PAID_FOLDER_NAME;
+            $paidDir = "./{$interestNoteFolderName}/{$buyerTaxNo}/{$interestNotePaidFolderName}/";
+            if (!is_dir($paidDir)) {
+                mkdir($paidDir, 0777, true);
+            }
+            $interestNotePaidPrefix = INTEREST_NOTE_PAID_FOLDER_NAME . '-';
+            $renamedFilePath = "{$paidDir}{$interestNotePaidPrefix}{$fileName}";
+            rename($filePath, $renamedFilePath);
+
+            $mailing = new mailing();
+            $mailing->sendInterestNoteEmail(INTEREST_NOTE_SEND_TO_ACCOUNTING_OFFICE,
+                "Przesyłam Note Odsetkowa do FV numer: {$invoiceNb}",
+                "Nota odsetkowa.",
+                array(array("path" => $renamedFilePath, "filename" => $fileName))
+            );
+
+        }
+
+        return $this->resolveInterestNotes($buyerTaxNo);
+    }
+
     function getInterestNoteUrl($invoiceNb)
     {
         $today = date("Y-m-d");
@@ -370,6 +396,27 @@ class InvoicesController extends Controller
         $host = preg_replace("/^http:/i", "https:", FAKTUROWNIA_ENDPOINT);
         $token = FAKTUROWNIA_APITOKEN;
         return "{$host}/invoices/{$invoiceNb}.pdf?api_token={$token}&print_option=interest_note&interest_rate=&interest_type=legal&forced_payment_to={$due_date}";
+    }
+
+
+    function resolveInterestNotes($buyerTaxNo)
+    {
+        $interestNoteFolderName = INTEREST_NOTE_FOLDER_NAME;
+        $dir = "./{$interestNoteFolderName}/{$buyerTaxNo}/";
+
+        $noteNames = glob("$dir/*.pdf");
+
+        $notesWithDate = array_map(function ($filePath) {
+            $fileName = basename($filePath);
+            $timestamp = filemtime($filePath);
+            return array("name" => $fileName, "path" => $filePath, "date" => date("Y-m-d H:i:s", $timestamp), "timestamp" => $timestamp);
+        }, $noteNames);
+
+        usort($notesWithDate, function ($a, $b) {
+            return $b["timestamp"] - $a["timestamp"];
+        });
+
+        return $notesWithDate;
     }
 
     function issueInterestNote($id, $number, $buyerTaxNo, $buyerEmail, $sellDate, $paymentTo, $paidDate, $isLateDays)
@@ -382,7 +429,8 @@ class InvoicesController extends Controller
             mkdir($dir, 0777, true);
         }
 
-        $fileName = "{$id}.pdf";
+        $normalizedInvoiceNumber = str_replace('/', '-', $number);
+        $fileName = "{$normalizedInvoiceNumber}.pdf";
         $filePath = "{$dir}{$fileName}";
 
         $result = array('status' => 0, 'path' => $filePath, 'file_name' => $fileName);
@@ -402,6 +450,7 @@ class InvoicesController extends Controller
                 $mail['topic'],
                 $mail['attachments']
             );
+
             return array_merge($result, array('status' => -1, 'message' => 'file already exists'));
         }
 

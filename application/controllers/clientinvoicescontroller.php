@@ -98,6 +98,22 @@ class clientinvoicesController extends InvoicesController
         }
     }
 
+    function interestnotehasbeenpaid() {
+        if ($_POST['nip'] && $_POST['name'] &&  $_POST['number']) {
+            echo json_encode($this->markInterestNoteAsPaid($_POST['nip'], $_POST['name'], $_POST['number']));
+        } else {
+            echo "błędne parametry wyjściowe";
+        }
+    }
+
+    function getinterestnotes() {
+        if ($_POST['nip']) {
+            echo json_encode($this->resolveInterestNotes($_POST['nip']));
+        } else {
+            echo "błędne parametry wyjściowe";
+        }
+    }
+
     function generateinterestnote()
     {
         if ($_POST['id'] && $_POST['number'] && $_POST['buyer_tax_no'] && $_POST['sell_date'] && $_POST['payment_to'] && $_POST['is_late_days']) {

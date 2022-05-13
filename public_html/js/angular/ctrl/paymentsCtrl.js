@@ -341,6 +341,57 @@ PaymentsCtrl = function ($scope, rest, $q, $filter, $uibModal, $interpolate, app
         });
     };
 
+    this.interestNoteList = async function (clientInvoice) {
+        const {nip, invoices} = clientInvoice;
+        const interestNotes = await rest.post('getinterestnotes', {nip});
+        const interestNotesWithInvoices = interestNotes.map(note => (
+            {
+                ...note,
+                invoice: invoices.list.find(inv => note.name.replaceAll('-', '/').startsWith(inv.number))
+            }
+        ));
+
+
+        let modalInstance = $uibModal.open({
+            ariaLabelledBy: 'modal-title',
+            ariaDescribedBy: 'modal-body',
+            templateUrl: 'interestNoteList.html',
+            size: 'lg',
+            controller: function ($scope) {
+
+                let self = this;
+
+                this.data = {
+                    clientId: clientInvoice.clientId,
+                    clientName: clientInvoice.name,
+                    interestNotesWithInvoices
+                };
+
+
+                this.interestNotePaid = async function (nip, name, number) {
+                    const interestNotes = await rest.post('interestnotehasbeenpaid', {nip, name, number});
+
+                    const interestNotesWithInvoices = interestNotes.map(note => (
+                        {
+                            ...note,
+                            invoice: invoices.list.find(inv => note.name.replaceAll('-', '/').startsWith(inv.number))
+                        }
+                    ));
+
+                    self.data.interestNotesWithInvoices = interestNotesWithInvoices;
+                    $scope.$apply();
+                };
+
+                this.cancel = function () {
+                    modalInstance.dismiss('cancel');
+                };
+            },
+            controllerAs: '$ctrl',
+            windowClass: 'show',
+            backdropClass: 'show'
+        });
+    };
+
     this.paymentsList = function (clientInvoice, dateFrom, dateTo) {
 
         let invalidateListOfInvoices = false;
@@ -441,9 +492,18 @@ PaymentsCtrl = function ($scope, rest, $q, $filter, $uibModal, $interpolate, app
         });
     };
 
-    this.generateInterestNote = function(invoice) {
+    this.generateInterestNote = function (invoice) {
         const {id, number, buyer_tax_no, buyer_email, sell_date, payment_to, paid_date, is_late_days} = invoice;
-        rest.post('generateinterestnote', {id, number, buyer_tax_no, buyer_email, sell_date, payment_to, paid_date, is_late_days});
+        rest.post('generateinterestnote', {
+            id,
+            number,
+            buyer_tax_no,
+            buyer_email,
+            sell_date,
+            payment_to,
+            paid_date,
+            is_late_days
+        });
     };
 
     this.addPayment = function (clientId, invoiceTaxNo, invoice) {
@@ -494,7 +554,7 @@ PaymentsCtrl = function ($scope, rest, $q, $filter, $uibModal, $interpolate, app
                 paid_date: data.form.paymentdate
             }).then(function (payment) {
                 self.loadData($scope.date_from, $scope.date_to);
-        });
+            });
 
         }, function () {
             // nop
