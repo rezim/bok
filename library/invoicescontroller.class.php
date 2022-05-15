@@ -362,25 +362,26 @@ class InvoicesController extends Controller
         return str_replace(',', '.', $value);
     }
 
-    function markInterestNoteAsPaid($buyerTaxNo, $fileName, $invoiceNb) {
+    function markInterestNoteAsPaid($buyerTaxNo, $fileName, $invoiceNb, $date) {
         $interestNoteFolderName = INTEREST_NOTE_FOLDER_NAME;
         $dir = "./{$interestNoteFolderName}/{$buyerTaxNo}/";
         $filePath = "{$dir}{$fileName}";
         if (file_exists($filePath)) {
-            $interestNotePaidFolderName = INTEREST_NOTE_PAID_FOLDER_NAME;
-            $paidDir = "./{$interestNoteFolderName}/{$buyerTaxNo}/{$interestNotePaidFolderName}/";
+//            $interestNotePaidFolderName = INTEREST_NOTE_PAID_FOLDER_NAME;
+            $paidDir = "./{$interestNoteFolderName}/{$buyerTaxNo}/";
             if (!is_dir($paidDir)) {
                 mkdir($paidDir, 0777, true);
             }
             $interestNotePaidPrefix = INTEREST_NOTE_PAID_FOLDER_NAME . '-';
-            $renamedFilePath = "{$paidDir}{$interestNotePaidPrefix}{$fileName}";
+            $renamedFilePath = "{$paidDir}{$interestNotePaidPrefix}({$date})-{$fileName}";
             rename($filePath, $renamedFilePath);
 
             $mailing = new mailing();
+
             $mailing->sendInterestNoteEmail(INTEREST_NOTE_SEND_TO_ACCOUNTING_OFFICE,
-                "Przesyłam Note Odsetkowa do FV numer: {$invoiceNb}",
-                "Nota odsetkowa.",
-                array(array("path" => $renamedFilePath, "filename" => $fileName))
+                "Nota odsetkowa do FV numer: {$invoiceNb}",
+                date_format(date_create($date), 'm/Y'),
+                array(array("path" => $renamedFilePath, "filename" => "nota-$fileName"))
             );
 
         }

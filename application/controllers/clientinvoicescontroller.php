@@ -99,8 +99,8 @@ class clientinvoicesController extends InvoicesController
     }
 
     function interestnotehasbeenpaid() {
-        if ($_POST['nip'] && $_POST['name'] &&  $_POST['number']) {
-            echo json_encode($this->markInterestNoteAsPaid($_POST['nip'], $_POST['name'], $_POST['number']));
+        if ($_POST['nip'] && $_POST['name'] && $_POST['number'] && $_POST['date']) {
+            echo json_encode($this->markInterestNoteAsPaid($_POST['nip'], $_POST['name'], $_POST['number'], $_POST['date']));
         } else {
             echo "błędne parametry wyjściowe";
         }

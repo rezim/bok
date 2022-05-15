@@ -179,9 +179,14 @@ table.notification-popup td.text-field {
     color: black;
 }
 
-.invoices .paid {
+.invoices .paid, .interest-notes .paid  {
     color: green;
     text-decoration: line-through;
+}
+
+.interest-notes .paid .action .small {
+    color: black;
+    text-decoration: none!important;
 }
 
 .invoices .partial {

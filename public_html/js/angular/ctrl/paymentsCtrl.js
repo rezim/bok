@@ -344,10 +344,16 @@ PaymentsCtrl = function ($scope, rest, $q, $filter, $uibModal, $interpolate, app
     this.interestNoteList = async function (clientInvoice) {
         const {nip, invoices} = clientInvoice;
         const interestNotes = await rest.post('getinterestnotes', {nip});
+        const paidNoteNamePrefixRegExp = /^paid-\(.*\)-/;
+
+        const getInvoicesByNote = (note) => invoices.list.find(
+            inv => note.name.replace(paidNoteNamePrefixRegExp, '').replaceAll('-', '/').startsWith(inv.number)
+        );
+
         const interestNotesWithInvoices = interestNotes.map(note => (
             {
                 ...note,
-                invoice: invoices.list.find(inv => note.name.replaceAll('-', '/').startsWith(inv.number))
+                invoice: getInvoicesByNote(note)
             }
         ));
 
@@ -364,17 +370,25 @@ PaymentsCtrl = function ($scope, rest, $q, $filter, $uibModal, $interpolate, app
                 this.data = {
                     clientId: clientInvoice.clientId,
                     clientName: clientInvoice.name,
-                    interestNotesWithInvoices
+                    interestNotesWithInvoices,
+                    paymentDate: $.datepicker.formatDate('yy-mm-dd', new Date())
+               };
+
+                this.normalizeNoteName = function(name) {
+                    return name.replace(paidNoteNamePrefixRegExp, '');
                 };
 
+                this.resolvePaidDateFromNoteName = function(name) {
+                    return name.match(/\(.*\)/)[0];
+                };
 
-                this.interestNotePaid = async function (nip, name, number) {
-                    const interestNotes = await rest.post('interestnotehasbeenpaid', {nip, name, number});
+                this.interestNotePaid = async function (nip, name, number, date) {
+                    const interestNotes = await rest.post('interestnotehasbeenpaid', {nip, name, number, date});
 
                     const interestNotesWithInvoices = interestNotes.map(note => (
                         {
                             ...note,
-                            invoice: invoices.list.find(inv => note.name.replaceAll('-', '/').startsWith(inv.number))
+                            invoice: getInvoicesByNote(note)
                         }
                     ));
 
