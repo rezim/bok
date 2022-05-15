@@ -114,7 +114,7 @@ PaymentsCtrl = function ($scope, rest, $q, $filter, $uibModal, $interpolate, app
 
     let invoices;
 
-    this.loadData = function (date_from, date_to, notPaidInvoicesOnly) {
+    this.loadData = async function (date_from, date_to, notPaidInvoicesOnly, callback) {
         if (date_from && date_to) {
             $scope.isPending = true;
             const serviceName = !notPaidInvoicesOnly ? 'getinvoices' : 'getnotpaidinvoices';
@@ -135,17 +135,23 @@ PaymentsCtrl = function ($scope, rest, $q, $filter, $uibModal, $interpolate, app
 
                 calculate(result[0], result[1], result[2]);
 
+                if (callback) {
+                    callback();
+                }
+
                 $scope.isPending = false;
             });
         }
     };
 
-    const initClientInvoice = function (name, nip, phone, agreementClientId) {
+    const initClientInvoice = function (name, nip, phone, agreementClientId, mailFaktury, naliczacOdsetki) {
         return {
             name,
             nip,
             phone,
             agreementClientId,
+            mailFaktury,
+            naliczacOdsetki,
             clientId: null,
             agreements: {},
             invoices: {
@@ -175,7 +181,7 @@ PaymentsCtrl = function ($scope, rest, $q, $filter, $uibModal, $interpolate, app
 
             if (!objClientInvoice[agreement['client_nip']]) {
                 objClientInvoice[agreement['client_nip']] =
-                    initClientInvoice(agreement['client_name'], agreement['client_nip'], agreement['client_phone'], agreement['client_id']);
+                    initClientInvoice(agreement['client_name'], agreement['client_nip'], agreement['client_phone'], agreement['client_id'], agreement['client_mailfaktury'], agreement['client_naliczacodsetki']);
 
                 let client = objClientInvoice[agreement['client_nip']];
 
@@ -372,13 +378,13 @@ PaymentsCtrl = function ($scope, rest, $q, $filter, $uibModal, $interpolate, app
                     clientName: clientInvoice.name,
                     interestNotesWithInvoices,
                     paymentDate: $.datepicker.formatDate('yy-mm-dd', new Date())
-               };
+                };
 
-                this.normalizeNoteName = function(name) {
+                this.normalizeNoteName = function (name) {
                     return name.replace(paidNoteNamePrefixRegExp, '');
                 };
 
-                this.resolvePaidDateFromNoteName = function(name) {
+                this.resolvePaidDateFromNoteName = function (name) {
                     return name.match(/\(.*\)/)[0];
                 };
 
@@ -506,13 +512,13 @@ PaymentsCtrl = function ($scope, rest, $q, $filter, $uibModal, $interpolate, app
         });
     };
 
-    this.generateInterestNote = function (invoice) {
-        const {id, number, buyer_tax_no, buyer_email, sell_date, payment_to, paid_date, is_late_days} = invoice;
+    this.generateInterestNote = function (invoice, mailFaktury) {
+        const {id, number, buyer_tax_no, sell_date, payment_to, paid_date, is_late_days} = invoice;
         rest.post('generateinterestnote', {
             id,
             number,
             buyer_tax_no,
-            buyer_email,
+            buyer_email: mailFaktury,
             sell_date,
             payment_to,
             paid_date,
@@ -566,15 +572,40 @@ PaymentsCtrl = function ($scope, rest, $q, $filter, $uibModal, $interpolate, app
                 invoice_tax_no: data.invoiceTaxNo,
                 paid_name: data.form.paymentname,
                 paid_date: data.form.paymentdate
-            }).then(function (payment) {
-                self.loadData($scope.date_from, $scope.date_to);
+            }).then(async function (payment) {
+
+                const callback =  () => {
+                    const clientTaxNo = payment.invoice_tax_no;
+                    const invoiceId = payment.invoice_id;
+                    const client = self.getClientInvoices().find(client => client.nip === clientTaxNo);
+
+                    if (!client) {
+                        console.error(`Nie można znaleźć klient o numerze NIP: ${clientTaxNo}`);
+                        return;
+                    }
+                    if (!client.naliczacOdsetki) {
+                        return;
+                    }
+
+                    const invoice = client.invoices.list.find(invoice => invoice.id === invoiceId);
+
+                    if (!invoice) {
+                        console.error(`Nie można znaleźć faktur numer: ${invoiceId} dla klienta NIP: ${clientTaxNo}`);
+                        return;
+                    }
+
+                    if (invoice.is_paid && invoice.is_late_days > 0) {
+                        self.generateInterestNote(invoice, client.mailFaktury);
+                    }
+                };
+
+                self.loadData($scope.date_from, $scope.date_to, null, callback);
             });
 
         }, function () {
             // nop
         });
     };
-
 
     /**
      * Currently we need to map NIP for only one client,

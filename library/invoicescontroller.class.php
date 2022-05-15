@@ -367,7 +367,6 @@ class InvoicesController extends Controller
         $dir = "./{$interestNoteFolderName}/{$buyerTaxNo}/";
         $filePath = "{$dir}{$fileName}";
         if (file_exists($filePath)) {
-//            $interestNotePaidFolderName = INTEREST_NOTE_PAID_FOLDER_NAME;
             $paidDir = "./{$interestNoteFolderName}/{$buyerTaxNo}/";
             if (!is_dir($paidDir)) {
                 mkdir($paidDir, 0777, true);
@@ -384,6 +383,9 @@ class InvoicesController extends Controller
                 array(array("path" => $renamedFilePath, "filename" => "nota-$fileName"))
             );
 
+            $customerMessage = "Nota odsetkowa {$fileName} została opłacona {$date} i wysłana do biura rachunkowego.";
+            $customerMessageParams = array("client_nip" => $buyerTaxNo, "message_date" => date("Y-m-d"), "message" => $customerMessage);
+            $this->clientinvoice->addPaymentMessage($customerMessageParams, 'payments_messages');
         }
 
         return $this->resolveInterestNotes($buyerTaxNo);
@@ -438,11 +440,13 @@ class InvoicesController extends Controller
 
         $mail = array(
             "mailTo" => INTEREST_NOTE_DEBUG_SEND_TO !== '' ? INTEREST_NOTE_DEBUG_SEND_TO : $buyerEmail,
-            "message" => "Nota odsetkowa do Faktury Vat numer: {$number}.<br />Termin płatności: {$paymentTo},<br />Data płatności: {$paidDate},<br />Opóźnienie dni: {$isLateDays}",
+            "message" => "Dzień Dobry,<br /><br /> W załączniku przesyłamy notę odsetkową do faktury vat numer: {$number}.<br />Termin płatności faktury: {$paymentTo},<br />Data płatności faktury: {$paidDate},<br />Opóźnienie w płatności dni: {$isLateDays}.<br /><br />pozdrawiamy,<br />Otus.pl",
             "topic" => "Nota odsetkowa do faktury vat {$number}.",
             "attachments" => array(array("path" => $filePath, "filename" => $fileName))
         );
 
+        $customerMessage = "Wysłano notę odsetkową {$fileName} na adres email: {$mail['mailTo']}.";
+        $customerMessageParams = array("client_nip" => $buyerTaxNo, "message_date" => date("Y-m-d"), "message" => $customerMessage);
         if (file_exists($filePath)) {
             $mailing = new mailing();
             $mailing->sendInterestNoteEmail(
@@ -451,6 +455,9 @@ class InvoicesController extends Controller
                 $mail['topic'],
                 $mail['attachments']
             );
+            unset($mailing);
+
+            $this->clientinvoice->addPaymentMessage($customerMessageParams, 'payments_messages');
 
             return array_merge($result, array('status' => -1, 'message' => 'file already exists'));
         }
@@ -467,6 +474,8 @@ class InvoicesController extends Controller
                 $mail['attachments']
             );
             unset($mailing);
+
+            $this->clientinvoice->addPaymentMessage($customerMessageParams, 'payments_messages');
 
             return array_merge($result, array('message' => 'file created successful'));
         } else {

@@ -350,8 +350,6 @@
                                                 class="btn btn-primary ng-scope" type="button" style="font-size: 10px">
                                             zapłać
                                         </button>
-                                        <button ng-if="invoice.status === 'paid' && invoice.is_late_days > 0" ng-click="ctrl.generateInterestNote(invoice); $event.stopPropagation();"
-                                                class="btn btn-outline-warning" style="font-size: 10px">nota</button>
                                     </td>
                                 </tr>
                                 </tbody>
