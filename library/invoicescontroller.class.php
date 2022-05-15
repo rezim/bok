@@ -440,7 +440,7 @@ class InvoicesController extends Controller
 
         $mail = array(
             "mailTo" => INTEREST_NOTE_DEBUG_SEND_TO !== '' ? INTEREST_NOTE_DEBUG_SEND_TO : $buyerEmail,
-            "message" => "Dzień Dobry,<br /><br /> W załączniku przesyłamy notę odsetkową do faktury vat numer: {$number}.<br />Termin płatności faktury: {$paymentTo},<br />Data płatności faktury: {$paidDate},<br />Opóźnienie w płatności dni: {$isLateDays}.<br /><br />pozdrawiamy,<br />Otus.pl",
+            "message" => "Dzień Dobry,<br /><br /> W załączniku przesyłamy notę odsetkową do faktury vat numer: {$number}.<br />Termin płatności faktury: {$paymentTo},<br />Data płatności faktury: {$paidDate},<br />Opóźnienie w płatności dni: {$isLateDays}.<br /><br />Prosimy o terminowe płatności,<br />pozdrawiamy,<br />Otus.pl",
             "topic" => "Nota odsetkowa do faktury vat {$number}.",
             "attachments" => array(array("path" => $filePath, "filename" => $fileName))
         );
