@@ -362,7 +362,8 @@ class InvoicesController extends Controller
         return str_replace(',', '.', $value);
     }
 
-    function markInterestNoteAsPaid($buyerTaxNo, $fileName, $invoiceNb, $date) {
+    function markInterestNoteAsPaid($buyerTaxNo, $fileName, $invoiceNb, $date)
+    {
         $interestNoteFolderName = INTEREST_NOTE_FOLDER_NAME;
         $dir = "./{$interestNoteFolderName}/{$buyerTaxNo}/";
         $filePath = "{$dir}{$fileName}";
@@ -401,11 +402,13 @@ class InvoicesController extends Controller
         return "{$host}/invoices/{$invoiceNb}.pdf?api_token={$token}&print_option=interest_note&interest_rate=&interest_type=legal&forced_payment_to={$due_date}";
     }
 
-
     function resolveInterestNotes($buyerTaxNo)
     {
+
         $interestNoteFolderName = INTEREST_NOTE_FOLDER_NAME;
         $dir = "./{$interestNoteFolderName}/{$buyerTaxNo}/";
+
+        return $this->attachInterestNotesToInvoice('158135151', $dir, ['nota_1.pdf', 'nota_2.pdf', 'nota_3.pdf', 'nota_4.pdf']);
 
         $noteNames = glob("$dir/*.pdf");
 
@@ -483,4 +486,137 @@ class InvoicesController extends Controller
         }
     }
 
+
+    function attachInterestNotesToInvoice($invoiceNumber, $attachmentPath, $attachmentNames) {
+        // configuration
+        $token = FAKTUROWNIA_APITOKEN;
+        $httpHost = FAKTUROWNIA_ENDPOINT;
+
+        $invoicesUrl = "{$httpHost}/invoices/{$invoiceNumber}";
+
+        // resolve s3 bucket credentials
+        $url = "{$invoicesUrl}/get_new_attachment_credentials.json?api_token={$token}";
+        $result = curl_get($url);
+
+        if (isset($result['error'])) {
+            return array_merge($result, array("Could not resolve s3 bucket credentials for new attachment. Error: {$result['message']}"));
+        }
+        $s3BucketCredentials = json_decode($result, true);
+        unset($s3BucketCredentials['url']); // extra input fields are forbidden by s3 policy
+
+        foreach ($attachmentNames as $attachmentName) {
+            $attachmentFilePath = "{$attachmentPath}{$attachmentName}";
+
+            // send file to amazon s3 bucket
+            $curlFile = new CURLFile(realpath($attachmentFilePath), 'application/pdf');
+            $amazonS3BucketUrl = 'https://s3-eu-west-1.amazonaws.com/fs.firmlet.com';
+
+            $data = array_merge($s3BucketCredentials, array('file' => $curlFile));
+            $result = curl_post($amazonS3BucketUrl, $data, false);
+            if (isset($result['error'])) {
+                return array_merge($result, array("message" => "Could not send file to s3 bucket. Error: {$result['message']}"));
+            }
+
+            // assign attachment to the invoice
+            $url = "{$invoicesUrl}/add_attachment.json?api_token={$token}&file_name={$attachmentName}";
+            $result = curl_post($url);
+            if (isset($result['error'])) {
+                return array_merge($result, array("Could not assign attachment {$attachmentName} to invoice {$invoiceNumber}. Error: {$result['error']}"));
+            }
+        }
+
+        // set attachments are visible for the user
+        $url = "{$invoicesUrl}.json";
+        $data = array(
+            "api_token" => $token,
+            "invoice" => array(
+                "show_attachments" => true
+            )
+        );
+        $result = curl_put($url, $data);
+        if (isset($result['error'])) {
+            return array_merge($result, array("Could set attachments to be visible to the user for invoice {$invoiceNumber}. Error: {$result['error']}"));
+        }
+
+        return array("message" => "OK");
+    }
+
+
+}
+
+function curl_get($url, $useProxy = USE_PROXY)
+{
+    $ch = curl_init();
+
+    curl_setopt($ch, CURLOPT_URL, $url);
+    curl_setopt($ch, CURLOPT_HTTPGET, true);
+    curl_setopt($ch, CURLOPT_RETURNTRANSFER, TRUE);
+    if ($useProxy) {
+        curl_setopt($ch, CURLOPT_PROXY, '127.0.0.1:8888');
+    }
+
+    $response = curl_exec($ch);
+
+    if (curl_errno($ch)) {
+        $response = array("error" => curl_errno($ch), "message" => curl_error($ch));
+    }
+    curl_close($ch);
+
+    return $response;
+}
+
+function curl_post($url, $data = array(), $useProxy = USE_PROXY)
+{
+    $ch = curl_init();
+
+    curl_setopt($ch, CURLOPT_URL, $url);
+    curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+    curl_setopt($ch, CURLOPT_POST, true);
+    curl_setopt($ch, CURLOPT_CUSTOMREQUEST, "POST");
+
+    curl_setopt($ch, CURLOPT_POSTFIELDS, $data);
+    if ($useProxy) {
+        curl_setopt($ch, CURLOPT_PROXY, '127.0.0.1:8888');
+    }
+
+    $response = curl_exec($ch);
+
+    if (curl_errno($ch)) {
+        $response = array("error" => curl_errno($ch), "message" => curl_error($ch));
+    }
+    curl_close($ch);
+
+    return $response;
+}
+
+function curl_put($url, $data, $useProxy = USE_PROXY)
+{
+    $ch = curl_init();
+
+    if ($useProxy) {
+        curl_setopt($ch, CURLOPT_PROXY, '127.0.0.1:8888');
+    }
+
+    $data_string = json_encode($data);
+
+    curl_setopt($ch, CURLOPT_URL, $url);
+    curl_setopt($ch, CURLOPT_CUSTOMREQUEST, "PUT");
+    curl_setopt($ch, CURLOPT_POSTFIELDS, $data_string);
+    curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+    curl_setopt($ch, CURLOPT_HTTPHEADER, array(
+            'Content-Type: application/json',
+            'Content-Length: ' . strlen($data_string))
+    );
+    if (USE_PROXY) {
+        curl_setopt($ch, CURLOPT_PROXY, '127.0.0.1:8888');
+    }
+
+    $response = curl_exec($ch);
+
+    if (curl_errno($ch)) {
+        $response = array("error" => curl_errno($ch), "message" => curl_error($ch));
+    }
+    curl_close($ch);
+
+    return $response;
 }
