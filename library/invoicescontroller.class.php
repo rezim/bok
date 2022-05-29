@@ -408,7 +408,7 @@ class InvoicesController extends Controller
         $interestNoteFolderName = INTEREST_NOTE_FOLDER_NAME;
         $dir = "./{$interestNoteFolderName}/{$buyerTaxNo}/";
 
-        return $this->attachInterestNotesToInvoice('158136955', $dir, ['nota_1.pdf', 'nota_2.pdf', 'nota_3.pdf', 'nota_4.pdf']);
+        // return $this->attachInterestNotesToInvoice('158136955', $dir, ['nota_1.pdf', 'nota_2.pdf', 'nota_3.pdf', 'nota_4.pdf']);
 
         $noteNames = glob("$dir/*.pdf");
 
