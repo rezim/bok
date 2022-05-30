@@ -365,6 +365,7 @@ class InvoicesController extends Controller
     function markInterestNoteAsPaid($buyerTaxNo, $fileName, $invoiceNb, $date)
     {
         $interestNoteFolderName = INTEREST_NOTE_FOLDER_NAME;
+        $interestNoteNamePrefix = INTEREST_NOTE_NAME_PREFIX;
         $dir = "./{$interestNoteFolderName}/{$buyerTaxNo}/";
         $filePath = "{$dir}{$fileName}";
         if (file_exists($filePath)) {
@@ -381,7 +382,7 @@ class InvoicesController extends Controller
             $mailing->sendInterestNoteEmail(INTEREST_NOTE_SEND_TO_ACCOUNTING_OFFICE,
                 "Nota odsetkowa do FV numer: {$invoiceNb}",
                 date_format(date_create($date), 'm/Y'),
-                array(array("path" => $renamedFilePath, "filename" => "nota-$fileName"))
+                array(array("path" => $renamedFilePath, "filename" => "{$interestNoteNamePrefix}{$fileName}"))
             );
 
             $customerMessage = "Nota odsetkowa {$fileName} została opłacona {$date} i wysłana do biura rachunkowego.";
@@ -448,17 +449,20 @@ class InvoicesController extends Controller
             "attachments" => array(array("path" => $filePath, "filename" => $fileName))
         );
 
-        $customerMessage = "Wysłano notę odsetkową {$fileName} na adres email: {$mail['mailTo']}.";
+        // $customerMessage = "Wysłano notę odsetkową {$fileName} na adres email: {$mail['mailTo']}.";
+        $customerMessage = "Wystawiono notę odsetkową {$fileName}.";
         $customerMessageParams = array("client_nip" => $buyerTaxNo, "message_date" => date("Y-m-d"), "message" => $customerMessage);
         if (file_exists($filePath)) {
-            $mailing = new mailing();
-            $mailing->sendInterestNoteEmail(
-                $mail['mailTo'],
-                $mail['message'],
-                $mail['topic'],
-                $mail['attachments']
-            );
-            unset($mailing);
+            if (INTEREST_NOTE_SEND_EMAIL_TO_CLIENT) {
+                $mailing = new mailing();
+                $mailing->sendInterestNoteEmail(
+                    $mail['mailTo'],
+                    $mail['message'],
+                    $mail['topic'],
+                    $mail['attachments']
+                );
+                unset($mailing);
+            }
 
             $this->clientinvoice->addPaymentMessage($customerMessageParams, 'payments_messages');
 
@@ -469,14 +473,16 @@ class InvoicesController extends Controller
         // from url and use file_put_contents() function to
         // save the file by using base name
         if (file_put_contents($filePath, file_get_contents($url))) {
-            $mailing = new mailing();
-            $mailing->sendInterestNoteEmail(
-                $mail['mailTo'],
-                $mail['message'],
-                $mail['topic'],
-                $mail['attachments']
-            );
-            unset($mailing);
+            if (INTEREST_NOTE_SEND_EMAIL_TO_CLIENT) {
+                $mailing = new mailing();
+                $mailing->sendInterestNoteEmail(
+                    $mail['mailTo'],
+                    $mail['message'],
+                    $mail['topic'],
+                    $mail['attachments']
+                );
+                unset($mailing);
+            }
 
             $this->clientinvoice->addPaymentMessage($customerMessageParams, 'payments_messages');
 
@@ -487,7 +493,31 @@ class InvoicesController extends Controller
     }
 
 
-    function attachInterestNotesToInvoice($invoiceNumber, $attachmentPath, $attachmentNames) {
+    function addNotPaidInterestNotesToInvoice($invoiceId, $buyerTaxNo)
+    {
+        $interestNotes = $this->resolveInterestNotes($buyerTaxNo);
+        $filterPaidInterestNotes = function ($note) {
+            $paidNotePrefix = INTEREST_NOTE_PAID_FOLDER_NAME . '-';
+            $len = strlen($paidNotePrefix);
+            return (substr($note['name'], 0, $len) !== $paidNotePrefix);
+        };
+
+        $notPaidInterestNotes = array_filter($interestNotes, $filterPaidInterestNotes);
+
+        if (count($notPaidInterestNotes) > 0) {
+            $firstNote = $notPaidInterestNotes[0];
+            $notePath = str_replace($firstNote['name'], '', $firstNote['path']);
+            $resolveNoteName = function ($note) {
+                return $note['name'];
+            };
+            $this->attachInterestNotesToInvoice($invoiceId, $notePath, array_map($resolveNoteName, $notPaidInterestNotes));
+        }
+
+        return array("status" => "OK", "notes" => $notPaidInterestNotes);
+    }
+
+    function attachInterestNotesToInvoice($invoiceNumber, $attachmentPath, $attachmentNames)
+    {
         // configuration
         $token = FAKTUROWNIA_APITOKEN;
         $httpHost = FAKTUROWNIA_ENDPOINT;
@@ -506,9 +536,10 @@ class InvoicesController extends Controller
 
         foreach ($attachmentNames as $attachmentName) {
             $attachmentFilePath = "{$attachmentPath}{$attachmentName}";
+            $attachementFileNameWithPrefix = INTEREST_NOTE_NAME_PREFIX . $attachmentName;
 
             // send file to amazon s3 bucket
-            $curlFile = new CURLFile(realpath($attachmentFilePath), 'application/pdf');
+            $curlFile = new CURLFile(realpath($attachmentFilePath), 'application/pdf', $attachementFileNameWithPrefix);
             $amazonS3BucketUrl = 'https://s3-eu-west-1.amazonaws.com/fs.firmlet.com';
 
             $data = array_merge($s3BucketCredentials, array('file' => $curlFile));
@@ -518,10 +549,10 @@ class InvoicesController extends Controller
             }
 
             // assign attachment to the invoice
-            $url = "{$invoicesUrl}/add_attachment.json?api_token={$token}&file_name={$attachmentName}";
+            $url = "{$invoicesUrl}/add_attachment.json?api_token={$token}&file_name={$attachementFileNameWithPrefix}";
             $result = curl_post($url);
             if (isset($result['error'])) {
-                return array_merge($result, array("Could not assign attachment {$attachmentName} to invoice {$invoiceNumber}. Error: {$result['error']}"));
+                return array_merge($result, array("Could not assign attachment {$attachementFileNameWithPrefix} to invoice {$invoiceNumber}. Error: {$result['error']}"));
             }
         }
 

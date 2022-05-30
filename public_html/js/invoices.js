@@ -1,10 +1,10 @@
-const yesterday = function(strDate) {
+const yesterday = function (strDate) {
     const d = new Date(strDate);
     d.setDate(d.getDate() - 1);
 
     const year = d.getFullYear();
-    const month = d.getMonth()+1 >=10 ? d.getMonth()+1 : `0${d.getMonth()+1}`;
-    const day = d.getDate() >=10 ? d.getDate() : `0${d.getDate()}`;
+    const month = d.getMonth() + 1 >= 10 ? d.getMonth() + 1 : `0${d.getMonth() + 1}`;
+    const day = d.getDate() >= 10 ? d.getDate() : `0${d.getDate()}`;
 
     return `${year}-${month}-${day}`;
 };
@@ -170,7 +170,14 @@ InvoiceManager = function (api_token, endpoint, company_name, invoice_number_len
             for (const agrIds of groupedAgreementIds) {
                 const params = getInvoiceParams(invoice, agrIds);
                 try {
-                    await post(invoicesUrl, params);
+                    const invoice = await post(invoicesUrl, params);
+
+                    const interestNotes = await loadAsyncData('/clientinvoices/addinterestnotestoinvoice/notemplate', {
+                        invoice_id: invoice.id,
+                        nip: invoice.buyer_tax_no
+                    });
+
+                    console.log(interestNotes);
                 } catch (e) {
                     errorMsg += `Błąd!, nie można wystawić FV dla '${invoice['nazwapelna']}', komunikat błędu: ${e.responseText}! `;
                 }

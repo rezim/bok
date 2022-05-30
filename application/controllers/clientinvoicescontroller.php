@@ -114,6 +114,14 @@ class clientinvoicesController extends InvoicesController
         }
     }
 
+    function addinterestnotestoinvoice() {
+        if ($_POST['invoice_id'] && $_POST['nip']) {
+            echo json_encode($this->addNotPaidInterestNotesToInvoice($_POST['invoice_id'], $_POST['nip']));
+        } else {
+            echo "błędne parametry wyjściowe";
+        }
+    }
+
     function generateinterestnote()
     {
         if ($_POST['id'] && $_POST['number'] && $_POST['buyer_tax_no'] && $_POST['sell_date'] && $_POST['payment_to'] && $_POST['is_late_days']) {
