@@ -177,7 +177,6 @@ InvoiceManager = function (api_token, endpoint, company_name, invoice_number_len
                         nip: invoice.buyer_tax_no
                     });
 
-                    console.log(interestNotes);
                 } catch (e) {
                     errorMsg += `Błąd!, nie można wystawić FV dla '${invoice['nazwapelna']}', komunikat błędu: ${e.responseText}! `;
                 }
@@ -223,7 +222,12 @@ InvoiceManager = function (api_token, endpoint, company_name, invoice_number_len
                     for (const agrIds of groupedAgreementIds) {
                         const params = getInvoiceParams(report, agrIds);
                         try {
-                            await post(invoicesUrl, params);
+                            const invoice = await post(invoicesUrl, params);
+
+                            await loadAsyncData('/clientinvoices/addinterestnotestoinvoice/notemplate', {
+                                invoice_id: invoice.id,
+                                nip: invoice.buyer_tax_no
+                            });
                         } catch (e) {
                             errorMsg += `Błąd!, nie można wystawić FV dla '${report['nazwapelna']}', komunikat błędu: ${e.responseText}! `;
                         }
