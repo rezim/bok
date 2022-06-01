@@ -370,9 +370,6 @@ class InvoicesController extends Controller
         $filePath = "{$dir}{$fileName}";
         if (file_exists($filePath)) {
             $paidDir = "./{$interestNoteFolderName}/{$buyerTaxNo}/";
-            if (!is_dir($paidDir)) {
-                mkdir($paidDir, 0777, true);
-            }
             $interestNotePaidPrefix = INTEREST_NOTE_PAID_FOLDER_NAME . '-';
             $renamedFilePath = "{$paidDir}{$interestNotePaidPrefix}({$date})-{$fileName}";
             rename($filePath, $renamedFilePath);
@@ -386,6 +383,22 @@ class InvoicesController extends Controller
             );
 
             $customerMessage = "Nota odsetkowa {$fileName} została opłacona {$date} i wysłana do biura rachunkowego.";
+            $customerMessageParams = array("client_nip" => $buyerTaxNo, "message_date" => date("Y-m-d"), "message" => $customerMessage);
+            $this->clientinvoice->addPaymentMessage($customerMessageParams, 'payments_messages');
+        }
+
+        return $this->resolveInterestNotes($buyerTaxNo);
+    }
+    function removeNotPaidInterestNote($buyerTaxNo, $fileName, $invoiceNb, $date)
+    {
+        $interestNoteFolderName = INTEREST_NOTE_FOLDER_NAME;
+
+        $dir = "./{$interestNoteFolderName}/{$buyerTaxNo}/";
+        $filePath = "{$dir}{$fileName}";
+        if (file_exists($filePath)) {
+            unlink($filePath);
+
+            $customerMessage = "Nota odsetkowa {$fileName} została usunięta {$date}!.";
             $customerMessageParams = array("client_nip" => $buyerTaxNo, "message_date" => date("Y-m-d"), "message" => $customerMessage);
             $this->clientinvoice->addPaymentMessage($customerMessageParams, 'payments_messages');
         }

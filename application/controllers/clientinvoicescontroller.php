@@ -106,6 +106,14 @@ class clientinvoicesController extends InvoicesController
         }
     }
 
+    function removeinterestnote() {
+        if ($_POST['nip'] && $_POST['name'] && $_POST['number'] && $_POST['date']) {
+            echo json_encode($this->removeNotPaidInterestNote($_POST['nip'], $_POST['name'], $_POST['number'], $_POST['date']));
+        } else {
+            echo "błędne parametry wyjściowe";
+        }
+    }
+
     function getinterestnotes() {
         if ($_POST['nip']) {
             echo json_encode($this->resolveInterestNotes($_POST['nip']));

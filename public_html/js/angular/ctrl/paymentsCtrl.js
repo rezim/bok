@@ -389,17 +389,35 @@ PaymentsCtrl = function ($scope, rest, $q, $filter, $uibModal, $interpolate, app
                 };
 
                 this.interestNotePaid = async function (nip, name, number, date) {
-                    const interestNotes = await rest.post('interestnotehasbeenpaid', {nip, name, number, date});
+                    if (confirm("Czy na pewno oznaczyć notę odsetkową jako zapłaconą?")) {
+                        const interestNotes = await rest.post('interestnotehasbeenpaid', {nip, name, number, date});
 
-                    const interestNotesWithInvoices = interestNotes.map(note => (
-                        {
-                            ...note,
-                            invoice: getInvoicesByNote(note)
-                        }
-                    ));
+                        const interestNotesWithInvoices = interestNotes.map(note => (
+                            {
+                                ...note,
+                                invoice: getInvoicesByNote(note)
+                            }
+                        ));
 
-                    self.data.interestNotesWithInvoices = interestNotesWithInvoices;
-                    $scope.$apply();
+                        self.data.interestNotesWithInvoices = interestNotesWithInvoices;
+                        $scope.$apply();
+                    }
+                };
+
+                this.removeInterestNote = async function (nip, name, number, date) {
+                    if (confirm("Czy na pewno usnąć notę odsetkową?")) {
+                        const interestNotes = await rest.post('removeinterestnote', {nip, name, number, date});
+
+                        const interestNotesWithInvoices = interestNotes.map(note => (
+                            {
+                                ...note,
+                                invoice: getInvoicesByNote(note)
+                            }
+                        ));
+
+                        self.data.interestNotesWithInvoices = interestNotesWithInvoices;
+                        $scope.$apply();
+                    }
                 };
 
                 this.cancel = function () {
@@ -574,7 +592,7 @@ PaymentsCtrl = function ($scope, rest, $q, $filter, $uibModal, $interpolate, app
                 paid_date: data.form.paymentdate
             }).then(async function (payment) {
 
-                const callback =  () => {
+                const callback = () => {
                     const clientTaxNo = payment.invoice_tax_no;
                     const invoiceId = payment.invoice_id;
                     const client = self.getClientInvoices().find(client => client.nip === clientTaxNo);
