@@ -101,9 +101,6 @@ class Email_reader
 
 function email_pull()
 {
-     // _readfileXML('2018-01-01', "'192.168.1.1'");
-     // die();
-
     global $mysqli;
     $emailReader = new Email_reader();
 
@@ -1686,8 +1683,6 @@ function getIpAddress($email_header)
 
     return $found;
 }
-
-
 
 function isMinoltaServiceMessage($email_body) {
     $result = array();

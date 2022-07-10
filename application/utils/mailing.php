@@ -1,6 +1,6 @@
 <?php
-if (file_exists("../library/phpmailer/PHPMailerAutoload.php")) {
-    require_once "../library/phpmailer/PHPMailerAutoload.php";
+if (file_exists("c:/work/bok/library/phpmailer/PHPMailerAutoload.php")) {
+    require_once "c:/work/bok/library/phpmailer/PHPMailerAutoload.php";
 } else {
     require_once "/volume1/web/bok/library/phpmailer/PHPMailerAutoload.php";
 }
@@ -12,74 +12,6 @@ class mailing
     function br2nl($html)
     {
         return preg_replace('#<br\s*/?>#i', "\n", $html);
-    }
-
-
-    function sendMailInfoNowy($rowid, $data_email, $tresc, $temat, $clientname,
-                              $osobazglaszajaca = '', $nrkontaktowy = '', $modelurzadzenia = '', $nrseryjny = '', $przebieg = '', $stantonera = '', $adresip = '', $firmware = ''
-    )
-    {
-
-        $mailek = new PHPMailer;
-
-        //$this->mail->SMTPDebug = 3;                               // Enable verbose debug output
-
-        $mailek->isSMTP();                                      // Set mailer to use SMTP
-        $mailek->Host = SERWER_OTUS;  // Specify main and backup SMTP servers
-        $mailek->SMTPAuth = true;                               // Enable SMTP authentication
-        $mailek->Username = LOGIN_CASE;                 // SMTP username
-        $mailek->Password = HASLO_CASE;                           // SMTP password
-        $mailek->SMTPSecure = 'tls';                            // Enable TLS encryption, `ssl` also accepted
-        $mailek->Port = 587;                                    // TCP port to connect to
-
-        $mailek->From = FROM_CASE;
-        $mailek->FromName = NAME_CASE;
-        $mailek->CharSet = 'UTF-8';
-        $mailek->WordWrap = 50;                                 // Set word wrap to 50 characters
-        $mailek->addReplyTo(FROM_CASE, NAME_CASE);
-        $mailek->isHTML(true);
-
-        if (INFO_NEW_CASE == '')
-            return;
-
-
-        $maile = explode(',', INFO_NEW_CASE);
-        foreach ($maile as $email) {
-            $mailek->addAddress($email);
-        }
-
-        $mailek->Subject = $clientname . " " . $temat . " #Serwis";
-        $mailek->Body =
-            "
-                                Pojawiło się nowe zgłoszenie :<br/>
-                                -Nr zgłoszenia: {$rowid}<br/>
-                                -Data i czas zgłoszenia : {$data_email}<br/>
-                                -Nazwa klienta : {$clientname}<br/>
-                                -Osoba zgłaszająca :{$osobazglaszajaca}<br/>
-                                -Nr kontaktowy do osoby zgłaszającej:{$nrkontaktowy}<br/>
-                                -Model urządzenia:{$modelurzadzenia}<br/>
-                                -NR Seryjny urządzenia:{$nrseryjny}<br/>                                
-                                <br/><br/>
-                                <b>Oryginalna wiadomość :</b><br/><br/>
-                               
-                            "
-            . $tresc;
-
-
-        $mailek->AltBody =
-            "
-                                 Pojawiło się nowe zgłoszenie :
-                                -Nr zgłoszenia: {$rowid}
-                                -Data i czas zgłoszenia : {$data_email}
-                                -Nazwa klienta : {$clientname}
-                            ";
-
-        if (!$mailek->send()) {
-            echo 'Błąd wysłania wiadomości.';
-            echo 'Mailer Error: ' . $mailek->ErrorInfo;
-        } else {
-
-        }
     }
 
     function sendMailPrzydzielonoZlecenie($rowid, $mail, $tresc, $temat, $clientname,
@@ -161,87 +93,6 @@ class mailing
         }
     }
 
-    function sendMailPrzypomnienie($rowid, $mail, $tresc, $temat, $clientname,
-                                   $osobazglaszajaca = '', $nrkontaktowy = '', $modelurzadzenia = '', $nrseryjny = '', $przebieg = '', $stantonera = '', $adresip = '', $firmware = '', $printerLogs = '', $pozostalo_godzin = 0
-    )
-    {
-
-        if (empty($mail) || $mail == '')
-            return;
-        $mailek = new PHPMailer;
-
-        //$this->mail->SMTPDebug = 3;                               // Enable verbose debug output
-
-        $mailek->isSMTP();                                      // Set mailer to use SMTP
-        $mailek->Host = SERWER_OTUS;  // Specify main and backup SMTP servers
-        $mailek->SMTPAuth = true;                               // Enable SMTP authentication
-        $mailek->Username = LOGIN_CASE;                 // SMTP username
-        $mailek->Password = HASLO_CASE;                           // SMTP password
-        $mailek->SMTPSecure = 'tls';                            // Enable TLS encryption, `ssl` also accepted
-        $mailek->Port = 587;                                    // TCP port to connect to
-
-        $mailek->From = FROM_CASE;
-        $mailek->FromName = NAME_CASE;
-        $mailek->CharSet = 'UTF-8';
-        $mailek->WordWrap = 50;                                 // Set word wrap to 50 characters
-        $mailek->addReplyTo(FROM_CASE, NAME_CASE);
-        $mailek->isHTML(true);
-
-
-        $mailek->addAddress($mail);
-
-
-        $mailek->Subject = $temat;
-        $mailek->Body =
-            "
-                                Przypomnienie o zleceniu :<br/>
-                                -Pozostało: {$pozostalo_godzin} godzin do terminu wykonania<br/>
-                                -Nr zgłoszenia: {$rowid}<br/>
-                                -Data i czas zgłoszenia : {$data_email}<br/>
-                                -Nazwa klienta : {$clientname}<br/>
-                                -Osoba zgłaszająca :{$osobazglaszajaca}<br/>
-                                -Nr kontaktowy do osoby zgłaszającej:< a href='tel:{$nrkontaktowy}'>{$nrkontaktowy}</a><br/>
-                                -Model urządzenia:{$modelurzadzenia}<br/>
-                                -NR Seryjny urządzenia:{$nrseryjny}<br/>
-                                -Przebieg:{$przebieg}<br/>
-                                -Stan tonera:{$stantonera}<br/>
-                                -Adres IP:{$adresip}<br/>
-                                -Logi: <br/>{$printerLogs}                                
-                                
-                                <br/><br/>
-                                <b>Oryginalna wiadomość :</b><br/><br/>
-                               
-                            "
-            . $tresc;
-
-
-        $mailek->AltBody =
-            "
-                                 Przypomnienie o zleceniu :
-                                -Pozostało: {$pozostalo_godzin} godzin do terminu wykonania
-                                -Nr zgłoszenia: {$rowid}
-                                -Data i czas zgłoszenia : {$data_email}
-                                -Nazwa klienta : {$clientname}
-                                -Osoba zgłaszająca :{$osobazglaszajaca}
-                                -Nr kontaktowy do osoby zgłaszającej:{$nrkontaktowy}
-                                -Model urządzenia:{$modelurzadzenia}
-                                -NR Seryjny urządzenia:{$nrseryjny}
-                                -Przebieg:{$przebieg}
-                                -Stan tonera:{$stantonera}
-                                -Adres IP:{$adresip}
-                                -Firmware:{$firmware}
-                                -Logi: {$printerLogs}         
-                                
-                            ";
-
-        if (!$mailek->send()) {
-            echo 'Błąd wysłania wiadomości.';
-            echo 'Mailer Error: ' . $mailek->ErrorInfo;
-        } else {
-
-        }
-    }
-
     function sendMailZarejestrowano($rowid, $mailto, $tresc, $temat)
     {
 
@@ -277,7 +128,7 @@ class mailing
                                 Pozdrawiamy,<br/>
                                 Otus Sp. z o.o.<br/>
                                 +48 71 321 19 06<br/>
-                                <a href='http://www.otus.pl'>www.otus.pl</a><br/>
+                                <a href='http://www.otus.pl/kontakt'>www.otus.pl/kontakt</a><br/>
                                 <img src='http://www.otus.pl/templates/otus/images/obraz/logo.png' alt='Otus' title='Otus' border='0' height='82' width='150'></img>
                                 <br/><br/>
                             
@@ -293,7 +144,7 @@ class mailing
                                 Pozdrawiamy,
                                 Otus Sp. z o.o.
                                 +48 71 321 19 06
-                                www.otus.pl
+                                www.otus.pl/kontakt
                             ";
 
             if (!$mailek->send()) {

@@ -11,8 +11,6 @@ include 'application/models/notimail.php';
 include 'application/models/service.php';
 include 'application/utils/mailing.php';
 
-
-
-read_ceses();
+readEmailNotifications();
 
 

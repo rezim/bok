@@ -270,20 +270,7 @@ class notificationsController extends InvoicesController
                 $mailing->sendMailZarejestrowano($wynik['keyval'], $this->$nameOfModel->_filedsToEdit['email']['value'], nl2br($this->$nameOfModel->_filedsToEdit['tresc_wiadomosci']['value']),
                     "[Ticket#{$wynik['keyval']}] " . $this->$nameOfModel->_filedsToEdit['temat']['value']);
                 unset($mailing);
-
-
             }
-
-            $mailing = new mailing();
-            $mailing->sendMailInfoNowy($wynik['keyval'], $this->$nameOfModel->_filedsToEdit['date_email']['value'], nl2br($this->$nameOfModel->_filedsToEdit['tresc_wiadomosci']['value']),
-                "[Ticket#{$wynik['keyval']}] " . $this->$nameOfModel->_filedsToEdit['temat']['value'],
-                $wynik['clientname'],
-                $this->$nameOfModel->_filedsToEdit['osobazglaszajaca']['value'],
-                $this->$nameOfModel->_filedsToEdit['nr_telefonu']['value'],
-                $modelurzadzenia, $nrseryjny, $przebieg, $stantonera, $adresip, $firmware
-            );
-            unset($mailing);
-
         }
 
         echo(json_encode($wynik));
