@@ -101,7 +101,7 @@ class mailing
 
             $this->mail->SMTPDebug = 3;                               // Enable verbose debug output
 
-            $mailek->isSMTP();                                      // Set mailer to use SMTP
+//            $mailek->isSMTP();                                      // Set mailer to use SMTP
             $mailek->Host = SERWER_OTUS;  // Specify main and backup SMTP servers
             $mailek->SMTPAuth = true;                               // Enable SMTP authentication
             $mailek->Username = LOGIN_CASE;                 // SMTP username
