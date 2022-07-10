@@ -22,7 +22,7 @@
                 <div class="form-group row text-right">
                     <div class="col-sm-9">
                         <button onclick="acl_logowanie('{$smarty.const.SCIEZKA}','{$smarty.const.SCIEZKA}');return false;"
-                                type="submit" class="btn btn-info"><i class="fas fa-sign-in"></i>&nbsp;&nbsp;&nbsp;Zaloguj się</button>
+                                type="submit" class="btn btn-info">Zaloguj się&nbsp;<i class="fas fa-sign-in-alt"></i></button>
                     </div>
 
                 </div>

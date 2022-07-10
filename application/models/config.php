@@ -3,7 +3,7 @@
 class config extends Model
 {
 
-    protected $stawkakilometrowa = null, $stawkagodzinowa = null;
+    protected $stawkakilometrowa = null, $stawkagodzinowa = null, $czassesjiminut = null;
 
     function getConfiguration()
     {
@@ -34,6 +34,11 @@ class config extends Model
         if ($this->stawkagodzinowa !== null) {
             array_push($columnList, array('name' => '`stawka_godzinowa`', 'type' => 'd', 'value' => $this->stawkagodzinowa));
         }
+
+        if ($this->czassesjiminut !== null) {
+            array_push($columnList, array('name' => '`czas_sesji_minut`', 'type' => 'd', 'value' => $this->czassesjiminut));
+        }
+
 
         $names = implode(',', array_map(function ($name) {
             return $name . '=?';

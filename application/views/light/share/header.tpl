@@ -115,11 +115,22 @@
 
 <script type="text/javascript" src="{$smarty.const.SCIEZKA}/js/test/e2e.js?{$smarty.now}"></script>
 
+{if isset($smarty.session.login) && $smarty.session.login==1}
+    <script type="text/javascript" src="{$smarty.const.SCIEZKA}/js/auto-logout.js?{$smarty.const.APPVERSION}"></script>
+{/if}
+
 </head>
 <?php flush(); ?>
 <body>
 
 {if isset($smarty.session.login) && $smarty.session.login==1}
+
+{if isset($smarty.session.appConfig['czas_sesji_minut'])}
+    <script type="text/javascript">
+        autoLogout({$smarty.session.appConfig['czas_sesji_minut']}, "/bok/acls/logout/notemplate");
+    </script>
+{/if}
+
 <div class="progress otus-progress" id="progress">
     <div id="progressBar" class="progress-bar bg-success" role="progressbar"
          style="width: 0;" aria-valuenow="10" aria-valuemin="0" aria-valuemax="100"></div>
@@ -259,7 +270,8 @@
                             <a href='{$smarty.const.SCIEZKA}/toners/show' class="dropdown-item">Tonery</a>
                         {/if}
                         {if isset($smarty.session.przypisanemenu['li_consumables'])}
-                            <a href='{$smarty.const.SCIEZKA}/consumables/show' class="dropdown-item">Materiały Eksploatacyjne</a>
+                            <a href='{$smarty.const.SCIEZKA}/consumables/show' class="dropdown-item">Materiały
+                                Eksploatacyjne</a>
                         {/if}
                         {if
                         isset($smarty.session.przypisanemenu['but_addcase']) &&
@@ -307,21 +319,23 @@
                             <a href='{$smarty.const.SCIEZKA}/reports/show' class="dropdown-item">Wystaw faktury</a>
                         {/if}
                         {if isset($smarty.session.przypisanemenu['li_statisticsshow'])}
-                            <a href='{$smarty.const.SCIEZKA}/statistics/show' class="dropdown-item">Statystyki Zgłoszeń</a>
+                            <a href='{$smarty.const.SCIEZKA}/statistics/show' class="dropdown-item">Statystyki
+                                Zgłoszeń</a>
                         {/if}
                         {if isset($smarty.session.przypisanemenu['li_materialsshow'])}
-                            <a href='{$smarty.const.SCIEZKA}/materials/show' class="dropdown-item">Statystyki Materiałów</a>
+                            <a href='{$smarty.const.SCIEZKA}/materials/show' class="dropdown-item">Statystyki
+                                Materiałów</a>
                         {/if}
                         {if
                         isset($smarty.session.przypisanemenu['li_externallinks']) &&
                         $smarty.session.przypisanemenu['li_externallinks']['permission'] === 'rw'
                         }
-                        <div class="dropdown-divider"></div>
-                        <a target="_blank" href='https://faktury.otus.pl' class="dropdown-item">Faktury</a>
-                        <a target="_blank" href='https://saldeo.brainshare.pl/login.jsf'
-                           class="dropdown-item">Wydatki</a>
-                        <a target="_blank" href='https://rejestr-bdo.mos.gov.pl/User/ChooseCompany'
-                           class="dropdown-item">BDO</a>
+                            <div class="dropdown-divider"></div>
+                            <a target="_blank" href='https://faktury.otus.pl' class="dropdown-item">Faktury</a>
+                            <a target="_blank" href='https://saldeo.brainshare.pl/login.jsf'
+                               class="dropdown-item">Wydatki</a>
+                            <a target="_blank" href='https://rejestr-bdo.mos.gov.pl/User/ChooseCompany'
+                               class="dropdown-item">BDO</a>
                         {/if}
                     </div>
                 </li>
@@ -347,8 +361,8 @@
                         isset($smarty.session.przypisanemenu['li_externallinks']) &&
                         $smarty.session.przypisanemenu['li_externallinks']['permission'] === 'rw'
                         }
-                        <div class="dropdown-divider"></div>
-                        <a target="_blank" href='https://app.nozbe.com' class="dropdown-item">Nozbe</a>
+                            <div class="dropdown-divider"></div>
+                            <a target="_blank" href='https://app.nozbe.com' class="dropdown-item">Nozbe</a>
                         {/if}
                     </div>
                 </li>

@@ -83,7 +83,7 @@ class SQLQuery {
                     {
 
                        $dane['status']=1;
-                       $dane['info'] = 'Dane zapisane poprawnie';
+                       $dane['info'] = $stmt->affected_rows > 0 ? 'Dane zapisane poprawnie' : 'Nic nie zostało zapisane';
                        $dane['rows_affected'] = $stmt->affected_rows;
 
                         $stmt->close();

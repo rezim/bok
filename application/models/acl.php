@@ -1,35 +1,42 @@
 <?php
-class acl extends Model 
+
+class acl extends Model
 {
     function getByLogin($login)
     {
-       $this->_table = 'users';
-        return $this->selectWhere(null,false,'s',array($login),' id=?  and activity=1 and haslo is not null','*'); 
+        $this->_table = 'users';
+        return $this->selectWhere(null, false, 's', array($login), ' id=?  and activity=1 and haslo is not null', '*');
     }
+
     function getByRowid($rowid)
     {
         $this->_table = 'users';
-        return $this->selectWhere(null,false,'i',array($rowid),' rowid=?  and activity=1','id,imie,nazwisko,mail,rowid'); 
+        return $this->selectWhere(null, false, 'i', array($rowid), ' rowid=?  and activity=1', 'id,imie,nazwisko,mail,rowid');
     }
-    function refreshSession($rowidUser)
-   {
+
+    function refreshSession($rowidUser, $appConfig)
+    {
         $this->_table = 'users';
         $dataUser = $this->getByRowid($rowidUser);
         $_SESSION['shares'] = $this->getAllShares();
         $_SESSION['przypisaneshares'] = $this->getPrzypisaneShares($rowidUser);
         $_SESSION['user'] = $dataUser[0];
         $_SESSION['przypisanemenu'] = $this->getPrzypisaneMenu($rowidUser);
-        
+
+        $_SESSION['appConfig'] = $appConfig;
+
         unset($dataUser);
-        $_SESSION['login']=1;
-   }
-   function getAllShares()
-   {
+        $_SESSION['login'] = 1;
+    }
+
+    function getAllShares()
+    {
         $this->_table = 'shares';
-        return $this->selectWhere('id',false,null,null,' activity=1 ','id,controller,action'); 
-   }
-   function getPrzypisaneMenu($rowidUser)
-   {
+        return $this->selectWhere('id', false, null, null, ' activity=1 ', 'id,controller,action');
+    }
+
+    function getPrzypisaneMenu($rowidUser)
+    {
         $query = "select distinct * from 
                 (select 
                 d.id,
@@ -53,10 +60,11 @@ class acl extends Model
                 left outer join shares d on c.rowid_share=d.rowid
                 where
                 a.rowid_user={$rowidUser} and d.activity=1) as zbior";
-        return $this->query($query,'id',false); 
-   }
-   function getPrzypisaneShares($rowidUser)
-   {
+        return $this->query($query, 'id', false);
+    }
+
+    function getPrzypisaneShares($rowidUser)
+    {
         $query = "select distinct * from 
                 (select 
                 d.id,
@@ -80,6 +88,6 @@ class acl extends Model
                 left outer join shares d on c.rowid_share=d.rowid
                 where
                 a.rowid_user={$rowidUser} and d.activity=1) as zbior";
-        return $this->query($query,'id',false); 
-   }
+        return $this->query($query, 'id', false);
+    }
 }

@@ -14,6 +14,10 @@
 {/if}
 
 </div><!--divContainerKoniec-->
+
+<!-- Common Bootstrap Modal Placeholder  -->
+<div id="commonModalPlaceholder"></div>
+
 <div>
 
     <script type="text/javascript">

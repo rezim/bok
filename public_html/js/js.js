@@ -39,16 +39,8 @@ function showSzczegolyRaportRozwin(tr) {
     }
 }
 
-function saveConfiguration() {
-    var
-        doc = document,
-        objOk = doc.getElementById('actionok'),
-        objError = doc.getElementById('actionerror');
-
-    const data = {
-        stawkakilometrowa: doc.getElementById('txtStawkaKilometrowa').value,
-        stawkagodzinowa: doc.getElementById('txtStawkaGodzinowa').value
-    };
+function saveConfiguration(success = successCallback, error = errorCallback) {
+    const data = getDataFromContainer('configModal');
 
     $.ajax({
         type: 'POST',
@@ -56,12 +48,15 @@ function saveConfiguration() {
         async: true,
         data,
         success: function (dane) {
-            checkReplay(objError, null, null, null, dane, objOk, 1, 3000, null);
+            if (success) {
+                success(dane);
+            }
             return false;
         },
-        error: function () {
-
-            showError(objError, null, null, null, 10000);
+        error: function (dane) {
+            if (error) {
+                error(dane);
+            }
             return false;
         }
     });
@@ -96,24 +91,7 @@ function clearPaymentMonitoring() {
 }
 
 function showConfiguration() {
-    $.colorbox
-    ({
-        height: 250 + 'px',
-        width: 500 + 'px',
-        title: "Konfiguracja",
-        data:
-            {},
-
-        href: sciezka + "/config/show/todiv",
-        onClosed: function () {
-
-        },
-        onComplete: function () {
-
-            $("txtStawkaKilometrowa").focus();
-            uprawnienia();
-        }
-    });
+    openModal("/config/show/todiv");
 }
 
 function showNewClientAdd(rowid) {
@@ -170,7 +148,7 @@ function showNewConsumablesAdd(rowid) {
         height: 640 + 'px',
         width: 600 + 'px',
         title: "Dodawanie/Edycja materiału eksploatacyjnego",
-        data: { rowid },
+        data: {rowid},
         href: sciezka + "/consumables/addedit/todiv",
         onClosed: function () {
 
@@ -2258,4 +2236,96 @@ function evalScript(htmlElement) {
     for (let n = 0; n < arr.length; n++) {
         eval(arr[n].innerHTML);
     }
+}
+
+function openModal(src, data) {
+
+    const normalizedSrc = src.startsWith(sciezka) ? src : `${sciezka}${src}`;
+
+    loadAsyncData(normalizedSrc, data ?? {}, function (html) {
+
+        const placeholder = $('#commonModalPlaceholder');
+
+        placeholder.html(html);
+
+        const modal = placeholder.find('.modal');
+
+        modal.on('show.bs.modal', function (event) {
+            modal.on('hidden.bs.modal', function (event) {
+                placeholder.html('');
+                modal.unbind();
+            });
+        });
+
+        modal.modal({keyboard: true});
+    });
+}
+
+function callServiceAction(serviceUrl, dataContainerId, success = successCallback, error = errorCallback) {
+    const data = getDataFromContainer(dataContainerId);
+
+    $.ajax({
+        type: 'POST',
+        url: sciezka + serviceUrl,
+        async: true,
+        data,
+        success: function (dane) {
+            if (success) {
+                try {
+                    success($.parseJSON(dane));
+                } catch (e) {
+                    // nop
+                }
+            }
+            return false;
+        },
+        error: function (dane) {
+            if (error) {
+                try {
+                    error($.parseJSON(dane));
+                } catch (e) {
+                    // nop
+                }
+            }
+            return false;
+        }
+    });
+}
+
+function successCallback(result, timeout = 3000) {
+    const defaultSuccessMessage = 'Dane zapisane poprawnie.';
+    const modalInstance = $(`.modal`);
+    if (modalInstance) {
+        const message = modalInstance.find('.alert-success');
+        if (result && result.info) {
+            message.html(result.info);
+        } else {
+            message.html(defaultSuccessMessage);
+        }
+        message.show();
+        setTimeout(() => {
+            message.hide();
+            modalInstance.modal('hide')
+        }, timeout);
+    }
+}
+
+function errorCallback(result, timeout = 3000) {
+    const defaultErrorMessage = 'Błąd zapisu danych.';
+    const modalInstance = $(`.modal`);
+    if (modalInstance) {
+        const message = modalInstance.find('alert-danger');
+        if (result && result.info) {
+            message.html(result.info);
+        } else {
+            message.html(defaultErrorMessage);
+        }
+        message.show();
+    }
+}
+
+function getDataFromContainer(containerId) {
+    const container = document.querySelector(`#${containerId}`);
+    const selectedData = Array.from(container.querySelectorAll('[data-ref]'));
+    return Object.fromEntries(selectedData.map(d => [d.id, d.value]));
 }
