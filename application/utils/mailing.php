@@ -99,7 +99,7 @@ class mailing
         if ($mailto != '') {
             $mailek = new PHPMailer;
 
-            //$this->mail->SMTPDebug = 3;                               // Enable verbose debug output
+            $this->mail->SMTPDebug = 3;                               // Enable verbose debug output
 
             $mailek->isSMTP();                                      // Set mailer to use SMTP
             $mailek->Host = SERWER_OTUS;  // Specify main and backup SMTP servers
