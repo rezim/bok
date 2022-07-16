@@ -2262,7 +2262,7 @@ function openModal(src, data) {
 }
 
 function callServiceAction(serviceUrl, dataContainerId, success = successCallback, error = errorCallback) {
-    const data = getDataFromContainer(dataContainerId);
+    const data = dataContainerId ? getDataFromContainer(dataContainerId) : {};
 
     $.ajax({
         type: 'POST',
@@ -2328,4 +2328,8 @@ function getDataFromContainer(containerId) {
     const container = document.querySelector(`#${containerId}`);
     const selectedData = Array.from(container.querySelectorAll('[data-ref]'));
     return Object.fromEntries(selectedData.map(d => [d.id, d.value]));
+}
+
+function pullDeviceCounters() {
+
 }

@@ -50,7 +50,7 @@ class Email_reader
     function connect()
     {
         $this->conn = imap_open($this->server, $this->user, $this->pass);
-        if (!$imap) {
+        if (!$this->conn) {
             echo imap_last_error();
         }
     }
@@ -99,8 +99,11 @@ class Email_reader
 
 }
 
-function email_pull()
+function readDeviceCounters()
 {
+    $mailing = new mailing();
+    $mailing->sendNewMail('tregimowicz@gmail.com', 'Czytanie liczników - start', 'Czytanie liczników - start ' . date_create()->format('Y-m-d H:i:s') , null);
+
     global $mysqli;
     $emailReader = new Email_reader();
 
@@ -113,6 +116,7 @@ function email_pull()
         }
 
         $attachments = array();
+
 
         if (isset($email['structure']->parts) && count($email['structure']->parts)) {
 
@@ -262,6 +266,8 @@ function email_pull()
 
     // close the connection to the IMAP server
     $emailReader->close();
+
+    $mailing->sendNewMail('tregimowicz@gmail.com', 'Czytanie liczników - koniec', 'Czytanie liczników - koniec ' . date_create()->format('Y-m-d H:i:s') , null);
 }
 
 

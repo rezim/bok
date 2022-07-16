@@ -326,6 +326,9 @@
                             <a href='{$smarty.const.SCIEZKA}/materials/show' class="dropdown-item">Statystyki
                                 Materiałów</a>
                         {/if}
+                        {if isset($smarty.session.przypisanemenu['li_pullcountersshow'])}
+                            <a onclick="callServiceAction('/emails/readdevicecounters/notemplate', null, null, null)" class="dropdown-item">Zaczytaj liczniki urządzeń</a>
+                        {/if}
                         {if
                         isset($smarty.session.przypisanemenu['li_externallinks']) &&
                         $smarty.session.przypisanemenu['li_externallinks']['permission'] === 'rw'
