@@ -327,7 +327,8 @@
                                 Materiałów</a>
                         {/if}
                         {if isset($smarty.session.przypisanemenu['li_pullcountersshow'])}
-                            <a onclick="callServiceAction('/emails/readdevicecounters/notemplate', null, null, null)" class="dropdown-item">Zaczytaj liczniki urządzeń</a>
+                            <div class="dropdown-divider"></div>
+                            <a href="javascript:void(0)" onclick="callServiceAction('/emails/readdevicecounters/notemplate', null, null, null)" class="dropdown-item">Zaczytaj liczniki urządzeń</a>
                         {/if}
                         {if
                         isset($smarty.session.przypisanemenu['li_externallinks']) &&

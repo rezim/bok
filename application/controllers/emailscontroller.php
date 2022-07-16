@@ -9,7 +9,8 @@ class emailsController extends Controller
     function readdevicecounters() {
         if( isset( $_SERVER['HTTP_X_REQUESTED_WITH'] ) && ( $_SERVER['HTTP_X_REQUESTED_WITH'] == 'XMLHttpRequest' ) )
         {
-            echo json_encode($this->email->pullDeviceCounters());
+            $currentUserEmail  = $_SESSION['user']['mail'];
+            echo json_encode($this->email->pullDeviceCounters($currentUserEmail));
         }
     }
 }

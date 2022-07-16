@@ -4,7 +4,7 @@ require_once (ROOT . DS . 'application' . DS . 'utils' . DS . 'Email_reader.php'
 
 class email extends Model
 {
-    function pullDeviceCounters() {
-        return readDeviceCounters();
+    function pullDeviceCounters($email) {
+        return readDeviceCounters($email);
     }
 }

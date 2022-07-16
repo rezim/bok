@@ -12,6 +12,9 @@ if (mysqli_connect_errno()) {
 $mysqli->query("SET NAMES 'utf8'");
 
 
+
+
+
 class Email_reader
 {
 
@@ -99,13 +102,17 @@ class Email_reader
 
 }
 
-function readDeviceCounters()
+function readDeviceCounters($notificationEmail = null)
 {
-//    $mailing = new mailing();
-//    $mailing->sendNewMail('tregimowicz@gmail.com', 'Czytanie liczników - start', 'Czytanie liczników - start ' . date_create()->format('Y-m-d H:i:s') , null);
+    if ($notificationEmail !== null) {
+        $mailing = new mailing();
+        $mailing->sendNewMail($notificationEmail, 'Data rozpoczęcia operacji:' . date_create()->format('Y-m-d H:i:s') . '<br />' . '' , 'Operacja ręcznego zaczytania liczników została rozpoczęta.', null);
+    }
 
-    global $mysqli;
+    $mysqli = getMySqlConn();
     $emailReader = new Email_reader();
+
+    $successCounter = 0;
 
     while (1) {
 
@@ -245,6 +252,7 @@ function readDeviceCounters()
         $size = $email['header']->Size;
         // move the email to Processed folder on the server
         $emailReader->move($email['index'], 'INBOX.Processed');
+        $successCounter++;
 
         $query = "insert into mails(sender,subject,datemail,size,dateimport, address_ip) values
                             ('{$addr}','{$subject}','{$datawiadomosc}','{$size}','" . date('Y-m-d H:i:s') . "', $ip)";
@@ -267,7 +275,9 @@ function readDeviceCounters()
     // close the connection to the IMAP server
     $emailReader->close();
 
-//    $mailing->sendNewMail('tregimowicz@gmail.com', 'Czytanie liczników - koniec', 'Czytanie liczników - koniec ' . date_create()->format('Y-m-d H:i:s') , null);
+    if (isset($mailing) && $notificationEmail !== null) {
+        $mailing->sendNewMail($notificationEmail, 'Data zakończenia operacji:' . date_create()->format('Y-m-d H:i:s') . '<br />' . 'Ilość zaczytanych liczników: ' . $successCounter , 'Operacja ręcznego zaczytania liczników została zakończona.', null);
+    }
 }
 
 
@@ -1114,7 +1124,7 @@ function validateDate($date, $format)
 }
 
 function saveMinoltaDataDevice($minoltaMessage) {
-    global $mysqli;
+    $mysqli = getMySqlConn();
     $statement = $mysqli->prepare("INSERT INTO logs (sequencenumber, eventcode, description,timestamp,valuefloat,revision,dateinsert,serial)
                                     VALUES (?,?,?,?,?,?,?,?)");
 
@@ -1134,7 +1144,7 @@ function saveMinoltaDataDevice($minoltaMessage) {
 function saveDataDevice($dataDevice, $dataWiadomosci, $ip)
 {
 
-    global $mysqli;
+    $mysqli = getMySqlConn();
     $query = "select serial,dateupdate,deleted from printers where serial='{$dataDevice['system']['dd:SerialNumber']}'";
     $dateupdate = '';
     $deleted = 0;
@@ -1734,4 +1744,17 @@ function strRight($delimiter, $str) {
 
 function startWith($str, $subStr) {
     return (substr($str, 0, strlen($subStr)) === $subStr);
+}
+
+function getMySqlConn()
+{
+    global $mysqli;
+
+    if ($mysqli === null) {
+        $mysqli = new mysqli(DB_HOST, DB_USER, DB_PASSWORD, DB_NAME);
+        $mysqli->query("SET NAMES 'utf8'");
+        return $mysqli;
+    }
+
+    return $mysqli;
 }
