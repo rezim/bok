@@ -101,8 +101,8 @@ class Email_reader
 
 function readDeviceCounters()
 {
-    $mailing = new mailing();
-    $mailing->sendNewMail('tregimowicz@gmail.com', 'Czytanie liczników - start', 'Czytanie liczników - start ' . date_create()->format('Y-m-d H:i:s') , null);
+//    $mailing = new mailing();
+//    $mailing->sendNewMail('tregimowicz@gmail.com', 'Czytanie liczników - start', 'Czytanie liczników - start ' . date_create()->format('Y-m-d H:i:s') , null);
 
     global $mysqli;
     $emailReader = new Email_reader();
@@ -267,7 +267,7 @@ function readDeviceCounters()
     // close the connection to the IMAP server
     $emailReader->close();
 
-    $mailing->sendNewMail('tregimowicz@gmail.com', 'Czytanie liczników - koniec', 'Czytanie liczników - koniec ' . date_create()->format('Y-m-d H:i:s') , null);
+//    $mailing->sendNewMail('tregimowicz@gmail.com', 'Czytanie liczników - koniec', 'Czytanie liczników - koniec ' . date_create()->format('Y-m-d H:i:s') , null);
 }
 
 
