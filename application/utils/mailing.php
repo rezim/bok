@@ -121,30 +121,29 @@ class mailing
             $mailek->Subject = $temat;
             $mailek->Body =
                 "
-                                Dziękujemy za kontakt i potwierdzamy zarejestrowanie zgłoszenia pod numerem <b>{$rowid} </b>.<br/>
-                                Nasz pracownik zajmie się tym zleceniem tak szybko, jak to będzie możliwe.<br/>
-                                Jeżeli będziesz kontynuować korespondencję prosimy o zachowanie tematu wiadomości - pozwoli to nam zidentyfikować Twoją sprawę.<br/>
+                                Dziękujemy za kontakt i potwierdzamy zarejestrowanie zgłoszenia pod numerem <b>{$rowid} </b>.&nbsp;
+                                Zajmiemy się Twoją sprawą i udzielimy odpowiedzi najszybciej, jak to będzie możliwe.&nbsp;
+                                Postaramy się, aby czas oczekiwania był możliwie najkrótszy.&nbsp;
+                                Jeżeli będziesz kontynuować korespondencję prosimy o zachowanie tematu wiadomości - pozwoli nam to szybciej zidentyfikować Twoją sprawę.                                  
                                 <br/><br/>
-                                Pozdrawiamy,<br/>
-                                Otus Sp. z o.o.<br/>
-                                +48 71 321 19 06<br/>
-                                <a href='http://www.otus.pl/kontakt'>www.otus.pl/kontakt</a><br/>
-                                <img src='http://www.otus.pl/templates/otus/images/obraz/logo.png' alt='Otus' title='Otus' border='0' height='82' width='150'></img>
+                                Zawsze służymy pomocą. W <a href='https://www.otus.pl/wsparcie/'>witrynie wsparcia Otus</a> znajdziesz wskazówki i rozwiązania które mogą pomóc rozwiązać Twoją sprawę.
                                 <br/><br/>
-                            
+                                W bardzo pilnych przypadkach prosimy o <a href=\"tel:+48713211906\">kontakt telefoniczny</a> podając numer tego zgłoszenia.
+                                Pozdrawiamy <a href='https://www.otus.pl/kontakt/'>Wsparcie Otus</a>                            
                             ";
 
 
             $mailek->AltBody =
                 "
-                                 Dziękujemy za kontakt i potwierdzamy zarejestrowanie zgłoszenia pod numerem <{$rowid}>
-                                Nasz pracownik zajmie się tym zleceniem tak szybko, jak to będzie możliwe
-                                Jeżeli będziesz kontynuować korespondencję prosimy o zachowanie tematu wiadomości - pozwoli to nam zidentyfikować Twoją sprawę
-
-                                Pozdrawiamy,
-                                Otus Sp. z o.o.
-                                +48 71 321 19 06
-                                www.otus.pl/kontakt
+                                Dziękujemy za kontakt i potwierdzamy zarejestrowanie zgłoszenia pod numerem <{$rowid}>
+                                Zajmiemy się Twoją sprawą i udzielimy odpowiedzi najszybciej, jak to będzie możliwe.
+                                Postaramy się, aby czas oczekiwania był możliwie najkrótszy.                                
+                                
+                                Jeżeli będziesz kontynuować korespondencję prosimy o zachowanie tematu wiadomości - pozwoli nam to szybciej zidentyfikować Twoją sprawę.                                  
+                                Zawsze służymy pomocą. W witrynie wsparcia Otus - https://www.otus.pl/wsparcie/ znajdziesz wskazówki i rozwiązania które mogą pomóc rozwiązać Twoją sprawę.                                
+                                
+                                W bardzo pilnych przypadkach prosimy o kontakt telefoniczny (tel: +48 71 321 19 06) podając numer tego zgłoszenia.
+                                Pozdrawiamy Wsparcie Otus - https://www.otus.pl/kontakt/
                             ";
 
             if (!$mailek->send()) {
