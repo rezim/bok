@@ -326,10 +326,6 @@
                             <a href='{$smarty.const.SCIEZKA}/materials/show' class="dropdown-item">Statystyki
                                 Materiałów</a>
                         {/if}
-                        {if isset($smarty.session.przypisanemenu['li_pullcountersshow'])}
-                            <div class="dropdown-divider"></div>
-                            <a href="javascript:void(0)" onclick="callServiceAction('/emails/readdevicecounters/notemplate', null, null, null)" class="dropdown-item">Zaczytaj liczniki urządzeń</a>
-                        {/if}
                         {if
                         isset($smarty.session.przypisanemenu['li_externallinks']) &&
                         $smarty.session.przypisanemenu['li_externallinks']['permission'] === 'rw'
@@ -389,7 +385,9 @@
             </li>
             {if
             isset($smarty.session.przypisanemenu['li_passwordshow']) ||
-            isset($smarty.session.przypisanemenu['li_sharesshow'])
+            isset($smarty.session.przypisanemenu['li_sharesshow']) ||
+            isset($smarty.session.przypisanemenu['li_pullcountersshow']) ||
+            isset($smarty.session.przypisanemenu['li_configuration'])
             }
                 <li class="nav-item dropdown">
                     <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button"
@@ -397,19 +395,25 @@
                        aria-haspopup="true" aria-expanded="false">
                         <i class="fas fa-cog"></i>&nbsp;Ustawienia
                     </a>
-                    <div class="dropdown-menu" aria-labelledby="navbarDropdown">
+                    <div class="dropdown-menu dropdown-menu-end dropdown-menu-start" aria-labelledby="navbarDropdown">
                         {if isset($smarty.session.przypisanemenu['li_passwordshow'])}
                             <a class="dropdown-item" href='{$smarty.const.SCIEZKA}/acls/passshow'>Hasło</a>
                         {/if}
                         {if isset($smarty.session.przypisanemenu['li_sharesshow'])}
                             <a class="dropdown-item" href='{$smarty.const.SCIEZKA}/shares/show'>Uprawnienia</a>
                         {/if}
+                        {if isset($smarty.session.przypisanemenu['li_configuration'])}
                         <a class="dropdown-item" href='#' onclick="showConfiguration()">Konfiguracja</a>
+                        {/if}
                         {if
                         isset($smarty.session.przypisanemenu['li_externallinks']) &&
                         $smarty.session.przypisanemenu['li_externallinks']['permission'] === 'rw'
                         }
                             <a target="_blank" class="dropdown-item" href='https://server.otus.pl:5001'>Serwer</a>
+                        {/if}
+                        {if isset($smarty.session.przypisanemenu['li_pullcountersshow'])}
+                            <div class="dropdown-divider"></div>
+                            <a href="javascript:void(0)" onclick="callServiceAction('/emails/readdevicecounters/notemplate', null, null, null)" class="dropdown-item">Liczniki urządzeń</a>
                         {/if}
                     </div>
                 </li>
