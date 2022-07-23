@@ -266,6 +266,9 @@ PaymentsCtrl = function ($scope, rest, $q, $filter, $uibModal, $interpolate, app
     };
 
     this.showDetails = function (clientInvoice) {
+        if (this.show_details[clientInvoice.nip] === undefined) {
+            this.show_details = {};
+        }
         this.show_details[clientInvoice.nip] = !this.show_details[clientInvoice.nip];
     };
 

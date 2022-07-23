@@ -179,6 +179,10 @@ table.notification-popup td.text-field {
     color: black;
 }
 
+.payments.table-hover tr {
+    cursor: pointer;
+}
+
 .invoices .paid, .interest-notes .paid  {
     color: green;
     text-decoration: line-through;

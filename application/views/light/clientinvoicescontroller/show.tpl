@@ -13,31 +13,6 @@
                 <div class="form-group">
                     <label for="txtfilterserial">okres (miesięcy)</label>
                 </div>
-                <div class="form-group">
-                    <div class="btn-toolbar" role="toolbar" aria-label="Toolbar with button groups">
-                        <div class="btn-group mr-2" role="group" aria-label="First group"
-                             aria-describedby="dateRangeHelp">
-                            <button type="button" class="btn btn-outline-secondary form-control"
-                                    ng-click="date_from=ctrl.getLastMonths(24); date_to=ctrl.getToday();ctrl.loadData(date_from, date_to)">
-                                24
-                            </button>
-                            <button type="button" class="btn btn-outline-secondary form-control"
-                                    ng-click="date_from=ctrl.getLastMonths(12); date_to=ctrl.getToday();ctrl.loadData(date_from, date_to)">
-                                12
-                            </button>
-                            <button type="button" class="btn btn-outline-secondary form-control"
-                                    ng-click="date_from=ctrl.getLastMonths(6); date_to=ctrl.getToday();ctrl.loadData(date_from, date_to)">
-                                &nbsp;6
-                            </button>
-                            <button type="button" class="btn btn-outline-secondary form-control"
-                                    ng-click="date_from=ctrl.getLastMonths(3); date_to=ctrl.getToday();ctrl.loadData(date_from, date_to)">
-                                &nbsp;3
-                            </button>
-                        </div>
-                    </div>
-                    <small id="dateRangeHelp" class="form-text text-muted"><i class="fas fa-info-circle"></i> Podaj
-                        okres w miesiącach.</small>
-                </div>
 
                 <div class="form-group">
                     <label for="txtdataod">data od</label>
@@ -66,7 +41,8 @@
                 <div class="form-group">
                     <input type="text" id="txtDaysLate" class="form-control"
                            aria-describedby="txtDaysLateHelp" ng-model="ctrl.filters.days_late">
-                    <small id="txtDaysLateHelp" class="form-text text-muted"><i class="fas fa-info-circle"></i> Podaj ilość dni opóźnienia w płatności</small>
+                    <small id="txtDaysLateHelp" class="form-text text-muted"><i class="fas fa-info-circle"></i> Podaj
+                        ilość dni opóźnienia w płatności</small>
                 </div>
 
                 <div class="border-top my-4 otus-separator"></div>
@@ -191,74 +167,28 @@
                     </tr>
                     </thead>
                     <tbody ng-repeat="clientInvoice in ctrl.getClientInvoices() | filter:search | filter: ctrl.clientInvoicesFilter() | orderBy:orderBy.propertyName:orderBy.reverse">
-
-                    <tr ng-if="!ctrl.filters.show_paid_invoices">
-                        <td class='tdLink' onclick="ctrl.showClientCard(clientInvoice.agreementClientId)"
-                        ">[[clientInvoice.name]]</td>
-                        <td>[[clientInvoice.phone]]</td>
-                        <td align="center" class="profit"
-                            ng-class="(clientInvoice.balance < 0) ? 'underpaid' : (clientInvoice.balance > 0) ? 'overpaid' : 'paid'">
-                            [[clientInvoice.invoices.count.notPaid]]
+                    <tr ng-dblclick="ctrl.showDetails(clientInvoice);">
+                        <td>
+                            <span class='actionLink' ng-click="ctrl.showClientCard(clientInvoice.agreementClientId)">[[clientInvoice.name]]</span>
                         </td>
-                        <td align="right" class="profit"
-                            ng-class="(clientInvoice.balance < 0) ? 'underpaid' : (clientInvoice.balance > 0) ? 'overpaid' : 'paid'">
-                            [[clientInvoice.balance.toFixed(2)]]
+                        <td><span class='actionLink' ng-click="ctrl.showClientCard(clientInvoice.agreementClientId)">[[clientInvoice.phone]]</span>
                         </td>
-                        <td align="right" class="profit"
-                            ng-class="(clientInvoice.overpaid.sum > 0) ? 'overpaid' : 'paid'">
-                            [[clientInvoice.overpaid.sum.toFixed(2)]]
-                        </td>
-                        <td class="profit">
-                            <div class="dropdown show">
-                                <button class="btn border border-secondary dropdown-toggle" type="button"
-                                        id="dropdownMenuButton" data-toggle="dropdown" aria-haspopup="true"
-                                        aria-expanded="false">
-                                    <i class="fas fa-cog"></i>
-                                    <span ng-if="clientInvoice.overpaid.sum > 0 && clientInvoice.invoices.count.notPaid > 0"
-                                          class="badge badge-pill badge-danger" title="Rozksięgowanie!"><i
-                                                class="fas fa-balance-scale"></i></span>
-                                </button>
-                                <div class="dropdown-menu dropdown-menu-right" aria-labelledby="dropdownMenuLink">
-
-                                    <a href="#" class="dropdown-item pointer"
-                                       ng-click="ctrl.showDetails(clientInvoice);"><i class="fas fa-coins"></i>&nbsp;&nbsp;płatności</a>
-                                    <a href="#" class="dropdown-item"
-                                       ng-click="ctrl.paymentsClientMessages(clientInvoice);$event.stopPropagation();"><i
-                                                class="fas fa-comment-dots"></i>&nbsp;&nbsp;notatki</a>
-                                    <a href="#" class="dropdown-item"
-                                       ng-if="clientInvoice.overpaid.sum > 0 && clientInvoice.invoices.count.notPaid > 0"
-                                       ng-click="ctrl.splitPayments(clientInvoice.clientId);$event.stopPropagation();"><i
-                                                class="fas fa-balance-scale"></i>&nbsp;&nbsp;rozksięguj</a>
-                                    <a href="#" class="dropdown-item"
-                                       ng-click="ctrl.paymentsList(clientInvoice, date_from, date_to); $event.stopPropagation();"><i
-                                                class="fas fa-coins"></i>&nbsp;&nbsp;płatności klienta</a>
-                                    <a href="#" class="dropdown-item"
-                                       ng-click="ctrl.interestNoteList(clientInvoice); $event.stopPropagation();"><i
-                                                class="fas fa-file-invoice"></i>&nbsp;&nbsp;noty odsetkowe</a>
-                                </div>
-                            </div>
-                        </td>
-                    </tr>
-                    <tr ng-if="ctrl.filters.show_paid_invoices">
-                        <td class='tdLink' ng-click="ctrl.showClientCard(clientInvoice.agreementClientId)">
-                            [[clientInvoice.name]]
-                        </td>
-                        <td>[[clientInvoice.phone]]</td>
                         <td align="center" ng-click="ctrl.sortBy('clientInvoice.invoices.count.notPaid')" class="profit"
                             ng-class="(clientInvoice.balance < 0) ? 'underpaid' : (clientInvoice.balance > 0) ? 'overpaid' : 'paid'">
-                            [[clientInvoice.invoices.count.notPaid]]
+                            <span class="actionLink"
+                                  ng-click="ctrl.paymentsList(clientInvoice, date_from, date_to); $event.stopPropagation();">[[clientInvoice.invoices.count.notPaid]]</span>
                         </td>
                         <td align="right" class="profit"
                             ng-class="(clientInvoice.balance < 0) ? 'underpaid' : (clientInvoice.balance > 0) ? 'overpaid' : 'paid'">
-                            [[clientInvoice.balance.toFixed(2)]]
+                            <span class="actionLink"
+                                  ng-click="ctrl.paymentsList(clientInvoice, date_from, date_to); $event.stopPropagation();">[[clientInvoice.balance.toFixed(2)]]</span>
                         </td>
                         <td align="right" class="profit"
                             ng-class="(clientInvoice.overpaid.sum > 0) ? 'overpaid' : 'paid'">
-                            [[clientInvoice.overpaid.sum.toFixed(2)]]
+                            <span class="actionLink"
+                                  ng-click="ctrl.paymentsList(clientInvoice, date_from, date_to); $event.stopPropagation();">[[clientInvoice.overpaid.sum.toFixed(2)]]</span>
                         </td>
                         <td class="profit">
-
-
                             <div class="dropdown show">
                                 <button class="btn border border-secondary dropdown-toggle" type="button"
                                         id="dropdownMenuButton" data-toggle="dropdown" aria-haspopup="true"
@@ -270,27 +200,26 @@
                                 </button>
                                 <div class="dropdown-menu dropdown-menu-right" aria-labelledby="dropdownMenuLink">
 
-                                    <a href="#" class="dropdown-item pointer"
+                                    <a href="javascript:void(0)" class="dropdown-item pointer"
                                        ng-click="ctrl.showDetails(clientInvoice);"><i
                                                 class="fas fa-clipboard-list"></i></i>&nbsp;&nbsp;rozliczenie
                                         szczegółowe</a>
-                                    <a href="#" class="dropdown-item"
+                                    <a href="javascript:void(0)" class="dropdown-item"
                                        ng-click="ctrl.paymentsClientMessages(clientInvoice);$event.stopPropagation();"><i
                                                 class="fas fa-comment-dots"></i>&nbsp;&nbsp;notatki</a>
-                                    <a href="#" class="dropdown-item"
+                                    <a href="javascript:void(0)" class="dropdown-item"
                                        ng-if="clientInvoice.overpaid.sum > 0 && clientInvoice.invoices.count.notPaid > 0"
                                        ng-click="ctrl.splitPayments(clientInvoice.clientId);$event.stopPropagation();"><i
                                                 class="fas fa-balance-scale"></i>&nbsp;&nbsp;rozksięguj</a>
-                                    <a href="#" class="dropdown-item"
+                                    <a href="javascript:void(0)" class="dropdown-item"
                                        ng-click="ctrl.paymentsList(clientInvoice, date_from, date_to); $event.stopPropagation();"><i
                                                 class="fas fa-coins"></i>&nbsp;&nbsp;płatności klienta</a>
-                                    <a href="#" class="dropdown-item"
+                                    <a href="javascript:void(0)" class="dropdown-item"
                                        ng-click="ctrl.interestNoteList(clientInvoice); $event.stopPropagation();"><i
                                                 class="fas fa-file-invoice"></i>&nbsp;&nbsp;noty odsetkowe</a>
                                 </div>
                             </div>
                         </td>
-
                     </tr>
 
                     <tr ng-if="(ctrl.show_details[clientInvoice.nip] ) && clientInvoice.invoices.list.length">
