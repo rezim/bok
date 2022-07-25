@@ -114,6 +114,10 @@ class clientinvoicesController extends InvoicesController
         }
     }
 
+    /**
+     * getInterestNotes()
+     * get interest notes by client NIP
+     */
     function getinterestnotes() {
         if ($_POST['nip']) {
             echo json_encode($this->resolveInterestNotes($_POST['nip']));
@@ -122,6 +126,14 @@ class clientinvoicesController extends InvoicesController
         }
     }
 
+    function getallinterestnotes() {
+        echo json_encode($this->resolveAllInterestNotes());
+    }
+
+    /**
+     * addInterestNotesInvoice()
+     *
+     */
     function addinterestnotestoinvoice() {
         if ($_POST['invoice_id'] && $_POST['nip']) {
             echo json_encode($this->addNotPaidInterestNotesToInvoice($_POST['invoice_id'], $_POST['nip']));

@@ -123,17 +123,19 @@ PaymentsCtrl = function ($scope, rest, $q, $filter, $uibModal, $interpolate, app
                     period: 'more',
                     date_from: date_from,
                     date_to: date_to
-                })
+                });
 
             const agreementsPromise = rest.post('getagreements', {});
 
             const overpaidPaymentsPromise = !notPaidInvoicesOnly ? rest.post('getoverpaidpayments', {}) : [];
 
-            $q.all([invoicesPromise, agreementsPromise, overpaidPaymentsPromise]).then(result => {
+            const interestNotes = rest.post('getallinterestnotes', {});
+
+            $q.all([invoicesPromise, agreementsPromise, overpaidPaymentsPromise, interestNotes]).then(result => {
 
                 self.invalidate();
 
-                calculate(result[0], result[1], result[2]);
+                calculate(result[0], result[1], result[2], result[3]);
 
                 if (callback) {
                     callback();
@@ -174,7 +176,7 @@ PaymentsCtrl = function ($scope, rest, $q, $filter, $uibModal, $interpolate, app
         };
     };
 
-    const calculate = function (invoices, agreements, overpaidpaymets) {
+    const calculate = function (invoices, agreements, overpaidpaymets, interestNotes) {
         let objClientInvoice = {};
 
         angular.forEach(agreements, function (agreement) {
@@ -239,6 +241,13 @@ PaymentsCtrl = function ($scope, rest, $q, $filter, $uibModal, $interpolate, app
                 }
             }
         });
+
+        const paidNoteNamePrefixRegExp = /^paid-\(.*\)-/;
+        for(const [clientNip, clientInterestNotes] of Object.entries(interestNotes)) {
+
+            objClientInvoice[clientNip]['interestNotes'] = clientInterestNotes.filter((note) => !paidNoteNamePrefixRegExp.test(note.name));
+            objClientInvoice[clientNip]['interestNotesLength'] = clientInterestNotes.filter((note) => !paidNoteNamePrefixRegExp.test(note.name)).length;
+        }
 
         angular.forEach(objClientInvoice, function (clientInvoice) {
             clientInvoices.push(clientInvoice);

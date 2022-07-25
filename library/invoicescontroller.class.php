@@ -389,6 +389,7 @@ class InvoicesController extends Controller
 
         return $this->resolveInterestNotes($buyerTaxNo);
     }
+
     function removeNotPaidInterestNote($buyerTaxNo, $fileName, $invoiceNb, $date)
     {
         $interestNoteFolderName = INTEREST_NOTE_FOLDER_NAME;
@@ -437,6 +438,21 @@ class InvoicesController extends Controller
         });
 
         return $notesWithDate;
+    }
+
+    function resolveAllInterestNotes()
+    {
+        $interestNoteFolderName = INTEREST_NOTE_FOLDER_NAME;
+        $interestNoteDir = "./{$interestNoteFolderName}/";
+        $clientNips = scandir($interestNoteDir);
+
+        $nipToInterestNotesMap = array();
+        array_walk($clientNips, function (&$nip, $key) use (&$nipToInterestNotesMap) {
+            if ($nip !== '.' && $nip !== '..') {
+                $nipToInterestNotesMap[$nip] = $this->resolveInterestNotes($nip);
+            }
+        });
+        return $nipToInterestNotesMap;
     }
 
     function issueInterestNote($id, $number, $buyerTaxNo, $buyerEmail, $sellDate, $paymentTo, $paidDate, $isLateDays)

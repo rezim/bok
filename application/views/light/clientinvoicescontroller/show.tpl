@@ -140,9 +140,12 @@
                         <th>telefon</th>
                         <th ng-click="sortBy('invoices.count.notPaid')"
                             class="sortable">
-                            faktur niezapłaconych
+                            niezapłaconych
                             <span class="sortorder" ng-show="orderBy.propertyName === 'invoices.count.notPaid'"
                                   ng-class="(orderBy.reverse) ? 'reverse': ''"></span>
+                        </th>
+                        <th class="sortable">
+                            noty
                         </th>
                         <th ng-click="sortBy('balance')" class="sortable text-right">
                             saldo
@@ -177,6 +180,10 @@
                             ng-class="(clientInvoice.balance < 0) ? 'underpaid' : (clientInvoice.balance > 0) ? 'overpaid' : 'paid'">
                             <span class="actionLink"
                                   ng-click="ctrl.paymentsList(clientInvoice, date_from, date_to); $event.stopPropagation();">[[clientInvoice.invoices.count.notPaid]]</span>
+                        </td>
+                        <td align="center" ng-click="ctrl.sortBy('clientInvoice.interestNotesLength')">
+                            <span class="actionLink" ng-class="overpaid"
+                                  ng-click="ctrl.interestNoteList(clientInvoice); $event.stopPropagation();">[[(clientInvoice.interestNotes.length || '-')]]</span>
                         </td>
                         <td align="right" class="profit"
                             ng-class="(clientInvoice.balance < 0) ? 'underpaid' : (clientInvoice.balance > 0) ? 'overpaid' : 'paid'">
