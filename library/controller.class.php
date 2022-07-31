@@ -94,4 +94,20 @@ class Controller
 
         return $this->$nameOfModel->save();
     }
+
+    function validatePostParams($postParams) {
+        $emptyParams = array_filter($postParams, function ($param) {
+            return !isset($_POST[$param]) || (!$_POST[$param] && $_POST[$param] != 0);
+        });
+
+        if (count($emptyParams) > 0) {
+            echo("Blad! Parametry: " . implode(",", $emptyParams) . " sa wymagane!");
+
+            http_response_code(400);
+
+            return false;
+        }
+
+        return true;
+    }
 }

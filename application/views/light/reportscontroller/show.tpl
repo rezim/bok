@@ -86,7 +86,8 @@
                 </div>
 
                 <div class="form-group">
-                    <button class="btn btn-danger btn-block" type="button" onclick="fixDeviceCounters(invMgr.getReportData())">
+                    <button class="btn btn-danger btn-block" type="button"
+                            onclick="fixDeviceCounters(invMgr.getReportData())">
                         Popraw Liczniki Urządzeń
                     </button>
                 </div>
@@ -124,14 +125,13 @@
 
 
 <script type="text/javascript">
-    // initialize invoice manager
-    var invMgr = new InvoiceManager('{$smarty.const.FAKTUROWNIA_APITOKEN}',
-        '{$smarty.const.FAKTUROWNIA_ENDPOINT}',
-        '{$smarty.const.FAKTUROWNIA_COMPANYNAME}',
-        '{$smarty.const.FAKTUROWNIA_INVOICE_NUMBER_LENGTH}');
+    const invMgr = new InvoiceManager('{$smarty.const.FAKTUROWNIA_INVOICE_NUMBER_LENGTH}');
 
     function startReportGeneration() {
-        generujRaport(function(data, params){literal}{invMgr.refreshInvoices(params, () => invMgr.showClientWithAllIssuedInvoices(!$(`#checkShowClientWithAllIssuedInvoices`).prop(`checked`)));invMgr.showAgreementWarnings(params);}{/literal});
+        generujRaport(function (data, params) {literal}{
+            invMgr.refreshInvoices(params, () => invMgr.showClientWithAllIssuedInvoices(!$(`#checkShowClientWithAllIssuedInvoices`).prop(`checked`)));
+            invMgr.showAgreementWarnings(params);
+        }{/literal});
     }
 </script>
 <script type="text/javascript">

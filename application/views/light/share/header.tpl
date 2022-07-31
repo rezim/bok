@@ -86,11 +86,11 @@
 <script type="text/javascript" src="{$smarty.const.SCIEZKA}/js/jquery-1.11.0.min.js"></script>
 <script type="text/javascript" src="{$smarty.const.SCIEZKA}/js/jquery-ui-1.10.4.custom.min.js"></script>
 <script type="text/javascript" src="{$smarty.const.SCIEZKA}/js/jquery-ui-timepicker-addon.js"></script>
-<script type="text/javascript" src="{$smarty.const.SCIEZKA}/js/js.js?{$smarty.now}"></script>
+<script type="text/javascript" src="{$smarty.const.SCIEZKA}/js/js.js?{$smarty.const.APPVERSION}"></script>
 <script type="text/javascript" src="{$smarty.const.SCIEZKA}/js/acl.js"></script>
 <script type="text/javascript" src="{$smarty.const.SCIEZKA}/js/jquery.tablesorter.min.js"></script>
 <script type="text/javascript" src="{$smarty.const.SCIEZKA}/js/dropzone.js"></script>
-<script type="text/javascript" src="{$smarty.const.SCIEZKA}/js/invoices.js?{$smarty.now}"></script>
+<script type="text/javascript" src="{$smarty.const.SCIEZKA}/js/invoices.js?{$smarty.const.APPVERSION}"></script>
 <!-- angular libs -->
 <script type="text/javascript" src="{$smarty.const.SCIEZKA}/js/lib/angular.min.js"></script>
 <script type="text/javascript" src="{$smarty.const.SCIEZKA}/js/lib/angular-locale_pl.min.js"></script>
@@ -99,21 +99,21 @@
 <script type="text/javascript" src="{$smarty.const.SCIEZKA}/js/angular/app.config.js"></script>
 <script type="text/javascript" src="{$smarty.const.SCIEZKA}/js/angular/service/rest.js"></script>
 <script type="text/javascript"
-        src="{$smarty.const.SCIEZKA}/js/angular/ctrl/profitabilityCtrl.js?{$smarty.now}"></script>
+        src="{$smarty.const.SCIEZKA}/js/angular/ctrl/profitabilityCtrl.js?{$smarty.const.APPVERSION}"></script>
 <script type="text/javascript"
-        src="{$smarty.const.SCIEZKA}/js/angular/ctrl/paymentsCtrl.js?{$smarty.now}"></script>
+        src="{$smarty.const.SCIEZKA}/js/angular/ctrl/paymentsCtrl.js?{$smarty.const.APPVERSION}"></script>
 <script type="text/javascript"
-        src="{$smarty.const.SCIEZKA}/js/angular/ctrl/userSharesCtrl.js?{$smarty.now}"></script>
-<script type="text/javascript" src="{$smarty.const.SCIEZKA}/js/angular/ctrl/serviceCtrl.js?{$smarty.now}"></script>
+        src="{$smarty.const.SCIEZKA}/js/angular/ctrl/userSharesCtrl.js?{$smarty.const.APPVERSION}"></script>
+<script type="text/javascript" src="{$smarty.const.SCIEZKA}/js/angular/ctrl/serviceCtrl.js?{$smarty.const.APPVERSION}"></script>
 
 <script type="text/javascript"
-        src="{$smarty.const.SCIEZKA}/js/angular/common/dropdownCtrl.js?{$smarty.now}"></script>
+        src="{$smarty.const.SCIEZKA}/js/angular/common/dropdownCtrl.js?{$smarty.const.APPVERSION}"></script>
 
 <!-- Angular UI bootstrap  -->
 <script type="text/javascript" src="{$smarty.const.SCIEZKA}/js/lib/ui-bootstrap-2.5.0.min.js"></script>
 <script type="text/javascript" src="{$smarty.const.SCIEZKA}/js/lib/ui-bootstrap-tpls-2.5.0.min.js"></script>
 
-<script type="text/javascript" src="{$smarty.const.SCIEZKA}/js/test/e2e.js?{$smarty.now}"></script>
+<script type="text/javascript" src="{$smarty.const.SCIEZKA}/js/test/e2e.js?{$smarty.const.APPVERSION}"></script>
 
 {if isset($smarty.session.login) && $smarty.session.login==1}
     <script type="text/javascript" src="{$smarty.const.SCIEZKA}/js/auto-logout.js?{$smarty.const.APPVERSION}"></script>

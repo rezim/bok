@@ -11,21 +11,17 @@ const yesterday = function (strDate) {
 
 const MY_BENEFIT_NIP = "8361676510";
 
-InvoiceManager = function (api_token, endpoint, company_name, invoice_number_length) {
-    var invoicesUrl = [endpoint, 'invoices.json'].join('/');
-    var invoiceViewUrl = [endpoint, 'invoice'].join('/');
+InvoiceManager = function (invoice_number_length) {
 
-    var clientsUrl = [endpoint, 'clients.json'].join('/');
+    const self = this;
 
-    var self = this;
-
-    var currentPeriodInvoices = {
+    const currentPeriodInvoices = {
         period: null,
         invoices: [],
         orderedInvoices: []
     };
 
-    var status = {
+    const status = {
         issued: "wystawiona",
         sent: "wysłana",
         paid: "opłacona",
@@ -33,8 +29,8 @@ InvoiceManager = function (api_token, endpoint, company_name, invoice_number_len
         rejected: "odrzucona"
     };
 
-    var getStatus = function (invStatus, sentTime) {
-        var result = invStatus;
+    const getStatus = function (invStatus, sentTime) {
+        let result = invStatus;
         if (result == 'wystawiona' && sentTime) {
             result = 'wysłana';
         }
@@ -43,26 +39,6 @@ InvoiceManager = function (api_token, endpoint, company_name, invoice_number_len
     };
 
     this.reportData = null;
-
-    /**
-     * tmp function to sync clients, need to be refactored
-     * @deprecated
-     */
-    var updateClients = function () {
-        $.when(getClients(['page=1']), getClients(['page=2'])).done(function (client1, client2) {
-            var clients = client1[0].concat(client2[0]);
-
-            var text = "START TRANSACTION;\n";
-            $.each(clients, function (idx, client) {
-                var updateCmd = "update clients set nazwapelna='" + client.name.split('"').join('') + "', nazwakrotka='" + client.shortcut.split('"').join('') + "', ulica = '" + client.street + "', kodpocztowy='" + client.post_code + "', mailfaktury = '" + client.email + "', miasto = '" + client.city + "' where nip='" + client.tax_no + "';";
-
-                text += updateCmd + "\n";
-            });
-
-            text += "Commit;";
-            $("textarea#clients").val(text);
-        });
-    };
 
     this.setReportData = function (data) {
         this.reportData = data;
@@ -80,9 +56,9 @@ InvoiceManager = function (api_token, endpoint, company_name, invoice_number_len
         return currentPeriodInvoices.missingInvoices;
     };
 
-    this.showInvoice = function (token, title) {
-        var url = [invoiceViewUrl, token].join('/');
-        window.open(url, title);
+    this.showInvoice = function (url, title) {
+        const secureUrl = url.replace('http://', 'https://');
+        window.open(secureUrl, title);
     };
 
     this.getLastInvoice = function () {
@@ -101,18 +77,6 @@ InvoiceManager = function (api_token, endpoint, company_name, invoice_number_len
         return last;
     };
 
-    this.updateInvoiceNumber = function (id, number, callback) {
-        var url = [endpoint, 'invoices', id + '.json'].join('/');
-
-        var data = {
-            "invoice": {
-                "number": number
-            }
-        };
-
-        put(url, data, callback);
-    };
-
     this.getInvoiceById = function (id) {
         var invoices = this.getInvoices();
 
@@ -121,21 +85,14 @@ InvoiceManager = function (api_token, endpoint, company_name, invoice_number_len
         })
     };
 
-    this.removeInvoice = function (id, rowSelector, status) {
-
+    this.removeInvoice = async function (id, rowSelector, status) {
         if (status == 'wystawiona') {
-
-            var url = [endpoint, 'invoices', [id, 'json'].join('.')].join('/');
-
             if (confirm('Czy na pewno chcesz usunąć fakturę?')) {
-                // var lastInvoice = self.getLastInvoice();
-                // var removedInvoice = self.getInvoiceById(id);
-                del(url, function (inv) {
 
-                    self.refreshInvoices();
-                    $(rowSelector).remove();
+                await loadAsyncData('/clientinvoices/removeinvoicebyid/notemplate', {invoice_id: id});
 
-                });
+                self.refreshInvoices();
+                $(rowSelector).remove();
             }
         } else {
             alert('Nie moża usunąć faktury, której status jest "' + status + '"!');
@@ -169,16 +126,20 @@ InvoiceManager = function (api_token, endpoint, company_name, invoice_number_len
 
             for (const agrIds of groupedAgreementIds) {
                 const params = getInvoiceParams(invoice, agrIds);
+                let newInvoice;
                 try {
-                    const invoice = await post(invoicesUrl, params);
-
-                    const interestNotes = await loadAsyncData('/clientinvoices/addinterestnotestoinvoice/notemplate', {
-                        invoice_id: invoice.id,
-                        nip: invoice.buyer_tax_no
-                    });
-
+                    newInvoice = await loadAsyncData('/clientinvoices/addnewinvoice/notemplate', params);
                 } catch (e) {
                     errorMsg += `Błąd!, nie można wystawić FV dla '${invoice['nazwapelna']}', komunikat błędu: ${e.responseText}! `;
+                }
+                try {
+                    const {id, buyer_tax_no} = JSON.parse(newInvoice);
+                    await loadAsyncData('/clientinvoices/addinterestnotestoinvoice/notemplate', {
+                        invoice_id: id,
+                        nip: buyer_tax_no
+                    });
+                } catch (e) {
+                    errorMsg += `Błąd!, nie można dołaczyć not odsetkowych do wystawionej faktury, komunikat błędu: ${e.responseText}! `;
                 }
             }
             await this.refreshInvoices();
@@ -221,15 +182,20 @@ InvoiceManager = function (api_token, endpoint, company_name, invoice_number_len
 
                     for (const agrIds of groupedAgreementIds) {
                         const params = getInvoiceParams(report, agrIds);
+                        let newInvoice;
                         try {
-                            const invoice = await post(invoicesUrl, params);
-
+                            newInvoice = await loadAsyncData('/clientinvoices/addnewinvoice/notemplate', params);
+                        } catch (e) {
+                            errorMsg += `Błąd!, nie można wystawić FV dla '${invoice['nazwapelna']}', komunikat błędu: ${e.responseText}! `;
+                        }
+                        try {
+                            const {id, buyer_tax_no} = JSON.parse(newInvoice);
                             await loadAsyncData('/clientinvoices/addinterestnotestoinvoice/notemplate', {
-                                invoice_id: invoice.id,
-                                nip: invoice.buyer_tax_no
+                                invoice_id: id,
+                                nip: buyer_tax_no
                             });
                         } catch (e) {
-                            errorMsg += `Błąd!, nie można wystawić FV dla '${report['nazwapelna']}', komunikat błędu: ${e.responseText}! `;
+                            errorMsg += `Błąd!, nie można dołaczyć not odsetkowych do wystawionej faktury, komunikat błędu: ${e.responseText}! `;
                         }
                     }
 
@@ -508,56 +474,58 @@ InvoiceManager = function (api_token, endpoint, company_name, invoice_number_len
         }
     };
 
-    var createInvoiceListView = function (key, group) {
+    const createInvoiceListView = function (key, group) {
 
-        var table$ = $('<table />').attr('class', 'tablesorter displaytable');
+        const table$ = $('<table />').attr('class', 'tablesorter displaytable');
 
-        var head$ = $('<thead />');
+        const head$ = $('<thead />');
 
-        [{'name': 'Lp', 'width': '20px'}, {'name': 'Numer', 'width': '35px'}, {
+        [{'name': 'Lp', 'width': '20px'}, {'name': 'Numer', 'width': '120px'}, {
             'name': 'Nazwa klienta',
-            'width': '220px'
-        }, {'name': 'Umowy', 'width': '150px'}, {'name': 'Cena netto', 'width': '100px'}, {
-            'name': 'Wartość VAT',
-            'width': '100px'
-        }, {'name': 'Wartość brutto', 'width': '100px'}, {'name': 'Status', 'width': '100px'}, {
+            'width': '250px'
+        }, {'name': 'Umowy', 'width': '120px'}, {'name': 'Netto', 'width': '100px', 'text-align': 'right'}, {
+            'name': 'VAT',
+            'width': '100px', 'text-align': 'right'
+        }, {'name': 'Brutto', 'width': '100px', 'text-align': 'right'}, {'name': 'Status', 'width': '100px', 'text-align': 'center'}, {
             'name': '',
             'width': '100px'
         }].forEach(function (th) {
-            head$.append($('<th>').attr('style', ['width', th['width']].join(':')).html(th['name']));
+            head$.append($('<th>').attr('style', `width: ${th['width']}; text-align: ${th['text-align']};`).html(th['name']));
         });
 
         table$.append(head$);
 
-        var body$ = $('<tbody />');
+        const body$ = $('<tbody />');
 
-        for (var i = 0; i < group.length; i++) {
-            row$ = $('<tr/>').attr('id', ['row', group[i].id].join('-'));
+        for (let i = 0; i < group.length; i++) {
+
+            const {id, number, buyer_name, internal_note, price_net, price_tax, price_gross, sent_time, view_url} = group[i];
+            const invoice_status = group[i].status;
+
+            const row$ = $('<tr/>').attr('id', ['row', id].join('-'));
 
             row$.append($('<td/>').html(i + 1));
-            row$.append($('<td/>').html(group[i].number));
-            row$.append($('<td/>').html(group[i].buyer_name));
-            if (group[i].internal_note) {
-                row$.append($('<td/>').html(group[i].internal_note.split(',').join(', ')));
+            row$.append($('<td/>').html(number));
+            row$.append($('<td/>').html(buyer_name));
+            if (internal_note) {
+                row$.append($('<td/>').html(internal_note.split(',').join(', ')));
             } else {
                 row$.append($('<td/>'));
             }
-            row$.append($('<td align="right"/>').html(group[i].price_net));
-            row$.append($('<td align="right"/>').html(group[i].price_tax));
-            row$.append($('<td align="right"/>').html(group[i].price_gross));
-            row$.append($('<td align="right"/>').html(getStatus(status[group[i].status], group[i].sent_time)));
+            row$.append($('<td align="right"/>').html(price_net));
+            row$.append($('<td align="right"/>').html(price_tax));
+            row$.append($('<td align="right"/>').html(price_gross));
+            row$.append($('<td align="right"/>').html(getStatus(status[invoice_status], sent_time)));
 
-            var actionShow = $('<img>');
-            actionShow.attr('class', 'imgAkcja imgNormalLogs');
-            actionShow.attr('onclick', 'invMgr.showInvoice("' + group[i].token + '","' + group[i].buyer_name + '")');
+            const actionShow = $('<i>');
+            actionShow.attr('class', 'fas fa-search cursor-pointer text-success mr-3');
+            actionShow.attr('onclick', 'invMgr.showInvoice("' + view_url + '","' + buyer_name + '")');
 
-            //actionShow.attr('title', 'Pokaż fakturę');
+            const actionDelete = $('<i>');
+            actionDelete.attr('class', 'fas fa-times-circle cursor-pointer text-danger mr-1');
+            actionDelete.attr('onclick', 'invMgr.removeInvoice("' + id + '","' + ['#colorbox #row', id].join('-') + '","' + getStatus(status[invoice_status], sent_time) + '")');
 
-            var actionDelete = $('<img>');
-            actionDelete.attr('class', 'imgAkcja imgusun');
-            actionDelete.attr('onclick', 'invMgr.removeInvoice("' + group[i].id + '","' + ['#colorbox #row', group[i].id].join('-') + '","' + getStatus(status[group[i].status], group[i].sent_time) + '")');
-
-            row$.append($('<td align="right"/>').append(actionShow).append(actionDelete));
+            row$.append($('<td align="right" style="font-size: 20px" />').append(actionShow).append(actionDelete));
 
             body$.append(row$);
         }
@@ -617,7 +585,7 @@ InvoiceManager = function (api_token, endpoint, company_name, invoice_number_len
      *
      * @param invoice
      * @param agreementIds
-     * @returns {{api_token: *, invoice: {kind: string, number: null, seller_name: string, sell_date: string, issue_date: string, payment_to: string, buyer_name: string, buyer_tax_no: string, positions: *[]}}}
+     * @returns {{buyer_email: *, show_discount: string, kind: string, buyer_street: *, buyer_name: *, positions: [], internal_note: string, buyer_city: *, additional_info_desc: string, number: null, sell_date: *, buyer_post_code: *, issue_date: *, buyer_tax_no: *, additional_info: string, payment_to: *, recipient_id: (string)}}
      */
     var getInvoiceParams = function (invoice, agreementIds) {
 
@@ -705,27 +673,23 @@ InvoiceManager = function (api_token, endpoint, company_name, invoice_number_len
         }
 
         return {
-            "api_token": api_token,
-            "invoice": {
-                "kind": "vat",
-                "number": invNumber,
-                "sell_date": dateFormat(getLastDayInMonth(currentPeriodInvoices.period.dateFrom)),
-                "issue_date": dateFormat(getLastDayInMonth(currentPeriodInvoices.period.dateFrom)),
-                "payment_to": dateFormat(addDaysToDate(getLastDayInMonth(currentPeriodInvoices.period.dateFrom), invoice['terminplatnosci'])),
-                "buyer_name": invoice["nazwapelna"],
-                "buyer_tax_no": invoice["nip"],
-                "buyer_email": invoice["mailfaktury"],
-                "buyer_post_code": invoice["kodpocztowy"],
-                "buyer_city": invoice["miasto"],
-                "buyer_street": invoice["ulica"],
-                "recipient_id": recipient_id || '',
-                "positions": positions,
-                "show_discount": "0",
-                "internal_note": agreementIds.join(','),
-                "additional_info": "1",
-                "additional_info_desc": "Lokalizacja Urządzenia"
-                // "description": "some test description" // uwagi
-            }
+            "kind": "vat",
+            "number": invNumber,
+            "sell_date": dateFormat(getLastDayInMonth(currentPeriodInvoices.period.dateFrom)),
+            "issue_date": dateFormat(getLastDayInMonth(currentPeriodInvoices.period.dateFrom)),
+            "payment_to": dateFormat(addDaysToDate(getLastDayInMonth(currentPeriodInvoices.period.dateFrom), invoice['terminplatnosci'])),
+            "buyer_name": invoice["nazwapelna"],
+            "buyer_tax_no": invoice["nip"],
+            "buyer_email": invoice["mailfaktury"],
+            "buyer_post_code": invoice["kodpocztowy"],
+            "buyer_city": invoice["miasto"],
+            "buyer_street": invoice["ulica"],
+            "recipient_id": recipient_id || '',
+            "positions": positions,
+            "show_discount": "0",
+            "internal_note": agreementIds.join(','),
+            "additional_info": "1",
+            "additional_info_desc": "Lokalizacja Urządzenia"
         };
     };
 
@@ -737,52 +701,6 @@ InvoiceManager = function (api_token, endpoint, company_name, invoice_number_len
         }
 
         return nb;
-    };
-
-    var post = function (url, data, callback) {
-        return $.ajax({
-            type: "POST",
-            url: url,
-            data: data,
-            dataType: 'json',
-            success: callback
-        });
-    };
-
-    var put = function (url, data, callback) {
-        $.ajax({
-            url: url,
-            type: 'post',
-            data: $.extend({_method: 'put', api_token: api_token}, data),
-            success: callback
-        });
-    };
-
-    var del = function (url, callback) {
-        $.ajax({
-            url: url,
-            type: 'post',
-            data: {_method: 'delete', api_token: api_token},
-            success: callback
-        });
-    };
-
-    var get = function (params, callback) {
-        var api_token_param = ["api_token", api_token].join('=');
-        var request_params = params.join('&');
-        request_params = [request_params, api_token_param].join('&');
-
-        var url = [invoicesUrl, request_params].join('?');
-        return $.get(url, callback);
-    };
-
-    var getClients = function (params, callback) {
-        var api_token_param = ["api_token", api_token].join('=');
-        var request_params = params.join('&');
-        request_params = [request_params, api_token_param].join('&');
-
-        var url = [clientsUrl, request_params].join('?');
-        return $.get(url, callback);
     };
 
     var getFormattedDate = function (strDate) {

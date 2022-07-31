@@ -148,6 +148,80 @@ class InvoicesController extends Controller
         return $invoices;
     }
 
+    function addInvoice($kind, $number, $sellDate, $issueDate, $paymentTo, $buyerName, $buyerTaxNo, $buyerEmail,
+                        $buyerPostCode, $buyerCity, $buyerStreet, $recipientId, $positions, $showDiscount, $internalNote,
+                        $additionalInfo, $additionalInfoDesc)
+    {
+        $ch = curl_init();
+        $url = FAKTUROWNIA_ENDPOINT . '/invoices.json';
+
+        $data = array(
+            "api_token" => FAKTUROWNIA_APITOKEN,
+            "invoice" => array(
+                "kind" => $kind,
+                "number" => $number,
+                "sell_date" => $sellDate,
+                "issue_date" => $issueDate,
+                "payment_to" => $paymentTo,
+                "buyer_name" => $buyerName,
+                "buyer_tax_no" => $buyerTaxNo,
+                "buyer_email" => $buyerEmail,
+                "buyer_post_code" => $buyerPostCode,
+                "buyer_city" => $buyerCity,
+                "buyer_street" => $buyerStreet,
+                "recipient_id" => $recipientId,
+                "positions" => $positions,
+                "show_discount" => $showDiscount,
+                "internal_note" => $internalNote,
+                "additional_info" => $additionalInfo,
+                "additional_info_desc" => $additionalInfoDesc
+            )
+        );
+
+        $data_string = json_encode($data);
+        curl_setopt($ch, CURLOPT_URL, $url);
+        curl_setopt($ch, CURLOPT_POSTFIELDS, $data_string);
+        curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+        if (USE_PROXY) {
+            curl_setopt($ch, CURLOPT_PROXY, '127.0.0.1:8888');
+        }
+        curl_setopt($ch, CURLOPT_HTTPHEADER, array(
+                'Content-Type: application/json',
+                'Content-Length: ' . strlen($data_string))
+        );
+        $result = json_decode(curl_exec($ch), true);
+
+        curl_close($ch);
+
+        return $result;
+    }
+
+    function removeInvoice($invoiceId) {
+        $ch = curl_init();
+        $url = FAKTUROWNIA_ENDPOINT . '/invoices/' . $invoiceId . '.json';
+
+        $data = array(
+            "api_token" => FAKTUROWNIA_APITOKEN
+        );
+
+        $data_string = json_encode($data);
+        curl_setopt($ch, CURLOPT_URL, $url);
+        curl_setopt($ch, CURLOPT_CUSTOMREQUEST, "DELETE");
+        curl_setopt($ch, CURLOPT_POSTFIELDS, $data_string);
+        curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+        if (USE_PROXY) {
+            curl_setopt($ch, CURLOPT_PROXY, '127.0.0.1:8888');
+        }
+        curl_setopt($ch, CURLOPT_HTTPHEADER, array(
+                'Content-Type: application/json',
+                'Content-Length: ' . strlen($data_string))
+        );
+        $result = json_decode(curl_exec($ch), true);
+
+        curl_close($ch);
+
+        return $result;
+    }
 
     function addPayment($price, $invoiceId, $clientId, $invoiceTaxNo, $name, $paidDate, $description)
     {

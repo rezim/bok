@@ -655,7 +655,7 @@ body {
 .displaytable
 {
     font-family: "Lato";
-    margin:0 auto;
+    margin: 30px auto;
     font-size: 14px; 
     border-collapse: collapse; 
 }
