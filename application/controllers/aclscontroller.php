@@ -104,7 +104,10 @@ class PassHash
     function hash($password)
     {
         // format: algorithm:iterations:salt:hash
-        $salt = base64_encode(mcrypt_create_iv(PBKDF2_SALT_BYTE_SIZE, MCRYPT_DEV_URANDOM));
+        // [TR]: mcrypt_create_iv was removed in PHP 7.2, we use alternative base64_encode, see
+        // https://www.php.net/manual/en/function.random-bytes.php
+        // $salt = base64_encode(mcrypt_create_iv(PBKDF2_SALT_BYTE_SIZE, MCRYPT_DEV_URANDOM));
+        $salt = base64_encode(random_bytes(PBKDF2_SALT_BYTE_SIZE));
 
         return PBKDF2_HASH_ALGORITHM . ":" . PBKDF2_ITERATIONS . ":" . $salt . ":" .
             base64_encode(PassHash::pbkdf2(

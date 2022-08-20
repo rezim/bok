@@ -518,6 +518,11 @@ class InvoicesController extends Controller
     {
         $interestNoteFolderName = INTEREST_NOTE_FOLDER_NAME;
         $interestNoteDir = "./{$interestNoteFolderName}/";
+
+        if (!is_dir($interestNoteDir)) {
+            return [];
+        }
+
         $clientNips = scandir($interestNoteDir);
 
         $nipToInterestNotesMap = array();
