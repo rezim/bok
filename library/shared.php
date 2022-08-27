@@ -35,24 +35,6 @@ $months = array(
     '12' => 'grudzień',
 );
 
-
-/** Check for Magic Quotes and remove them **/
-
-function stripSlashesDeep($value)
-{
-    $value = is_array($value) ? array_map('stripSlashesDeep', $value) : stripslashes($value);
-    return $value;
-}
-
-function removeMagicQuotes()
-{
-    if (get_magic_quotes_gpc()) {
-        $_GET = stripSlashesDeep($_GET);
-        $_POST = stripSlashesDeep($_POST);
-        $_COOKIE = stripSlashesDeep($_COOKIE);
-    }
-}
-
 /** Check register globals and remove them **/
 
 function unregisterGlobals()
@@ -321,10 +303,13 @@ function isSecure()
         || $_SERVER['SERVER_PORT'] == 443;
 }
 
+require ROOT . DS . 'library' . DS . 'vendor' . DS . 'autoload.php';
+
 date_default_timezone_set('Europe/Warsaw');
 
 setReporting();
-removeMagicQuotes();
 unregisterGlobals();
 callHook();
+
+
 

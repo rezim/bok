@@ -12,7 +12,7 @@
             <table class='table table-sm bok-two-column-layout'>
                 <tr>
                     <th>
-                        Nazwa krótka
+                        Nazwa krótka&nbsp;<span style="color: red">*</span>
                     </th>
                     <td>
                         <input class="form-control form-control-md" type="text" id='txtNazwaKrotka' autofocus
@@ -21,7 +21,7 @@
                 </tr>
                 <tr>
                     <th>
-                        Nazwa pełna
+                        Nazwa pełna&nbsp;<span style="color: red">*</span>
                     </th>
                     <td>
                         <textarea id="txtNazwaPelna"
@@ -58,7 +58,7 @@
 
                 <tr>
                     <th>
-                        NIP
+                        NIP&nbsp;<span style="color: red">*</span>
                     </th>
                     <td>
                         <input class="form-control form-control-md" id='txtNip' {if !$show_payment_options && $rowid!=0}disabled{/if}
@@ -378,7 +378,9 @@
     {if !$show_payment_options}
         <div class="h-50">&nbsp;{*placeholder*}</div>
     {/if}
-    <div class="container text-right" wymaganylevel='w' wymaganyzrobiony='0'>
+
+    {* [TR] - as we show these options to both Admin and sytem Operator, we can remove it as optional below *}
+    <div class="container text-right" wymaganylevel='r' wymaganyzrobiony='1'>
         <a href="#" class="btn btn-outline-success active" role="button" aria-pressed="true"
            onmousedown='zapiszKlienta("{$rowid}");return false;'><i class="fas fa-save"></i>&nbsp; Zapisz</a>
         <a href="#" class="btn btn-outline-secondary" role="button" onclick="$.colorbox.close();">Anuluj</a>
