@@ -196,7 +196,8 @@ class InvoicesController extends Controller
         return $result;
     }
 
-    function removeInvoice($invoiceId) {
+    function removeInvoice($invoiceId)
+    {
         $ch = curl_init();
         $url = FAKTUROWNIA_ENDPOINT . '/invoices/' . $invoiceId . '.json';
 
@@ -501,10 +502,15 @@ class InvoicesController extends Controller
 
         $noteNames = glob("$dir/*.pdf");
 
-        $notesWithDate = array_map(function ($filePath) {
+        $parser = new \Smalot\PdfParser\Parser();
+        $notesWithDate = array_map(function ($filePath) use ($parser) {
+
+            $pdf = $parser->parseFile($filePath);
+            $text = array_map(fn($lineOfText) => preg_replace("/\s+/", "", $lineOfText), preg_split('/\r\n|\r|\n/', $pdf->getText()));
+
             $fileName = basename($filePath);
             $timestamp = filemtime($filePath);
-            return array("name" => $fileName, "path" => $filePath, "date" => date("Y-m-d H:i:s", $timestamp), "timestamp" => $timestamp);
+            return array("name" => $fileName, "path" => $filePath, "date" => date("Y-m-d H:i:s", $timestamp), "timestamp" => $timestamp, "text" => $text);
         }, $noteNames);
 
         usort($notesWithDate, function ($a, $b) {

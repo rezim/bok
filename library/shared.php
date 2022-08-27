@@ -303,9 +303,13 @@ function isSecure()
         || $_SERVER['SERVER_PORT'] == 443;
 }
 
+require ROOT . DS . 'library' . DS . 'vendor' . DS . 'autoload.php';
+
 date_default_timezone_set('Europe/Warsaw');
 
 setReporting();
 unregisterGlobals();
 callHook();
+
+
 

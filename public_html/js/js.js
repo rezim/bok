@@ -1437,10 +1437,9 @@ function uprawnienia() {
 
         $('[wymaganylevel]').each(function () {
 
-            var value = $(this).attr('wymaganylevel');
+            const value = $(this).attr('wymaganylevel');
 
-
-            if (value == 'r' && $(this).attr('wymaganyzrobiony') == '0') {
+            if (value === 'r' && $(this).attr('wymaganyzrobiony') === '0') {
                 if (val2.indexOf(value) === -1) {
                     $(this).css('display', 'none');
                 }
