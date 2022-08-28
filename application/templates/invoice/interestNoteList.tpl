@@ -17,18 +17,20 @@
                     </div>
                 </div>
                 <div class="row header">
-                    <div class="col-sm-3">data</div>
-                    <div class="col-sm-3">numer noty</div>
-                    <div class="col-sm-2">kwota FV</div>
-                    <div class="col-sm-2">dni opóźnienia</div>
+                    <div class="col-sm-2">data</div>
+                    <div class="col-sm-3">numer</div>
+                    <div class="col-sm-2 text-right">kwota</div>
+                    <div class="col-sm-2 text-right">FVat</div>
+                    <div class="col-sm-1 text-right">dni</div>
                     <div class="col-sm-2 text-right">akcja</div>
                 </div>
                 <div class="row" ng-repeat="note in $ctrl.data.interestNotesWithInvoices track by $index ">
-                    <div ng-class="(note.name.startsWith('paid-')) ? 'paid' : ''" class="col-sm-3" role="button">[[note.date]]</div>
+                    <div ng-class="(note.name.startsWith('paid-')) ? 'paid' : ''" class="col-sm-2" role="button">[[note.date]]</div>
                     <div class="col-sm-3" role="button"><a href="[['.' + note.path]]" target=”_blank”>[[$ctrl.normalizeNoteName(note.name)]]</a>
                     </div>
+                    <div class="col-sm-2 text-right" role="button">[[note.amount | currency: '']]</div>
                     <div class="col-sm-2 text-right" role="button">[[note.invoice.paid | currency: '']]</div>
-                    <div class="col-sm-2 text-right" role="button">[[note.invoice.is_late_days]]</div>
+                    <div class="col-sm-1 text-right" role="button">[[note.invoice.is_late_days]]</div>
                     <div class="col-sm-2 text-right action" role="button">
                         <button ng-if="!note.name.startsWith('paid-')" class="btn btn-warning" style="font-size: 10px " title="usuń"
                                 ng-click="$ctrl.removeInterestNote(note.invoice.buyer_tax_no, note.name, note.invoice.number, $ctrl.data.paymentDate)">
