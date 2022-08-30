@@ -502,15 +502,13 @@ class InvoicesController extends Controller
 
         $noteNames = glob("$dir/*.pdf");
 
-        $parser = new \Smalot\PdfParser\Parser();
-        $notesWithDate = array_map(function ($filePath) use ($parser) {
+        $notesWithDate = array_map(function ($filePath) {
 
-            $pdf = $parser->parseFile($filePath);
-            $text = array_map(fn($lineOfText) => preg_replace("/\s+/", "", $lineOfText), preg_split('/\r\n|\r|\n/', $pdf->getText()));
+            $parsedInterestNote = $this->readInterestNote($filePath);
 
             $fileName = basename($filePath);
             $timestamp = filemtime($filePath);
-            return array("name" => $fileName, "path" => $filePath, "date" => date("Y-m-d H:i:s", $timestamp), "timestamp" => $timestamp, "text" => $text);
+            return array("name" => $fileName, "path" => $filePath, "date" => date("Y-m-d H:i:s", $timestamp), "timestamp" => $timestamp, "amount" => $parsedInterestNote['amount'], "text" => $parsedInterestNote["text"]);
         }, $noteNames);
 
         usort($notesWithDate, function ($a, $b) {
@@ -519,6 +517,35 @@ class InvoicesController extends Controller
 
         return $notesWithDate;
     }
+
+    function readInterestNote($filePath) {
+        $parser = new \Smalot\PdfParser\Parser();
+        $pdf = $parser->parseFile($filePath);
+        $textArr = array_map(fn($lineOfText) => preg_replace("/\s+/", "", $lineOfText), preg_split('/\r\n|\r|\n/', $pdf->getText()));
+
+        $result = array();
+
+        /**
+         * ...
+         * 47: "Razem"
+         * 48: "1,61PLN"
+         * 49: "Słownie"
+         * ...
+         */
+        $amountPosition = array_search("Słownie", $textArr);
+
+        $result['text'] = $textArr;
+
+
+        if ($amountPosition &&  count($textArr) > 2 &&  $textArr[$amountPosition-2] === "Razem") {
+            $result['amount'] = floatval(str_replace(",", ".", $textArr[$amountPosition-1]));
+        } else {
+            $result['amount'] = -1;
+        }
+
+        return $result;
+    }
+
 
     function resolveAllInterestNotes()
     {
