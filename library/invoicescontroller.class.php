@@ -35,6 +35,7 @@ class InvoicesController extends Controller
     function geInvoicesByClientId($clientId, $isPaid)
     {
         $invoices = array();
+        $perPage = 100;
 
         $ch = curl_init();
         $pageNb = 1;
@@ -42,6 +43,7 @@ class InvoicesController extends Controller
             . 'client_id=' . $clientId
             . '&status=' . (($isPaid) ? 'paid' : 'not_paid')
             . '&order=issue_date'
+            . '&per_page=' . $perPage
             . '&api_token=' . FAKTUROWNIA_APITOKEN;
         do {
             curl_setopt($ch, CURLOPT_URL, $url . '&page=' . $pageNb);
@@ -53,7 +55,7 @@ class InvoicesController extends Controller
 
             $invoices = array_merge($invoices, $data);
             $pageNb++;
-        } while (count($data) == 50);
+        } while (count($data) == $perPage);
 
         curl_close($ch);
 
@@ -63,11 +65,15 @@ class InvoicesController extends Controller
     function getInvoicesByDateRange($period, $dateFrom, $dateTo)
     {
 
-        $max_multi_calls_count = 50;
+        $ch = curl_init();
+        $perPage = 100;
+//        $pageNb = 1;
+//
+//        $max_multi_calls_count = 50;
 
         $invoices = array();
 
-        $curl_arr = array();
+//        $curl_arr = array();
         $mh = curl_multi_init();
 
         $pageNb = 1;
@@ -75,42 +81,58 @@ class InvoicesController extends Controller
             . 'period=' . $period
             . '&date_from=' . $dateFrom
             . '&date_to=' . $dateTo
-            . '&api_token=' . FAKTUROWNIA_APITOKEN;
+            . '&api_token=' . FAKTUROWNIA_APITOKEN
+            . '&per_page=' . $perPage;
 
         do {
-            for ($i = 0; $i < $max_multi_calls_count; $i++) {
-
-                $curl_arr[$i] = curl_init($url . '&page=' . $pageNb);
-                curl_setopt($curl_arr[$i], CURLOPT_RETURNTRANSFER, true);
-                if (USE_PROXY) {
-                    curl_setopt($curl_arr[$i], CURLOPT_PROXY, '127.0.0.1:8888');
-                }
-                curl_multi_add_handle($mh, $curl_arr[$i]);
-
-                $pageNb++;
+            curl_setopt($ch, CURLOPT_URL, $url . '&page=' . $pageNb);
+            curl_setopt($ch, CURLOPT_RETURNTRANSFER, TRUE);
+            if (USE_PROXY) {
+                curl_setopt($ch, CURLOPT_PROXY, '127.0.0.1:8888');
             }
+            $data = json_decode(curl_exec($ch), true);
 
-            do {
-                $status = curl_multi_exec($mh, $running);
-            } while ($running > 0 && $status === CURLM_OK);
+            $invoices = array_merge($invoices, $data);
+            $pageNb++;
+        } while (count($data) == $perPage);
 
+        curl_close($ch);
 
-            if ($status === CURLM_OK) {
-                for ($i = 0; $i < $max_multi_calls_count; $i++) {
-                    $results[] = curl_multi_getcontent($curl_arr[$i]);
+//        do {
+//            for ($i = 0; $i < $max_multi_calls_count; $i++) {
+//
+//                $curl_arr[$i] = curl_init($url . '&page=' . $pageNb);
+//                curl_setopt($curl_arr[$i], CURLOPT_RETURNTRANSFER, true);
+//                if (USE_PROXY) {
+//                    curl_setopt($curl_arr[$i], CURLOPT_PROXY, '127.0.0.1:8888');
+//                }
+//                curl_multi_add_handle($mh, $curl_arr[$i]);
+//
+//                $pageNb++;
+//            }
+//
+//            do {
+//                $status = curl_multi_exec($mh, $running);
+//            } while ($running > 0 && $status === CURLM_OK);
+//
+//
+//            if ($status === CURLM_OK) {
+//                for ($i = 0; $i < $max_multi_calls_count; $i++) {
+//                    $results[] = curl_multi_getcontent($curl_arr[$i]);
+//
+//                    curl_multi_remove_handle($mh, $curl_arr[$i]);
+//
+//                    $data = json_decode(curl_multi_getcontent($curl_arr[$i]), true);
+//
+//                    $invoices = array_merge($invoices, $data);
+//                }
+//            }
+//        } while (count($invoices) === ($pageNb - 1) * 50 && $status === CURLM_OK);
 
-                    curl_multi_remove_handle($mh, $curl_arr[$i]);
-
-                    $data = json_decode(curl_multi_getcontent($curl_arr[$i]), true);
-
-                    $invoices = array_merge($invoices, $data);
-                }
-            }
-        } while (count($invoices) === ($pageNb - 1) * 50 && $status === CURLM_OK);
-
-        curl_multi_close($mh);
-
-        return ($status === CURLM_OK) ? $invoices : $status;
+//        curl_multi_close($mh);
+//
+//        return ($status === CURLM_OK) ? $invoices : $status;
+        return $invoices;
     }
 
 
