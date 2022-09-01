@@ -354,6 +354,12 @@ InvoiceManager = function (invoice_number_length) {
             // set new invoice counts
             $.each(groupedInvoices, function (key, group) {
 
+                // fix for a case, if client has not NIP,
+                // then the format of NIP is: PESEL : 123456
+                if (key.startsWith('Pesel')) {
+                    return;
+                }
+
                 $('.invoice-count.' + key).text(group.length).unbind('click');
 
                 $('.invoice-count.' + key).text(group.length).bind('click', function () {
@@ -486,7 +492,11 @@ InvoiceManager = function (invoice_number_length) {
         }, {'name': 'Umowy', 'width': '120px'}, {'name': 'Netto', 'width': '100px', 'text-align': 'right'}, {
             'name': 'VAT',
             'width': '100px', 'text-align': 'right'
-        }, {'name': 'Brutto', 'width': '100px', 'text-align': 'right'}, {'name': 'Status', 'width': '100px', 'text-align': 'center'}, {
+        }, {'name': 'Brutto', 'width': '100px', 'text-align': 'right'}, {
+            'name': 'Status',
+            'width': '100px',
+            'text-align': 'center'
+        }, {
             'name': '',
             'width': '100px'
         }].forEach(function (th) {
