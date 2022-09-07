@@ -221,7 +221,10 @@ PaymentsCtrl = function ($scope, rest, $q, $filter, $uibModal, $interpolate, app
                     invoice.buyer_tax_no = mapTaxNo(invoice.buyer_tax_no);
 
                     if (!objClientInvoice[invoice.buyer_tax_no]) {
-                        const noAgreementClientName = ['# - (brak umowy)', invoice.buyer_name].join(' ');
+                        if (invoice.buyer_tax_no === '') {
+                            invoice.buyer_tax_no = invoice.buyer_name;
+                        }
+                        const noAgreementClientName = `${invoice.buyer_name}`;
                         objClientInvoice[invoice.buyer_tax_no] =
                             initClientInvoice(noAgreementClientName, invoice.buyer_tax_no);
                     }
@@ -667,6 +670,10 @@ PaymentsCtrl = function ($scope, rest, $q, $filter, $uibModal, $interpolate, app
 
 
     this.showClientCard = function (clientId) {
+        if (!clientId) {
+            alert("Ten klient nie posiada umowy w systemie!");
+            return;
+        }
         showNewClientAdd(clientId);
     }
 
