@@ -108,6 +108,11 @@
                         <div class="dropdown-menu dropdown-menu-right" aria-labelledby="dropdownMenuLink">
                             <a class="dropdown-item" href="#" onClick='showNewPrinterAdd("{$item.serial}")'><i class="fas fa-edit"></i>&nbsp;&nbsp;Edycja</a>
                             <div class="border-top my-1"></div>
+
+                            <a href="javascript:void(0)" class="dropdown-item"
+                               onClick="showPrinterMessages('{$item.serial}', '{$item.model}')"><i
+                                        class="fas fa-comment-dots"></i>&nbsp;&nbsp;notatki</a>
+
                             <a class="dropdown-item" href="#" onClick='pokazLogi("{$item.serial}")'><i class="fas fa-history"></i>&nbsp;&nbsp;Logi</a>
                             <a class="dropdown-item" href="#" onClick='historiaTonerow("{$item.serial}")'>Historia
                                 Tonerów</a>

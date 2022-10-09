@@ -108,6 +108,9 @@
                             <div class="dropdown-menu dropdown-menu-right" aria-labelledby="dropdownMenuLink">
                                 <a wymaganylevel='r' wymaganyzrobiony='0' class="dropdown-item" href="#"
                                    onClick='showNewAgreementAdd("{$item.rowid}")'><i class="fas fa-edit"></i>&nbsp;&nbsp;Edycja</a>
+                                <a href="javascript:void(0)" class="dropdown-item"
+                                   onClick="showAgreementMessages('{$item.nrumowy}', '{$item.type}', '{$item.nazwakrotka}')"><i
+                                            class="fas fa-comment-dots"></i>&nbsp;&nbsp;notatki</a>
                                 {if !empty($item.serial)}
                                     <div class="border-top my-1"></div>
                                     <a class="dropdown-item" href="#" onClick='pokazLogi("{$item.serial}")'><i

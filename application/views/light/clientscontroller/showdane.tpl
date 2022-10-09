@@ -62,6 +62,9 @@
                                 <a class="dropdown-item" href="#" onClick='showNewClientAdd("{$item.rowid}")'><i
                                             class="fas fa-edit"></i>&nbsp;&nbsp;Edycja</a>
                                 <div class="border-top my-1"></div>
+                                <a href="javascript:void(0)" class="dropdown-item"
+                                   onClick="showClientMessages('{$item.nip}', '{$item.nazwakrotka}')"><i
+                                            class="fas fa-comment-dots"></i>&nbsp;&nbsp;notatki</a>
                                 <a class="dropdown-item" href="#" onClick='showDrukarkiDoKlienta("{$item.rowid}")'><i
                                             class="fas fa-print"></i>&nbsp;&nbsp;&nbsp;Urządzenia klienta</a>
                                 <a class="dropdown-item" href="#" onClick='showUmowyDoKlienta("{$item.rowid}")'><i

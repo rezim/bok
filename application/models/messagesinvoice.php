@@ -5,7 +5,7 @@ class messagesinvoice extends Model
 
     function getMessages() {
         $query = "
-                SELECT * FROM `messages`
+                SELECT m.*, u.imie as imie, u.nazwisko as nazwisko FROM `messages` m inner join `users` u on m.owner = u.id 
                 WHERE active = 1 and type = 1
                 ORDER BY created desc
               ";

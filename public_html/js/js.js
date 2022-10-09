@@ -94,6 +94,37 @@ function showConfiguration() {
     openModal("/config/show/todiv");
 }
 
+
+function showPrinterMessages(serial, model) {
+    const description = {
+        title: `Notatki dla urządzenia`,
+        subtitle: `<b>Serial</b>: ${serial}, <b>Model</b>: ${model}`
+    }
+    const type = 2;
+    openModal("/messages/showmodal/todiv", {description, type, foreignkey: serial});
+}
+
+function showClientMessages(nip, nazwakrotka) {
+    const description = {
+        title: `Notatki dla klienta`,
+        subtitle: `<b>Nip:</b>: ${nip}, <b>Nazwa:</b>: ${nazwakrotka}`
+    }
+    const type = 3;
+    openModal("/messages/showmodal/todiv", {description, type, foreignkey: nip});
+}
+
+
+
+function showAgreementMessages(nrumowy, agreementType, clientName) {
+    const description = {
+        title: `Notatki dla umowy`,
+        subtitle: `<b>Nr umowy:</b>: ${nrumowy}, <b>Typ:</b>: ${agreementType}, <b>Klient:</b>: ${clientName}`
+    }
+    const type = 3;
+    openModal("/messages/showmodal/todiv", {description, type, foreignkey: nrumowy});
+}
+
+
 function showNewClientAdd(rowid) {
 
     $.colorbox
@@ -1682,42 +1713,27 @@ function closeColorbox(callback) {
     }
 }
 
-function saveUpdateMessage(type) {
-    var
-        doc = document,
-        objLoad = doc.getElementById('actionloader'),
-        objOk = doc.getElementById('actionok'),
-        objError = doc.getElementById('actionerror'),
-        objClick = doc.getElementById('actionbuttonclick');
-
-    $.ajax({
-        type: 'POST',
-        url: sciezka + ((!type) ? "/messages/saveupdate/notemplate" : "/messagesinvoices/saveupdate/notemplate"),
-        async: true,
-        data:
-            {
-                message: doc.getElementById('messageArea').value
-            },
-        success: function (dane) {
-            // checkReplay(objError,objLoad,null,objClick,dane,objOk,1,3000,null);
-            showMessages(type);
-            doc.getElementById('messageArea').value = '';
-            return false;
-        },
-        error: function () {
-            showError(objError, objLoad, null, objClick, 3000);
-            return false;
-        }
-    });
+function saveUpdateMessage(dataContainerId, containerId, type, foreignkey) {
+    const actionUrl = "/messages/saveupdate/notemplate";
+    const callback = () => {
+        showMessages(containerId, type, foreignkey);
+        clearDataFromContainer(dataContainerId)
+    };
+    callServiceAction(actionUrl, dataContainerId, callback, callback);
 }
 
-function showMessages(type) {
-    const objCenter = getElementById('divRightCenter');
-
+function showMessages(containerId, type, foreignkey) {
+    const objCenter = getElementById(containerId);
+    const foreignKeyObj = foreignkey ? {foreignkey} : {};
     $.ajax({
-        url: sciezka + ((!type) ? "/messages/showdane/todiv" : "/messagesinvoices/showdane/todiv"),
+        url: sciezka + "/messages/showdane/todiv",
         type: 'POST',
-        data: {},
+        data: {
+            type,
+            foreignkey,
+            containerId,
+            ...foreignKeyObj
+        },
         success: function (data) {
             objCenter.innerHTML = data;
             $(objCenter).animate({opacity: 1}, 1500);
@@ -1731,19 +1747,19 @@ function showMessages(type) {
     return false;
 }
 
-function removeMessage(rowid, type) {
+function removeMessage(rowid, type, foreignkey, containerId) {
 
     if (confirm('Czy na pewno chcesz usunąć wiadomość ?')) {
         const objCenter = getElementById('divRightCenter');
 
         $.ajax({
-            url: sciezka + ((!type) ? "/messages/remove/todiv" : "/messagesinvoices/remove/todiv"),
+            url: sciezka + "/messages/remove/todiv",
             type: 'POST',
             data: {
                 rowid: rowid
             },
             success: function (data) {
-                showMessages(type);
+                showMessages(containerId, type, foreignkey);
             },
             error: function () {
                 objCenter.innerHTML = 'Problem z usunięciem wiadomości';
@@ -2237,11 +2253,11 @@ function evalScript(htmlElement) {
     }
 }
 
-function openModal(src, data) {
+function openModal(src, data = {}) {
 
     const normalizedSrc = src.startsWith(sciezka) ? src : `${sciezka}${src}`;
 
-    loadAsyncData(normalizedSrc, data ?? {}, function (html) {
+    loadAsyncData(normalizedSrc, {data}, function (html) {
 
         const placeholder = $('#commonModalPlaceholder');
 
@@ -2329,6 +2345,8 @@ function getDataFromContainer(containerId) {
     return Object.fromEntries(selectedData.map(d => [d.id, d.value]));
 }
 
-function pullDeviceCounters() {
-
+function clearDataFromContainer(containerId) {
+    const container = document.querySelector(`#${containerId}`);
+    const selectedData = Array.from(container.querySelectorAll('[data-clear-ref]'));
+    selectedData.forEach(d => d.value = '');
 }

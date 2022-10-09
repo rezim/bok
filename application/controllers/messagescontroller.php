@@ -1,12 +1,28 @@
 <?php
 class messagesController extends Controller
 {
+
+    function showmodal() {
+        if( isset( $_SERVER['HTTP_X_REQUESTED_WITH'] ) && ( $_SERVER['HTTP_X_REQUESTED_WITH'] == 'XMLHttpRequest' ) && $_POST['data'])
+        {
+            global $smarty;
+            $smarty->assign('data', $_POST['data']);
+        }
+    }
+
     function showdane()
     {
-
-        global $smarty;
+        $this->message->populateWithPost();
         $messages = $this->message->getMessages();
-        $smarty->assign('messages',$messages);
+        global $smarty;
+        $smarty->assign('messages', $messages);
+        $smarty->assign('type', $_POST['type']);
+        if (isset($_POST['foreignkey'])) {
+            $smarty->assign('foreignkey', $_POST['foreignkey']);
+        } else {
+            $smarty->assign('foreignkey', null);
+        }
+        $smarty->assign('containerId', $_POST['containerId']);
 
         unset($messages);
     }
