@@ -99,7 +99,7 @@ function showPrinterMessages(serial, model) {
     const description = {
         title: `Notatki dla urządzenia`,
         subtitle: `<b>Serial</b>: ${serial}, <b>Model</b>: ${model}`
-    }
+    };
     const type = 2;
     openModal("/messages/showmodal/todiv", {description, type, foreignkey: serial});
 }
@@ -108,7 +108,7 @@ function showClientMessages(nip, nazwakrotka) {
     const description = {
         title: `Notatki dla klienta`,
         subtitle: `<b>Nip:</b>: ${nip}, <b>Nazwa:</b>: ${nazwakrotka}`
-    }
+    };
     const type = 3;
     openModal("/messages/showmodal/todiv", {description, type, foreignkey: nip});
 }
@@ -119,8 +119,8 @@ function showAgreementMessages(nrumowy, agreementType, clientName) {
     const description = {
         title: `Notatki dla umowy`,
         subtitle: `<b>Nr umowy:</b>: ${nrumowy}, <b>Typ:</b>: ${agreementType}, <b>Klient:</b>: ${clientName}`
-    }
-    const type = 3;
+    };
+    const type = 4;
     openModal("/messages/showmodal/todiv", {description, type, foreignkey: nrumowy});
 }
 
