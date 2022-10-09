@@ -21,6 +21,7 @@
                     <div>
                     <textarea rows=4 type="text" class="form-control" id="message" name="message"
                               placeholder="treść wiadomości" data-ref data-clear-ref></textarea>
+                        <small class="form-text text-muted"><i class="fa fa-info-circle text-info"></i> Naciśnięcie enter automatycznie zapisze wiadomość.</small>
                     </div>
                 </div>
             </div>
@@ -42,4 +43,12 @@
     showMessages('divRightCenter', 0);
     $( "#date" ).datepicker({ dateFormat: "yy-mm-dd" });
     $( "#date" ).datepicker('setDate', 'today');
+
+    $('#message').unbind("keypress");
+    $('#message').keypress(function (event) {
+        if (event.keyCode === 13) {
+            saveUpdateMessage('messageDataContainer', 'divRightCenter', 0);
+            return false;
+        }
+    });
 </script>
