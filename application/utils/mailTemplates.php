@@ -825,7 +825,7 @@ class mailTemplates
                                 <tr>
                                   <td style=\"padding-right: 0px;padding-left: 0px;\" align=\"right\">
                                     <a href=\"https://g.page/r/CYrqwLalBJ0qEAg/review\" target=\"_blank\">
-                                      <img align=\"right\" border=\"0\" src=\"https://assets.unlayer.com/projects/106709/1665585289500-805885.jpg\" alt=\"\" title=\"\" style=\"outline: none;text-decoration: none;-ms-interpolation-mode: bicubic;clear: both;display: inline-block !important;border: none;height: auto;float: none;width: 100%;max-width: 100px;\"
+                                      <img align=\"right\" border=\"0\" src=\"https://assets.unlayer.com/projects/106709/1665585323407-132914.jpg\" alt=\"\" title=\"\" style=\"outline: none;text-decoration: none;-ms-interpolation-mode: bicubic;clear: both;display: inline-block !important;border: none;height: auto;float: none;width: 100%;max-width: 100px;\"
                                         width=\"100\" />
                                     </a>
                                   </td>
@@ -893,7 +893,7 @@ class mailTemplates
                                 <tr>
                                   <td style=\"padding-right: 0px;padding-left: 0px;\" align=\"left\">
                                     <a href=\"https://docs.google.com/forms/d/1zfEzgypY9bEAKs6BMstXnHsjMQX-2W5lpiodRQZSxrA/viewform?edit_requested=true\" target=\"_blank\">
-                                      <img align=\"left\" border=\"0\" src=\"https://assets.unlayer.com/projects/106709/1665585323407-132914.jpg\" alt=\"\" title=\"\" style=\"outline: none;text-decoration: none;-ms-interpolation-mode: bicubic;clear: both;display: inline-block !important;border: none;height: auto;float: none;width: 100%;max-width: 100px;\"
+                                      <img align=\"left\" border=\"0\" src=\"https://assets.unlayer.com/projects/106709/1665585289500-805885.jpg\" alt=\"\" title=\"\" style=\"outline: none;text-decoration: none;-ms-interpolation-mode: bicubic;clear: both;display: inline-block !important;border: none;height: auto;float: none;width: 100%;max-width: 100px;\"
                                         width=\"100\" />
                                     </a>
                                   </td>
