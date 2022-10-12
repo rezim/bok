@@ -9,6 +9,7 @@ include 'application/models/sendfile.php';
 include 'application/models/client.php';   
 include 'application/models/notimail.php';   
 include 'application/models/service.php';
+include 'application/utils/mailTemplates.php';
 include 'application/utils/mailing.php';
 
 readEmailNotifications();
