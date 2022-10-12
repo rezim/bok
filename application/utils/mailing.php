@@ -207,12 +207,11 @@ class mailing
 
 
         $mailek->Subject = "Re: [Ticket#{$rowid}] . " . $temat;
-        $mailek->Body =
-            "
+        $mailek->Body = "
                                Informujemy , że zlecenie o numerze {$rowid} zostało zakończone.<br/>
                                 Państwa doświadczenie związane z realizacją tego zlecenia jest dla nas bardzo ważne i może być pomocne w ciągłym podnoszeniu jakości naszych usług.<br/>
                                 Bardzo prosimy o wypełnienie krótkiej <a href='https://docs.google.com/forms/d/1zfEzgypY9bEAKs6BMstXnHsjMQX-2W5lpiodRQZSxrA/edit'>ankiety tutaj</a>.<br/>
-                                Zależy nam na Państwa opinii. 
+                                Zależy nam na Państwa opinii.
                                 <br/>
                                 Dziękujemy za poświęcenie czasu na podzielenie się z nami swoimi przemyśleniami.
                                 <br/><br/>
@@ -222,9 +221,9 @@ class mailing
                                 <a href='http://www.otus.pl'>www.otus.pl</a><br/>
                                 <img src='http://www.otus.pl/templates/otus/images/obraz/logo.png' alt='Otus' title='Otus' border='0' height='82' width='150'></img>
                                 <br/><br/>
-                            
-                            ";
 
+                            ";
+//            $this->getEmailWithPollBody("Informujemy , że zlecenie o numerze {$rowid} zostało zakończone.");
 
         $mailek->AltBody =
             "
@@ -307,7 +306,7 @@ class mailing
         }
 
 
-        $mailek->Body =  $tresc; // $this->getEmailBody($tresc);
+        $mailek->Body = $tresc; //  $this->getEmailWithPollBody($tresc);
 
         $mailek->AltBody = $tresc .
             "
@@ -385,7 +384,7 @@ class mailing
         return $result;
     }
 
-    function getEmailBody($headerText)
+    function getEmailWithPollBody($headerText)
     {
         return "
         <!DOCTYPE HTML PUBLIC \"-//W3C//DTD XHTML 1.0 Transitional //EN\" \"http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd\">
@@ -523,8 +522,7 @@ class mailing
     
                                   <table width=\"100%\" cellpadding=\"0\" cellspacing=\"0\" border=\"0\">
                                     <tr>
-                                      <td style=\"padding-right: 0px;padding-left: 0px;\" align=\"center\">
-    
+                                      <td style=\"padding-right: 0px;padding-left: 0px;\" align=\"center\">                                        
                                         <img align=\"center\" border=\"0\" src=\"https://www.otus.pl/wp-content/uploads/2021/06/logo_ot1.png\" alt=\"Image\" title=\"Image\" style=\"outline: none;text-decoration: none;-ms-interpolation-mode: bicubic;clear: both;display: inline-block !important;border: none;height: auto;float: none;width: 100%;max-width: 110px;\"
                                           width=\"110\" />
                                       </td>
@@ -588,7 +586,7 @@ class mailing
                                 <td style=\"overflow-wrap:break-word;word-break:break-word;padding:0px 10px 31px;font-family:'Cabin',sans-serif;\" align=\"left\">
     
                                   <div style=\"color: #e5eaf5; line-height: 140%; text-align: center; word-wrap: break-word;\">
-                                    <p style=\"font-size: 14px; line-height: 140%;\"><span style=\"font-size: 28px; line-height: 39.199999999999996px;\"><strong><span style=\"line-height: 39.199999999999996px; font-size: 28px;\">{$headerText}</span></strong>
+                                    <p style=\"font-size: 14px; line-height: 140%;\"><span style=\"font-size: 28px; line-height: 39.199999999999996px;\"><strong><span style=\"line-height: 39.199999999999996px; font-size: 28px;\"></span></strong>
                                       </span>
                                     </p>
                                   </div>
@@ -629,9 +627,9 @@ class mailing
                                 <td style=\"overflow-wrap:break-word;word-break:break-word;padding:33px 55px;font-family:'Cabin',sans-serif;\" align=\"left\">
     
                                   <div style=\"line-height: 160%; text-align: center; word-wrap: break-word;\">
-                                    <p style=\"font-size: 14px; line-height: 160%;\"> </p>
-                                    <p style=\"font-size: 14px; line-height: 160%;\"><strong><span style=\"font-size: 20px; line-height: 32px;\">Twoja opinia jest dla nas ważna</span></strong></p>
-                                    <p style=\"font-size: 14px; line-height: 160%;\"><span style=\"font-size: 20px; line-height: 32px;\">Jeśli jesteś zadowolony z naszych usług powiedz o nas innym, jeżeli nie, <strong>powiedz nam</strong>, zrobimy wszystko, aby się poprawić.</span></p>
+                                    <p style=\"font-size: 14px; line-height: 200%;padding-bottom: 30px;\"><span style=\"font-size: 18px; line-height: 32px;\">{$headerText}</span></p>
+                                    <p style=\"font-size: 14px; line-height: 160%;\"><strong><span style=\"font-size: 18px; line-height: 32px;\">Twoja opinia jest dla nas ważna</span></strong></p>
+                                    <p style=\"font-size: 14px; line-height: 160%;\"><span style=\"font-size: 18px; line-height: 32px;\">Jeśli jesteś zadowolony z naszych usług powiedz o nas innym, jeżeli nie, <strong>powiedz nam</strong>, zrobimy wszystko, aby się poprawić.</span></p>
                                   </div>
     
                                 </td>
@@ -671,11 +669,8 @@ class mailing
     
                                   <table width=\"100%\" cellpadding=\"0\" cellspacing=\"0\" border=\"0\">
                                     <tr>
-                                      <td style=\"padding-right: 0px;padding-left: 0px;\" align=\"center\">
-                                        <a href=\"https://g.page/r/CYrqwLalBJ0qEAg/review\" target=\"_blank\">
-                                          <img align=\"center\" border=\"0\" src=\"https://www.otus.pl/wp-content/uploads/2022/07/image.png\" alt=\"Zadowolony ? \" title=\"Zadowolony ? \" style=\"outline: none;text-decoration: none;-ms-interpolation-mode: bicubic;clear: both;display: inline-block !important;border: none;height: auto;float: none;width: 100%;max-width: 280px;\"
-                                            width=\"280\" />
-                                        </a>
+                                      <td style=\"padding-right: 10px;padding-left: 0px;\" align=\"right\">
+                                        <a href=\"https://g.page/r/CYrqwLalBJ0qEAg/review\" target=\"_blank\" style=\"font-size: 35px\">&#128578;</a>
                                       </td>
                                     </tr>
                                   </table>
@@ -705,11 +700,8 @@ class mailing
     
                                   <table width=\"100%\" cellpadding=\"0\" cellspacing=\"0\" border=\"0\">
                                     <tr>
-                                      <td style=\"padding-right: 0px;padding-left: 0px;\" align=\"center\">
-                                        <a href=\"https://docs.google.com/forms/d/1zfEzgypY9bEAKs6BMstXnHsjMQX-2W5lpiodRQZSxrA/viewform?edit_requested=true\" target=\"_blank\">
-                                          <img align=\"center\" border=\"0\" src=\"https://www.otus.pl/wp-content/uploads/2022/07/image-1.png\" alt=\"Niezadowolony ? \" title=\"Niezadowolony ? \" style=\"outline: none;text-decoration: none;-ms-interpolation-mode: bicubic;clear: both;display: inline-block !important;border: none;height: auto;float: none;width: 100%;max-width: 280px;\"
-                                            width=\"280\" />
-                                        </a>
+                                      <td style=\"padding-right: 0px;padding-left: 10px;\" align=\"left\">
+                                        <a href=\"https://docs.google.com/forms/d/1zfEzgypY9bEAKs6BMstXnHsjMQX-2W5lpiodRQZSxrA/viewform?edit_requested=true\" target=\"_blank\" style=\"font-size: 35px\">&#128577;</a>
                                       </td>
                                     </tr>
                                   </table>
