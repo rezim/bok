@@ -5,6 +5,8 @@ if (file_exists("c:/work/bok/library/phpmailer/PHPMailerAutoload.php")) {
     require_once "/volume1/web/bok/library/phpmailer/PHPMailerAutoload.php";
 }
 
+require_once "mailTemplates.php";
+
 class mailing
 {
 
@@ -124,20 +126,6 @@ class mailing
 
             $mailek->Body = $templates->sendMailZarejestrowanoEmailTemplate($rowid);
 
-//            $mailek->Body =
-//                "
-//                                Dziękujemy za kontakt i potwierdzamy zarejestrowanie zgłoszenia pod numerem <b>{$rowid} </b>.&nbsp;
-//                                Zajmiemy się Twoją sprawą i udzielimy odpowiedzi najszybciej, jak to będzie możliwe.&nbsp;
-//                                Postaramy się, aby czas oczekiwania był możliwie najkrótszy.&nbsp;
-//                                Jeżeli będziesz kontynuować korespondencję prosimy o zachowanie tematu wiadomości - pozwoli nam to szybciej zidentyfikować Twoją sprawę.
-//                                <br/><br/>
-//                                Zawsze służymy pomocą. W <a href='https://www.otus.pl/wsparcie/'>witrynie wsparcia Otus</a> znajdziesz wskazówki i rozwiązania które mogą pomóc rozwiązać Twoją sprawę.
-//                                <br/><br/>
-//                                W bardzo pilnych przypadkach prosimy o <a href=\"tel:+48713211906\">kontakt telefoniczny</a> podając numer tego zgłoszenia.
-//                                Pozdrawiamy <a href='https://www.otus.pl/kontakt/'>Wsparcie Otus</a>
-//                            ";
-
-
             $mailek->AltBody =
                 "
                                 Dziękujemy za kontakt i potwierdzamy zarejestrowanie zgłoszenia pod numerem <{$rowid}>
@@ -212,22 +200,6 @@ class mailing
 
 
         $mailek->Subject = "Re: [Ticket#{$rowid}] . " . $temat;
-//        $mailek->Body = "
-//                               Informujemy , że zlecenie o numerze {$rowid} zostało zakończone.<br/>
-//                                Państwa doświadczenie związane z realizacją tego zlecenia jest dla nas bardzo ważne i może być pomocne w ciągłym podnoszeniu jakości naszych usług.<br/>
-//                                Bardzo prosimy o wypełnienie krótkiej <a href='https://docs.google.com/forms/d/1zfEzgypY9bEAKs6BMstXnHsjMQX-2W5lpiodRQZSxrA/edit'>ankiety tutaj</a>.<br/>
-//                                Zależy nam na Państwa opinii.
-//                                <br/>
-//                                Dziękujemy za poświęcenie czasu na podzielenie się z nami swoimi przemyśleniami.
-//                                <br/><br/>
-//                                Pozdrawiamy,<br/>
-//                                Otus Sp. z o.o.<br/>
-//                                +48 71 321 19 06<br/>
-//                                <a href='http://www.otus.pl'>www.otus.pl</a><br/>
-//                                <img src='http://www.otus.pl/templates/otus/images/obraz/logo.png' alt='Otus' title='Otus' border='0' height='82' width='150'></img>
-//                                <br/><br/>
-//
-//                            ";
 
         $templates = new mailTemplates();
 
