@@ -466,7 +466,7 @@ function zapiszKlienta(rowid) {
     const protectDisabledValues = true;
 
     if (!doc.getElementById('txtNip').disabled || !protectDisabledValues) {
-        data['nip'] = doc.getElementById('txtNip').value;
+        data['nip'] = doc.getElementById('txtNip').value.replace(/[\ \-]/gi, '');
     }
 
     if (!doc.getElementById('txtTerminPlatnosci').disabled || !protectDisabledValues) {
@@ -487,11 +487,10 @@ function zapiszKlienta(rowid) {
         async: true,
         data,
         success: function (dane) {
-            checkReplay(objError, objLoad, null, objClick, dane, objOk, 1, 3000, null);
+            checkReplay(objError, objLoad, null, objClick, dane, objOk, 1, 5000, null);
             return false;
         },
         error: function () {
-
             showError(objError, objLoad, null, objClick, 10000);
             return false;
         }

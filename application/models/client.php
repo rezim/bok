@@ -132,6 +132,12 @@ class client extends Model
         return $this->query($query, null, false);
     }
 
+    function getClientByNip($clientNip)
+    {
+        $query = "select * from clients where nip={$clientNip}";
+        return $this->query($query, null, false);
+    }
+
     function getRowidByEmail($email)
     {
         $query = "select rowid from clients where mail='{$email}'";

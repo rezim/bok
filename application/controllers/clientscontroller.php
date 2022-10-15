@@ -45,10 +45,23 @@ class clientsController extends Controller
     {
         if (isset($_SERVER['HTTP_X_REQUESTED_WITH']) && ($_SERVER['HTTP_X_REQUESTED_WITH'] == 'XMLHttpRequest')) {
 
-            if ($_POST['nazwakrotka'] == '')
-                die('Uzupełnij nazwę krótką');
-            if ($_POST['nazwapelna'] == '')
-                die('Uzupełnij nazwę pełną');
+            if ($_POST['nazwakrotka'] == '') {
+                die('Uzupełnij nazwę krótką 123');
+            }
+
+            if ($_POST['nazwapelna'] == '') {
+                die('Uzupełnij nazwę pełną 123');
+            }
+
+            if ($_POST['rowid'] === '0') {
+                if (!isset($_POST['nip']) || $_POST['nip'] == '') {
+                    die('Podaj NIP.');
+                }
+                $client = $this->client->getClientByNip($_POST['nip']);
+                if (!empty($client)) {
+                    die('Klient o numerze NIP: ' . $_POST['nip'] . ' już istnieje w bazie!');
+                }
+            }
 
             if ($this->areClientPaymentOptionsPermitted) {
                 if (!isset($_POST['nip']) || $_POST['nip'] == '')
