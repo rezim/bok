@@ -1,428 +1,448 @@
-<table id='tableform' class='tableform' cellspacing=0 cellpadding=0>
-    <tr>
-        <td class='tdOpis' style="width:170px;min-width:170px;max-width:170px;">
-            Nr umowy
-        </td>
-        <td class='tdWartosc' colspan="3">
-            <input type="text" id='txtnrumowy' autofocus
-                   class='textBoxForm' maxlength="40" style='width:130px;min-width:130px;'
-                   {if $rowid!=0}value="{$dataUmowa[0].nrumowy|escape:'htmlall'}"{/if}>
-        </td>
-    </tr>
-    <tr>
-        <td style='height:3px;min-height: 3px;' colspan=2></td>
-    </tr>
-    <tr>
-        <td class='tdOpis'>
-            Typ umowy
-        </td>
-        <td class='tdWartosc' colspan="3">
-            <select id='txttypumowy' class="comboboxForm" style='width:200px;min-width:200px;'>
-                <option value="" selected></option>
-                {foreach from=$dataAgreementTypes item=item key=key}
-                    <option value="{$item.rowid}"
-                            {if $rowid!=0 && $dataUmowa[0].rowid_type==$item.rowid}selected{/if}>{$item.description}</option>
-                {/foreach}
-            </select>
-        </td>
-    </tr>
-    <tr>
-        <td style='height:3px;min-height: 3px;' colspan=2></td>
-    </tr>
-    <tr>
-        <td class='tdOpis'>
-            Klient
-        </td>
-        <td class='tdWartosc' colspan="3">
-            <select id='txtklient' class="selectpicker"
-                    data-size="10"
-                    data-width="340px"
-                    data-none-selected-text="Nie wybrano żadnego klient"
-                    data-none-results-text="Nie znaleziono wyników dla podanego filtra"
-                    data-live-search-placeholder="Wpisz filtr aby zawęzić liste klientów"
-                    data-live-search="true">
-                <option value="" selected></option>
-                {foreach from=$dataClients item=item key=key}
-                    <option value="{$key}"
-                            {if $rowid!=0 && $dataUmowa[0].rowidclient==$key}selected{/if}>{$item.nazwakrotka}</option>
-                {/foreach}
-            </select>
-        </td>
-    </tr>
-    <tr>
-        <td style='height:3px;min-height: 3px;' colspan=2></td>
-    </tr>
-    <tr>
-        <td class='tdOpis'>
-            id odbiorcy [fakturownia]
-        </td>
-        <td class='tdWartosc' colspan="3">
-            <input type="text" id='txtodbiorca_id'
-                   class='textBoxForm' maxlength="20"
-                   style='width:130px;min-width:130px;'
-                   {if $rowid!=0}value="{$dataUmowa[0].odbiorca_id|escape:'htmlall'}"{/if}>
+<div class="container mt-3">
+    <div class="container">
+        <div id='actionok' class="actionok alert alert-success" role="alert">
+            <strong>Dane zapisane poprawnie</strong>
+        </div>
+        <div id='actionerror' class="actionerror alert alert-danger" role="alert">
+            <strong>Błąd zapisu danych.</strong>
+        </div>
+    </div>
 
-        </td>
-    </tr>
-    <tr>
-        <td style='height:3px;min-height: 3px;' colspan=2></td>
-    </tr>
-
-
-    <tr>
-        <td class='tdOpis'>
-            Drukarka
-        </td>
-        <td class='tdWartosc' colspan="3">
-
-            <select id='txtdrukarka' class="selectpicker" onchange="updateAgreementWithPrinter({$rowid}, this.value)"
-                    data-size="10"
-                    data-width="340px"
-                    data-none-selected-text="Nie wybrano żadnej drukarki"
-                    data-none-results-text="Nie znaleziono wyników dla podanego filtra"
-                    data-live-search-placeholder="Wpisz filtr aby zawęzić list drukarek"
-                    data-live-search="true">
-                <option value="" selected></option>
-
-                {foreach from=$dataPrinters item=item key=key}
-                    <option value="{$item.serial}"
-                            {if $rowid!=0 && $dataUmowa[0].serial==$item.serial}selected{/if}>{$item.serial}
-                        - {$item.model}</option>
-                {/foreach}
-            </select>
-        </td>
-    </tr>
-    <tr>
-        <td style='height:3px;min-height: 3px;' colspan=2></td>
-    </tr>
-
-    <tr id='trtxtrozliczenie'>
-        <td class='tdOpis'>
-            Rozliczenie
-        </td>
-        <td class='tdWartosc' colspan="3">
-            <select id='txtrozliczenie' class="comboboxForm" style='width:200px;min-width:200px;'>
-                <option value="" selected></option>
-                <option value="miesięczne" {if $rowid!=0 && $dataUmowa[0].rozliczenie=='miesięczne'}selected{/if}>
-                    miesięczne
-                </option>
-                <option value="roczne" {if $rowid!=0 && $dataUmowa[0].rozliczenie=='roczne'}selected{/if}>roczne
-                </option>
-            </select>
-        </td>
-    </tr>
-    <tr>
-        <td style='height:3px;min-height: 3px;' colspan=2></td>
-    </tr>
-
-    <tr id="trtxtabonament">
-        <td class='tdOpis'>
-            abonament
-        </td>
-        <td class='tdWartosc' colspan="3">
-            <input type="text" id='txtabonament'
-                   class='textBoxForm' maxlength="10"
-                   style='width:70px;min-width:70px;text-align: right;padding-right: 10px;'
-                   {if $rowid!=0}value="{$dataUmowa[0].abonament|number_format:2:",":" "|escape:'htmlall'}"{/if}>
-        </td>
-    </tr>
-    <tr>
-        <td style='height:3px;min-height: 3px;' colspan=2></td>
-    </tr>
-    <tr id="trtxtabonament">
-        <td class='tdOpis'>
-            kwota w abonamencie
-        </td>
-        <td class='tdWartosc' colspan="3">
-            <input type="text" id='txtkwotawabonamencie'
-                   class='textBoxForm' maxlength="10"
-                   style='width:70px;min-width:70px;text-align: right;padding-right: 10px;'
-                   {if $rowid!=0}value="{$dataUmowa[0].kwotawabonamencie|number_format:2:",":" "|escape:'htmlall'}"{/if}>
-        </td>
-    </tr>
-    <tr>
-        <td style='height:3px;min-height: 3px;' colspan=2></td>
-    </tr>
-    <tr id="trtxtdataod">
-        <td class='tdOpis'>
-            Data od
-        </td>
-        <td class='tdWartosc' colspan="3">
-            <input type="text" id='txtdataod'
-                   class='textBoxForm' maxlength="10" style='width:100px;min-width:100px;'
-                   {if $rowid!=0}value="{$dataUmowa[0].dataod|escape:'htmlall'}"{/if}>
-            <font style='font-size: 12px;color:gray'>(rok-miesiąc-dzień )np.2007-07-23</font>
-        </td>
-    </tr>
-    <tr>
-        <td style='height:3px;min-height: 3px;' colspan=2></td>
-    </tr>
-
-    <tr id="trtxtdataod">
-        <td class='tdOpis'>
-            Data do
-        </td>
-        <td class='tdWartosc' colspan="3">
-            <input type="text" id='txtdatado'
-                   class='textBoxForm' maxlength="10" style='width:100px;min-width:100px;'
-                   {if $rowid!=0}value="{$dataUmowa[0].datado|escape:'htmlall'}"{/if}>
-            <font style='font-size: 12px;color:gray'>(rok-miesiąc-dzień )np.2007-07-23</font>
-        </td>
-    </tr>
-    <tr>
-        <td style='height:3px;min-height: 3px;' colspan=2></td>
-    </tr>
-
-    <tr id="trtxtiloscstron">
-        <td class='tdOpis'>
-            stron black w abonam.
-        </td>
-        <td class='tdWartosc'>
-            <input type="text" id='txtiloscstron'
-                   class='textBoxForm' maxlength="10"
-                   style='width:70px;min-width:70px;text-align: right;padding-right: 10px;'
-                   {if $rowid!=0}value="{$dataUmowa[0].stronwabonamencie|number_format:0:",":" "|escape:'htmlall'}"{/if}>
-        </td>
-
-        <td class='tdOpis'>
-            cena instalacji
-        </td>
-        <td class='tdWartosc'>
-            <input type="text" id='txtcenainstalacji'
-                   class='textBoxForm' maxlength="10"
-                   style='width:70px;min-width:70px;text-align: right;padding-right: 10px;'
-                   {if $rowid!=0 && !empty($dataUmowa[0].cenainstalacji)}value="{$dataUmowa[0].cenainstalacji|number_format:0:",":" "|escape:'htmlall'}"{/if}>
-        </td>
-
-
-    </tr>
-    <tr>
-        <td style='height:3px;min-height: 3px;' colspan=2></td>
-    </tr>
-
-    <tr id="trtxtcenazastrone">
-        <td class='tdOpis'>
-            cena za stronę black
-        </td>
-        <td class='tdWartosc'>
-            <input type="text" id='txtcenazastrone'
-                   class='textBoxForm' maxlength="10"
-                   style='width:70px;min-width:70px;text-align: right;padding-right: 10px;'
-                   {if $rowid!=0}value="{$dataUmowa[0].cenazastrone|number_format:3:",":" "|escape:'htmlall'}"{/if}>
-        </td>
-        <td class='tdOpis'>
-            prowizja partn.[%]
-        </td>
-        <td class='tdWartosc'>
-            <input type="text" id='txtprowizjapartnerska'
-                   class='textBoxForm' maxlength="10"
-                   style='width:70px;min-width:70px;text-align: right;padding-right: 10px;'
-                   {if $rowid!=0 && !empty($dataUmowa[0].prowizjapartnerska)}value="{$dataUmowa[0].prowizjapartnerska|number_format:0:",":" "|escape:'htmlall'}"{/if}>
-        </td>
-    </tr>
-
-
-    <tr>
-        <td style='height:3px;min-height: 3px;' colspan=2></td>
-    </tr>
-    <tr id="trtxtiloscstron_kolor">
-        <td class='tdOpis'>
-            stron kolor w abonam.
-        </td>
-        <td class='tdWartosc'>
-            <input type="text" id='txtiloscstron_kolor'
-                   class='textBoxForm' maxlength="10"
-                   style='width:70px;min-width:70px;text-align: right;padding-right: 10px;'
-                   {if $rowid!=0 && !empty($dataUmowa[0].iloscstron_color)}value="{$dataUmowa[0].iloscstron_color|number_format:0:",":" "|escape:'htmlall'}"{/if}>
-        </td>
-        <td class='tdOpis'>
-            SLA [ h ]
-        </td>
-        <td class='tdWartosc'>
-            <input type="text" id='txtsla'
-                   class='textBoxForm' maxlength="10"
-                   style='width:70px;min-width:70px;text-align: right;padding-right: 10px;'
-                   {if $rowid!=0 && !empty($dataUmowa[0].sla)}value="{$dataUmowa[0].sla|number_format:0:",":" "|escape:'htmlall'}"{/if}>
-        </td>
-    </tr>
-    <tr>
-        <td style='height:3px;min-height: 3px;' colspan=2></td>
-    </tr>
-
-    <tr id="trtxtcenazastrone_kolor">
-        <td class='tdOpis'>
-            cena za stronę kolor
-        </td>
-        <td class='tdWartosc'>
-            <input type="text" id='txtcenazastrone_kolor'
-                   class='textBoxForm' maxlength="10"
-                   style='width:70px;min-width:70px;text-align: right;padding-right: 10px;'
-                   {if $rowid!=0 && !empty($dataUmowa[0].cenazastrone_kolor)}value="{$dataUmowa[0].cenazastrone_kolor|number_format:3:",":" "|escape:'htmlall'}"{/if}>
-        </td>
-        <td class='tdOpis'>
-            wartość urządz.
-        </td>
-        <td class='tdWartosc'>
-            <input type="text" id='txtwartoscurzadzenia'
-                   class='textBoxForm' maxlength="10"
-                   style='width:70px;min-width:70px;text-align: right;padding-right: 10px;'
-                   {if $rowid!=0 && !empty($dataUmowa[0].wartoscurzadzenia)}value="{$dataUmowa[0].wartoscurzadzenia|number_format:2:",":" "|escape:'htmlall'}"{/if}>
-        </td>
-    </tr>
-    <tr>
-        <td style='height:3px;min-height: 3px;' colspan=2></td>
-    </tr>
-    <tr id="trtxtrabatdoabonamentu">
-        <td class='tdOpis'>
-            rabat do abonamentu[%]
-        </td>
-        <td class='tdWartosc'>
-            <input type="text" id='txtrabatdoabonamentu'
-                   class='textBoxForm' maxlength="10"
-                   style='width:70px;min-width:70px;text-align: right;padding-right: 10px;'
-                   {if $rowid!=0 && !empty($dataUmowa[0].rabatdoabonamentu)}value="{$dataUmowa[0].rabatdoabonamentu|number_format:2:",":" "|escape:'htmlall'}"{/if}>
-        </td>
-
-        <td class='tdOpis'>
-            wszystko jak czarne
-        </td>
-        <td class='tdWartosc'>
-            <input type="checkbox" id='checkJakCzarne' class='checkBoxNormal'
-                   {if $rowid!=0 && !empty($dataUmowa[0].jakczarne) &&  $dataUmowa[0].jakczarne==1}checked{/if}
-            />
-
-
-        </td>
-
-    </tr>
-    <tr>
-        <td style='height:3px;min-height: 3px;' colspan=2></td>
-    </tr>
-    <tr id="trtxtrabatdowydrukow">
-        <td class='tdOpis'>
-            rabat do wydruków[%]
-        </td>
-        <td class='tdWartosc'>
-            <input type="text" id='txtrabatdowydrukow'
-                   class='textBoxForm' maxlength="10"
-                   style='width:70px;min-width:70px;text-align: right;padding-right: 10px;'
-                   {if $rowid!=0 && !empty($dataUmowa[0].rabatdowydrukow)}value="{$dataUmowa[0].rabatdowydrukow|number_format:2:",":" "|escape:'htmlall'}"{/if}>
-        </td>
-    </tr>
-    <tr>
-        <td style='height:3px;min-height: 3px;' colspan=2></td>
-    </tr>
-
-
-    <tr>
-        <td class='tdOpis' style='height:50px;min-height: 50px;max-height: 50px;'>
-            krótki opis
-        </td>
-        <td class='tdWartosc' colspan="3">
-                                   <textarea id="txtopis" class="textareaForm" style='height:80px;min-height: 80px;'
-                                             maxlength="500">{if $rowid!=0}{$dataUmowa[0].opis|escape:'htmlall'}{/if}</textarea>
-        </td>
-    </tr>
-    <tr>
-        <td style='height:3px;min-height: 3px;' colspan=2></td>
-    </tr>
-
-    <tr>
-        <td colspan="4">
-            <table style="width: 100%; margin-top: 5px; margin-left: 0px" class='tableform'>
+    <div class="row container">
+        <div class="col">
+            <table class='table table-sm bok-two-column-layout'>
                 <tr>
-                    <td colspan="6" class="tdOpis">stan początkowy licznika</td>
+                    <th>
+                        Nr umowy&nbsp;<span class="text-danger">*</span>
+                    </th>
+                    <td class='tdWartosc' colspan="3">
+                        <input type="text" id='txtnrumowy' autofocus
+                               class="form-control form-control-md" maxlength="40"
+                               {if $rowid!=0}value="{$dataUmowa[0].nrumowy|escape:'htmlall'}"{/if}>
+                    </td>
                 </tr>
-                <tr><td colspan="6" style="height: 5px; min-height: 5px;"></td></tr>
                 <tr>
-                    <td style="font-size: 12px; color: gray;padding-right: 5px" align="right">czarno/biały:</td>
+                    <th class='tdOpis'>
+                        Typ umowy
+                    </th>
+                    <td class='tdWartosc' colspan="3">
+                        <select id='txttypumowy' class="form-control form-control-md">
+                            <option value="" selected></option>
+                            {foreach from=$dataAgreementTypes item=item key=key}
+                                <option value="{$item.rowid}"
+                                        {if $rowid!=0 && $dataUmowa[0].rowid_type==$item.rowid}selected{/if}>{$item.description}</option>
+                            {/foreach}
+                        </select>
+                    </td>
+                </tr>
+                <tr>
+                    <th class='tdOpis'>
+                        Klient&nbsp;<span class="text-danger">*</span>
+                    </th>
+                    <td>
+                        <select id='txtklient' class="form-control form-control-md selectpicker"
+                                data-size="10"
+                                data-width="340px"
+                                data-none-selected-text="Nie wybrano żadnego klient"
+                                data-none-results-text="Nie znaleziono wyników dla podanego filtra"
+                                data-live-search-placeholder="Wpisz filtr aby zawęzić liste klientów"
+                                data-live-search="true">
+                            <option value="" selected></option>
+                            {foreach from=$dataClients item=item key=key}
+                                <option value="{$key}"
+                                        {if $rowid!=0 && $dataUmowa[0].rowidclient==$key}selected{/if}>{$item.nazwakrotka}</option>
+                            {/foreach}
+                        </select>
+                    </td>
+                </tr>
+                <tr>
+                    <th class='tdOpis'>
+                        id odbiorcy [fakturownia]
+                    </th>
+                    <td class='tdWartosc' colspan="3">
+                        <input type="text" id='txtodbiorca_id'
+                               class="form-control form-control-md" maxlength="20"
+                               {if $rowid!=0}value="{$dataUmowa[0].odbiorca_id|escape:'htmlall'}"{/if}>
+
+                    </td>
+                </tr>
+                <tr>
+                    <th class='tdOpis'>
+                        Drukarka&nbsp;<span class="text-danger">*</span>
+                    </th>
+                    <td class='tdWartosc' colspan="3">
+
+                        <select id='txtdrukarka' class="form-control form-control-md selectpicker"
+                                onchange="updateAgreementWithPrinter({$rowid}, this.value)"
+                                data-size="10"
+                                data-width="340px"
+                                data-none-selected-text="Nie wybrano żadnej drukarki"
+                                data-none-results-text="Nie znaleziono wyników dla podanego filtra"
+                                data-live-search-placeholder="Wpisz filtr aby zawęzić list drukarek"
+                                data-live-search="true">
+                            <option value="" selected></option>
+
+                            {foreach from=$dataPrinters item=item key=key}
+                                <option value="{$item.serial}"
+                                        {if $rowid!=0 && $dataUmowa[0].serial==$item.serial}selected{/if}>{$item.serial}
+                                    - {$item.model}</option>
+                            {/foreach}
+                        </select>
+                    </td>
+                </tr>
+                <tr id='trtxtrozliczenie'>
+                    <th class='tdOpis'>
+                        Rozliczenie
+                    </th>
+                    <td class='tdWartosc' colspan="3">
+                        <select id='txtrozliczenie' class="form-control form-control-md">
+                            <option value="" selected></option>
+                            <option value="miesięczne"
+                                    {if $rowid!=0 && $dataUmowa[0].rozliczenie=='miesięczne'}selected{/if}>
+                                miesięczne
+                            </option>
+                            <option value="roczne" {if $rowid!=0 && $dataUmowa[0].rozliczenie=='roczne'}selected{/if}>
+                                roczne
+                            </option>
+                        </select>
+                    </td>
+                </tr>
+                <tr id="trtxtabonament">
+                    <th class='tdOpis'>
+                        abonament
+                    </th>
+                    <td class='tdWartosc' colspan="3">
+                        <input type="text" id='txtabonament'
+                               class="form-control form-control-md" maxlength="10"
+                               {if $rowid!=0}value="{$dataUmowa[0].abonament|number_format:2:",":" "|escape:'htmlall'}"{/if}>
+                    </td>
+                </tr>
+                <tr id="trtxtabonament">
+                    <th class='tdOpis'>
+                        kwota w abonamencie
+                    </th>
+                    <td class='tdWartosc' colspan="3">
+                        <input type="text" id='txtkwotawabonamencie'
+                               class="form-control form-control-md" maxlength="10"
+                               {if $rowid!=0}value="{$dataUmowa[0].kwotawabonamencie|number_format:2:",":" "|escape:'htmlall'}"{/if}>
+                    </td>
+                </tr>
+                <tr id="trtxtdataod">
+                    <th class='tdOpis'>
+                        Data od&nbsp;<span class="text-danger">*</span>
+                    </th>
+                    <td class='tdWartosc' colspan="3">
+                        <input type="text" id='txtdataod'
+                               class="form-control form-control-md" maxlength="10"
+                               {if $rowid!=0}value="{$dataUmowa[0].dataod|escape:'htmlall'}"{/if}>
+                    </td>
+                </tr>
+                <tr id="trtxtdataod">
+                    <th class='tdOpis'>
+                        Data do
+                    </th>
+                    <td class='tdWartosc' colspan="3">
+                        <input type="text" id='txtdatado'
+                               class="form-control form-control-md" maxlength="10"
+                               {if $rowid!=0}value="{$dataUmowa[0].datado|escape:'htmlall'}"{/if}>
+                    </td>
+                </tr>
+            </table>
+        </div>
+        <div class="col">
+            <table class='table table-sm bok-two-column-layout'>
+                <tr id="trtxtiloscstron">
+                    <th class='tdOpis'>
+                        stron black w abonam.
+                    </th>
+                    <td class='tdWartosc'>
+                        <input type="text" id='txtiloscstron'
+                               class="form-control form-control-md" maxlength="10"
+                               {if $rowid!=0}value="{$dataUmowa[0].stronwabonamencie|number_format:0:",":" "|escape:'htmlall'}"{/if}>
+                    </td>
+
+                    <th class='tdOpis'>
+                        cena instalacji
+                    </th>
+                    <td class='tdWartosc'>
+                        <input type="text" id='txtcenainstalacji'
+                               class="form-control form-control-md" maxlength="10"
+                               {if $rowid!=0 && !empty($dataUmowa[0].cenainstalacji)}value="{$dataUmowa[0].cenainstalacji|number_format:0:",":" "|escape:'htmlall'}"{/if}>
+                    </td>
+
+
+                </tr>
+
+                <tr id="trtxtcenazastrone">
+                    <th class='tdOpis'>
+                        cena za stronę black
+                    </th>
+                    <td class='tdWartosc'>
+                        <input type="text" id='txtcenazastrone'
+                               class="form-control form-control-md" maxlength="10"
+                               {if $rowid!=0}value="{$dataUmowa[0].cenazastrone|number_format:3:",":" "|escape:'htmlall'}"{/if}>
+                    </td>
+                    <th class='tdOpis'>
+                        prowizja partn.[%]
+                    </th>
+                    <td class='tdWartosc'>
+                        <input type="text" id='txtprowizjapartnerska'
+                               class="form-control form-control-md" maxlength="10"
+                               {if $rowid!=0 && !empty($dataUmowa[0].prowizjapartnerska)}value="{$dataUmowa[0].prowizjapartnerska|number_format:0:",":" "|escape:'htmlall'}"{/if}>
+                    </td>
+                </tr>
+
+
+                <tr id="trtxtiloscstron_kolor">
+                    <th class='tdOpis'>
+                        stron kolor w abonam.
+                    </th>
+                    <td class='tdWartosc'>
+                        <input type="text" id='txtiloscstron_kolor'
+                               class="form-control form-control-md" maxlength="10"
+                               {if $rowid!=0 && !empty($dataUmowa[0].iloscstron_color)}value="{$dataUmowa[0].iloscstron_color|number_format:0:",":" "|escape:'htmlall'}"{/if}>
+                    </td>
+                    <th class='tdOpis'>
+                        SLA [ h ]
+                    </th>
+                    <td class='tdWartosc'>
+                        <input type="text" id='txtsla'
+                               class="form-control form-control-md" maxlength="10"
+                               {if $rowid!=0 && !empty($dataUmowa[0].sla)}value="{$dataUmowa[0].sla|number_format:0:",":" "|escape:'htmlall'}"{/if}>
+                    </td>
+                </tr>
+                <tr id="trtxtcenazastrone_kolor">
+                    <th class='tdOpis'>
+                        cena za stronę kolor
+                    </th>
+                    <td class='tdWartosc'>
+                        <input type="text" id='txtcenazastrone_kolor'
+                               class="form-control form-control-md" maxlength="10"
+                               {if $rowid!=0 && !empty($dataUmowa[0].cenazastrone_kolor)}value="{$dataUmowa[0].cenazastrone_kolor|number_format:3:",":" "|escape:'htmlall'}"{/if}>
+                    </td>
+                    <th class='tdOpis'>
+                        wartość urządz.
+                    </th>
+                    <td class='tdWartosc'>
+                        <input type="text" id='txtwartoscurzadzenia'
+                               class="form-control form-control-md" maxlength="10"
+                               {if $rowid!=0 && !empty($dataUmowa[0].wartoscurzadzenia)}value="{$dataUmowa[0].wartoscurzadzenia|number_format:2:",":" "|escape:'htmlall'}"{/if}>
+                    </td>
+                </tr>
+                <tr id="trtxtrabatdoabonamentu">
+                    <th class='tdOpis'>
+                        rabat do abonamentu[%]
+                    </th>
+                    <td class='tdWartosc'>
+                        <input type="text" id='txtrabatdoabonamentu'
+                               class="form-control form-control-md" maxlength="10"
+                               {if $rowid!=0 && !empty($dataUmowa[0].rabatdoabonamentu)}value="{$dataUmowa[0].rabatdoabonamentu|number_format:2:",":" "|escape:'htmlall'}"{/if}>
+                    </td>
+
+                    <th class='tdOpis'>
+                        wszystko jak czarne
+                    </th>
+                    <td class='tdWartosc'>
+                        <input type="checkbox" id='checkJakCzarne' class="form-control form-control-md"
+                               {if $rowid!=0 && !empty($dataUmowa[0].jakczarne) &&  $dataUmowa[0].jakczarne==1}checked{/if}
+                        />
+
+
+                    </td>
+
+                </tr>
+                <tr id="trtxtrabatdowydrukow">
+                    <th class='tdOpis'>
+                        rabat do wydruków[%]
+                    </th>
+                    <td class='tdWartosc'>
+                        <input type="text" id='txtrabatdowydrukow'
+                               class="form-control form-control-md" maxlength="10"
+                               {if $rowid!=0 && !empty($dataUmowa[0].rabatdowydrukow)}value="{$dataUmowa[0].rabatdowydrukow|number_format:2:",":" "|escape:'htmlall'}"{/if}>
+                    </td>
+                </tr>
+                <tr>
+                    <th class='tdOpis' style='height:50px;min-height: 50px;max-height: 50px;'>
+                        krótki opis
+                    </th>
+                    <td class='tdWartosc' colspan="3">
+                                   <textarea id="txtopis" class="form-control form-control-md"
+                                             maxlength="500">{if $rowid!=0}{$dataUmowa[0].opis|escape:'htmlall'}{/if}</textarea>
+                    </td>
+                </tr>
+            </table>
+        </div>
+    </div>
+
+    <div class="row container">
+        <div class="col">
+            <table class='table table-sm bok-two-column-layout'>
+
+                <tr>
+                    <th class="text-center" colspan="6">stan początkowy licznika</th>
+                </tr>
+                <tr>
+                    <td class="align-middle text-muted"><small>czarno/biały:</small></td>
                     <td class="tdWartosc">
-                        <input type="text" id='counterstart' class='textBoxForm' maxlength="10"
-                               style="width:70px;min-width:70px;text-align: right; padding-right: 10px"
+                        <input type="text" id='counterstart' class="form-control form-control-md" maxlength="10"
                                {if $prtcntrowid!=0 && !empty($dataCounters[0].ilosc_start)}value="{$dataCounters[0].ilosc_start|number_format:0:",":" "|escape:'htmlall'}"{/if}
                     </td>
-                    <td style="font-size: 12px; color: gray;padding-right: 5px" align="right">kolor:</td>
+                    <td class="align-middle text-muted"><small>kolor:</small></td>
                     <td class="tdWartosc">
-                        <input type="text" id='countercolorstart' class='textBoxForm' maxlength="10"
-                                style="width:70px;min-width:70px;text-align: right; padding-right: 10px"
-                                {if $prtcntrowid!=0 && !empty($dataCounters[0].ilosckolor_start)}value="{$dataCounters[0].ilosckolor_start|number_format:0:",":" "|escape:'htmlall'}"{/if}>
+                        <input type="text" id='countercolorstart' class="form-control form-control-md" maxlength="10"
+                               {if $prtcntrowid!=0 && !empty($dataCounters[0].ilosckolor_start)}value="{$dataCounters[0].ilosckolor_start|number_format:0:",":" "|escape:'htmlall'}"{/if}>
                     </td>
-                    <td style="font-size: 12px; color: gray;padding-right: 5px" align="right">data:</td>
+                    <td class="align-middle text-muted"><small>data:</small></td>
                     <td class="tdWartosc">
-                        <input type="text" class='textBoxForm' id='datacounterstart'
-                               style="width: 150px; min-width: 150px"
+                        <input type="text" class="form-control form-control-md" id='datacounterstart'
                                {if $prtcntrowid!=0}value="{$dataCounters[0].date_start|escape:'htmlall'}"{/if}>
                     </td>
                 </tr>
-                <tr><td colspan="6" style="height: 5px; min-height: 5px;"></td></tr>
+
+            </table>
+        </div>
+        <div class="col">
+            <table class='table table-sm bok-two-column-layout'>
                 <tr>
-                    <td colspan="6" class="tdOpis">stan końcowy licznika</td>
+                    <th class="text-center" colspan="6">stan końcowy licznika</th>
                 </tr>
-                <tr><td colspan="6" style="height: 5px; min-height: 5px;"></td></tr>
                 <tr>
-                    <td style="font-size: 12px; color: gray;padding-right: 5px" align="right">czarno/biały:</td>
+                    <td class="align-middle text-muted"><small>czarno/biały:</small></td>
                     <td class="tdWartosc">
-                        <input type="text" id='counterend' class='textBoxForm' maxlength="10"
-                               style="width:70px;min-width:70px;text-align: right; padding-right: 10px"
+                        <input type="text" id='counterend' class="form-control form-control-md" maxlength="10"
                                {if $prtcntrowid!=0 && !empty($dataCounters[0].ilosc_koniec)}value="{$dataCounters[0].ilosc_koniec|number_format:0:",":" "|escape:'htmlall'}"{/if}>
                     </td>
-                    <td style="font-size: 12px; color: gray;padding-right: 5px" align="right">kolor:</td>
+                    <td class="align-middle text-muted"><small>kolor:</small></td>
                     <td class="tdWartosc">
-                        <input type="text" id='countercolorend' class='textBoxForm' maxlength="10"
-                               style="width:70px;min-width:70px;text-align: right; padding-right: 10px"
+                        <input type="text" id='countercolorend' class="form-control form-control-md" maxlength="10"
                                {if $prtcntrowid!=0 && !empty($dataCounters[0].ilosckolor_koniec)}value="{$dataCounters[0].ilosckolor_koniec|number_format:0:",":" "|escape:'htmlall'}"{/if}>
                     </td>
-                    <td style="font-size: 12px; color: gray;padding-right: 5px" align="right">data:</td>
+                    <td class="align-middle text-muted"><small>data:</small></td>
                     <td class="tdWartosc">
-                        <input type="text" class='textBoxForm' id='datacounterend'
-                               style="width: 150px; min-width: 150px"
+                        <input type="text" class="form-control form-control-md" id='datacounterend'
                                {if $prtcntrowid!=0}value="{$dataCounters[0].date_koniec|escape:'htmlall'}"{/if}>
                         <input type="hidden" id="prtcntrowid" value="{$prtcntrowid}">
                     </td>
                 </tr>
-                <tr><td colspan="6" style="height: 25px; min-height: 25px;"></td></tr>
             </table>
-        </td>
-    </tr>
 
-    <tr>
-        <td style='text-align: right;' colspan="4">
-            <div class='divSave' id="divSaveUmowa">
-                <div id='actionerror' class='actionerror'><span>Błąd zapisu danych.</span></div>
-                <div id='actionok' class='actionok'><span style='margin-top:6px;'>Dane zapisane poprawnie</span></div>
-                <div id='actionbuttonclick2' class="buttonDeclin" onmousedown='usunUmowe("{$rowid}");return false;' style="float: left">
-                    <span>X Zamknij</span>
-                </div>
-                <div class="buttonDeclin" onmousedown='closeColorbox()'>
-                    <span>X Anuluj</span>
-                </div>
-                <div class="actionbuttonZapisz"
-                     onmousedown='zapiszUmowe("{$rowid}");return false;'>
-                    <span>Zapisz >></span>
-                </div>
-                <div id='actionloader' class="actionloader">
-                    <img src="{$smarty.const.SCIEZKA}/{$smarty.const.SMARTVERSION}/img/smallLoader.GIF"
-                         style='display:inline;'/>przetwarzanie
-                </div>
-                <div style='clear:both'></div>
-            </div>
-        </td>
-    </tr>
-    <tr><td colspan="6" style="height: 5px; min-height: 5px;"></td></tr>
-    <tr>
-        <td style='text-align: center;' colspan="4">
+        </div>
+    </div>
 
-            {if isset($rowid) && $rowid!=0}
-                <div class="dropzone" id="divdropzone3">
+</div>
 
-                </div>
-                <script type="text/javascript">
-                        createDropZone('div#divdropzone3', '{$rowid}', 'agreements', '{$smarty.const.ADRESHTTPS}/public_html', '{$smarty.const.SCIEZKA}');
-                </script>
-            {/if}
-        </td>
-    </tr>
-</table>
+
+<div class="container text-right mt-4" wymaganylevel='r' wymaganyzrobiony='1'>
+    <a href="#" class="btn btn-danger mr-5" role="button" onclick='usunUmowe("{$rowid}");return false;'><i
+                class="fas fa-trash"></i>&nbsp;&nbsp;Zamknij Umowę</a>
+    <a href="#" class="btn btn-outline-secondary" role="button" onclick="$.colorbox.close();">Anuluj</a>
+    <a href="#" class="btn btn-outline-success active" role="button" aria-pressed="true"
+       onmousedown='zapiszUmowe("{$rowid}");return false;'><i class="fas fa-save"></i>&nbsp; Zapisz</a>
+</div>
+
+{*<table>*}
+{*    <tr>*}
+{*        <td colspan="4">*}
+{*            <table style="width: 100%; margin-top: 5px; margin-left: 0px" class='tableform'>*}
+{*                <tr>*}
+{*                    <td colspan="6" class="tdOpis">stan początkowy licznika</td>*}
+{*                </tr>*}
+{*                <tr><td colspan="6" style="height: 5px; min-height: 5px;"></td></tr>*}
+{*                <tr>*}
+{*                    <td style="font-size: 12px; color: gray;padding-right: 5px" align="right">czarno/biały:</td>*}
+{*                    <td class="tdWartosc">*}
+{*                        <input type="text" id='counterstart' class='textBoxForm' maxlength="10"*}
+{*                               style="width:70px;min-width:70px;text-align: right; padding-right: 10px"*}
+{*                               {if $prtcntrowid!=0 && !empty($dataCounters[0].ilosc_start)}value="{$dataCounters[0].ilosc_start|number_format:0:",":" "|escape:'htmlall'}"{/if}*}
+{*                    </td>*}
+{*                    <td style="font-size: 12px; color: gray;padding-right: 5px" align="right">kolor:</td>*}
+{*                    <td class="tdWartosc">*}
+{*                        <input type="text" id='countercolorstart' class='textBoxForm' maxlength="10"*}
+{*                               style="width:70px;min-width:70px;text-align: right; padding-right: 10px"*}
+{*                               {if $prtcntrowid!=0 && !empty($dataCounters[0].ilosckolor_start)}value="{$dataCounters[0].ilosckolor_start|number_format:0:",":" "|escape:'htmlall'}"{/if}>*}
+{*                    </td>*}
+{*                    <td style="font-size: 12px; color: gray;padding-right: 5px" align="right">data:</td>*}
+{*                    <td class="tdWartosc">*}
+{*                        <input type="text" class='textBoxForm' id='datacounterstart'*}
+{*                               style="width: 150px; min-width: 150px"*}
+{*                               {if $prtcntrowid!=0}value="{$dataCounters[0].date_start|escape:'htmlall'}"{/if}>*}
+{*                    </td>*}
+{*                </tr>*}
+{*                <tr><td colspan="6" style="height: 5px; min-height: 5px;"></td></tr>*}
+{*                <tr>*}
+{*                    <td colspan="6" class="tdOpis">stan końcowy licznika</td>*}
+{*                </tr>*}
+{*                <tr><td colspan="6" style="height: 5px; min-height: 5px;"></td></tr>*}
+{*                <tr>*}
+{*                    <td style="font-size: 12px; color: gray;padding-right: 5px" align="right">czarno/biały:</td>*}
+{*                    <td class="tdWartosc">*}
+{*                        <input type="text" id='counterend' class='textBoxForm' maxlength="10"*}
+{*                               style="width:70px;min-width:70px;text-align: right; padding-right: 10px"*}
+{*                               {if $prtcntrowid!=0 && !empty($dataCounters[0].ilosc_koniec)}value="{$dataCounters[0].ilosc_koniec|number_format:0:",":" "|escape:'htmlall'}"{/if}>*}
+{*                    </td>*}
+{*                    <td style="font-size: 12px; color: gray;padding-right: 5px" align="right">kolor:</td>*}
+{*                    <td class="tdWartosc">*}
+{*                        <input type="text" id='countercolorend' class='textBoxForm' maxlength="10"*}
+{*                               style="width:70px;min-width:70px;text-align: right; padding-right: 10px"*}
+{*                               {if $prtcntrowid!=0 && !empty($dataCounters[0].ilosckolor_koniec)}value="{$dataCounters[0].ilosckolor_koniec|number_format:0:",":" "|escape:'htmlall'}"{/if}>*}
+{*                    </td>*}
+{*                    <td style="font-size: 12px; color: gray;padding-right: 5px" align="right">data:</td>*}
+{*                    <td class="tdWartosc">*}
+{*                        <input type="text" class='textBoxForm' id='datacounterend'*}
+{*                               style="width: 150px; min-width: 150px"*}
+{*                               {if $prtcntrowid!=0}value="{$dataCounters[0].date_koniec|escape:'htmlall'}"{/if}>*}
+{*                        <input type="hidden" id="prtcntrowid" value="{$prtcntrowid}">*}
+{*                    </td>*}
+{*                </tr>*}
+{*                <tr><td colspan="6" style="height: 25px; min-height: 25px;"></td></tr>*}
+{*            </table>*}
+{*        </td>*}
+{*    </tr>*}
+
+{*    <tr>*}
+{*        <td style='text-align: right;' colspan="4">*}
+{*            <div class='divSave' id="divSaveUmowa">*}
+{*                <div id='actionerror' class='actionerror'><span>Błąd zapisu danych.</span></div>*}
+{*                <div id='actionok' class='actionok'><span style='margin-top:6px;'>Dane zapisane poprawnie</span></div>*}
+{*                <div id='actionbuttonclick2' class="buttonDeclin" onmousedown='usunUmowe("{$rowid}");return false;' style="float: left">*}
+{*                    <span>X Zamknij</span>*}
+{*                </div>*}
+{*                <div class="buttonDeclin" onmousedown='closeColorbox()'>*}
+{*                    <span>X Anuluj</span>*}
+{*                </div>*}
+{*                <div class="actionbuttonZapisz"*}
+{*                     onmousedown='zapiszUmowe("{$rowid}");return false;'>*}
+{*                    <span>Zapisz >></span>*}
+{*                </div>*}
+{*                <div id='actionloader' class="actionloader">*}
+{*                    <img src="{$smarty.const.SCIEZKA}/{$smarty.const.SMARTVERSION}/img/smallLoader.GIF"*}
+{*                         style='display:inline;'/>przetwarzanie*}
+{*                </div>*}
+{*                <div style='clear:both'></div>*}
+{*            </div>*}
+{*        </td>*}
+{*    </tr>*}
+
+{*    <tr>*}
+{*        <td style='text-align: center;' colspan="4">*}
+
+{*            {if isset($rowid) && $rowid!=0}*}
+{*                <div class="dropzone" id="divdropzone3">*}
+
+{*                </div>*}
+{*                <script type="text/javascript">*}
+{*                    createDropZone('div#divdropzone3', '{$rowid}', 'agreements', '{$smarty.const.ADRESHTTPS}/public_html', '{$smarty.const.SCIEZKA}');*}
+{*                </script>*}
+{*            {/if}*}
+{*        </td>*}
+{*    </tr>*}
+{*</table>*}
+
+{*<table id='tableform' class='tableform' cellspacing=0 cellpadding=0>*}
+
+
+
+{*</table>*}
 <script type="text/javascript">
     $("#txtdataod").datepicker($.datepicker.regional['pl'], {
         dateFormat: "yy-mm-dd", changeMonth: true,

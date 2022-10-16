@@ -12,13 +12,18 @@ class agreementsController extends Controller
     {
 
         if (isset($_SERVER['HTTP_X_REQUESTED_WITH']) && ($_SERVER['HTTP_X_REQUESTED_WITH'] == 'XMLHttpRequest')) {
-            if ($_POST['nrumowy'] == '')
-                die('Wpisz numer umowy');
-            if ($_POST['serial'] == '')
-                die('Wybierz drukarkę');
-            if ($_POST['rowidclient'] == '')
-                die('Wybierz klienta');
-
+            if ($_POST['nrumowy'] == '') {
+                die('Wpisz numer umowy!');
+            }
+            if ($_POST['serial'] == '') {
+                die('Wybierz drukarkę!');
+            }
+            if ($_POST['rowidclient'] == '') {
+                die('Wybierz klienta!');
+            }
+            if ($_POST['dataod'] == '') {
+                die('Poda datę startu umowy!');
+            }
 
             $this->agreement->populateWithPost();
             echo(json_encode($this->agreement->saveupdate()));

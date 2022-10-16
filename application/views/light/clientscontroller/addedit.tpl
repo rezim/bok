@@ -12,7 +12,7 @@
             <table class='table table-sm bok-two-column-layout'>
                 <tr>
                     <th>
-                        Nazwa krótka&nbsp;<span style="color: red">*</span>
+                        Nazwa krótka&nbsp;<span class="text-danger">*</span>
                     </th>
                     <td>
                         <input class="form-control form-control-md" type="text" id='txtNazwaKrotka' autofocus
@@ -21,7 +21,7 @@
                 </tr>
                 <tr>
                     <th>
-                        Nazwa pełna&nbsp;<span style="color: red">*</span>
+                        Nazwa pełna&nbsp;<span class="text-danger">*</span>
                     </th>
                     <td>
                         <textarea id="txtNazwaPelna"
@@ -58,7 +58,7 @@
 
                 <tr>
                     <th>
-                        NIP&nbsp;<span style="color: red">*</span>
+                        NIP&nbsp;<span class="text-danger">*</span>
                     </th>
                     <td>
                         <input class="form-control form-control-md" id='txtNip' {if !$show_payment_options && $rowid!=0}disabled{/if}
