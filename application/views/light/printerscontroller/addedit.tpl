@@ -84,7 +84,7 @@
             <td class='tdWartosc'>
                 <input type="text" id='txtip'
                        class='textBoxForm' maxlength="100" style='width:120px;min-width:120px;'
-                       {if $serial!=''}value="{$dataPrinter[0].ip|escape:'htmlall'}"{/if}>
+                       {if $serial!=''}value="{$dataPrinter[0].address_ip|escape:'htmlall'}"{/if}>
             </td>
         </tr>
         <tr>

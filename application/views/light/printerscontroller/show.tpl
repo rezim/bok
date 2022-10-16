@@ -50,6 +50,19 @@
                         klienta.</small>
                 </div>
 
+                <div class="form-group">
+                    <label for="txtfilterlokalizacja">Lokalizacja</label>
+                </div>
+                <div class="form-group">
+                    <input type="text" id='txtfilterlokalizacja{$czycolorbox}' class='form-control'
+                           aria-describedby="lokalizacjaHelp"
+                            {if isset($miasto)}
+                                value='{$miasto}'
+                            {/if}
+                    >
+                    <small id="clientHelp" class="form-text text-muted"><i class="fas fa-info-circle"></i> Podaj lokalizację urządzenia.</small>
+                </div>
+
                 <div class="border-top my-4 otus-separator"></div>
 
                 <div class="form-group">

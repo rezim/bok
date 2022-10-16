@@ -2,7 +2,7 @@
 
 class printer extends Model
 {
-    protected $filterserial = '', $filtermodel = '', $filternumber = '', $filternip = '', $clientrowid, $filterklient = '';
+    protected $filterserial = '', $filtermodel = '', $filternumber = '', $filternip = '', $filterlokalizacja, $clientrowid, $filterklient = '';
     protected $serial = '', $model = '', $product_number = '', $nr_firmware = '', $date_firmware = '', $ip = '', $stan_fuser = '', $stan_adf = '',
         $black_toner = '', $date_insert = '', $cyan_toner = '', $magenta_toner = '', $yellow_toner = '', $blackdrum_toner = '', $cyandrum_toner = '',
         $magentadrum_toner = '', $yellowdrum_toner = '', $dateupdate = '', $iloscstron = '', $opis = '', $lokalizacja = '', $iloscstron_kolor = '', $iloscstron_total = '', $stanna = '',
@@ -52,6 +52,10 @@ class printer extends Model
         if ($this->filterklient != '') {
             $where .= " and ( c.nazwakrotka like '%{$this->filterklient}%' or  c.nazwapelna like '%{$this->filterklient}%')";
         }
+        if ($this->filterlokalizacja != '') {
+            $where .= " and ( p.miasto like '%{$this->filterlokalizacja}%')";
+        }
+
 
         $query = "
             select p.*,a.nrumowy,a.sla,a.rowid as 'rowidumowa',c.rowid as 'rowidclient',c.nazwakrotka as 'nazwaklient',

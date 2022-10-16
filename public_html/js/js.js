@@ -1780,6 +1780,7 @@ function showPrinters(isPopup) {
             filterserial: getElementById('txtfilterserial', isPopup).value,
             filtermodel: getElementById('txtfiltermodel', isPopup).value,
             filterklient: getElementById('txtfilterklient', isPopup).value,
+            filterlokalizacja: getElementById('txtfilterlokalizacja', isPopup).value,
             czycolorbox: isPopup
         },
         success: function (data) {
