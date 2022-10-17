@@ -11,10 +11,10 @@
             <th>
                 model
             </th>
-            <th>
+            <th class="text-right">
                 black
             </th>
-            <th>
+            <th class="text-center">
                 color
             </th>
             {if !$czycolorbox}
@@ -51,8 +51,8 @@
                 <th scope="row">{$smarty.foreach.loopek.index+1}</th>
                 <td>{$item.serial|escape:'htmlall'}</td>
                 <td>{$item.model|escape:'htmlall'} </td>
-                <td>{if $item.iloscstron==0}0{else}{$item.iloscstron|number_format:0:",":" "|replace:',00':''|escape:'htmlall'}{/if}</td>
-                <td>{if $item.iloscstron_kolor==''}{else}{$item.iloscstron_kolor|number_format:0:",":" "|replace:',00':''|escape:'htmlall'}{/if}</td>
+                <td class="text-right">{if $item.iloscstron==0}0{else}{$item.iloscstron|number_format:0:",":" "|replace:',00':''|escape:'htmlall'}{/if}</td>
+                <td class="text-right">{if $item.iloscstron_kolor==''}{else}{$item.iloscstron_kolor|number_format:0:",":" "|replace:',00':''|escape:'htmlall'}{/if}</td>
                 {if $czycolorbox==''}
                     <td onClick='showNewAgreementAdd("{$item.rowidumowa}")'>{$item.nrumowy|escape:'htmlall'}</td>
                     <td {if !empty($item.nazwaklient)}onClick='showNewClientAdd("{$item.rowidclient}")'{/if}>{$item.nazwaklient|escape:'htmlall'}</td>
