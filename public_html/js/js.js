@@ -579,7 +579,6 @@ function zapiszUmowe(rowid) {
                 prowizjapartnerska: doc.getElementById('txtprowizjapartnerska').value,
                 sla: doc.getElementById('txtsla').value,
                 wartoscurzadzenia: doc.getElementById('txtwartoscurzadzenia').value,
-                jakczarne: doc.getElementById("checkJakCzarne").checked ? 1 : 0,
                 counterstart: doc.getElementById("counterstart").value,
                 countercolorstart: doc.getElementById("countercolorstart").value,
                 datacounterstart: doc.getElementById("datacounterstart").value,
