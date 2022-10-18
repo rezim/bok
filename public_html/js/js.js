@@ -248,7 +248,7 @@ function showNewAgreementAdd(rowid) {
 
     $.colorbox
     ({
-        height: 680 + 'px',
+        height: ((rowid && rowid !== '0') ? 870 : 680) + 'px',
         width: 1200 + 'px',
         title: "Dodawanie/Edycja umowy",
         data:

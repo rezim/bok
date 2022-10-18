@@ -316,10 +316,22 @@
 
         </div>
     </div>
+    <div class="row container">
+        <div class="col">
+            {if isset($rowid) && $rowid!=0}
+                <div class="dropzone" id="divdropzone3">
+
+                </div>
+                <script type="text/javascript">
+                    createDropZone('div#divdropzone3', '{$rowid}', 'agreements', '{$smarty.const.ADRESHTTPS}/public_html', '{$smarty.const.SCIEZKA}');
+                </script>
+            {/if}
+        </div>
+    </div>
 
 </div>
 
-<div class="container text-right mt-4" wymaganylevel='r' wymaganyzrobiony='1'>
+<div class="container text-right mt-4 mb-2" wymaganylevel='r' wymaganyzrobiony='1'>
     <a href="#" class="btn btn-danger mr-5" role="button" onclick='usunUmowe("{$rowid}");return false;'><i
                 class="fas fa-trash"></i>&nbsp;&nbsp;Zamknij Umowę</a>
     <a href="#" class="btn btn-outline-secondary" role="button" onclick="$.colorbox.close();">Anuluj</a>
