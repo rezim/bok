@@ -744,7 +744,7 @@ a.SLA-(( unix_timestamp(now())
         $query = "  
         select c.rowid as clientid, c.nazwakrotka as clientname, c.nip as clientnip, a.rowid as agreementid, a.nrumowy as agreementnumber 
         from printers p inner join agreements a on p.serial = a.serial INNER join clients c on a.rowidclient = c.rowid
-        where p.serial = '" . $serial . "'";
+        where a.activity = 1 and p.serial = '" . $serial . "'";
 
         return $this->query($query, null, false);
     }
