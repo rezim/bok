@@ -7,7 +7,7 @@ class alert extends Model
         $toner_left = 10;
         $query =
             "
-            Select t.serial, t.toner_type, t.date, t.toner_left, p.model, p.product_number, c.ulica, c.miasto, c.kodpocztowy, c.telefon, c.mail, c.nazwakrotka as nazwa, c.zamowieniaimienazwisko as osobakontaktowa, n.rowid as notification_rowid From 
+            Select t.serial, t.toner_type, t.date, t.toner_left, p.model, p.product_number, p.ulica, p.miasto, p.kodpocztowy, p.telefon, p.mail, p.nazwa, p.osobakontaktowa, n.rowid as notification_rowid From 
             (
             SELECT l1.serial as serial, l2.toner as toner_type, l1.timestamp as date, '" . $toner_left ."' as toner_left from `logs` l1
             INNER JOIN (
@@ -34,9 +34,7 @@ class alert extends Model
             
             INNER JOIN printers p on p.serial = t.serial
             
-            INNER JOIN agreements a on a.serial = p.serial 
-            
-            INNER JOIN clients c on a.rowidclient = c.rowid
+            INNER JOIN agreements a on a.serial = p.serial            
             
             LEFT JOIN 
             
