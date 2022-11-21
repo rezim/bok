@@ -21,11 +21,37 @@ class clientinvoicesController extends InvoicesController
     function getinvoices()
     {
         if ($_POST['period'] && $_POST['date_from'] && $_POST['date_to']) {
+            $filters = '';
+            if (isset($_POST['filters'])) {
+                $filters = $_POST['filters'];
+            }
             echo json_encode(
-                $this->getInvoicesByDateRange($_POST['period'], $_POST['date_from'], $_POST['date_to'])
+                $this->getInvoicesByDateRange($_POST['period'], $_POST['date_from'], $_POST['date_to'], $filters)
             );
         } else {
             echo "błędne parametry wejściowe";
+        }
+    }
+
+    function sendpaimentreminder()
+    {
+        if (!$_POST['client_id'] || !$_POST['client_nip'] || !$_POST['client_email']) {
+            header($_SERVER['SERVER_PROTOCOL'] . ' 500 Internal Server Error', true, 500);
+            echo "blędne parametery wejściowe";
+            return;
+        }
+
+        try {
+            $clientOverdueInvoices = $this->getOverdueInvoicesByClientId($_POST['client_id']);
+
+            $clientInterestNotes = $this->resolveNotPaidInterestNotes($_POST['client_nip']);
+
+            $this->sendOverduePaymentsReminder($clientOverdueInvoices, $clientInterestNotes);
+
+            echo "OK";
+        } catch(Exception $e) {
+            header($_SERVER['SERVER_PROTOCOL'] . ' 500 Internal Server Error', true, 500);
+            echo $e->getMessage();
         }
     }
 
@@ -50,11 +76,11 @@ class clientinvoicesController extends InvoicesController
         }
     }
 
-    function getinvoicesbyclientid()
+    function getclientinvoices()
     {
         if ($_POST['client_id'] && $_POST['is_paid']) {
             echo json_encode(
-                $this->geInvoicesByClientId($_POST['client_id'], ($_POST['is_paid'] === 'true') ? true : false)
+                $this->getInvoicesByClientId($_POST['client_id'], ($_POST['is_paid'] === 'true') ? true : false)
             );
         } else {
             echo "błędne parametry wejściowe";
@@ -79,7 +105,8 @@ class clientinvoicesController extends InvoicesController
         }
     }
 
-    function removeinvoicebyid() {
+    function removeinvoicebyid()
+    {
         $required = ['invoice_id'];
         if ($this->validatePostParams($required)) {
             echo json_encode($this->removeInvoice($_POST['invoice_id']));

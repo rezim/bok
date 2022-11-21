@@ -32,7 +32,14 @@ class InvoicesController extends Controller
         return $client;
     }
 
-    function geInvoicesByClientId($clientId, $isPaid)
+    function getOverdueInvoicesByClientId($clientId)
+    {
+        $invoices = $this->getInvoicesByClientId($clientId, false);
+
+        return array_filter($invoices, fn($invoice) => isset($invoice['overdue?']) && $invoice['overdue?'] == true);
+    }
+
+    function getInvoicesByClientId($clientId, $isPaid)
     {
         $invoices = array();
         $perPage = 100;
@@ -62,7 +69,7 @@ class InvoicesController extends Controller
         return $invoices;
     }
 
-    function getInvoicesByDateRange($period, $dateFrom, $dateTo)
+    function getInvoicesByDateRange($period, $dateFrom, $dateTo, $additionalFilters = '')
     {
 
         $ch = curl_init();
@@ -82,7 +89,9 @@ class InvoicesController extends Controller
             . '&date_from=' . $dateFrom
             . '&date_to=' . $dateTo
             . '&api_token=' . FAKTUROWNIA_APITOKEN
-            . '&per_page=' . $perPage;
+            . '&per_page=' . $perPage
+            . '&order=issue_date'
+            . $additionalFilters;
 
         do {
             curl_setopt($ch, CURLOPT_URL, $url . '&page=' . $pageNb);
@@ -98,40 +107,6 @@ class InvoicesController extends Controller
 
         curl_close($ch);
 
-//        do {
-//            for ($i = 0; $i < $max_multi_calls_count; $i++) {
-//
-//                $curl_arr[$i] = curl_init($url . '&page=' . $pageNb);
-//                curl_setopt($curl_arr[$i], CURLOPT_RETURNTRANSFER, true);
-//                if (USE_PROXY) {
-//                    curl_setopt($curl_arr[$i], CURLOPT_PROXY, '127.0.0.1:8888');
-//                }
-//                curl_multi_add_handle($mh, $curl_arr[$i]);
-//
-//                $pageNb++;
-//            }
-//
-//            do {
-//                $status = curl_multi_exec($mh, $running);
-//            } while ($running > 0 && $status === CURLM_OK);
-//
-//
-//            if ($status === CURLM_OK) {
-//                for ($i = 0; $i < $max_multi_calls_count; $i++) {
-//                    $results[] = curl_multi_getcontent($curl_arr[$i]);
-//
-//                    curl_multi_remove_handle($mh, $curl_arr[$i]);
-//
-//                    $data = json_decode(curl_multi_getcontent($curl_arr[$i]), true);
-//
-//                    $invoices = array_merge($invoices, $data);
-//                }
-//            }
-//        } while (count($invoices) === ($pageNb - 1) * 50 && $status === CURLM_OK);
-
-//        curl_multi_close($mh);
-//
-//        return ($status === CURLM_OK) ? $invoices : $status;
         return $invoices;
     }
 
@@ -405,7 +380,7 @@ class InvoicesController extends Controller
         $overPaidPayments = $this->getAllOverpaidPayments($clientId);
 
         foreach ($overPaidPayments as $payment) {
-            $notPaidInvoices = $this->geInvoicesByClientId($clientId, false);
+            $notPaidInvoices = $this->getInvoicesByClientId($clientId, false);
 
             if (count($notPaidInvoices) > 0) {
                 $this->splitPayment($notPaidInvoices, $payment);
@@ -540,7 +515,17 @@ class InvoicesController extends Controller
         return $notesWithDate;
     }
 
-    function readInterestNote($filePath) {
+    function resolveNotPaidInterestNotes($buyerTaxNo)
+    {
+        $filterPaidInterestNotes = function ($interestNote) {
+            return !startsWith($interestNote['name'], 'paid-(');
+        };
+
+        return array_filter($this->resolveInterestNotes($buyerTaxNo), $filterPaidInterestNotes);
+    }
+
+    function readInterestNote($filePath)
+    {
         $parser = new \Smalot\PdfParser\Parser();
         $pdf = $parser->parseFile($filePath);
         $textArr = array_map(fn($lineOfText) => preg_replace("/\s+/", "", $lineOfText), preg_split('/\r\n|\r|\n/', $pdf->getText()));
@@ -559,8 +544,8 @@ class InvoicesController extends Controller
         $result['text'] = $textArr;
 
 
-        if ($amountPosition &&  count($textArr) > 2 &&  $textArr[$amountPosition-2] === "Razem") {
-            $result['amount'] = floatval(str_replace(",", ".", $textArr[$amountPosition-1]));
+        if ($amountPosition && count($textArr) > 2 && $textArr[$amountPosition - 2] === "Razem") {
+            $result['amount'] = floatval(str_replace(",", ".", $textArr[$amountPosition - 1]));
         } else {
             $result['amount'] = -1;
         }
@@ -735,6 +720,59 @@ class InvoicesController extends Controller
         return array("message" => "OK");
     }
 
+
+    function sendOverduePaymentsReminder($invoices, $interestNotes)
+    {
+
+        $mailingBody = '';
+
+        if (count($invoices) > 0) {
+
+            $invoicesAmount = array_sum(array_map(function ($note) {
+                return floatval($note['price_gross']) - floatval($note['paid']);
+            }, $invoices));
+
+            $invoicesSummary = join('<br/>', array_map(function ($invoice) {
+                $calculatedAmount = floatval($invoice['price_gross']) - floatval($invoice['paid']);
+                return "numer faktury: {$invoice['number']}, kwota: {$invoice['price_gross']}, termin płatności: {$invoice['payment_to']}, zapłacono: {$invoice['paid']}";
+            },
+                $invoices));
+
+            $mailingBody .= "$invoicesSummary<br /><br />pozostało do zapłaty: <b>$invoicesAmount zł</b><br /><br />";
+        }
+
+        if (count($interestNotes) > 0) {
+            $interestNotesAmount = array_sum(array_map(function ($note) {
+                return $note['amount'];
+            }, $interestNotes));
+
+            $interestNotesSummary = join('<br/>', array_map(function ($note) {
+                $normalizedName = substr($note['name'], 0, -4);
+                return "numer noty odsetkowej: $normalizedName, kwota: {$note['amount']}";
+            },
+                $interestNotes));
+
+
+            $mailingBody .= "$interestNotesSummary<br /><br />pozostało do zapłaty: <b>$interestNotesAmount zł</b><br /><br />";
+        }
+
+
+        if ($mailingBody !== '') {
+            $mailingBody .= "<br />Prosimy o terminowe płatności.<br /><br />"
+                . "Pozdrawiamy," . "<br />"
+                . "Otus Sp. z o.o." . "<br />"
+                . "+48 71 321 19 06" . "<br />"
+                . "www.otus.pl";
+
+            $mailing = new mailing();
+            $mailing->sendNewMail(
+                'tregimowicz@gmail.com',
+                $mailingBody,
+                "Przypomnienie o zaległych płatnościach"
+            );
+            unset($mailing);
+        }
+    }
 
 }
 

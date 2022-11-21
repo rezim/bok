@@ -1,5 +1,5 @@
 <div class="container-fluid" ng-app="app" ng-controller="PaymentsCtrl as ctrl" ng-cloak
-     ng-init="ctrl.loadData(date_from, date_to)">
+     ng-init="ctrl.loadData(date_from, date_to, true)">
 
     <div class="row">
         <div class="otus-sidebar col-12 col-xl-auto">
@@ -107,7 +107,7 @@
 
                 <div class="form-group">
                     <button class="btn btn-info btn-block" type="submit"
-                            ng-click='ctrl.loadData(date_from, date_to, show_inactive)'>
+                            ng-click='ctrl.loadData(date_from, date_to, !ctrl.filters.show_paid_invoices)'>
                         Pokaż
                     </button>
                 </div>
@@ -218,6 +218,9 @@
                                     <a href="javascript:void(0)" class="dropdown-item"
                                        ng-click="ctrl.interestNoteList(clientInvoice); $event.stopPropagation();"><i
                                                 class="fas fa-file-invoice"></i>&nbsp;&nbsp;noty odsetkowe</a>
+                                    <a href="javascript:void(0)" class="dropdown-item"
+                                       ng-click="ctrl.sendPaymentReminderEmail(clientInvoice); $event.stopPropagation();"><i
+                                                class="fas fa-envelope"></i>&nbsp;&nbsp;wyślij przypomnienie</a>
                                 </div>
                             </div>
                         </td>

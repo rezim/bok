@@ -246,7 +246,7 @@ class mailing
         }
     }
 
-    function sendNewMail($mailto, $tresc, $temat, $zalaczniki)
+    function sendNewMail($mailto, $tresc, $temat, $zalaczniki = null)
     {
 
 

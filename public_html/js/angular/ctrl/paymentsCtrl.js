@@ -19,7 +19,7 @@ PaymentsCtrl = function ($scope, rest, $q, $filter, $uibModal, $interpolate, app
     };
 
     this.filters = {
-        show_paid_invoices: true,
+        show_paid_invoices: false,
         show_overpaid_invoices: true,
         show_non_deptors: false,
         invoiceNb: '',
@@ -117,12 +117,14 @@ PaymentsCtrl = function ($scope, rest, $q, $filter, $uibModal, $interpolate, app
     this.loadData = async function (date_from, date_to, notPaidInvoicesOnly, callback) {
         if (date_from && date_to) {
             $scope.isPending = true;
-            const serviceName = !notPaidInvoicesOnly ? 'getinvoices' : 'getnotpaidinvoices';
+            const serviceName = 'getinvoices';
+            const filters = !notPaidInvoicesOnly ? '' : "&status=not_paid";
             const invoicesPromise =
                 rest.post(serviceName, {
                     period: 'more',
                     date_from: date_from,
-                    date_to: date_to
+                    date_to: date_to,
+                    filters
                 });
 
             const agreementsPromise = rest.post('getagreements', {});
@@ -246,7 +248,7 @@ PaymentsCtrl = function ($scope, rest, $q, $filter, $uibModal, $interpolate, app
         });
 
         const paidNoteNamePrefixRegExp = /^paid-\(.*\)-/;
-        for(const [clientNip, clientInterestNotes] of Object.entries(interestNotes)) {
+        for (const [clientNip, clientInterestNotes] of Object.entries(interestNotes)) {
 
             objClientInvoice[clientNip]['interestNotes'] = clientInterestNotes.filter((note) => !paidNoteNamePrefixRegExp.test(note.name));
             objClientInvoice[clientNip]['interestNotesLength'] = clientInterestNotes.filter((note) => !paidNoteNamePrefixRegExp.test(note.name)).length;
@@ -299,6 +301,25 @@ PaymentsCtrl = function ($scope, rest, $q, $filter, $uibModal, $interpolate, app
                 }
             })
         });
+    };
+
+    this.sendPaymentReminderEmail = function (clientInvoice) {
+        const client_id = clientInvoice.clientId;
+        const client_nip = clientInvoice.nip;
+        const client_email = clientInvoice.mailFaktury;
+
+        if (!client_nip || !client_id || !client_email) {
+            alert(`Identyfikator klienta: ${client_id ?? 'NULL'}, jego adres email: ${client_email ?? 'NULL'} oraz nip: ${client_nip ?? 'NULL'} są konieczne aby wysłać maila!`);
+            return;
+        }
+
+        if (confirm(`Mail zostanie wysłany na adres: ${client_email}. Potwierdzasz ?`)) {
+            rest.post('sendpaimentreminder', {client_id, client_nip, client_email})
+                .then(() => alert("Przypomnienie zostało wysłane!"))
+                .catch(err =>
+                    alert(`Nie można wysłać wiadomości! Błąd: ${err.data}`)
+                );
+        }
     };
 
     this.paymentsClientMessages = function (clientInvoice) {

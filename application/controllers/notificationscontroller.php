@@ -291,7 +291,7 @@ class notificationsController extends InvoicesController
                 if (!empty($client)) {
                     global $smarty;
 
-                    $notPaidInvoices = $this->geInvoicesByClientId($client[0]['id'], false);
+                    $notPaidInvoices = $this->getInvoicesByClientId($client[0]['id'], false);
 
                     $notPaidInvoices = array_map(function ($inv) {
                         $today = new DateTime();
