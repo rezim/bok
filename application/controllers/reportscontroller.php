@@ -629,14 +629,7 @@ class reportsController extends InvoicesController
     function getinvoices()
     {
         if ($_POST['period'] && $_POST['date_from'] && $_POST['date_to']) {
-
-            $invoices = $this->getInvoicesByDateRange($_POST['period'], $_POST['date_from'], $_POST['date_to']);
-
-            foreach($invoices as $invoice) {
-                $this->report->insertInvoice($invoice);
-            }
-
-            echo json_encode($invoices);
+            echo json_encode($this->getInvoicesByDateRange($_POST['period'], $_POST['date_from'], $_POST['date_to']));
         } else {
             echo "błędne parametry wejściowe";
         }
