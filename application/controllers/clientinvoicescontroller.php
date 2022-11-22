@@ -42,11 +42,12 @@ class clientinvoicesController extends InvoicesController
         }
 
         try {
-            $clientOverdueInvoices = $this->getOverdueInvoicesByClientId($_POST['client_id']);
+            // send all not paid invoices //$this->getOverdueInvoicesByClientId($_POST['client_id']);
+            $clientOverdueInvoices = array_reverse($this->getInvoicesByClientId($_POST['client_id'], false));
 
             $clientInterestNotes = $this->resolveNotPaidInterestNotes($_POST['client_nip']);
 
-            $this->sendOverduePaymentsReminder($clientOverdueInvoices, $clientInterestNotes);
+            $this->sendOverduePaymentsReminder($clientOverdueInvoices, $clientInterestNotes, $_POST['client_nip']);
 
             echo "OK";
         } catch(Exception $e) {

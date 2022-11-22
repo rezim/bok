@@ -203,7 +203,7 @@ class mailing
 
         $templates = new mailTemplates();
 
-       $mailek->Body = $templates->sendMailZakonczonoEmailTemplate($rowid);
+        $mailek->Body = $templates->sendMailZakonczonoEmailTemplate($rowid);
 
         $mailek->AltBody =
             "
@@ -246,7 +246,7 @@ class mailing
         }
     }
 
-    function sendNewMail($mailto, $tresc, $temat, $zalaczniki = null)
+    function sendNewMail($mailto, $tresc, $temat, $zalaczniki = null, $mailFrom = null, $mailFromName = null)
     {
 
 
@@ -266,8 +266,8 @@ class mailing
         $mailek->SMTPSecure = 'tls';                            // Enable TLS encryption, `ssl` also accepted
         $mailek->Port = 587;                                    // TCP port to connect to
 
-        $mailek->From = FROM_CASE;
-        $mailek->FromName = NAME_CASE;
+        $mailek->From = $mailFrom ? $mailFrom : FROM_CASE;
+        $mailek->FromName = $mailFromName ? $mailFromName : NAME_CASE;
         $mailek->CharSet = 'UTF-8';
         $mailek->WordWrap = 50;                                 // Set word wrap to 50 characters
         $mailek->addReplyTo(FROM_CASE, NAME_CASE);
@@ -287,6 +287,58 @@ class mailing
 
 
         $mailek->Body = $tresc; //  $this->getEmailWithPollBody($tresc);
+
+        $mailek->AltBody = $tresc .
+            "
+                                     
+                                    Pozdrawiamy,
+                                    Otus Sp. z o.o.
+                                    +48 71 321 19 06
+                                    www.otus.pl
+                                ";
+
+        $result = $mailek->send();
+        if (!$result) {
+            echo 'Błąd wysłania wiadomości.';
+            echo 'Mailer Error: ' . $mailek->ErrorInfo;
+        } else {
+
+        }
+
+        return $result;
+    }
+
+    function sendNewOverduePaymentsMail($mailto, $tresc, $temat)
+    {
+
+
+        if (empty($mailto) || $mailto == '')
+            return;
+
+        $mailek = new PHPMailer;
+        $mailek->isSMTP(); // Set mailer to use SMTP
+        $mailek->Host = SERWER_OTUS; // Specify main and backup SMTP servers
+        $mailek->SMTPAuth = true; // Enable SMTP authentication
+        $mailek->Username = LOGIN_INVOICES; // LOGIN_CASE;                 // SMTP username
+        $mailek->Password = HASLO_INVOICES; // HASLO_CASE;                           // SMTP password
+        $mailek->SMTPSecure = 'tls';                            // Enable TLS encryption, `ssl` also accepted
+        $mailek->Port = 587;                                    // TCP port to connect to
+
+        $mailek->From = LOGIN_INVOICES; // FROM_CASE;
+        $mailek->FromName = NAME_INVOICES;
+        $mailek->CharSet = 'UTF-8';
+        $mailek->WordWrap = 50;                                 // Set word wrap to 50 characters
+        $mailek->addReplyTo(LOGIN_INVOICES, NAME_INVOICES);
+        $mailek->isHTML(true);
+        $mailek->addAddress($mailto);     // Add a recipient
+
+        $mailek->Subject = $temat;
+
+        $mailek->Body = $tresc
+            . "Pozdrawiamy," . "<br />"
+            . "Otus Sp. z o.o." . "<br />"
+            . "+48 71 321 19 06" . "<br />"
+            . "www.otus.pl";
 
         $mailek->AltBody = $tresc .
             "

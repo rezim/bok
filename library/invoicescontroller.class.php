@@ -721,10 +721,13 @@ class InvoicesController extends Controller
     }
 
 
-    function sendOverduePaymentsReminder($invoices, $interestNotes)
+    function sendOverduePaymentsReminder($invoices, $interestNotes, $buyerTaxNo)
     {
 
         $mailingBody = '';
+        $fmt = new NumberFormatter('pl_PL', NumberFormatter::CURRENCY);
+        $fmt->setTextAttribute(NumberFormatter::CURRENCY_CODE, 'zł');
+        $fmt->setAttribute(NumberFormatter::FRACTION_DIGITS, 2);
 
         if (count($invoices) > 0) {
 
@@ -732,46 +735,52 @@ class InvoicesController extends Controller
                 return floatval($note['price_gross']) - floatval($note['paid']);
             }, $invoices));
 
-            $invoicesSummary = join('<br/>', array_map(function ($invoice) {
-                $calculatedAmount = floatval($invoice['price_gross']) - floatval($invoice['paid']);
-                return "numer faktury: {$invoice['number']}, kwota: {$invoice['price_gross']}, termin płatności: {$invoice['payment_to']}, zapłacono: {$invoice['paid']}";
+            $invoicesSummary = join('<br/>', array_map(function ($invoice) use (&$fmt) {
+                $calculatedAmount = $fmt->format(floatval($invoice['price_gross']) - floatval($invoice['paid']));
+                return "{$invoice['number']} na kwotę {$calculatedAmount} termin płatności {$invoice['payment_to']}";
             },
                 $invoices));
 
-            $mailingBody .= "$invoicesSummary<br /><br />pozostało do zapłaty: <b>$invoicesAmount zł</b><br /><br />";
+            $mailingBody .= "$invoicesSummary<br /><br />pozostało do zapłaty faktury: <b>{$fmt->format($invoicesAmount)}</b><br /><br />";
         }
 
         if (count($interestNotes) > 0) {
-            $interestNotesAmount = array_sum(array_map(function ($note) {
-                return $note['amount'];
+            $interestNotesAmount = array_sum(array_map(function ($note) use (&$fmt) {
+                return $fmt->format($note['amount']);
             }, $interestNotes));
 
             $interestNotesSummary = join('<br/>', array_map(function ($note) {
                 $normalizedName = substr($note['name'], 0, -4);
-                return "numer noty odsetkowej: $normalizedName, kwota: {$note['amount']}";
+                return "nota odsetkowa $normalizedName na kwotę {$note['amount']}";
             },
                 $interestNotes));
 
-
-            $mailingBody .= "$interestNotesSummary<br /><br />pozostało do zapłaty: <b>$interestNotesAmount zł</b><br /><br />";
+            $mailingBody .= "$interestNotesSummary<br /><br />pozostało do zapłaty noty: <b>{$fmt->format($interestNotesAmount)}</b><br /><br />";
         }
 
-
+        $customerMessage = '';
         if ($mailingBody !== '') {
-            $mailingBody .= "<br />Prosimy o terminowe płatności.<br /><br />"
-                . "Pozdrawiamy," . "<br />"
-                . "Otus Sp. z o.o." . "<br />"
-                . "+48 71 321 19 06" . "<br />"
-                . "www.otus.pl";
+
+            $overdueAmount = $fmt->format($invoicesAmount + $interestNotesAmount);
+
+            $mailingBody = "Bardzo proszę o uregulowanie poniższej kwoty: <b>$overdueAmount</b> (Łącznie do zapłaty faktury i noty odsetkowe)<br /><br />" . $mailingBody;
 
             $mailing = new mailing();
-            $mailing->sendNewMail(
+            $mailing->sendNewOverduePaymentsMail(
                 'tregimowicz@gmail.com',
                 $mailingBody,
                 "Przypomnienie o zaległych płatnościach"
             );
             unset($mailing);
+
+
+            $customerMessage = "Wiadomość o zaległości w wysokości $overdueAmount, została wysłana do klienta.";
+        } else {
+            $customerMessage = "Klient nie posiada zaległości, wiadomość nie została wysłana.";
+
         }
+        $customerMessageParams = array("client_nip" => $buyerTaxNo, "message_date" => date("Y-m-d"), "message" => $customerMessage);
+        $this->clientinvoice->addPaymentMessage($customerMessageParams, 'payments_messages');
     }
 
 }
