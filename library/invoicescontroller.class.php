@@ -767,7 +767,7 @@ class InvoicesController extends Controller
 
             $mailing = new mailing();
             $mailing->sendNewOverduePaymentsMail(
-                'tregimowicz@gmail.com',
+                'stankomarek@gmail.com',
                 $mailingBody,
                 "Przypomnienie o zaległych płatnościach"
             );
