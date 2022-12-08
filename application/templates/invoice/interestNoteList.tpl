@@ -33,11 +33,11 @@
                     <div class="col-sm-1 text-right" role="button">[[note.invoice.is_late_days]]</div>
                     <div class="col-sm-2 text-right action" role="button">
                         <button ng-if="!note.name.startsWith('paid-')" class="btn btn-warning" style="font-size: 10px " title="usuń"
-                                ng-click="$ctrl.removeInterestNote(note.invoice.buyer_tax_no, note.name, note.invoice.number, $ctrl.data.paymentDate)">
+                                ng-click="$ctrl.removeInterestNote(note.nip, note.name, note.number, $ctrl.data.paymentDate)">
                             X
                         </button>
                         <button ng-if="!note.name.startsWith('paid-')" class="btn btn-primary" style="font-size: 10px " title="zapłać"
-                                ng-click="$ctrl.interestNotePaid(note.invoice.buyer_tax_no, note.name, note.invoice.number, $ctrl.data.paymentDate)">
+                                ng-click="$ctrl.interestNotePaid(note.nip, note.name, note.number, $ctrl.data.paymentDate)">
                             zapłać
                         </button>
                         <div class="small" ng-if="note.name.startsWith('paid-')">[[$ctrl.resolvePaidDateFromNoteName(note.name)]]</div>

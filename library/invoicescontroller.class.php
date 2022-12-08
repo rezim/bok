@@ -505,7 +505,7 @@ class InvoicesController extends Controller
 
             $fileName = basename($filePath);
             $timestamp = filemtime($filePath);
-            return array("name" => $fileName, "path" => $filePath, "date" => date("Y-m-d H:i:s", $timestamp), "timestamp" => $timestamp, "amount" => $parsedInterestNote['amount'], "text" => $parsedInterestNote["text"]);
+            return array("name" => $fileName, "path" => $filePath, "date" => date("Y-m-d H:i:s", $timestamp), "timestamp" => $timestamp, "amount" => $parsedInterestNote['amount'], "text" => $parsedInterestNote["text"], "number" => $parsedInterestNote["number"], "nip" => $parsedInterestNote["nip"]);
         }, $noteNames);
 
         usort($notesWithDate, function ($a, $b) {
@@ -526,6 +526,7 @@ class InvoicesController extends Controller
 
     function readInterestNote($filePath)
     {
+
         $parser = new \Smalot\PdfParser\Parser();
         $pdf = $parser->parseFile($filePath);
         $textArr = array_map(fn($lineOfText) => preg_replace("/\s+/", "", $lineOfText), preg_split('/\r\n|\r|\n/', $pdf->getText()));
@@ -549,6 +550,22 @@ class InvoicesController extends Controller
         } else {
             $result['amount'] = -1;
         }
+
+        $invoiceNumber = '';
+        $nip = '';
+
+        foreach ($textArr as $value) {
+            if (strpos($value, '1Fakturanumer') === 0) {
+                $invoiceNumber = str_replace('1Fakturanumer', '', $value);
+            }
+            if (strpos($value, 'NIP') === 0) {
+                $nip = str_replace('NIP', '', $value);
+            }
+        }
+
+        $result['number'] = $invoiceNumber;
+
+        $result['nip'] = $nip;
 
         return $result;
     }
