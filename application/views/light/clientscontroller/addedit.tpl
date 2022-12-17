@@ -97,6 +97,7 @@
                 <tr>
                     <th>
                         Numer rachunku bankowego
+                        <small id="dateFromHelp" class="form-text text-white"><i class="fas fa-info-circle"></i> Jeśli puste generuje się automatycznie.</small>
                     </th>
                     <td>
                         <input class="form-control form-control-sm" id='txtNumerRachunku' {if !$show_payment_options && $rowid!=0}disabled{/if}

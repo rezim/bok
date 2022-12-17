@@ -49,8 +49,16 @@ class client extends Model
             array_push($columnList, array('name' => '`terminplatnosci`', 'type' => 'd', 'value' => $this->terminplatnosci));
         if ($this->bank !== null)
             array_push($columnList, array('name' => '`bank`', 'type' => 's', 'value' => $this->bank));
-        if ($this->numerrachunku !== null)
+        if ($this->numerrachunku !== null && $this->numerrachunku !== '') {
             array_push($columnList, array('name' => '`numerrachunku`', 'type' => 's', 'value' => $this->numerrachunku));
+        } else if ($this->nip !== null && $this->nip !== '0000000000') {
+            try {
+                $clientIBAN = $this->calculateIBAN(IBAN_PL, IBAN_NUMER_ROZLICZENIOWY_BANKU, IBAN_NUMER_KLIENTA_BANKU, $this->nip);
+                array_push($columnList, array('name' => '`numerrachunku`', 'type' => 's', 'value' => $clientIBAN));
+            } catch (Exception $e) {
+                // nop
+            }
+        }
         if ($this->opis !== null)
             array_push($columnList, array('name' => '`opis`', 'type' => 's', 'value' => $this->opis));
 
@@ -104,9 +112,6 @@ class client extends Model
         if ($this->fakturyemail !== null)
             array_push($columnList, array('name' => '`fakturyemail`', 'type' => 's', 'value' => $this->fakturyemail));
 
-
-
-
         if ($this->rowid == 0) {
             $names = implode(',', array_column($columnList, 'name'));
             $types = implode('', array_column($columnList, 'type'));
@@ -156,6 +161,22 @@ class client extends Model
         return $this->query($query, null, false);
     }
 
+    function updateIBANForAllClients() {
+        $query = "select rowid, nip from clients where activity = 1 and (numerrachunku is null or numerrachunku = '')";
+        $clients = $this->query($query, null, false);
+
+        foreach ($clients as $client) {
+            try {
+                $clientIBAN = $this->calculateIBAN(IBAN_PL, IBAN_NUMER_ROZLICZENIOWY_BANKU, IBAN_NUMER_KLIENTA_BANKU, $client['nip']);
+                $this->update("update clients set `numerrachunku`=?  where `rowid`=?", 'si', array($clientIBAN, $client['rowid']));
+            } catch (Exception $e) {
+                return $e;
+            }
+        }
+
+        return 'OK';
+    }
+
     function getClients()
     {
 
@@ -185,4 +206,31 @@ class client extends Model
             {$where} order by a.nazwakrotka";
         return $this->query($query, 'rowid', false);
     }
+
+    function calculateIBAN($countryCode, $bankAccountId, $ownerAccountId, $clientId) {
+        if (strlen($bankAccountId) !== 8) {
+            throw new Exception("Błędny numer rozliczeniowy banku");
+        }
+        if (strlen($ownerAccountId) !== 4) {
+            throw new Exception("Błędny numer identyfikujący firmę");
+        }
+        $clientId = sprintf("%012s", $clientId);
+
+        $controlNumber = "00";
+
+        $bankAccountIdMod97 = strval( intval($bankAccountId) % 97 );
+
+        $ownerAccountIdMod97 = strval( intval($bankAccountIdMod97 . $ownerAccountId) % 97 );
+
+        $clientIdMod97 = strval( intval($ownerAccountIdMod97 . $clientId) % 97 );
+
+        $IBANMod97 = strval( intval($clientIdMod97 . $countryCode . $controlNumber) % 97 );
+
+        $controlNumber = strval( 98 - intval($IBANMod97) );
+
+        $strIBAN = sprintf("%02s", $controlNumber) . $bankAccountId . $ownerAccountId . $clientId;
+
+        return $strIBAN;
+    }
+
 }

@@ -41,6 +41,11 @@ class clientsController extends Controller
             echo(json_encode($this->client->delete($_POST['rowid'])));
     }
 
+    function updateibanforclients() {
+        echo json_encode($this->client->updateIBANForAllClients());
+    }
+
+
     function saveupdate()
     {
         if (isset($_SERVER['HTTP_X_REQUESTED_WITH']) && ($_SERVER['HTTP_X_REQUESTED_WITH'] == 'XMLHttpRequest')) {
