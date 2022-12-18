@@ -47,7 +47,7 @@ class clientinvoicesController extends InvoicesController
 
             $clientInterestNotes = $this->resolveNotPaidInterestNotes($_POST['client_nip']);
 
-            $this->sendOverduePaymentsReminder($clientOverdueInvoices, $clientInterestNotes, $_POST['client_nip']);
+            $this->sendOverduePaymentsReminder($clientOverdueInvoices, $clientInterestNotes, $_POST['client_nip'], $_POST['client_email']);
 
             echo "OK";
         } catch(Exception $e) {

@@ -738,7 +738,7 @@ class InvoicesController extends Controller
     }
 
 
-    function sendOverduePaymentsReminder($invoices, $interestNotes, $buyerTaxNo)
+    function sendOverduePaymentsReminder($invoices, $interestNotes, $buyerTaxNo, $clientEmail)
     {
 
         $mailingBody = '';
@@ -787,7 +787,7 @@ class InvoicesController extends Controller
 
             $mailing = new mailing();
             $mailing->sendNewOverduePaymentsMail(
-                'stankomarek@gmail.com',
+                $clientEmail,
                 $mailingBody,
                 "Przypomnienie o zaległych płatnościach"
             );
