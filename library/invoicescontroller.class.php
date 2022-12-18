@@ -754,7 +754,7 @@ class InvoicesController extends Controller
 
             $invoicesSummary = join('<br/>', array_map(function ($invoice) use (&$fmt) {
                 $calculatedAmount = $fmt->format(floatval($invoice['price_gross']) - floatval($invoice['paid']));
-                return "{$invoice['number']} na kwotę {$calculatedAmount} termin płatności {$invoice['payment_to']}";
+                return "faktura numer {$invoice['number']} na kwotę {$calculatedAmount} termin płatności {$invoice['payment_to']}";
             },
                 $invoices));
 
@@ -763,12 +763,12 @@ class InvoicesController extends Controller
 
         if (count($interestNotes) > 0) {
             $interestNotesAmount = array_sum(array_map(function ($note) use (&$fmt) {
-                return $fmt->format($note['amount']);
+                return floatval($note['amount']);
             }, $interestNotes));
 
-            $interestNotesSummary = join('<br/>', array_map(function ($note) {
-                $normalizedName = substr($note['name'], 0, -4);
-                return "nota odsetkowa $normalizedName na kwotę {$note['amount']}";
+            $interestNotesSummary = join('<br/>', array_map(function ($note) use (&$fmt) {
+                $normalizedName = str_replace("-", "/", substr($note['name'], 0, -4)) ;
+                return "nota odsetkowa do faktury numer $normalizedName na kwotę {$fmt->format($note['amount'])}";
             },
                 $interestNotes));
 
@@ -780,7 +780,10 @@ class InvoicesController extends Controller
 
             $overdueAmount = $fmt->format($invoicesAmount + $interestNotesAmount);
 
-            $mailingBody = "Bardzo proszę o uregulowanie poniższej kwoty: <b>$overdueAmount</b> (Łącznie do zapłaty faktury i noty odsetkowe)<br /><br />" . $mailingBody;
+            $OTUSBankAccount = BOK_OTUS_KONTO_BANKOWE;
+            $mailingBody = "Bardzo proszę o uregulowanie poniższej kwoty: <b>$overdueAmount</b> (Łącznie do zapłaty faktury i noty odsetkowe) <br />na konto&nbsp;"
+                . BOK_OTUS_KONTO_BANKOWE. "<br /><br />"
+                . $mailingBody;
 
             $mailing = new mailing();
             $mailing->sendNewOverduePaymentsMail(
