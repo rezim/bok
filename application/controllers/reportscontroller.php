@@ -7,7 +7,7 @@ class reportsController extends InvoicesController
 
     private $CLIENT_FIELD_NAMES = array('rowidclient', 'nazwapelna', 'nazwakrotka', 'terminplatnosci', 'nip',
         'mailfaktury', 'ulica', 'miasto', 'kodpocztowy', 'pokaznumerseryjny',
-        'pokazstanlicznika', 'fakturadlakazdejumowy');
+        'pokazstanlicznika', 'fakturadlakazdejumowy', 'bank', 'numerrachunku');
 
     private $AGREEMENT_FIELDS = array('rowidumowa', 'nrumowy', 'serial', 'model', 'rozliczenie', 'strony_black_start', 'data_wiadomosci_black_start', 'strony_black_koniec',
         'data_wiadomosci_black_koniec', 'strony_kolor_start', 'data_wiadomosci_kolor_start', 'strony_kolor_koniec', 'data_wiadomosci_kolor_koniec', 'strony_black_sum',

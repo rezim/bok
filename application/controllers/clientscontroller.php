@@ -1,6 +1,6 @@
 <?php
 
-class clientsController extends Controller
+class clientsController extends InvoicesController
 {
 
     protected $areClientPaymentOptionsPermitted = false;
@@ -41,8 +41,25 @@ class clientsController extends Controller
             echo(json_encode($this->client->delete($_POST['rowid'])));
     }
 
+    function forceupdateibanforclients() {
+        $updatedClients = $this->client->updateIBANForAllClients(true);
+        $updatedCount = 0;
+        foreach ($updatedClients as $nip => $accountNb) {
+            $client = $this->getClientByTaxNo($nip);
+
+            if (count($client) === 1) {
+                $this->updateClientById($client[0]['id'], array("use_mass_payment" => true, "mass_payment_code" => $accountNb));
+                $updatedCount++;
+            } else {
+                echo "Nie można znaleźć klienta nip: $nip";
+            }
+        }
+
+        echo $updatedCount . ' z ' .count($updatedClients) . ' zaktualizowane!';
+    }
+
     function updateibanforclients() {
-        echo json_encode($this->client->updateIBANForAllClients());
+        echo json_encode($this->client->updateIBANForAllClients(false));
     }
 
 

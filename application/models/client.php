@@ -47,13 +47,16 @@ class client extends Model
             array_push($columnList, array('name' => '`nip`', 'type' => 's', 'value' => $this->nip));
         if ($this->terminplatnosci !== null)
             array_push($columnList, array('name' => '`terminplatnosci`', 'type' => 'd', 'value' => $this->terminplatnosci));
-        if ($this->bank !== null)
+        if ($this->bank !== null) {
             array_push($columnList, array('name' => '`bank`', 'type' => 's', 'value' => $this->bank));
+        } else if ($this->nip !== null && $this->nip !== '0000000000') {
+            array_push($columnList, array('name' => '`bank`', 'type' => 's', 'value' => BANK_NAME));
+        }
         if ($this->numerrachunku !== null && $this->numerrachunku !== '') {
             array_push($columnList, array('name' => '`numerrachunku`', 'type' => 's', 'value' => $this->numerrachunku));
         } else if ($this->nip !== null && $this->nip !== '0000000000') {
             try {
-                $clientIBAN = $this->calculateIBAN(IBAN_PL, IBAN_NUMER_ROZLICZENIOWY_BANKU, IBAN_NUMER_KLIENTA_BANKU, $this->nip);
+                $clientIBAN = $this->calculateIBAN( IBAN_PL, IBAN_NUMER_ROZLICZENIOWY_BANKU, IBAN_NUMER_KLIENTA_BANKU, $this->nip);
                 array_push($columnList, array('name' => '`numerrachunku`', 'type' => 's', 'value' => $clientIBAN));
             } catch (Exception $e) {
                 // nop
@@ -161,20 +164,28 @@ class client extends Model
         return $this->query($query, null, false);
     }
 
-    function updateIBANForAllClients() {
-        $query = "select rowid, nip from clients where activity = 1 and (numerrachunku is null or numerrachunku = '')";
+    function updateIBANForAllClients($force)
+    {
+        $query = "select rowid, nip from clients where activity = 1";
+        if (!$force) {
+            $query .= " and (numerrachunku is null or numerrachunku = '')";
+        }
         $clients = $this->query($query, null, false);
+
+        $updatedClients = array();
 
         foreach ($clients as $client) {
             try {
                 $clientIBAN = $this->calculateIBAN(IBAN_PL, IBAN_NUMER_ROZLICZENIOWY_BANKU, IBAN_NUMER_KLIENTA_BANKU, $client['nip']);
-                $this->update("update clients set `numerrachunku`=?  where `rowid`=?", 'si', array($clientIBAN, $client['rowid']));
+                $this->update("update clients set `numerrachunku`=?, `bank`=? where `rowid`=?", 'ssi', array($clientIBAN, BANK_NAME, $client['rowid']));
+
+                $updatedClients[$client['nip']] = BANK_NAME . ' ' . $clientIBAN;
             } catch (Exception $e) {
                 return $e;
             }
         }
 
-        return 'OK';
+        return $updatedClients;
     }
 
     function getClients()
@@ -207,7 +218,8 @@ class client extends Model
         return $this->query($query, 'rowid', false);
     }
 
-    function calculateIBAN($countryCode, $bankAccountId, $ownerAccountId, $clientId) {
+    function calculateIBAN($countryCode, $bankAccountId, $ownerAccountId, $clientId)
+    {
         if (strlen($bankAccountId) !== 8) {
             throw new Exception("Błędny numer rozliczeniowy banku");
         }
@@ -218,19 +230,28 @@ class client extends Model
 
         $controlNumber = "00";
 
-        $bankAccountIdMod97 = strval( intval($bankAccountId) % 97 );
+        $bankAccountIdMod97 = strval(intval($bankAccountId) % 97);
 
-        $ownerAccountIdMod97 = strval( intval($bankAccountIdMod97 . $ownerAccountId) % 97 );
+        $ownerAccountIdMod97 = strval(intval($bankAccountIdMod97 . $ownerAccountId) % 97);
 
-        $clientIdMod97 = strval( intval($ownerAccountIdMod97 . $clientId) % 97 );
+        $clientIdMod97 = strval(intval($ownerAccountIdMod97 . $clientId) % 97);
 
-        $IBANMod97 = strval( intval($clientIdMod97 . $countryCode . $controlNumber) % 97 );
+        $IBANMod97 = strval(intval($clientIdMod97 . $countryCode . $controlNumber) % 97);
 
-        $controlNumber = strval( 98 - intval($IBANMod97) );
+        $controlNumber = strval(98 - intval($IBANMod97));
 
         $strIBAN = sprintf("%02s", $controlNumber) . $bankAccountId . $ownerAccountId . $clientId;
 
-        return $strIBAN;
+        return "{$this->formatIBAN($strIBAN)}";
+    }
+
+    function formatIBAN($iban)
+    {
+        $controlNb = substr($iban, 0, 2);
+
+        $arrAccountNb = str_split(substr($iban, 2, 6 * 4), 4);
+
+        return implode(' ', array($controlNb, implode(' ', $arrAccountNb)));
     }
 
 }

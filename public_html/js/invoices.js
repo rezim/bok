@@ -699,7 +699,9 @@ InvoiceManager = function (invoice_number_length) {
             "show_discount": "0",
             "internal_note": agreementIds.join(','),
             "additional_info": "1",
-            "additional_info_desc": "Lokalizacja Urządzenia"
+            "additional_info_desc": "Lokalizacja Urządzenia",
+            "bank": invoice["bank"],
+            "numer_rachunku": invoice["numerrachunku"]
         };
     };
 

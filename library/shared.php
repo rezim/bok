@@ -13,7 +13,7 @@ function setReporting()
         $_SESSION['dev'] = 1;
     } else {
         $_SESSION['dev'] = 0;
-        error_reporting(E_ALL);
+        error_reporting(E_ERROR);
         ini_set('display_errors', '0');
         ini_set('log_errors', '1');
         ini_set('error_log', ROOT . DS . 'tmp' . DS . 'logs' . DS . 'error.log');

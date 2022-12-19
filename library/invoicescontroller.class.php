@@ -147,10 +147,18 @@ class InvoicesController extends Controller
 
     function addInvoice($kind, $number, $sellDate, $issueDate, $paymentTo, $buyerName, $buyerTaxNo, $buyerEmail,
                         $buyerPostCode, $buyerCity, $buyerStreet, $recipientId, $positions, $showDiscount, $internalNote,
-                        $additionalInfo, $additionalInfoDesc)
+                        $additionalInfo, $additionalInfoDesc, $sellerBank, $sellerBankAccount)
     {
         $ch = curl_init();
         $url = FAKTUROWNIA_ENDPOINT . '/invoices.json';
+
+        $client = $this->getClientByTaxNo($buyerTaxNo);
+
+        if (count($client) === 1) {
+            $client = $client[0];
+        } else {
+            $client = $this->createClient($buyerName, $buyerTaxNo, $sellerBank . ' ' . $sellerBankAccount);
+        }
 
         $data = array(
             "api_token" => FAKTUROWNIA_APITOKEN,
@@ -171,7 +179,8 @@ class InvoicesController extends Controller
                 "show_discount" => $showDiscount,
                 "internal_note" => $internalNote,
                 "additional_info" => $additionalInfo,
-                "additional_info_desc" => $additionalInfoDesc
+                "additional_info_desc" => $additionalInfoDesc,
+                "client_id" => $client['id']
             )
         );
 
@@ -221,6 +230,40 @@ class InvoicesController extends Controller
         return $result;
     }
 
+    function createClient($name, $taxNo, $bankAccount)
+    {
+        $ch = curl_init();
+        $url = FAKTUROWNIA_ENDPOINT . '/clients.json';
+
+        $data = array(
+            "api_token" => FAKTUROWNIA_APITOKEN,
+            "client" => array(
+                "name" => $name,
+                "tax_no" => $taxNo,
+                "use_mass_payment" => true,
+                "mass_payment_code" => $bankAccount
+            )
+        );
+        $data_string = json_encode($data);
+
+        curl_setopt($ch, CURLOPT_URL, $url);
+        curl_setopt($ch, CURLOPT_POSTFIELDS, $data_string);
+        curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+        if (USE_PROXY) {
+            curl_setopt($ch, CURLOPT_PROXY, '127.0.0.1:8888');
+        }
+        curl_setopt($ch, CURLOPT_HTTPHEADER, array(
+                'Content-Type: application/json',
+                'Content-Length: ' . strlen($data_string))
+        );
+
+        $result = json_decode(curl_exec($ch), true);
+
+        curl_close($ch);
+
+        return $result;
+    }
+
     function addPayment($price, $invoiceId, $clientId, $invoiceTaxNo, $name, $paidDate, $description)
     {
         $ch = curl_init();
@@ -263,6 +306,38 @@ class InvoicesController extends Controller
 
         return $result;
     }
+
+    function updateClientById($clientId, $clientData)
+    {
+
+        $ch = curl_init();
+        $url = FAKTUROWNIA_ENDPOINT . '/clients/' . $clientId . '.json?';
+
+        $data = array(
+            "api_token" => FAKTUROWNIA_APITOKEN,
+            "client" => $clientData
+        );
+        $data_string = json_encode($data);
+
+        curl_setopt($ch, CURLOPT_URL, $url);
+        curl_setopt($ch, CURLOPT_CUSTOMREQUEST, "PUT");
+        curl_setopt($ch, CURLOPT_POSTFIELDS, $data_string);
+        curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+        if (USE_PROXY) {
+            curl_setopt($ch, CURLOPT_PROXY, '127.0.0.1:8888');
+        }
+        curl_setopt($ch, CURLOPT_HTTPHEADER, array(
+                'Content-Type: application/json',
+                'Content-Length: ' . strlen($data_string))
+        );
+
+        $result = curl_exec($ch);
+
+        curl_close($ch);
+
+        return $result;
+    }
+
 
     function updatePaymentById($paymentId, $price)
     {
