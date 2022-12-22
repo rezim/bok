@@ -143,4 +143,13 @@ function showdane()
     $smarty->assign('modalselector', isset($_POST['modalselector']) ? $_POST['modalselector'] : '');
     unset($dataClient);
 }
+
+function showemails() {
+    global $smarty;
+    $dataClient = $this->client->getClients();
+    $smarty->assign('dataClient', $dataClient);
+    unset($dataClient);
+}
+
+
 }

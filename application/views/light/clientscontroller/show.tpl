@@ -63,6 +63,14 @@
                         Filtruj
                     </button>
                 </div>
+
+                <div class="form-group">
+                    <button class="btn btn-success btn-block" type="submit"
+                            onClick="showListOfClientInvoiceEmails();return false;"">
+                    Pokaż Listę Adresów Email
+                    </button>
+                </div>
+
             </form>
         </div>
 

@@ -113,7 +113,9 @@ function showClientMessages(nip, nazwakrotka) {
     openModal("/messages/showmodal/todiv", {description, type, foreignkey: nip});
 }
 
-
+function showListOfClientInvoiceEmails() {
+    openModal("/clients/showemails/todiv");
+}
 
 function showAgreementMessages(nrumowy, agreementType, clientName) {
     const description = {
@@ -2274,6 +2276,13 @@ function openModal(src, data = {}) {
         modal.modal({keyboard: true});
     });
 }
+
+
+const copyToClipboard = function(str) {
+    if (navigator && navigator.clipboard && navigator.clipboard.writeText)
+        return navigator.clipboard.writeText(str);
+    return Promise.reject('The Clipboard API is not available.');
+};
 
 function callServiceAction(serviceUrl, dataContainerId, success = successCallback, error = errorCallback) {
     const data = dataContainerId ? getDataFromContainer(dataContainerId) : {};
