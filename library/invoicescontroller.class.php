@@ -145,6 +145,7 @@ class InvoicesController extends Controller
         return $invoices;
     }
 
+    // TODO: remove $sellerBank name, its unused
     function addInvoice($kind, $number, $sellDate, $issueDate, $paymentTo, $buyerName, $buyerTaxNo, $buyerEmail,
                         $buyerPostCode, $buyerCity, $buyerStreet, $recipientId, $positions, $showDiscount, $internalNote,
                         $additionalInfo, $additionalInfoDesc, $sellerBank, $sellerBankAccount)
@@ -157,7 +158,11 @@ class InvoicesController extends Controller
         if (count($client) === 1) {
             $client = $client[0];
         } else {
-            $client = $this->createClient($buyerName, $buyerTaxNo, $sellerBank . ' ' . $sellerBankAccount);
+            $email = $buyerEmail;
+            $street = $buyerStreet;
+            $postCode = $buyerPostCode;
+            $city = $buyerCity;
+            $client = $this->createClient($buyerName, $buyerTaxNo, BANK_NAME . ' ' . $sellerBankAccount, $email, $street, $postCode, $city);
         }
 
         $data = array(
@@ -230,7 +235,7 @@ class InvoicesController extends Controller
         return $result;
     }
 
-    function createClient($name, $taxNo, $bankAccount)
+    function createClient($name, $taxNo, $bankAccount, $email, $street, $postCode, $city)
     {
         $ch = curl_init();
         $url = FAKTUROWNIA_ENDPOINT . '/clients.json';
@@ -241,7 +246,11 @@ class InvoicesController extends Controller
                 "name" => $name,
                 "tax_no" => $taxNo,
                 "use_mass_payment" => true,
-                "mass_payment_code" => $bankAccount
+                "mass_payment_code" => $bankAccount,
+                "email" => $email,
+                "street" => $street,
+                "post_code" => $postCode,
+                "city" => $city
             )
         );
         $data_string = json_encode($data);
