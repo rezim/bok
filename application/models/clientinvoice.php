@@ -47,4 +47,68 @@ class clientinvoice extends Model
         $query = "select nip from clients where monitoringplatnosci=1";
         return $this->query($query, null, false);
     }
+
+    function createInterestNote($clientTaxNb, $externalClientId, $amount, $invoice, $filePath, $created, $paid) {
+        $client = $this->getClientByTaxNb($clientTaxNb);
+
+        if (!$client) {
+            return "Nie można pobrać klienta po NIP: " . $clientTaxNb;
+        }
+
+        $interestNote = array(
+            'rowidclient' => $client['rowid'],
+            'externalclientid' => $externalClientId,
+            'amount' => $amount,
+            'invoice' => $invoice,
+            'filepath' => $filePath,
+            'created' => $created,
+            'paid' => $paid
+        );
+
+        $namesWihTypes = array(
+            'rowidclient' => 'integer',
+            'externalclientid' => 'integer',
+            'amount' => 'integer',
+            'invoice' => 'string',
+            'filepath' => 'string',
+            'created' => 'timestamp',
+            'paid' => 'boolean'
+        );
+
+        return $this->insertIntoTable('interest_notes', $namesWihTypes, $interestNote);
+    }
+
+    function getClientByTaxNb($clientTaxNb)
+    {
+        $query = "select * from clients where nip={$clientTaxNb}";
+        $clients = $this->query($query, null, false);
+
+        if (!count($clients) === 1) {
+            return null;
+        }
+
+        return $clients[0];
+    }
+
+    function getClientAccountNb($clientTaxNb) {
+        $client = $this->getClientByTaxNb($clientTaxNb);
+
+        if (!$client) {
+            return;
+        }
+
+        return $this->formatIBAN($client["numerrachunku"]);
+
+    }
+
+
+    function formatIBAN($iban)
+    {
+        $controlNb = substr($iban, 0, 2);
+
+        $arrAccountNb = str_split(substr($iban, 2, 6 * 4), 4);
+
+        return implode(' ', array($controlNb, implode(' ', $arrAccountNb)));
+    }
+
 }

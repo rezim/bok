@@ -824,6 +824,7 @@ class InvoicesController extends Controller
 
     function sendOverduePaymentsReminder($invoices, $interestNotes, $buyerTaxNo, $clientEmail)
     {
+        $clientAccountNb = $this->clientinvoice->getClientAccountNb($buyerTaxNo);
 
         $mailingBody = '';
         $fmt = new NumberFormatter('pl_PL', NumberFormatter::CURRENCY);
@@ -864,9 +865,9 @@ class InvoicesController extends Controller
 
             $overdueAmount = $fmt->format($invoicesAmount + $interestNotesAmount);
 
-            $OTUSBankAccount = BOK_OTUS_KONTO_BANKOWE;
-            $mailingBody = "Bardzo proszę o uregulowanie poniższej kwoty: <b>$overdueAmount</b> (Łącznie do zapłaty faktury i noty odsetkowe) <br />na konto&nbsp;"
-                . BOK_OTUS_KONTO_BANKOWE. "<br /><br />"
+            $OTUSBankAccount = BANK_NAME . ' ' . $clientAccountNb;
+            $mailingBody = "Bardzo proszę o uregulowanie poniższej kwoty: <b>$overdueAmount</b> (Łącznie do zapłaty faktury i noty odsetkowe) <br />na konto:&nbsp;"
+                . $OTUSBankAccount . "<br /><br />"
                 . $mailingBody;
 
             $mailing = new mailing();

@@ -306,7 +306,7 @@ PaymentsCtrl = function ($scope, rest, $q, $filter, $uibModal, $interpolate, app
     this.sendPaymentReminderEmail = function (clientInvoice) {
         const client_id = clientInvoice.clientId;
         const client_nip = clientInvoice.nip;
-        const client_email = clientInvoice.mailFaktury;
+        const client_email = "tregimowicz@gmail.com"; // clientInvoice.mailFaktury;
 
         if (!client_nip || !client_id || !client_email) {
             alert(`Identyfikator klienta: ${client_id ?? 'NULL'}, jego adres email: ${client_email ?? 'NULL'} oraz nip: ${client_nip ?? 'NULL'} są konieczne aby wysłać maila!`);
