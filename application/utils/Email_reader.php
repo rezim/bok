@@ -17,7 +17,6 @@ $mysqli->query("SET NAMES 'utf8'");
 
 class Email_reader
 {
-
     // imap server connection
     public $conn;
 
@@ -25,16 +24,10 @@ class Email_reader
     private $inbox;
     private $msg_cnt;
 
-    // email login credentials
-    private $server = SERWER;
-    private $user = LOGIN;
-    private $pass = HASLO;
-
-
     // connect to the server and get the inbox emails
-    function __construct()
+    function __construct($server, $user, $pass)
     {
-        $this->connect();
+        $this->connect($server, $user, $pass);
         $this->inbox();
     }
 
@@ -50,9 +43,9 @@ class Email_reader
     // open the server connection
     // the imap_open function parameters will need to be changed for the particular server
     // these are laid out to connect to a Dreamhost IMAP server
-    function connect()
+    function connect($server, $user, $pass)
     {
-        $this->conn = imap_open($this->server, $this->user, $this->pass);
+        $this->conn = imap_open($server, $user, $pass);
         if (!$this->conn) {
             echo imap_last_error();
         }
@@ -102,6 +95,11 @@ class Email_reader
 
 }
 
+
+function processClientPayments() {
+    $emailReader = new Email_reader();
+}
+
 function readDeviceCounters($notificationEmail = null)
 {
     if ($notificationEmail !== null) {
@@ -110,7 +108,7 @@ function readDeviceCounters($notificationEmail = null)
     }
 
     $mysqli = getMySqlConn();
-    $emailReader = new Email_reader();
+    $emailReader = new Email_reader(SERWER, LOGIN, HASLO);
 
     $successCounter = 0;
 

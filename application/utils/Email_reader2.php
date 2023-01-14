@@ -25,7 +25,7 @@ class Email_reader2
     private $msg_cnt;
 
     // email login credentials
-    private $server = SERWER_CASE;
+    private $server = SERWER;
     private $user = LOGIN_CASE;
     private $pass = HASLO_CASE;
 
