@@ -12,9 +12,6 @@ if (mysqli_connect_errno()) {
 $mysqli->query("SET NAMES 'utf8'");
 
 
-
-
-
 class Email_reader
 {
     // imap server connection
@@ -62,7 +59,34 @@ class Email_reader
         $this->inbox();
     }
 
-    // get a specific message (1 = first email, 2 = second email, etc.)
+    /**
+     * Move email message to processed folder.
+     *
+     * @param $msg
+     * @param string $folder
+     */
+    function processed($msg, $folder = 'INBOX.Processed')
+    {
+        $this->move($msg['index'], $folder);
+    }
+
+    /**
+     * Move email message to rejected folder.
+     *
+     * @param $msg
+     * @param string $folder
+     */
+    function rejected($msg, $folder = 'INBOX.Rejected')
+    {
+        $this->move($msg['index'], $folder);
+    }
+
+    /**
+     * Get a specific message (1 = first email, 2 = second email, etc.)
+     *
+     * @param null $msg_index
+     * @return array
+     */
     function get($msg_index = NULL)
     {
         if (count($this->inbox) <= 0) {
@@ -72,6 +96,76 @@ class Email_reader
         }
 
         return $this->inbox[0];
+    }
+
+    /**
+     * Return true in case inbox is empty, false otherwise
+     *
+     * @return bool
+     */
+    function isEmpty()
+    {
+        return (count($this->inbox) <= 0);
+    }
+
+    /**
+     * Get all attachments for given email message
+     *
+     * @param $msg
+     * @return array(
+     * 'is_attachment' => true,
+     * 'filename' => '',
+     * 'name' => '',
+     * 'content' => ''
+     * );
+     */
+    function getAttachments($msg)
+    {
+
+        $structure = $msg['structure'];
+
+        $attachments = array();
+        if (isset($structure->parts) && count($structure->parts)) {
+
+            for ($i = 0; $i < count($structure->parts); $i++) {
+
+                $attachments[$i] = array(
+                    'is_attachment' => false,
+                    'filename' => '',
+                    'name' => '',
+                    'content' => ''
+                );
+
+                if ($structure->parts[$i]->ifdparameters) {
+                    foreach ($structure->parts[$i]->dparameters as $object) {
+                        if (strtolower($object->attribute) == 'filename') {
+                            $attachments[$i]['is_attachment'] = true;
+                            $attachments[$i]['filename'] = $object->value;
+                        }
+                    }
+                }
+
+                if ($structure->parts[$i]->ifparameters) {
+                    foreach ($structure->parts[$i]->parameters as $object) {
+                        if (strtolower($object->attribute) == 'name') {
+                            $attachments[$i]['is_attachment'] = true;
+                            $attachments[$i]['name'] = $object->value;
+                        }
+                    }
+                }
+
+                if ($attachments[$i]['is_attachment']) {
+                    $attachments[$i]['content'] = imap_fetchbody($this->conn, $msg['index'], $i + 1);
+                    if ($structure->parts[$i]->encoding == 3) { // 3 = BASE64
+                        $attachments[$i]['content'] = base64_decode($attachments[$i]['content']);
+                    } elseif ($structure->parts[$i]->encoding == 4) { // 4 = QUOTED-PRINTABLE
+                        $attachments[$i]['content'] = quoted_printable_decode($attachments[$i]['content']);
+                    }
+                }
+            }
+        }
+
+        return array_filter($attachments, fn($attachment) => $attachment["is_attachment"]);
     }
 
     // read the inbox
@@ -96,15 +190,125 @@ class Email_reader
 }
 
 
-function processClientPayments() {
-    $emailReader = new Email_reader();
+function processClientPayments()
+{
+    $emailReader = new Email_reader(SERWER, GEN_LOGIN, GEN_PASS);
+
+    while (!$emailReader->isEmpty()) {
+        $email = $emailReader->get();
+        $emailDate = date("Y-m-d H:i:s", $email['header']->udate);
+
+        $isDailyPaymentsReport = $email['header']->subject === TEMATRAPORTDZIENNYOPERACJI;
+        if (!$isDailyPaymentsReport) {
+            $emailReader->rejected($email);
+            return;//  continue;
+        }
+
+        $attachments = $emailReader->getAttachments($email);
+
+        $hasAttachments = count($attachments) > 0;
+        if (!$hasAttachments) {
+            $emailReader->rejected($email);
+        }
+
+        $paymentsWithAttachmentsProcessResult = processPaymentAttachments($attachments, $emailDate);
+        if ($paymentsWithAttachmentsProcessResult) {
+            $emailReader->processed($email);
+        } else {
+            $emailReader->rejected($email);
+        }
+    }
+
+    $emailReader->close();
+}
+
+function processPaymentAttachments($attachments, $emailDate)
+{
+    $mysqli = getMySqlConn();
+    foreach ($attachments as $attachment) {
+
+        $contentLines = explode("\n", $attachment['content']);
+
+        $contentLines = array_filter($contentLines, fn($contentLine) => $contentLine !== "");
+
+        $paymentsCount = count($contentLines);
+        $processedLineCount = 0;
+
+        foreach ($contentLines as $contentLine) {
+
+            $insertPaymentQuery = insertIntoPaymentsQuery($contentLine);
+
+            $insertPaymentResult = mysqli_query($mysqli, $insertPaymentQuery);
+
+            if (!$insertPaymentResult) {
+                reportPaymentsProcessingMessage("Process payment error", $mysqli->error, $emailDate);
+                continue;
+            }
+
+            $processedLineCount++;
+        }
+
+        reportPaymentsProcessingMessage("Imported {$paymentsCount}/{$processedLineCount}", "", $emailDate);
+    }
+
+    return true;
+}
+
+
+function insertIntoPaymentsQuery($content)
+{
+    $contentValues = preg_split("/\",\"|,\"|\",/", $content); // explode(',', $content);
+
+    $firstContentPart = explode(',', $contentValues[0]);
+    $message_type = $firstContentPart[0];
+    $date = date('Y-m-d', strtotime($firstContentPart[1]));
+    $amount = $firstContentPart[2];
+    $senderBranchNumber = $firstContentPart[3];
+    $recipientBranchNumber = $firstContentPart[4];
+
+    $senderAccount = $contentValues[1];
+    $recipientAccount = $contentValues[2];
+
+    $senderName = addslashes(w1250_to_utf8($contentValues[3]));
+    $recipientName = addslashes(w1250_to_utf8($contentValues[4]));
+
+    $secondContentPart = explode(',', $contentValues[5]);
+
+    $intermediateBranchNumber = $secondContentPart[0];
+    $finalBranchNumber = $secondContentPart[1];
+
+    $details = addslashes(w1250_to_utf8($contentValues[6]));
+    $additionalNotes = $contentValues[10];
+
+    return "insert into 
+                      payments(message_type, date, amount, sender_branch_number, recipient_branch_number, sender_account,
+                       recipient_acount, sender_name, recipient_name, intermediate_branch_number, final_branch_number,
+                        details, additional_notes)
+                      values({$message_type}, '{$date}', $amount, '{$senderBranchNumber}', '{$recipientBranchNumber}', 
+                              {$senderAccount}, {$recipientAccount}, '{$senderName}', '{$recipientName}', {$intermediateBranchNumber},
+                               '{$finalBranchNumber}', '{$details}', '{$additionalNotes}')";
+}
+
+function reportPaymentsProcessingMessage($message, $error, $date)
+{
+    $mysqli = getMySqlConn();
+    $insertPaymentsProcessResultQuery = "insert into 
+                      payment_mails(message, error_message, email_datetime)
+                      values('{$message}', '{$error}', '{$date}')";
+
+
+    $result = mysqli_query($mysqli, $insertPaymentsProcessResultQuery);
+
+    if (!$result) {
+        echo $mysqli->error;
+    }
 }
 
 function readDeviceCounters($notificationEmail = null)
 {
     if ($notificationEmail !== null) {
         $mailing = new mailing();
-        $mailing->sendNewMail($notificationEmail, 'Data rozpoczęcia operacji:' . date_create()->format('Y-m-d H:i:s') . '<br />' . '' , 'Operacja ręcznego zaczytania liczników została rozpoczęta.', null);
+        $mailing->sendNewMail($notificationEmail, 'Data rozpoczęcia operacji:' . date_create()->format('Y-m-d H:i:s') . '<br />' . '', 'Operacja ręcznego zaczytania liczników została rozpoczęta.', null);
     }
 
     $mysqli = getMySqlConn();
@@ -181,15 +385,15 @@ function readDeviceCounters($notificationEmail = null)
         if (
             (($minoltaMessage = isMinoltaServiceMessage($email['body'])) != null)
             ||
-            (($minoltaMessage = isMinoltaServiceMessage(base64_decode ($email['body']))) != null)
+            (($minoltaMessage = isMinoltaServiceMessage(base64_decode($email['body']))) != null)
         ) {
             if (!saveMinoltaDataDevice($minoltaMessage)) {
                 $emailReader->move($email['index'], 'INBOX.Rejected');
                 continue;
             }
 
-        // TR NOTE: check if subject contains the search text,
-        //          this is because is could contains 'Fw:' 'Re:', others
+            // TR NOTE: check if subject contains the search text,
+            //          this is because is could contains 'Fw:' 'Re:', others
         } else if (strpos($email['header']->subject, TEMATMINOLTA) !== false) {
             if (!_readMinolta($email['body'], $datawiadomosc, $ip)) {
                 $emailReader->move($email['index'], 'INBOX.Rejected');
@@ -274,7 +478,7 @@ function readDeviceCounters($notificationEmail = null)
     $emailReader->close();
 
     if (isset($mailing) && $notificationEmail !== null) {
-        $mailing->sendNewMail($notificationEmail, 'Data zakończenia operacji:' . date_create()->format('Y-m-d H:i:s') . '<br />' . 'Ilość zaczytanych liczników: ' . $successCounter , 'Operacja ręcznego zaczytania liczników została zakończona.', null);
+        $mailing->sendNewMail($notificationEmail, 'Data zakończenia operacji:' . date_create()->format('Y-m-d H:i:s') . '<br />' . 'Ilość zaczytanych liczników: ' . $successCounter, 'Operacja ręcznego zaczytania liczników została zakończona.', null);
     }
 }
 
@@ -323,7 +527,8 @@ function _readMinolta($message, $dataWiadomosci, $ip)
     return true;
 }
 
-function _readKyocera($message, $dataWiadomosci, $ip) {
+function _readKyocera($message, $dataWiadomosci, $ip)
+{
     $dataDevice = getDataDeviceKyocera($message, $dataWiadomosci, $ip);
 
     if (count($dataDevice) == 0) {
@@ -416,7 +621,7 @@ function getHPDataDevice($dom)
         if ($systemConfigurationService[0]->getElementsByTagName('Logs')->length > 0) {
             $arrLogs = array();
             $logs = $systemConfigurationService[0]->getElementsByTagName('Logs')[0];
-            foreach($logs->getElementsByTagName('Log') as $log) {
+            foreach ($logs->getElementsByTagName('Log') as $log) {
                 $type = ($log->getElementsByTagName('Type')->length > 0) ?
                     $log->getElementsByTagName('Type')[0]->nodeValue : '';
                 if ($type === 'error') {
@@ -844,10 +1049,10 @@ function getOldHPDataDevice($dom)
                         $chromatic = "";
                         foreach ($book3->childNodes as $book4) {
                             if ($book4->nodeName == 'dd:ValueFloat') {
-                                $wartosc = intval( $book4->nodeValue );
+                                $wartosc = intval($book4->nodeValue);
                             }
                             if ($book4->nodeName == 'dd:ChromaticMode') {
-                                $chromatic = intval( $book4->nodeValue );
+                                $chromatic = intval($book4->nodeValue);
                             }
 
 
@@ -1013,7 +1218,8 @@ function getDataDeviceMinolta($message)
 }
 
 
-function getDataDeviceKyocera($message, $dataWiadomosci, $ip) {
+function getDataDeviceKyocera($message, $dataWiadomosci, $ip)
+{
     $messageRows = preg_split('/\r\n|\r|\n/', $message);
 
     $data = array();
@@ -1048,11 +1254,11 @@ function getDataDeviceKyocera($message, $dataWiadomosci, $ip) {
                 }
             }
         } else if (strpos(trim($item), '[ ]', 0) === 0 || strpos(trim($item), '[*]', 0) === 0) {
-            $property = explode(" ", trim( str_replace("[ ]", "[-]", $item)));
+            $property = explode(" ", trim(str_replace("[ ]", "[-]", $item)));
             $propertyValue = array_shift($property);
             $propertyName = implode(" ", $property);
             if (!array_key_exists($propertyName, $data)) {
-                $data[$propertyName] = $propertyValue === "[*]" ? true: false;
+                $data[$propertyName] = $propertyValue === "[*]" ? true : false;
             }
         } else if ($item === '') {
             // toners
@@ -1076,7 +1282,7 @@ function getDataDeviceKyocera($message, $dataWiadomosci, $ip) {
         $usageByColorMode = $data['Usage by Color Mode (Pages)'];
         $dataDevice['system']['wydruk'] = $usageByColorMode['Black & White']['Copier'] + $usageByColorMode['Black & White']['Printer'];
         $dataDevice['system']['wydrukkolor'] = $usageByColorMode['Full Color']['Copier'] + $usageByColorMode['Full Color']['Printer'];
-        $dataDevice['system']['wydruktotal'] = $dataDevice['system']['wydruk']+$dataDevice['system']['wydrukkolor'];
+        $dataDevice['system']['wydruktotal'] = $dataDevice['system']['wydruk'] + $dataDevice['system']['wydrukkolor'];
     } else {
         $dataDevice['system']['wydruk'] = $data['Counters by Function']['Printed Pages']['Total'];
         $dataDevice['system']['wydrukkolor'] = 0;
@@ -1121,7 +1327,8 @@ function validateDate($date, $format)
     return $d && $d->format($format) == $date;
 }
 
-function saveMinoltaDataDevice($minoltaMessage) {
+function saveMinoltaDataDevice($minoltaMessage)
+{
     $mysqli = getMySqlConn();
     $statement = $mysqli->prepare("INSERT INTO logs (sequencenumber, eventcode, description,timestamp,valuefloat,revision,dateinsert,serial)
                                     VALUES (?,?,?,?,?,?,?,?)");
@@ -1245,7 +1452,6 @@ function saveDataDevice($dataDevice, $dataWiadomosci, $ip)
                                 (select rowid from agreements where serial='" . $dataDevice['system']['dd:SerialNumber'] . "' and activity=1),
                                 (select product_version FROM printers where serial = '" . $dataDevice['system']['dd:SerialNumber'] . "')
                                 )";
-
 
 
     if ($result2 = mysqli_query($mysqli, $query)) {
@@ -1698,13 +1904,14 @@ function getIpAddress($email_header)
     return $found;
 }
 
-function isMinoltaServiceMessage($email_body) {
+function isMinoltaServiceMessage($email_body)
+{
     $result = array();
     $result['sequencenumber'] = -1;
     $result['valuefloat'] = -1;
     $result['description'] = "";
     $arrRows = explode("\n", $email_body);
-    foreach($arrRows as $row) {
+    foreach ($arrRows as $row) {
         $value = strRight(":", $row);
         if (startWith($row, "Miejsce instalacji") && $value != "") {
             $result['serial'] = $value;
@@ -1715,7 +1922,7 @@ function isMinoltaServiceMessage($email_body) {
         if (startWith($row, "Czas zdarzenia")) {
             $result['timestamp'] = $value;
         }
-        if (startWith(preg_replace('/[^A-Za-z0-9:]/','',$row), "BBd")) {
+        if (startWith(preg_replace('/[^A-Za-z0-9:]/', '', $row), "BBd")) {
             $result['eventcode'] = $value;
 
             if (base64_encode($result['eventcode']) == 'VXp1cGUBQm5paiB0b25lci4gAXvzAUJ0eQ==') {
@@ -1732,15 +1939,18 @@ function isMinoltaServiceMessage($email_body) {
     return $result;
 }
 
-function mapKyoceraModelName($modelName) {
+function mapKyoceraModelName($modelName)
+{
     return str_replace('ECOSYS', 'KYOCERA', $modelName);
 }
 
-function strRight($delimiter, $str) {
+function strRight($delimiter, $str)
+{
     return strpos($str, $delimiter) !== false ? trim(explode($delimiter, $str, 2)[1]) : "";
 }
 
-function startWith($str, $subStr) {
+function startWith($str, $subStr)
+{
     return (substr($str, 0, strlen($subStr)) === $subStr);
 }
 
@@ -1755,4 +1965,57 @@ function getMySqlConn()
     }
 
     return $mysqli;
+}
+
+
+function w1250_to_utf8($text)
+{
+    // map based on:
+    // http://konfiguracja.c0.pl/iso02vscp1250en.html
+    // http://konfiguracja.c0.pl/webpl/index_en.html#examp
+    // http://www.htmlentities.com/html/entities/
+    $map = array(
+        chr(0x8A) => chr(0xA9),
+        chr(0x8C) => chr(0xA6),
+        chr(0x8D) => chr(0xAB),
+        chr(0x8E) => chr(0xAE),
+        chr(0x8F) => chr(0xAC),
+        chr(0x9C) => chr(0xB6),
+        chr(0x9D) => chr(0xBB),
+        chr(0xA1) => chr(0xB7),
+        chr(0xA5) => chr(0xA1),
+        chr(0xBC) => chr(0xA5),
+        chr(0x9F) => chr(0xBC),
+        chr(0xB9) => chr(0xB1),
+        chr(0x9A) => chr(0xB9),
+        chr(0xBE) => chr(0xB5),
+        chr(0x9E) => chr(0xBE),
+        chr(0x80) => '&euro;',
+        chr(0x82) => '&sbquo;',
+        chr(0x84) => '&bdquo;',
+        chr(0x85) => '&hellip;',
+        chr(0x86) => '&dagger;',
+        chr(0x87) => '&Dagger;',
+        chr(0x89) => '&permil;',
+        chr(0x8B) => '&lsaquo;',
+        chr(0x91) => '&lsquo;',
+        chr(0x92) => '&rsquo;',
+        chr(0x93) => '&ldquo;',
+        chr(0x94) => '&rdquo;',
+        chr(0x95) => '&bull;',
+        chr(0x96) => '&ndash;',
+        chr(0x97) => '&mdash;',
+        chr(0x99) => '&trade;',
+        chr(0x9B) => '&rsquo;',
+        chr(0xA6) => '&brvbar;',
+        chr(0xA9) => '&copy;',
+        chr(0xAB) => '&laquo;',
+        chr(0xAE) => '&reg;',
+        chr(0xB1) => '&plusmn;',
+        chr(0xB5) => '&micro;',
+        chr(0xB6) => '&para;',
+        chr(0xB7) => '&middot;',
+        chr(0xBB) => '&raquo;',
+    );
+    return html_entity_decode(mb_convert_encoding(strtr($text, $map), 'UTF-8', 'ISO-8859-2'), ENT_QUOTES, 'UTF-8');
 }
