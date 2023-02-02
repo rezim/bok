@@ -60,9 +60,11 @@
                 <td
                         {if (!empty($item.datawiadomosci) && ($item.datawiadomosci|date_format:"%Y-%m-%d")<($smarty.now|date_format:"%Y-%m-%d"))}class="bg-danger text-light" {/if}
                 >
-                    {assign var="dateTime" value=" "|explode:$item.datawiadomosci}
-                    {$dateTime[0]|escape:'htmlall'}<br />
-                    <small>{$dateTime[1]|escape:'htmlall'}</small>
+                    {if (!empty($item.datawiadomosci))}
+                        {assign var="dateTime" value=" "|explode:$item.datawiadomosci}
+                        {$dateTime[0]|escape:'htmlall'}<br />
+                        <small>{$dateTime[1]|escape:'htmlall'}</small>
+                    {/if}
                 </td>
                 {if $czycolorbox==''}
                     <td>
