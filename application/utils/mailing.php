@@ -17,7 +17,7 @@ class mailing
     }
 
     function sendMailPrzydzielonoZlecenie($rowid, $mail, $tresc, $temat, $clientname,
-                                          $osobazglaszajaca = '', $nrkontaktowy = '', $priority = '', $modelurzadzenia = '', $nrseryjny = '', $lokalizacja = '', $przebieg = '', $stantonera = '', $adresip = '', $firmware = '', $terminwykonania = '',
+                                          $osobazglaszajaca = '', $nrkontaktowy = '', $priority = '', $modelurzadzenia = '', $nrseryjny = '', $lokalizacja = '', $uwagi = '', $przebieg = '', $stantonera = '', $adresip = '', $firmware = '', $terminwykonania = '',
                                           $printerLogs, $dataZalacznikiFirst
     )
     {
@@ -73,6 +73,7 @@ class mailing
                                 -Model urządzenia:{$modelurzadzenia}<br/>
                                 -NR Seryjny urządzenia:{$nrseryjny}<br/>
                                 -Lokalizacja urządzenia: <a href='http://maps.google.com/maps?q={$lokalizacja}'>{$lokalizacja}</a><br/> 
+                                -Uwagi:{$uwagi}<br/>
                                 -Przebieg:{$przebieg}<br/>
                                 -Stan tonera:{$stantonera}<br/>
                                 -Adres IP:{$adresip}<br/>

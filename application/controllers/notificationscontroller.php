@@ -192,6 +192,10 @@ class notificationsController extends InvoicesController
                     $lokalizacja .= ($dataPrinter[0]['miasto'] && $dataPrinter[0]['miasto'] !== '') ? ', ' . $dataPrinter[0]['miasto'] : '';
                     $lokalizacja .= ($dataPrinter[0]['kodpocztowy'] && $dataPrinter[0]['kodpocztowy'] !== '') ? ' ' . $dataPrinter[0]['kodpocztowy'] : '';
 
+                    // TR: I know this DB field name is not relevant to how we are using it,
+                    // it should be replace in DB to something more descriptive, like 'notes'
+                    $uwagi = $dataPrinter[0]['lokalizacja'];
+
                     $clientName = $dataPrinter[0]['nazwa'];
 
                     unset($printer);
@@ -223,7 +227,7 @@ class notificationsController extends InvoicesController
                     $clientName,
                     $this->$nameOfModel->_filedsToEdit['osobazglaszajaca']['value'],
                     $this->$nameOfModel->_filedsToEdit['nr_telefonu']['value'], $priority,
-                    $modelurzadzenia, $nrseryjny, $lokalizacja, $przebieg, $stantonera, $adresip, $firmware, $this->$nameOfModel->_filedsToEdit['data_planowana']['value'],
+                    $modelurzadzenia, $nrseryjny, $lokalizacja, $uwagi, $przebieg, $stantonera, $adresip, $firmware, $this->$nameOfModel->_filedsToEdit['data_planowana']['value'],
                     $printerLogs,
                     $dataZalacznikiFirst
                 );
