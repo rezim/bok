@@ -203,17 +203,6 @@
         </tr>
 
         <tr>
-            <td class='tdOpis' style='height:50px;min-height: 50px;max-height: 50px;'>
-                Uwagi
-            </td>
-            <td class='tdWartosc'>
-                                   <textarea id="txtlokalizacja" class="textareaForm"
-                                             style='height:80px;min-height: 80px;'
-                                             maxlength="500">{if $serial!=''}{$dataPrinter[0].lokalizacja|escape:'htmlall'}{/if}</textarea>
-            </td>
-        </tr>
-
-        <tr>
             <td class='tdOpis'>
                 Kolorowa
             </td>
@@ -352,6 +341,17 @@
     </tr>
 
     <tr>
+        <td class='tdOpis' style='height:50px;min-height: 50px;max-height: 50px;'>
+            Uwagi
+        </td>
+        <td class='tdWartosc'>
+                                   <textarea id="txtlokalizacja" class="textareaForm"
+                                             style='height:80px;min-height: 80px;'
+                                             maxlength="500">{if $serial!=''}{$dataPrinter[0].lokalizacja|escape:'htmlall'}{/if}</textarea>
+        </td>
+    </tr>
+
+    <tr>
         <td style='text-align: right;' colspan="2">
 
             <div class='divSave'>
@@ -370,7 +370,9 @@
         </td>
     </tr>
     {*    placeholder , TODO: introduce bootstrap *}
-    <tr><td>&nbsp;</td></tr>
+    <tr>
+        <td>&nbsp;</td>
+    </tr>
 </table>
 <script type="text/javascript">
 
