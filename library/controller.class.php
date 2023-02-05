@@ -110,4 +110,24 @@ class Controller
 
         return true;
     }
+
+    function badRequest($message) {
+        header('X-PHP-Response-Code: 400', true, 400);
+        die($message);
+    }
+
+    function forbidden($message) {
+        header('X-PHP-Response-Code: 403', true, 403);
+        die($message);
+    }
+
+    function notImplemented($message) {
+        header('X-PHP-Response-Code: 501', true, 501);
+        die($message);
+    }
+
+    function internalServerError($message) {
+        header('X-PHP-Response-Code: 500', true, 500);
+        die($message);
+    }
 }

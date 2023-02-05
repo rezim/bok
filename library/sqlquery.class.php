@@ -88,12 +88,14 @@ class SQLQuery
             } else {
                 $dane['status'] = 0;
                 $dane['info'] = "Błąd wykonania polecenia : " . $this->getError();
+                $dane['rows_affected'] = 0;
 
                 return $dane;
             }
         } else {
             $dane['status'] = 0;
             $dane['info'] = "Błędne polecenie : " . $this->getError();
+            $dane['rows_affected'] = 0;
 
             return $dane;
         }
@@ -224,12 +226,14 @@ class SQLQuery
                 $dane['keyval'] = $this->getLastId();
                 $dane['rowid'] = $this->getLastId();
                 $dane['isnew'] = '1';
+                $dane['rows_affected'] = 1;
                 return $dane;
             } else {
                 $dane['status'] = 0;
                 $dane['info'] = "Błąd wykonania polecenia : " . $this->getError();
                 $dane['rowid'] = $this->getLastId();
                 $dane['isnew'] = '1';
+                $dane['rows_affected'] = 0;
                 return $dane;
             }
         } else {
@@ -237,6 +241,7 @@ class SQLQuery
             $dane['info'] = "Błędne polecenie : " . $this->getError();
             $dane['rowid'] = $this->getLastId();
             $dane['isnew'] = '1';
+            $dane['rows_affected'] = 0;
             return $dane;
         }
     }

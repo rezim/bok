@@ -492,8 +492,8 @@ function zapiszKlienta(rowid) {
             checkReplay(objError, objLoad, null, objClick, dane, objOk, 1, 5000, null);
             return false;
         },
-        error: function () {
-            showError(objError, objLoad, null, objClick, 10000);
+        error: function (error) {
+            showError(objError, objLoad, error?.responseText, objClick, 20000);
             return false;
         }
     });

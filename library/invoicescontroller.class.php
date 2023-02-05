@@ -155,16 +155,6 @@ class InvoicesController extends Controller
 
         $client = $this->getClientByTaxNo($buyerTaxNo);
 
-        if (count($client) === 1) {
-            $client = $client[0];
-        } else {
-            $email = $buyerEmail;
-            $street = $buyerStreet;
-            $postCode = $buyerPostCode;
-            $city = $buyerCity;
-            $client = $this->createClient($buyerName, $buyerTaxNo, BANK_NAME . ' ' . $sellerBankAccount, $email, $street, $postCode, $city);
-        }
-
         $data = array(
             "api_token" => FAKTUROWNIA_APITOKEN,
             "invoice" => array(
@@ -235,23 +225,14 @@ class InvoicesController extends Controller
         return $result;
     }
 
-    function createClient($name, $taxNo, $bankAccount, $email, $street, $postCode, $city)
+    function createClient($clientData)
     {
         $ch = curl_init();
         $url = FAKTUROWNIA_ENDPOINT . '/clients.json';
 
         $data = array(
             "api_token" => FAKTUROWNIA_APITOKEN,
-            "client" => array(
-                "name" => $name,
-                "tax_no" => $taxNo,
-                "use_mass_payment" => true,
-                "mass_payment_code" => $bankAccount,
-                "email" => $email,
-                "street" => $street,
-                "post_code" => $postCode,
-                "city" => $city
-            )
+            "client" => $clientData
         );
         $data_string = json_encode($data);
 
@@ -271,6 +252,22 @@ class InvoicesController extends Controller
         curl_close($ch);
 
         return $result;
+    }
+
+    /**
+     * @param $clientData
+     * @return mixed|void
+     */
+    function createOrUpdateClientByTaxNo($clientData) {
+        $taxNo = $clientData['tax_no'];
+        $client = $this->getClientByTaxNo($taxNo);
+        $isNewClient = empty($client);
+        if ($isNewClient) {
+            return $this->createClient($clientData);
+        }
+        $client = $client[0];
+
+        $this->updateClientById($client['id'], $clientData);
     }
 
     function addPayment($price, $invoiceId, $clientId, $invoiceTaxNo, $name, $paidDate, $description)
@@ -888,6 +885,23 @@ class InvoicesController extends Controller
         $this->clientinvoice->addPaymentMessage($customerMessageParams, 'payments_messages');
     }
 
+    function isNIP($nip)
+    {
+        if(strlen($nip) == 10){
+            $aWeight = array(0 => 6, 5, 7, 2, 3, 4, 5, 6, 7);
+
+            $iSum = 0;
+            for($i = 0; $i < strlen($nip)-1; $i++){
+                $iSum += (int)$nip[$i] * $aWeight[$i];
+            }
+
+            $iCheck = $iSum % 11;
+
+            return (int)$nip[strlen($nip)-1] == $iCheck ? true : false;
+        }
+
+        return false;
+    }
 }
 
 function curl_get($url, $useProxy = USE_PROXY)
