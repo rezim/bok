@@ -61,8 +61,9 @@
                         NIP&nbsp;<span class="text-danger">*</span>
                     </th>
                     <td>
-                        <input class="form-control form-control-md" id='txtNip' {if !$show_payment_options && $rowid!=0}disabled{/if}
-                               {if $rowid!=0}value="{$dataClient[0].nip|escape:'htmlall'}"{/if}>
+                        <input class="form-control form-control-md" id='txtNip'
+                               {if !$show_payment_options && $rowid!=0}disabled{/if}
+                                {if $rowid!=0}value="{$dataClient[0].nip|escape:'htmlall'}"{/if}>
                     </td>
                 </tr>
                 <tr>
@@ -70,8 +71,9 @@
                         Termin płatności (dni)
                     </th>
                     <td>
-                        <input class="form-control form-control-md" id='txtTerminPlatnosci' {if !$show_payment_options && $rowid!=0}disabled{/if}
-                               {if $rowid!=0 && !empty($dataClient[0].terminplatnosci)}value="{$dataClient[0].terminplatnosci|number_format:0:",":" "|escape:'htmlall'}"{/if}>
+                        <input class="form-control form-control-md" id='txtTerminPlatnosci'
+                               {if !$show_payment_options && $rowid!=0}disabled{/if}
+                                {if $rowid!=0 && !empty($dataClient[0].terminplatnosci)}value="{$dataClient[0].terminplatnosci|number_format:0:",":" "|escape:'htmlall'}"{/if}>
                     </td>
                 </tr>
                 <tr>
@@ -89,19 +91,22 @@
                         Bank
                     </th>
                     <td>
-                        <input class="form-control form-control-md" id='txtBank' {if !$show_payment_options && $rowid!=0}disabled{/if}
-                               {if $rowid!=0}value="{$dataClient[0].bank|escape:'htmlall'}"{/if}
+                        <input class="form-control form-control-md" id='txtBank'
+                               {if !$show_payment_options && $rowid!=0}disabled{/if}
+                                {if $rowid!=0}value="{$dataClient[0].bank|escape:'htmlall'}"{/if}
                         />
                     </td>
                 </tr>
                 <tr>
                     <th>
                         Numer rachunku bankowego
-                        <small id="dateFromHelp" class="form-text text-white"><i class="fas fa-info-circle"></i> Jeśli puste generuje się automatycznie.</small>
+                        <small id="dateFromHelp" class="form-text text-white"><i class="fas fa-info-circle"></i> Jeśli
+                            puste generuje się automatycznie.</small>
                     </th>
                     <td>
-                        <input class="form-control form-control-sm" id='txtNumerRachunku' {if !$show_payment_options && $rowid!=0}disabled{/if}
-                               {if $rowid!=0}value="{$dataClient[0].numerrachunku|escape:'htmlall'}"{/if}
+                        <input class="form-control form-control-sm" id='txtNumerRachunku'
+                               {if !$show_payment_options && $rowid!=0}disabled{/if}
+                                {if $rowid!=0}value="{$dataClient[0].numerrachunku|escape:'htmlall'}"{/if}
                         />
                     </td>
                 </tr>
@@ -135,56 +140,55 @@
                     </td>
                 </tr>
                 {if $show_payment_options}
-                <!-- invoice options -->
-                <tr>
-                    <td colspan="2" class="font-weight-bold">
-                        Opcje Faktury
-                    </td>
-                </tr>
-
-                <!-- show serial number -->
-                <tr>
-                    <th>
-                        pokaż numer seryjny
-                    </th>
-                    <td>
-                        <input type="checkbox" id='checkPokazNumerSeryjny' class="form-control form-control-sm"
-                               {if $rowid!=0 && !empty($dataClient[0].pokaznumerseryjny) &&  $dataClient[0].pokaznumerseryjny==1}checked{/if}
-                        />
-                    </td>
-                </tr>
-                <!-- show device counter state -->
-                <tr>
-                    <th>
-                        Pokaż stan licznika
-                    </th>
-                    <td>
-                        <input type="checkbox" id='checkPokazStanLicznika' class="form-control form-control-sm"
-                               {if $rowid!=0 && !empty($dataClient[0].pokazstanlicznika) &&  $dataClient[0].pokazstanlicznika==1}checked{/if}
-                        />
-                    </td>
-                </tr>
-                <!-- separate invoice for each agreement -->
-                <tr>
-                    <th>
-                        Faktura dla każdej umowy
-                    </th>
-                    <td>
-                        <input type="checkbox" id='checkFakturaDlaKazdejUmowy' class="form-control form-control-sm"
-                               {if $rowid!=0 && !empty($dataClient[0].fakturadlakazdejumowy) && $dataClient[0].fakturadlakazdejumowy==1}checked{/if}
-                        />
-                    </td>
-                </tr>
-                <tr>
-                    <th>
-                        Umowa zbiorcza
-                    </th>
-                    <td>
-                        <input type="checkbox" id='checkUmowaZbiorcza' class="form-control form-control-sm"
-                               {if $rowid!=0 && !empty($dataClient[0].umowazbiorcza) && $dataClient[0].umowazbiorcza==1}checked{/if}
-                        />
-                    </td>
-                </tr>
+                    <!-- invoice options -->
+                    <tr>
+                        <td colspan="2" class="font-weight-bold">
+                            Opcje Faktury
+                        </td>
+                    </tr>
+                    <!-- show serial number -->
+                    <tr>
+                        <th>
+                            pokaż numer seryjny
+                        </th>
+                        <td>
+                            <input type="checkbox" id='checkPokazNumerSeryjny' class="form-control form-control-sm"
+                                   {if $rowid!=0 && !empty($dataClient[0].pokaznumerseryjny) &&  $dataClient[0].pokaznumerseryjny==1}checked{/if}
+                            />
+                        </td>
+                    </tr>
+                    <!-- show device counter state -->
+                    <tr>
+                        <th>
+                            Pokaż stan licznika
+                        </th>
+                        <td>
+                            <input type="checkbox" id='checkPokazStanLicznika' class="form-control form-control-sm"
+                                   {if $rowid!=0 && !empty($dataClient[0].pokazstanlicznika) &&  $dataClient[0].pokazstanlicznika==1}checked{/if}
+                            />
+                        </td>
+                    </tr>
+                    <!-- separate invoice for each agreement -->
+                    <tr>
+                        <th>
+                            Faktura dla każdej umowy
+                        </th>
+                        <td>
+                            <input type="checkbox" id='checkFakturaDlaKazdejUmowy' class="form-control form-control-sm"
+                                   {if $rowid!=0 && !empty($dataClient[0].fakturadlakazdejumowy) && $dataClient[0].fakturadlakazdejumowy==1}checked{/if}
+                            />
+                        </td>
+                    </tr>
+                    <tr>
+                        <th>
+                            Umowa zbiorcza
+                        </th>
+                        <td>
+                            <input type="checkbox" id='checkUmowaZbiorcza' class="form-control form-control-sm"
+                                   {if $rowid!=0 && !empty($dataClient[0].umowazbiorcza) && $dataClient[0].umowazbiorcza==1}checked{/if}
+                            />
+                        </td>
+                    </tr>
                 {/if}
                 <!-- end -->
             </table>
@@ -196,7 +200,7 @@
                 </tr>
                 <tr>
                     <th>
-                       Imię i nazwisko
+                        Imię i nazwisko
                     </th>
                     <td>
                         <input class="form-control form-control-md" id='txtKontaktImieNazwisko'
@@ -346,32 +350,32 @@
                         Uwagi / notatki
                     </th>
                     <td>
-                        <textarea id="txtFakturyUwagi" rows="2" class="form-control form-control-xl">
-                            {if $rowid!=0}{$dataClient[0].fakturyuwagi|escape:'htmlall'}{/if}
-                        </textarea>
+                        <textarea id="txtFakturyUwagi" rows="2"
+                                  class="form-control form-control-xl">{if $rowid!=0}{$dataClient[0].fakturyuwagi|escape:'htmlall'}{/if}</textarea>
                     </td>
                 </tr>
                 {if $show_payment_options}
-                <tr>
-                    <th>
-                        Monitoring płatności
-                    </th>
-                    <td>
-                        <input type="checkbox" id='checkMonitoringPlatnosci' class="form-control form-control-sm"
-                               {if $rowid!=0 && !empty($dataClient[0].monitoringplatnosci) && $dataClient[0].monitoringplatnosci==1}checked{/if}
-                        />
-                    </td>
-                </tr>
-                <tr>
-                    <th>
-                        Naliczać odsetki
-                    </th>
-                    <td class="text-left">
-                        <input type="checkbox" id='checkNaliczacOdsetki' class="form-control form-control-sm" class="text-left"
-                               {if $rowid!=0 && !empty($dataClient[0].naliczacodsetki) && $dataClient[0].naliczacodsetki==1}checked{/if}
-                        />
-                    </td>
-                </tr>
+                    <tr>
+                        <th>
+                            Monitoring płatności
+                        </th>
+                        <td>
+                            <input type="checkbox" id='checkMonitoringPlatnosci' class="form-control form-control-sm"
+                                   {if $rowid!=0 && !empty($dataClient[0].monitoringplatnosci) && $dataClient[0].monitoringplatnosci==1}checked{/if}
+                            />
+                        </td>
+                    </tr>
+                    <tr>
+                        <th>
+                            Naliczać odsetki
+                        </th>
+                        <td class="text-left">
+                            <input type="checkbox" id='checkNaliczacOdsetki' class="form-control form-control-sm"
+                                   class="text-left"
+                                   {if $rowid!=0 && !empty($dataClient[0].naliczacodsetki) && $dataClient[0].naliczacodsetki==1}checked{/if}
+                            />
+                        </td>
+                    </tr>
                 {/if}
             </table>
         </div>
