@@ -308,7 +308,7 @@ function readDeviceCounters($notificationEmail = null)
 {
     if ($notificationEmail !== null) {
         $mailing = new mailing();
-        $mailing->sendNewMail($notificationEmail, 'Data rozpoczęcia operacji:' . date_create()->format('Y-m-d H:i:s') . '<br />' . '', 'Operacja ręcznego zaczytania liczników została rozpoczęta.', null);
+        $mailing->sendNewMail($notificationEmail, 'Data rozpoczęcia operacji:' . date_create()->format('Y-m-d H:i:s') . '<br />' . '', 'Operacja zaczytania liczników została rozpoczęta.', null);
     }
 
     $mysqli = getMySqlConn();
@@ -478,7 +478,7 @@ function readDeviceCounters($notificationEmail = null)
     $emailReader->close();
 
     if (isset($mailing) && $notificationEmail !== null) {
-        $mailing->sendNewMail($notificationEmail, 'Data zakończenia operacji:' . date_create()->format('Y-m-d H:i:s') . '<br />' . 'Ilość zaczytanych liczników: ' . $successCounter, 'Operacja ręcznego zaczytania liczników została zakończona.', null);
+        $mailing->sendNewMail($notificationEmail, 'Data zakończenia operacji:' . date_create()->format('Y-m-d H:i:s') . '<br />' . 'Ilość zaczytanych liczników: ' . $successCounter, 'Operacja zaczytania liczników została zakończona.', null);
     }
 }
 
