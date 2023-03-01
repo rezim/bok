@@ -10,6 +10,7 @@ const yesterday = function (strDate) {
 };
 
 const MY_BENEFIT_NIP = "8361676510";
+const QUALITY_CONTROL_NIP = "1133019329";
 
 InvoiceManager = function (invoice_number_length) {
 
@@ -118,6 +119,8 @@ InvoiceManager = function (invoice_number_length) {
                 groupedAgreementIds = Object.values(agreementIds).map(agreementId => [agreementId]);
             } else if (invoice['nip'] === MY_BENEFIT_NIP) {
                 groupedAgreementIds = this.groupByDeviceType(Object.values(invoice['umowy']), agreementIds);
+            } else if (invoice['nip'] === QUALITY_CONTROL_NIP) {
+                groupedAgreementIds = this.groupByGivenAgreementIds(Object.values(invoice['umowy']), agreementIds, ['14/03/2022']);
             } else {
                 groupedAgreementIds = this.groupByRecipient(Object.values(invoice['umowy']), agreementIds);
             }
@@ -226,6 +229,27 @@ InvoiceManager = function (invoice_number_length) {
             }, Object.create(null));
 
         return Object.values(groupedAgreements);
+    };
+
+
+    this.groupByGivenAgreementIds = function (agreements, agreementIds, givenAgreementIds = []) {
+
+        const allAgreements = agreements.filter(agreement => agreementIds.indexOf(agreement.nrumowy) !== -1);
+
+        const givenAgreements = allAgreements.filter(agreement => givenAgreementIds.indexOf(agreement['nrumowy']) !== -1);
+
+        const remainingAgreements = allAgreements.filter(agreement => givenAgreementIds.indexOf(agreement['nrumowy']) === -1);
+
+        const result = [];
+
+        if (givenAgreements.length) {
+            result.push(givenAgreements.map(given => given.nrumowy));
+        }
+        if (remainingAgreements.length) {
+            result.push(remainingAgreements.map(remaining => remaining.nrumowy));
+        }
+
+        return result;
     };
 
     this.groupByDeviceType = function (agreements, agreementIds) {

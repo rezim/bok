@@ -128,7 +128,7 @@ class clientinvoicesController extends InvoicesController
                     $_POST['kind'], $_POST['number'], $_POST['sell_date'], $_POST['issue_date'], $_POST['payment_to'], $_POST['buyer_name'],
                     $_POST['buyer_tax_no'], $_POST['buyer_email'], $_POST['buyer_post_code'], $_POST['buyer_city'], $_POST['buyer_street'],
                     $_POST['recipient_id'], $_POST['positions'], $_POST['show_discount'], $_POST['internal_note'], $_POST['additional_info'],
-                    $_POST['additional_info_desc'], $_POST['bank'], $_POST['numer_rachunku'])
+                    $_POST['additional_info_desc'])
             );
         }
     }

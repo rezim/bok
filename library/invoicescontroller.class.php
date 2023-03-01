@@ -148,7 +148,7 @@ class InvoicesController extends Controller
     // TODO: remove $sellerBank name, its unused
     function addInvoice($kind, $number, $sellDate, $issueDate, $paymentTo, $buyerName, $buyerTaxNo, $buyerEmail,
                         $buyerPostCode, $buyerCity, $buyerStreet, $recipientId, $positions, $showDiscount, $internalNote,
-                        $additionalInfo, $additionalInfoDesc, $sellerBank, $sellerBankAccount)
+                        $additionalInfo, $additionalInfoDesc)
     {
         $ch = curl_init();
         $url = FAKTUROWNIA_ENDPOINT . '/invoices.json';
@@ -175,7 +175,7 @@ class InvoicesController extends Controller
                 "internal_note" => $internalNote,
                 "additional_info" => $additionalInfo,
                 "additional_info_desc" => $additionalInfoDesc,
-                "client_id" => $client['id']
+                "client_id" => $client[0]['id']
             )
         );
 
