@@ -77,12 +77,12 @@
                 <div class="w-100"></div>
 
                 <div class="form-group mt-4">
-                    <input type="checkbox" aria-describedby="paidHelp" ng-model="ctrl.filters.show_paid_invoices">
+                    <input type="checkbox" aria-describedby="paidHelp" ng-model="ctrl.filters.show_not_paid_or_partial_only">
                     <label for='paidHelp'>
-                        opłacone
+                        tylko nie opłacone i częsciowo opłacone
                     </label>
-                    <small id="paidHelp" class="form-text text-muted"><i class="fa fa-info-circle"></i> pokaż faktury
-                        opłacone</small>
+                    <small id="paidHelp" class="form-text text-muted"><i class="fa fa-info-circle"></i> tylko faktury
+                        nie opłacone oraz częściowo opłacone</small>
                 </div>
 
                 <div class="form-group mt-4">
@@ -107,7 +107,7 @@
 
                 <div class="form-group">
                     <button class="btn btn-info btn-block" type="submit"
-                            ng-click='ctrl.loadData(date_from, date_to, !ctrl.filters.show_paid_invoices)'>
+                            ng-click='ctrl.loadData(date_from, date_to, ctrl.filters.show_not_paid_or_partial_only)'>
                         Pokaż
                     </button>
                 </div>
@@ -156,8 +156,8 @@
                     <tr>
                         <td colspan="2" class="text-right">suma:</td>
                         <td class="text-right"
-                            ng-class="(ctrl.getTotal(search, ctrl.filters.show_paid_invoices, ctrl.filters.show_non_deptors) < 0) ? 'underpaid' : (clientInvoice.balance > 0) ? 'overpaid' : 'paid'">
-                            [[ctrl.getTotal(search, ctrl.filters.show_paid_invoices, ctrl.filters.show_non_deptors) |
+                            ng-class="(ctrl.getTotal(search) < 0) ? 'underpaid' : (clientInvoice.balance > 0) ? 'overpaid' : 'paid'">
+                            [[ctrl.getTotal(search) |
                             currency : '']]
                         </td>
                         <td colspan="2"></td>
@@ -267,7 +267,7 @@
                                 </tr>
                                 </thead>
                                 <tbody>
-                                <tr ng-repeat="invoice in clientInvoice.invoices.list | filter: ctrl.notPaidInvoicesOnlyFilter()"
+                                <tr ng-repeat="invoice in clientInvoice.invoices.list | orderBy:'-sell_date'"
                                     ng-class="(invoice.status === 'paid') ? 'paid' : (invoice.status === 'partial') ? 'partial': 'notpaid'">
                                     <td><a href="[[invoice.view_url]]" target="_blank"
                                            ng-click="$event.stopPropagation();">[[invoice.number]]</a>

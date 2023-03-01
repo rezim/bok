@@ -150,6 +150,8 @@ class SQLQuery
                     return $data[$fieldName] * 100;
                 case 'integer':
                     return $data[$fieldName] === null ? 'NULL' : $data[$fieldName];
+                case 'timestamp':
+                    return $data[$fieldName] === null ? 'NULL' : "FROM_UNIXTIME('" . $data[$fieldName] . "')";
                 default:
                     return $data[$fieldName];
             }
@@ -184,6 +186,9 @@ class SQLQuery
             }
 
         } else {
+
+            die($this->getError());
+
             $dane['status'] = 0;
             $dane['info'] = "Błędne polecenie : " . $this->getError();
             $dane['rowid'] = $this->getLastId();

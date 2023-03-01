@@ -19,7 +19,7 @@ PaymentsCtrl = function ($scope, rest, $q, $filter, $uibModal, $interpolate, app
     };
 
     this.filters = {
-        show_paid_invoices: false,
+        show_not_paid_or_partial_only: true,
         show_overpaid_invoices: true,
         show_non_deptors: false,
         invoiceNb: '',
@@ -61,7 +61,7 @@ PaymentsCtrl = function ($scope, rest, $q, $filter, $uibModal, $interpolate, app
 
     this.notPaidInvoicesOnlyFilter = function () {
         return function (item) {
-            return !self.filters.show_paid_invoices ? !item.is_paid : true;
+            return self.filters.show_not_paid_or_partial_only ? true : !item.is_paid;
         }
     };
 
@@ -96,7 +96,7 @@ PaymentsCtrl = function ($scope, rest, $q, $filter, $uibModal, $interpolate, app
     };
 
 
-    this.getTotal = function (search, showPaidInvoices, showNonDeptors) {
+    this.getTotal = function (search) {
         let total = 0;
 
         let filteredClientInvoices = ($filter('filter')($filter('filter')(clientInvoices, search), this.clientInvoicesFilter()));
@@ -117,19 +117,23 @@ PaymentsCtrl = function ($scope, rest, $q, $filter, $uibModal, $interpolate, app
     this.loadData = async function (date_from, date_to, notPaidInvoicesOnly, callback) {
         if (date_from && date_to) {
             $scope.isPending = true;
-            const serviceName = 'getinvoices';
-            const filters = !notPaidInvoicesOnly ? '' : "&status=not_paid";
+
+            const getInvoicesParams = {
+                period: 'more',
+                date_from: date_from,
+                date_to: date_to
+            };
             const invoicesPromise =
-                rest.post(serviceName, {
+                rest.post('getinvoices', {
                     period: 'more',
                     date_from: date_from,
                     date_to: date_to,
-                    filters
+                    status: notPaidInvoicesOnly ? "not_paid_or_partial" : ''
                 });
 
             const agreementsPromise = rest.post('getagreements', {});
 
-            const overpaidPaymentsPromise = !notPaidInvoicesOnly ? rest.post('getoverpaidpayments', {}) : [];
+            const overpaidPaymentsPromise = rest.post('getoverpaidpayments', {});
 
             const interestNotes = rest.post('getallinterestnotes', {});
 
@@ -581,6 +585,19 @@ PaymentsCtrl = function ($scope, rest, $q, $filter, $uibModal, $interpolate, app
     };
 
     this.addPayment = function (clientId, invoiceTaxNo, invoice) {
+
+
+        rest.post('addinvoicepayment', {
+            price: 0,
+            invoice_id: 0,
+            client_id: 0,
+            invoice_tax_no: 0,
+            paid_name: 0,
+            paid_date: 0
+        });
+
+        return;
+
 
         let modalInstance = $uibModal.open({
             ariaLabelledBy: 'modal-title',

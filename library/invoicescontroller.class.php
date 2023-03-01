@@ -39,121 +39,58 @@ class InvoicesController extends Controller
         return array_filter($invoices, fn($invoice) => isset($invoice['overdue?']) && $invoice['overdue?'] == true);
     }
 
-    function getInvoicesByClientId($clientId, $isPaid)
+    function getInvoicesByClientId($clientId, $isPaid): array
     {
-        $invoices = array();
-        $perPage = 100;
-
-        $ch = curl_init();
-        $pageNb = 1;
         $url = FAKTUROWNIA_ENDPOINT . '/invoices.json?'
             . 'client_id=' . $clientId
             . '&status=' . (($isPaid) ? 'paid' : 'not_paid')
             . '&order=issue_date'
-            . '&per_page=' . $perPage
             . '&api_token=' . FAKTUROWNIA_APITOKEN;
-        do {
-            curl_setopt($ch, CURLOPT_URL, $url . '&page=' . $pageNb);
-            curl_setopt($ch, CURLOPT_RETURNTRANSFER, TRUE);
-            if (USE_PROXY) {
-                curl_setopt($ch, CURLOPT_PROXY, '127.0.0.1:8888');
-            }
-            $data = json_decode(curl_exec($ch), true);
 
-            $invoices = array_merge($invoices, $data);
-            $pageNb++;
-        } while (count($data) == $perPage);
+        return $this->getResultsByUrlQuery($url);
+    }
 
-        curl_close($ch);
+    function getPaidInvoicesByDateRange($period, $dateFrom, $dateTo): array
+    {
+        return $this->getInvoicesByDateRange($period, $dateFrom, $dateTo, 'paid');
+    }
+
+    function getNotPaidInvoicesByDateRange($period, $dateFrom, $dateTo): array
+    {
+        return $this->getInvoicesByDateRange($period, $dateFrom, $dateTo, 'not_paid');
+    }
+
+    function getNotPaidOrPartialInvoicesByDateRange($period, $dateFrom, $dateTo): array
+    {
+        $invoices = array_merge(
+            $this->getInvoicesByDateRange($period, $dateFrom, $dateTo, 'not_paid'),
+            $this->getInvoicesByDateRange($period, $dateFrom, $dateTo, 'partial'),
+        );
 
         return $invoices;
     }
 
-    function getInvoicesByDateRange($period, $dateFrom, $dateTo, $additionalFilters = '')
+    function getInvoicesByDateRange($period, $dateFrom, $dateTo, $status = ''): array
     {
-
-        $ch = curl_init();
-        $perPage = 100;
-//        $pageNb = 1;
-//
-//        $max_multi_calls_count = 50;
-
-        $invoices = array();
-
-//        $curl_arr = array();
-        $mh = curl_multi_init();
-
-        $pageNb = 1;
         $url = FAKTUROWNIA_ENDPOINT . '/invoices.json?'
             . 'period=' . $period
             . '&date_from=' . $dateFrom
             . '&date_to=' . $dateTo
             . '&api_token=' . FAKTUROWNIA_APITOKEN
-            . '&per_page=' . $perPage
             . '&order=issue_date'
-            . $additionalFilters;
+            . "&status=$status"
+            . "&client_id=71980208";
 
-        do {
-            curl_setopt($ch, CURLOPT_URL, $url . '&page=' . $pageNb);
-            curl_setopt($ch, CURLOPT_RETURNTRANSFER, TRUE);
-            if (USE_PROXY) {
-                curl_setopt($ch, CURLOPT_PROXY, '127.0.0.1:8888');
-            }
-            $data = json_decode(curl_exec($ch), true);
-
-            $invoices = array_merge($invoices, $data);
-            $pageNb++;
-        } while (count($data) == $perPage);
-
-        curl_close($ch);
-
-        return $invoices;
-    }
-
-
-    function getNotPaidInvoicesByDateRange($period, $dateFrom, $dateTo)
-    {
-        $invoices = $this->getInvoicesByDateRange($period, $dateFrom, $dateTo);
-
-        if (!(is_array($invoices))) {
-            // $invoices is a status of error return from getInvoicesByDateRange()
-            return $invoices;
-        }
-
-        foreach ($invoices as $key => $element) {
-            // remove paid invoices
-            if ($element["paid"] === $element["price_gross"]) {
-                unset($invoices[$key]);
-            }
-//            else {
-//                // remove if paidTo date has not been exceeded
-//                $today = new DateTime();
-//                $paymentToDate = new DateTime($element["payment_to"]);
-//                if ($paymentToDate > $today) {
-//                    unset($invoices[$key]);
-//                }
-//            }
-        }
-
-        $keys_to_remove = ["view_url", "warehouse_id", "token"];
-        foreach ($keys_to_remove as $key) {
-            array_walk($invoices, function (&$v) use ($key) {
-                unset($v[$key]);
-            });
-        }
-
-        return $invoices;
+        return $this->getResultsByUrlQuery($url);
     }
 
     // TODO: remove $sellerBank name, its unused
     function addInvoice($kind, $number, $sellDate, $issueDate, $paymentTo, $buyerName, $buyerTaxNo, $buyerEmail,
                         $buyerPostCode, $buyerCity, $buyerStreet, $recipientId, $positions, $showDiscount, $internalNote,
-                        $additionalInfo, $additionalInfoDesc, $sellerBank, $sellerBankAccount)
+                        $additionalInfo, $additionalInfoDesc)
     {
         $ch = curl_init();
         $url = FAKTUROWNIA_ENDPOINT . '/invoices.json';
-
-        $client = $this->getClientByTaxNo($buyerTaxNo);
 
         $data = array(
             "api_token" => FAKTUROWNIA_APITOKEN,
@@ -174,8 +111,7 @@ class InvoicesController extends Controller
                 "show_discount" => $showDiscount,
                 "internal_note" => $internalNote,
                 "additional_info" => $additionalInfo,
-                "additional_info_desc" => $additionalInfoDesc,
-                "client_id" => $client['id']
+                "additional_info_desc" => $additionalInfoDesc
             )
         );
 
@@ -258,7 +194,8 @@ class InvoicesController extends Controller
      * @param $clientData
      * @return mixed|void
      */
-    function createOrUpdateClientByTaxNo($clientData) {
+    function createOrUpdateClientByTaxNo($clientData)
+    {
         $taxNo = $clientData['tax_no'];
         $client = $this->getClientByTaxNo($taxNo);
         $isNewClient = empty($client);
@@ -272,9 +209,7 @@ class InvoicesController extends Controller
 
     function addPayment($price, $invoiceId, $clientId, $invoiceTaxNo, $name, $paidDate, $description)
     {
-        $ch = curl_init();
         $url = FAKTUROWNIA_ENDPOINT . '/banking/payments.json';
-
         $data = array(
             "api_token" => FAKTUROWNIA_APITOKEN,
             "banking_payment" => array(
@@ -289,22 +224,8 @@ class InvoicesController extends Controller
                 "kind" => "api"
             )
         );
-        $data_string = json_encode($data);
 
-        curl_setopt($ch, CURLOPT_URL, $url);
-        curl_setopt($ch, CURLOPT_POSTFIELDS, $data_string);
-        curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
-        if (USE_PROXY) {
-            curl_setopt($ch, CURLOPT_PROXY, '127.0.0.1:8888');
-        }
-        curl_setopt($ch, CURLOPT_HTTPHEADER, array(
-                'Content-Type: application/json',
-                'Content-Length: ' . strlen($data_string))
-        );
-
-        $result = json_decode(curl_exec($ch), true);
-
-        curl_close($ch);
+        $result = curl_post($url, $data);
 
         if (floatval($result['overpaid']) > 0) {
             $this->splitPayments($clientId);
@@ -397,6 +318,60 @@ class InvoicesController extends Controller
         curl_close($ch);
 
         return $result;
+    }
+
+    function getInvoiceById($invoiceId) {
+        $url = FAKTUROWNIA_ENDPOINT . "/invoices/{$invoiceId}.json?api_token=" . FAKTUROWNIA_APITOKEN;
+        $invoice = json_decode(curl_get($url), true);
+
+        if (isset($payment['status']) && $payment['status'] === 404) {
+            return null;
+        }
+        return $invoice;
+    }
+
+    function getInvoicesByQuery($query) {
+        $url = FAKTUROWNIA_ENDPOINT . "/invoices.json?query={$query}&api_token=" . FAKTUROWNIA_APITOKEN;
+        $invoice = json_decode(curl_get($url), true);
+
+        if (isset($payment['status']) && $payment['status'] === 404) {
+            return null;
+        }
+        return $invoice;
+    }
+
+    function isInvoicePaid($invoice): bool {
+        return floatval($invoice['paid']) >= floatval($invoice['price_gross']);
+
+    }
+
+    function isInvoicePartiallyPaid($invoice): bool {
+        return (floatval($invoice['paid']) > 0) && !$this->isInvoicePaid($invoice);
+    }
+
+    function getPaidInvoiceLateDays($invoice): int {
+
+        if (!$this->isInvoicePaid($invoice)) {
+            return 0;
+        }
+
+        $today = new DateTime();
+        try {
+            $paymentTo = new DateTime($invoice['payment_to']);
+        } catch (Exception $e) {
+            return -1;
+        }
+        return $today->diff($paymentTo)->format("%a");
+    }
+
+    function getPaymentById($paymentId) {
+        $url = FAKTUROWNIA_ENDPOINT . "/banking/payments/{$paymentId}.json?api_token=" . FAKTUROWNIA_APITOKEN;
+        $payment = json_decode(curl_get($url), true);
+
+        if (isset($payment['status']) && $payment['status'] === 404) {
+            return null;
+        }
+        return $payment;
     }
 
     function getClientPayments($clientId, $dateFrom)
@@ -648,6 +623,10 @@ class InvoicesController extends Controller
 
         $result['nip'] = $nip;
 
+        $result['path'] = $filePath;
+
+        $result['timestamp'] = filemtime($filePath);
+
         return $result;
     }
 
@@ -712,7 +691,8 @@ class InvoicesController extends Controller
 
             $this->clientinvoice->addPaymentMessage($customerMessageParams, 'payments_messages');
 
-            return array_merge($result, array('status' => -1, 'message' => 'file already exists'));
+//            return array_merge($result, array('status' => -1, 'message' => 'file already exists'));
+            return $this->readInterestNote($filePath);
         }
 
         // Use file_get_contents() function to get the file
@@ -732,7 +712,10 @@ class InvoicesController extends Controller
 
             $this->clientinvoice->addPaymentMessage($customerMessageParams, 'payments_messages');
 
-            return array_merge($result, array('message' => 'file created successful'));
+//            return array_merge($result, array('message' => 'file created successful'));
+
+            return $this->readInterestNote($filePath);
+
         } else {
             return array_merge($result, array('status' => -1, 'message' => 'file download failed'));
         }
@@ -789,14 +772,14 @@ class InvoicesController extends Controller
             $amazonS3BucketUrl = 'https://s3-eu-west-1.amazonaws.com/fs.firmlet.com';
 
             $data = array_merge($s3BucketCredentials, array('file' => $curlFile));
-            $result = curl_post($amazonS3BucketUrl, $data, false);
+            $result = curl_post_form_data($amazonS3BucketUrl, $data, false);
             if (isset($result['error'])) {
                 return array_merge($result, array("message" => "Could not send file to s3 bucket. Error: {$result['message']}"));
             }
 
             // assign attachment to the invoice
             $url = "{$invoicesUrl}/add_attachment.json?api_token={$token}&file_name={$attachementFileNameWithPrefix}";
-            $result = curl_post($url);
+            $result = curl_post_form_data($url);
             if (isset($result['error'])) {
                 return array_merge($result, array("Could not assign attachment {$attachementFileNameWithPrefix} to invoice {$invoiceNumber}. Error: {$result['error']}"));
             }
@@ -849,7 +832,7 @@ class InvoicesController extends Controller
             }, $interestNotes));
 
             $interestNotesSummary = join('<br/>', array_map(function ($note) use (&$fmt) {
-                $normalizedName = str_replace("-", "/", substr($note['name'], 0, -4)) ;
+                $normalizedName = str_replace("-", "/", substr($note['name'], 0, -4));
                 return "nota odsetkowa do faktury numer $normalizedName na kwotę {$fmt->format($note['amount'])}";
             },
                 $interestNotes));
@@ -887,20 +870,50 @@ class InvoicesController extends Controller
 
     function isNIP($nip)
     {
-        if(strlen($nip) == 10){
+        if (strlen($nip) == 10) {
             $aWeight = array(0 => 6, 5, 7, 2, 3, 4, 5, 6, 7);
 
             $iSum = 0;
-            for($i = 0; $i < strlen($nip)-1; $i++){
+            for ($i = 0; $i < strlen($nip) - 1; $i++) {
                 $iSum += (int)$nip[$i] * $aWeight[$i];
             }
 
             $iCheck = $iSum % 11;
 
-            return (int)$nip[strlen($nip)-1] == $iCheck ? true : false;
+            return (int)$nip[strlen($nip) - 1] == $iCheck ? true : false;
         }
 
         return false;
+    }
+
+    /**
+     * @param bool $ch
+     * @param string $url
+     * @param int $pageNb
+     * @param $invoices
+     * @param int $perPage
+     * @return array
+     */
+    public function getResultsByUrlQuery(string $url, int $pageNb = 1, int $perPage = 100): array
+    {
+        $ch = curl_init();
+
+        $results = array();
+        do {
+            curl_setopt($ch, CURLOPT_URL, $url . '&page=' . $pageNb . '&per_page=' . $perPage);
+            curl_setopt($ch, CURLOPT_RETURNTRANSFER, TRUE);
+            if (USE_PROXY) {
+                curl_setopt($ch, CURLOPT_PROXY, '127.0.0.1:8888');
+            }
+            $data = json_decode(curl_exec($ch), true);
+
+            $results = array_merge($results, $data);
+            $pageNb++;
+        } while (count($data) == $perPage);
+
+        curl_close($ch);
+
+        return $results;
     }
 }
 
@@ -925,7 +938,34 @@ function curl_get($url, $useProxy = USE_PROXY)
     return $response;
 }
 
-function curl_post($url, $data = array(), $useProxy = USE_PROXY)
+function curl_post($url, $data = array(), $useProxy = USE_PROXY) {
+    $ch = curl_init();
+
+    $data_string = json_encode($data);
+
+    curl_setopt($ch, CURLOPT_URL, $url);
+    curl_setopt($ch, CURLOPT_POSTFIELDS, $data_string);
+    curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+    if ($useProxy) {
+        curl_setopt($ch, CURLOPT_PROXY, '127.0.0.1:8888');
+    }
+    curl_setopt($ch, CURLOPT_HTTPHEADER, array(
+            'Content-Type: application/json',
+            'Content-Length: ' . strlen($data_string))
+    );
+
+    $response = json_decode(curl_exec($ch), true);
+
+    if (curl_errno($ch)) {
+        $response = array("error" => curl_errno($ch), "message" => curl_error($ch));
+    }
+
+    curl_close($ch);
+
+    return $response;
+}
+
+function curl_post_form_data($url, $data = array(), $useProxy = USE_PROXY)
 {
     $ch = curl_init();
 

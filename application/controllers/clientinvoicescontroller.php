@@ -17,19 +17,20 @@ class clientinvoicesController extends InvoicesController
         echo $this->clientinvoice->getAgreements();
     }
 
-
     function getinvoices()
     {
-        if ($_POST['period'] && $_POST['date_from'] && $_POST['date_to']) {
-            $filters = '';
-            if (isset($_POST['filters'])) {
-                $filters = $_POST['filters'];
-            }
+        $this->validatePostParams(['period', 'date_from', 'date_to']);
+
+        $period = $_POST['period'];
+        $dateFrom = $_POST['date_from'];
+        $dateTo = $_POST['date_to'];
+
+        if (isset($_POST['status']) && $_POST['status'] === 'not_paid_or_partial') {
             echo json_encode(
-                $this->getInvoicesByDateRange($_POST['period'], $_POST['date_from'], $_POST['date_to'], $filters)
-            );
+                $this->getNotPaidOrPartialInvoicesByDateRange($period, $dateFrom, $dateTo));
         } else {
-            echo "błędne parametry wejściowe";
+            echo json_encode(
+                $this->getInvoicesByDateRange($period, $dateFrom, $dateTo));
         }
     }
 
@@ -52,41 +53,9 @@ class clientinvoicesController extends InvoicesController
             $this->sendOverduePaymentsReminder($clientOverdueInvoices, $clientInterestNotes, $_POST['client_nip'], $clientEmail);
 
             echo "OK";
-        } catch(Exception $e) {
+        } catch (Exception $e) {
             header($_SERVER['SERVER_PROTOCOL'] . ' 500 Internal Server Error', true, 500);
             echo $e->getMessage();
-        }
-    }
-
-    function getnotpaidinvoices()
-    {
-        if ($_POST['period'] && $_POST['date_from'] && $_POST['date_to']) {
-
-            $trackedDeptors = $this->clientinvoice->getTrackedDeptors();
-
-            $invoices = $this->getNotPaidInvoicesByDateRange($_POST['period'], $_POST['date_from'], $_POST['date_to']);
-
-            foreach ($invoices as $key => $element) {
-                // remove invoices for not tracked clients
-                if (array_search($element["buyer_tax_no"], array_column($trackedDeptors, 'nip')) === false) {
-                    unset($invoices[$key]);
-                }
-            }
-
-            echo json_encode($invoices);
-        } else {
-            echo "błędne parametry wejściowe";
-        }
-    }
-
-    function getclientinvoices()
-    {
-        if ($_POST['client_id'] && $_POST['is_paid']) {
-            echo json_encode(
-                $this->getInvoicesByClientId($_POST['client_id'], ($_POST['is_paid'] === 'true') ? true : false)
-            );
-        } else {
-            echo "błędne parametry wejściowe";
         }
     }
 
@@ -111,9 +80,9 @@ class clientinvoicesController extends InvoicesController
     function removeinvoicebyid()
     {
         $required = ['invoice_id'];
-        if ($this->validatePostParams($required)) {
-            echo json_encode($this->removeInvoice($_POST['invoice_id']));
-        }
+        $this->validatePostParams($required);
+
+        echo json_encode($this->removeInvoice($_POST['invoice_id']));
     }
 
     function addnewinvoice()
@@ -122,34 +91,76 @@ class clientinvoicesController extends InvoicesController
             'buyer_email', 'buyer_post_code', 'buyer_city', 'buyer_street', 'positions',
             'show_discount', 'internal_note', 'additional_info', 'additional_info_desc'];
 
-        if ($this->validatePostParams($required)) {
-            echo json_encode(
-                $this->addInvoice(
-                    $_POST['kind'], $_POST['number'], $_POST['sell_date'], $_POST['issue_date'], $_POST['payment_to'], $_POST['buyer_name'],
-                    $_POST['buyer_tax_no'], $_POST['buyer_email'], $_POST['buyer_post_code'], $_POST['buyer_city'], $_POST['buyer_street'],
-                    $_POST['recipient_id'], $_POST['positions'], $_POST['show_discount'], $_POST['internal_note'], $_POST['additional_info'],
-                    $_POST['additional_info_desc'], $_POST['bank'], $_POST['numer_rachunku'])
-            );
-        }
+        $this->validatePostParams($required);
+
+        echo json_encode(
+            $this->addInvoice(
+                $_POST['kind'], $_POST['number'], $_POST['sell_date'], $_POST['issue_date'], $_POST['payment_to'], $_POST['buyer_name'],
+                $_POST['buyer_tax_no'], $_POST['buyer_email'], $_POST['buyer_post_code'], $_POST['buyer_city'], $_POST['buyer_street'],
+                $_POST['recipient_id'], $_POST['positions'], $_POST['show_discount'], $_POST['internal_note'], $_POST['additional_info'],
+                $_POST['additional_info_desc'])
+        );
     }
 
     function addinvoicepayment()
     {
-        if ($_POST['price'] && $_POST['invoice_id'] && $_POST['invoice_tax_no'] && $_POST['client_id'] && $_POST['paid_name'] && $_POST['paid_date']) {
-            echo json_encode(
-                $this->addPayment(
-                    $_POST['price'],
-                    $_POST['invoice_id'],
-                    $_POST['client_id'],
-                    $_POST['invoice_tax_no'],
-                    $_POST['paid_name'],
-                    $_POST['paid_date'],
-                    $this->normalizeCurrencyValue($_POST['price'])
-                )
-            );
-        } else {
-            echo "błędne parametry wejściowe";
+        $required = ['price', 'invoice_id', 'invoice_tax_no', 'client_id', 'paid_name', 'paid_date'];
+
+        $this->validatePostParams($required);
+
+
+//            $payment =   $this->addPayment(
+//                    $_POST['price'],
+//                    $_POST['invoice_id'],
+//                    $_POST['client_id'],
+//                    $_POST['invoice_tax_no'],
+//                    $_POST['paid_name'],
+//                    $_POST['paid_date'],
+//                    $this->normalizeCurrencyValue($_POST['price']));
+
+        $payment = $this->getPaymentById(6941634);
+
+        if (!isset($payment)) {
+            $this->internalServerError("Nie można dodać płatności");
         }
+
+        $invoice = $this->getInvoiceById($payment['invoice_id']);
+
+        if (!isset($invoice)) {
+            $this->internalServerError("Nie można pobrać faktury dla zadanej płatności");
+        }
+
+        $client = $this->clientinvoice->getClientByTaxNb($invoice['buyer_tax_no']);
+
+        if (!isset($client)) {
+            $this->internalServerError("Nie można znaleźć klienta");
+        }
+
+        list('naliczacodsetki' => $client_create_interest_notes, 'rowid' => $client_id, 'nip' => $client_tax_nb) = $client;
+
+        // TODO [TR]: for debug purposes only
+        $client['mailfaktury'] = 'tregimowicz@gmail.com';
+
+        if ($client_create_interest_notes) {
+
+            $isInvoicePaid = $this->isInvoicePaid($invoice);
+
+            if ($isInvoicePaid) {
+                $lateDays = $this->getPaidInvoiceLateDays($invoice);
+                if ($lateDays > 0) {
+                    list('id' => $id, 'number' => $inv_number, 'buyer_tax_no' => $buyer_tax_no, 'sell_date' => $sell_date, 'payment_to' => $payment_to, 'view_url' => $inv_view_url) = $invoice;
+                    $interestNote = $this->issueInterestNote($id, $inv_number, $buyer_tax_no, $client['mailfaktury'], $sell_date, $payment_to, $payment_to, $lateDays );
+
+                    list('number' => $note_nb, 'amount' => $note_amount, 'path' => $note_path, 'timestamp' => $note_timestamp) = $interestNote;
+
+                    $this->clientinvoice->createInterestNote($client_id, $client_tax_nb, $inv_number,
+                        $note_nb, floatval($note_amount) * 100, $note_path, $inv_view_url, $note_timestamp);
+                }
+            }
+        }
+
+
+        echo json_encode($payment);
     }
 
     function interestnotehasbeenpaid()
@@ -185,7 +196,60 @@ class clientinvoicesController extends InvoicesController
 
     function getallinterestnotes()
     {
-        echo json_encode($this->resolveAllInterestNotes());
+        $allInterestNotes = $this->resolveAllInterestNotes();
+        $interestNotesCount = 0;
+        foreach ($allInterestNotes as $nip => $notes) {
+
+            $client = $this->clientinvoice->getClientByTaxNb($nip);
+            list('rowid' => $client_id, 'nip' => $client_tax_nb) = $client;
+
+
+            foreach ($notes as $note) {
+
+                $interestNotesCount++;
+
+                $invoices = $this->getInvoicesByQuery( $note['number'] );
+
+                if (count($invoices) === 0) {
+                    echo $note['number'] . ',';
+                    continue;
+                } else {
+
+                    $invoices = $this->filterArrayByKeyValue($invoices, 'number', $note['number']);
+
+                    if (count($invoices) !== 1) {
+                        echo $note['number'] . ',';
+                        continue;
+                    }
+                }
+
+                if (!isset($invoices[0])) {
+                    echo $note['number'];
+                } else {
+                    $invoice = $invoices[0];
+                }
+
+                list('number' => $inv_number, 'view_url' => $inv_view_url) = $invoice;
+
+
+                list('number' => $note_nb, 'amount' => $note_amount, 'path' => $note_path, 'timestamp' => $note_timestamp) = $note;
+
+                $success = preg_match("/paid-\(.*\)/", $note_path, $match);
+
+                $paid_date = $success ? substr($match[0], 6, -1) : null;
+
+                $paid = $paid_date ? 1 : 0;
+
+                $result = $this->clientinvoice->createInterestNote($client_id, $client_tax_nb, $inv_number,
+                    $note_nb, floatval($note_amount) * 100, $note_path, $inv_view_url, $note_timestamp, $paid, $paid_date);
+
+                if (isset($result['status']) && $result['status'] !== 1) {
+                    echo $note['number'] . $result['info'] . "<br />";
+                }
+
+            }
+        }
+        echo json_encode($allInterestNotes); // $this->clientinvoice->getInterestNotesGroupedByNip();
     }
 
     /**
@@ -194,18 +258,9 @@ class clientinvoicesController extends InvoicesController
      */
     function addinterestnotestoinvoice()
     {
+        $this->validatePostParams(['invoice_id', 'nip']);
 
-        $required = ['invoice_id', 'nip'];
-
-        if ($this->validatePostParams($required)) {
-
-            if ($_POST['invoice_id'] && $_POST['nip']) {
-                echo json_encode($this->addNotPaidInterestNotesToInvoice($_POST['invoice_id'], $_POST['nip']));
-            } else {
-                echo "błędne parametry wyjściowe";
-            }
-
-        }
+        echo json_encode($this->addNotPaidInterestNotesToInvoice($_POST['invoice_id'], $_POST['nip']));
     }
 
     function generateinterestnote()

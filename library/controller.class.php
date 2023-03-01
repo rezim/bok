@@ -95,20 +95,15 @@ class Controller
         return $this->$nameOfModel->save();
     }
 
-    function validatePostParams($postParams) {
+    function validatePostParams($postParams)
+    {
         $emptyParams = array_filter($postParams, function ($param) {
             return !isset($_POST[$param]) || (!$_POST[$param] && $_POST[$param] != 0);
         });
 
         if (count($emptyParams) > 0) {
-            echo("Blad! Parametry: " . implode(",", $emptyParams) . " sa wymagane!");
-
-            http_response_code(400);
-
-            return false;
+            $this->badRequest("Blad! Parametry: " . implode(",", $emptyParams) . " sa wymagane!");
         }
-
-        return true;
     }
 
     function badRequest($message) {
@@ -130,4 +125,14 @@ class Controller
         header('X-PHP-Response-Code: 500', true, 500);
         die($message);
     }
+
+    function filterArrayByKeyValue($array,$key, $keyValue): array {
+        $matches = array();
+        foreach($array as $a){
+            if($a[$key] == $keyValue)
+                $matches[]=$a;
+        }
+        return $matches;
+    }
+
 }

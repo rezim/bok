@@ -48,32 +48,42 @@ class clientinvoice extends Model
         return $this->query($query, null, false);
     }
 
-    function createInterestNote($clientTaxNb, $externalClientId, $amount, $invoice, $filePath, $created, $paid) {
-        $client = $this->getClientByTaxNb($clientTaxNb);
+    function createInterestNote($clientRowId, $clientNip, $invoiceNb, $noteNb, $amount, $filePath, $invoiceViewUrl, $created, $paid = 0, $paid_date = null) {
 
-        if (!$client) {
-            return "Nie można pobrać klienta po NIP: " . $clientTaxNb;
+        $query = "select * from interest_notes where notenb='{$noteNb}' and amount={$amount}";
+        $notes = $this->query($query, null, false);
+
+        if (count($notes) > 0) {
+            return null;
         }
 
         $interestNote = array(
-            'rowidclient' => $client['rowid'],
-            'externalclientid' => $externalClientId,
+            'rowidclient' => $clientRowId,
+            'invoicenb' => $invoiceNb,
+            'notenb' => $noteNb,
             'amount' => $amount,
-            'invoice' => $invoice,
             'filepath' => $filePath,
+            'invoiceviewurl' => $invoiceViewUrl,
+            'clientnip' => $clientNip,
             'created' => $created,
-            'paid' => $paid
+            'paid' => $paid,
+            'paid_date' => $paid_date
         );
 
         $namesWihTypes = array(
             'rowidclient' => 'integer',
-            'externalclientid' => 'integer',
+            'invoicenb' => 'string',
+            'notenb' => 'string',
             'amount' => 'integer',
-            'invoice' => 'string',
             'filepath' => 'string',
+            'invoiceviewurl' => 'string',
+            'clientnip' => 'string',
             'created' => 'timestamp',
-            'paid' => 'boolean'
+            'paid' => 'integer',
+            'paid_date' => 'date'
         );
+
+        // die(print_r($interestNote, true));
 
         return $this->insertIntoTable('interest_notes', $namesWihTypes, $interestNote);
     }
@@ -83,7 +93,7 @@ class clientinvoice extends Model
         $query = "select * from clients where nip={$clientTaxNb}";
         $clients = $this->query($query, null, false);
 
-        if (!count($clients) === 1) {
+        if (count($clients) !== 1) {
             return null;
         }
 
@@ -99,6 +109,22 @@ class clientinvoice extends Model
 
         return $this->formatIBAN($client["numerrachunku"]);
 
+    }
+
+    function getInterestNotesGroupedByNip() {
+        $query = "SELECT amount/100 as amonunt, created as date, invoicenb as number, filepath as path, clientnip as nip, UNIX_TIMESTAMP(created) as timestamp FROM `interest_notes`";
+
+        $interestNotes = $this->query($query,null,false);
+
+        $nipToInterestNotesMap = array();
+        array_walk($interestNotes, function (&$interestNote, $key) use (&$nipToInterestNotesMap) {
+            $nip = $interestNote['nip'];
+            if (!isset($nipToInterestNotesMap[$nip])) {
+                $nipToInterestNotesMap[$nip] = array();
+            }
+            array_push($nipToInterestNotesMap[$nip], $interestNote);
+        });
+        return json_encode( $nipToInterestNotesMap );
     }
 
 
