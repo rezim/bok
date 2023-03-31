@@ -160,12 +160,13 @@ class reportsController extends InvoicesController
                 $report['data_wiadomosci_black_koniec'] = $agreementPrintersEnd[$agreementPrintersKey]['date_koniec'];
                 $report['data_wiadomosci_kolor_koniec'] = $agreementPrintersEnd[$agreementPrintersKey]['date_koniec'];
 
-                $dateStart = new DateTime($report['data_wiadomosci_black_start']);
                 $dateEnd = new DateTime($report['data_wiadomosci_black_koniec']);
                 $daysInMoth = cal_days_in_month(CAL_GREGORIAN, date_format($dateEnd, 'm'), date_format($dateEnd, 'Y'));
-                $amountOfDays = $dateEnd->diff($dateStart)->format('%a');
+                $amountOfDays =  intval( $dateEnd->format('d') );
 
-                $report['abonament'] = $report['abonament'] * ($amountOfDays / $daysInMoth);
+                $report['stronwabonamencie'] *= ($amountOfDays / $daysInMoth);
+                $report['iloscstron_kolor'] *= ($amountOfDays / $daysInMoth);
+                $report['abonament'] *= ($amountOfDays / $daysInMoth);
             }
 
             $result[$report['serial']] = $report;
