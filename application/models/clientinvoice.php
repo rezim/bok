@@ -112,7 +112,7 @@ class clientinvoice extends Model
     }
 
     function getInterestNotesGroupedByNip() {
-        $query = "SELECT amount/100 as amonunt, created as date, invoicenb as number, filepath as path, clientnip as nip, UNIX_TIMESTAMP(created) as timestamp FROM `interest_notes`";
+        $query = "SELECT amount/100 as amonunt, created as date, invoicenb as number, filepath as path, clientnip as nip, UNIX_TIMESTAMP(created) as timestamp,  paid, paid_date, invoiceviewurl FROM `interest_notes`";
 
         $interestNotes = $this->query($query,null,false);
 
@@ -124,9 +124,16 @@ class clientinvoice extends Model
             }
             array_push($nipToInterestNotesMap[$nip], $interestNote);
         });
-        return json_encode( $nipToInterestNotesMap );
+        return $nipToInterestNotesMap;
     }
 
+
+    function getInterestNotesByClientNip($clientNip) {
+        $query = "SELECT amount/100 as amonunt, created as date, invoicenb as number, filepath as path, clientnip as nip, UNIX_TIMESTAMP(created) as timestamp, paid, paid_date, invoiceviewurl " .
+            " FROM `interest_notes` " . "WHERE clientnip='" . $clientNip . "'";
+
+        return $this->query($query,null,false);
+    }
 
     function formatIBAN($iban)
     {

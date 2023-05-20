@@ -159,6 +159,18 @@ class reportsController extends InvoicesController
                 $report['strony_kolor_koniec'] = $agreementPrintersEnd[$agreementPrintersKey]['ilosckolor_koniec'];
                 $report['data_wiadomosci_black_koniec'] = $agreementPrintersEnd[$agreementPrintersKey]['date_koniec'];
                 $report['data_wiadomosci_kolor_koniec'] = $agreementPrintersEnd[$agreementPrintersKey]['date_koniec'];
+
+                $dateEnd = new DateTime($report['data_wiadomosci_black_koniec']);
+                $daysInMoth = cal_days_in_month(CAL_GREGORIAN, date_format($dateEnd, 'm'), date_format($dateEnd, 'Y'));
+                $amountOfDays =  intval( $dateEnd->format('d') );
+
+                $report['abonament'] = $report['abonament'] * ($amountOfDays / $daysInMoth);
+
+                $report[stronwabonamencie] *= ($amountOfDays / $daysInMoth);
+                // iloscstron_kolor
+
+                echo '<pre>' . print_r($report) . '</pre>';
+                die();
             }
 
             $result[$report['serial']] = $report;
@@ -324,6 +336,7 @@ class reportsController extends InvoicesController
 
         $dataReportsMiesieczne = $this->applyAgreementPrinters($dataReportsMiesieczne, $agreementPrintersStart, $agreementPrintersEnd);
 
+
         $dataPrinterService = $this->getPrinterServiceMap($this->report->getPrinterService());
 
         $dataPrinterReplacement = $this->getPrinterReplacements($this->report->getPrinterService());
@@ -342,6 +355,9 @@ class reportsController extends InvoicesController
             $dayOfDateRange = 0;
             $setupFee = 0;
             $daysAmount = date("t", strtotime($item['dataod']));
+
+
+            echo ('days amount: ' . $daysAmount . '#');
 
             $clientId = $item['rowidclient'];
 

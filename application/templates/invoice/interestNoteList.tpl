@@ -25,11 +25,11 @@
                     <div class="col-sm-2 text-right">akcja</div>
                 </div>
                 <div class="row" ng-repeat="note in $ctrl.data.interestNotesWithInvoices track by $index ">
-                    <div ng-class="(note.name.startsWith('paid-')) ? 'paid' : ''" class="col-sm-2" role="button">[[note.date]]</div>
-                    <div class="col-sm-3" role="button"><a href="[['.' + note.path]]" target=”_blank”>[[$ctrl.normalizeNoteName(note.name)]]</a>
+                    <div ng-class="note.paid ? 'paid' : ''" class="col-sm-2" role="button">[[note.date]]</div>
+                    <div class="col-sm-3" role="button"><a href="[['.' + note.path]]" target=”_blank”>[[note.number]]</a>
                     </div>
                     <div class="col-sm-2 text-right" role="button">[[note.amount | currency: '']]</div>
-                    <div class="col-sm-2 text-right" role="button">[[note.invoice.paid | currency: '']]</div>
+                    <div class="col-sm-2 text-right" role="button">[[note.paid | currency: '']]</div>
                     <div class="col-sm-1 text-right" role="button">[[note.invoice.is_late_days]]</div>
                     <div class="col-sm-2 text-right action" role="button">
                         <button ng-if="!note.name.startsWith('paid-')" class="btn btn-warning" style="font-size: 10px " title="usuń"

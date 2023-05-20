@@ -166,7 +166,10 @@ class clientinvoicesController extends InvoicesController
     function interestnotehasbeenpaid()
     {
         if ($_POST['nip'] && $_POST['name'] && $_POST['number'] && $_POST['date']) {
-            echo json_encode($this->markInterestNoteAsPaid($_POST['nip'], $_POST['name'], $_POST['number'], $_POST['date']));
+            $clientNip = $_POST['nip'];
+//            echo json_encode($this->markInterestNoteAsPaid($clientNip, $_POST['name'], $_POST['number'], $_POST['date']));
+
+            echo json_encode($this->clientinvoice->getInterestNotesByClientNip($clientNip));
         } else {
             echo "błędne parametry wyjściowe";
         }
@@ -194,8 +197,8 @@ class clientinvoicesController extends InvoicesController
         }
     }
 
-    function getallinterestnotes()
-    {
+
+    function importinterestnotes() {
         $allInterestNotes = $this->resolveAllInterestNotes();
         $interestNotesCount = 0;
         foreach ($allInterestNotes as $nip => $notes) {
@@ -249,7 +252,12 @@ class clientinvoicesController extends InvoicesController
 
             }
         }
-        echo json_encode($allInterestNotes); // $this->clientinvoice->getInterestNotesGroupedByNip();
+        echo json_encode($allInterestNotes);
+    }
+
+    function getallinterestnotes()
+    {
+        echo json_encode( $this->clientinvoice->getInterestNotesGroupedByNip() );
     }
 
     /**

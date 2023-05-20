@@ -393,7 +393,7 @@ PaymentsCtrl = function ($scope, rest, $q, $filter, $uibModal, $interpolate, app
         const paidNoteNamePrefixRegExp = /^paid-\(.*\)-/;
 
         const getInvoicesByNote = (note) => invoices.list.find(
-            inv => note.name.replace(paidNoteNamePrefixRegExp, '').replaceAll('-', '/').startsWith(inv.number)
+            inv => note.number.startsWith(inv.number)
         );
 
         const interestNotesWithInvoices = interestNotes.map(note => (
