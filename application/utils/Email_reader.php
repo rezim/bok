@@ -1203,6 +1203,9 @@ function getDataDeviceMinolta($message)
         $dataDevice['system']['wydrukkolor'] = 0;
         $dataDevice['system']['wydruktotal'] = trim(strip_tags(html_entity_decode($dane['Total Counter'])));
     }
+
+    $dataDevice['system']['scantotal'] = $dane['Total Scan/Fax Counter'] != null ? $dane['Total Scan/Fax Counter'] : 0;
+
     $dataDevice['system']['black_toner'] = "";
     $dataDevice['system']['cyan_toner'] = "";
     $dataDevice['system']['magenta_toner'] = "";
@@ -1461,6 +1464,9 @@ function saveDataDevice($dataDevice, $dataWiadomosci, $ip)
         echo $mysqli->error;
     }
 
+    if (isset($dataDevice['system']['scantotal'])) {
+        insertScanCounter($dataDevice, $dataWiadomosci, $mysqli);
+    }
 
     // tonery
 
@@ -2018,4 +2024,23 @@ function w1250_to_utf8($text)
         chr(0xBB) => '&raquo;',
     );
     return html_entity_decode(mb_convert_encoding(strtr($text, $map), 'UTF-8', 'ISO-8859-2'), ENT_QUOTES, 'UTF-8');
+}
+
+
+function insertScanCounter($dataDevice, $dataWiadomosci, $mysqli) {
+    $deleteQuery = "DELETE FROM `scans` WHERE datawiadomosci = '{$dataWiadomosci}' AND serial = '{$dataDevice['system']['dd:SerialNumber']}'";
+
+    mysqli_query($mysqli, $deleteQuery);
+
+    $query = "insert into scans(serial,dateinsert,datawiadomosci,ilosctotal,rowid_agreement,product_version) values 
+                            (
+                                '{$dataDevice['system']['dd:SerialNumber']}','" . date('Y-m-d H:i:s') . "','{$dataWiadomosci}'                                
+                                ," . ($dataDevice['system']['scantotal'] == '' ? 'null' : $dataDevice['system']['scantotal']) . ",
+                                (select rowid from agreements where serial='" . $dataDevice['system']['dd:SerialNumber'] . "' and activity=1),
+                                (select product_version FROM printers where serial = '" . $dataDevice['system']['dd:SerialNumber'] . "')
+                                )";
+
+    if (!mysqli_query($mysqli, $query)) {
+        echo $mysqli->error;
+    }
 }
