@@ -308,6 +308,9 @@
                         <i class="fas fa-area-chart"></i>&nbsp;Raporty
                     </a>
                     <div class="dropdown-menu" aria-labelledby="navbarDropdown">
+                        {if isset($smarty.session.przypisanemenu['li_clientoweshas'])}
+                            <a href='{$smarty.const.SCIEZKA}/clientoweshas/show' class="dropdown-item">Winien/Ma</a>
+                        {/if}
                         {if isset($smarty.session.przypisanemenu['li_clientinvoicesshow'])}
                             <a href='{$smarty.const.SCIEZKA}/clientinvoices/show' class="dropdown-item">Płatności</a>
                         {/if}
