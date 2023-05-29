@@ -1722,6 +1722,19 @@ function saveUpdateMessage(dataContainerId, containerId, type, foreignkey) {
     callServiceAction(actionUrl, dataContainerId, callback, callback);
 }
 
+
+function sendPaymentsReport() {
+    const actionUrl = "/clientpayments/sendpaymentsreport/notemplate";
+    const successCallback = () => {
+        alert('Wiadomość została wysłana');
+    };
+    const errorCallback = () => {
+        alert('Nie można wysłać wiadomośći');
+    };
+
+    callServiceAction(actionUrl, null, successCallback, errorCallback);
+}
+
 function showMessages(containerId, type, foreignkey) {
     const objCenter = getElementById(containerId);
     const foreignKeyObj = foreignkey ? {foreignkey} : {};

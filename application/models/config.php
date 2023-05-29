@@ -3,7 +3,7 @@
 class config extends Model
 {
 
-    protected $stawkakilometrowa = null, $stawkagodzinowa = null, $czassesjiminut = null;
+    protected $stawkakilometrowa = null, $stawkagodzinowa = null, $czassesjiminut = null, $emailraportuplatnosci = null;
 
     function getConfiguration()
     {
@@ -39,6 +39,9 @@ class config extends Model
             array_push($columnList, array('name' => '`czas_sesji_minut`', 'type' => 'd', 'value' => $this->czassesjiminut));
         }
 
+        if ($this->emailraportuplatnosci !== null) {
+            array_push($columnList, array('name' => '`email_raportu_platnosci`', 'type' => 's', 'value' => $this->emailraportuplatnosci));
+        }
 
         $names = implode(',', array_map(function ($name) {
             return $name . '=?';

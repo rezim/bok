@@ -72,7 +72,21 @@
                                 <small  class="form-text text-muted"><i class="fas fa-info-circle"></i> Wyczyść monitoring płatności w kartach klientów dla operatora.</small>
                             </div>
                         </div>
-
+                        <div class="border-top my-4 otus-separator"></div>
+                        <div class="row align-items-start">
+                            <div class="col">
+                                Mail raportu płatności.
+                            </div>
+                            <div class="col">
+                                <input class="form-control form-control-md" data-ref type="text" id='emailraportuplatnosci'
+                                       value="{$configuration[0].email_raportu_platnosci|escape:'htmlall'}" />
+                            </div>
+                        </div>
+                        <div class="row align-items-center">
+                            <div class="col">
+                                <small  class="form-text text-muted"><i class="fas fa-info-circle"></i> Mail na który zostanie wysłany raport płatności za poprzedni miesiąc
+                            </div>
+                        </div>
                     </div>
                 </div>
 
