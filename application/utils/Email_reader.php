@@ -304,6 +304,61 @@ function reportPaymentsProcessingMessage($message, $error, $date)
     }
 }
 
+const CSV_CUSTOMER_INDEX = 0;
+const CSV_SERIAL_INDEX = 3;
+const CSV_DATE_INDEX = 6;
+const CSV_TOTAL_INDEX = 7;
+const CSV_BLACK_COUNT_INDEX = 8;
+const CSV_SCAN_COUNT_INDEX = 9;
+function processCsv($filename, $attachment)
+{
+    file_put_contents(SCIEZKAZALACZNIKI.$filename, $attachment);
+
+    if (($handle = fopen(SCIEZKAZALACZNIKI.$filename, "r")) !== false) {
+        while (($data = fgetcsv($handle, 1000, ",")) !== false) {
+
+            $customer = $data[CSV_CUSTOMER_INDEX] ?? null;
+            if ($customer === "OTUS") {
+                $date = $data[CSV_DATE_INDEX];
+                if ($date !== "N/A") {
+
+                    $serial = $data[CSV_SERIAL_INDEX];
+                    $blackCount = $data[CSV_BLACK_COUNT_INDEX];
+                    $totalCount = $data[CSV_TOTAL_INDEX];
+                    $colorCount = $totalCount - $blackCount;
+                    $scanCount = $data[CSV_SCAN_COUNT_INDEX];
+                    $date = (date_create_from_format("d/m/Y H:i", $date))->format("Y-m-d H:i:s");
+
+                    insertIntoPages($serial, $blackCount, $date, $colorCount, $totalCount);
+                    insertScanCounter($serial, $scanCount, $date);
+                }
+            }
+
+        }
+        fclose($handle);
+    }
+}
+
+
+function insertIntoPages($serial, $blackCount, $date, $colorCount, $totalCount)
+{
+    $mysqli = getMySqlConn();
+
+    $query = "insert into pages(serial,ilosc,dateinsert,datawiadomosci,ilosckolor,ilosctotal,rowid_agreement,product_version) values 
+                            (
+                                '{$serial}',{$blackCount},'" . date('Y-m-d H:i:s') . "','{$date}'
+                                ," . ($colorCount == '' ? 'null' : $colorCount) . "
+                                ," . ($totalCount == '' ? 'null' : $totalCount) . ",
+                                (select rowid from agreements where serial='" . $serial . "' and activity=1),
+                                (select product_version FROM printers where serial = '" . $serial . "')
+                                )";
+    $result = mysqli_query($mysqli, $query);
+    if (!$result) {
+        echo $mysqli->error;
+    }
+    return $result;
+}
+
 function readDeviceCounters($notificationEmail = null)
 {
     if ($notificationEmail !== null) {
@@ -374,7 +429,6 @@ function readDeviceCounters($notificationEmail = null)
             }
         }
 
-
         $datawiadomosc = date("Y-m-d H:i:s", $email['header']->udate);
 
         $ip = getIpAddress($email['detailed_header']);
@@ -420,9 +474,15 @@ function readDeviceCounters($notificationEmail = null)
                 if ($a['is_attachment'] == 1) {
                     //     get information on the file
                     $finfo = pathinfo($a['filename']);
+                    $extension = pathinfo($a['filename'], PATHINFO_EXTENSION);
 
+                    if ($extension === 'csv') {
+                        $found_img = TRUE;
+                        processCsv($a['filename'], $a['attachment']);
+                        break;
+                    }
                     // check if the file is a jpg, png, or gif
-                    if (preg_match('/(xml)/i', $finfo['extension'], $n)) {
+                    else if (preg_match('/(xml)/i', $finfo['extension'], $n)) {
 
                         $found_img = TRUE;
                         // process the image (save, resize, crop, etc.)
@@ -1465,7 +1525,7 @@ function saveDataDevice($dataDevice, $dataWiadomosci, $ip)
     }
 
     if (isset($dataDevice['system']['scantotal'])) {
-        insertScanCounter($dataDevice, $dataWiadomosci, $mysqli);
+        insertScanCounter($dataDevice['system']['dd:SerialNumber'], $dataDevice['system']['scantotal'], $dataWiadomosci);
     }
 
     // tonery
@@ -2027,17 +2087,20 @@ function w1250_to_utf8($text)
 }
 
 
-function insertScanCounter($dataDevice, $dataWiadomosci, $mysqli) {
-    $deleteQuery = "DELETE FROM `scans` WHERE datawiadomosci = '{$dataWiadomosci}' AND serial = '{$dataDevice['system']['dd:SerialNumber']}'";
+function insertScanCounter($serial, $scantotal, $dataWiadomosci)
+{
+    $mysqli = getMySqlConn();
+
+    $deleteQuery = "DELETE FROM `scans` WHERE datawiadomosci = '{$dataWiadomosci}' AND serial = '{$serial}'";
 
     mysqli_query($mysqli, $deleteQuery);
 
     $query = "insert into scans(serial,dateinsert,datawiadomosci,ilosctotal,rowid_agreement,product_version) values 
                             (
-                                '{$dataDevice['system']['dd:SerialNumber']}','" . date('Y-m-d H:i:s') . "','{$dataWiadomosci}'                                
-                                ," . ($dataDevice['system']['scantotal'] == '' ? 'null' : $dataDevice['system']['scantotal']) . ",
-                                (select rowid from agreements where serial='" . $dataDevice['system']['dd:SerialNumber'] . "' and activity=1),
-                                (select product_version FROM printers where serial = '" . $dataDevice['system']['dd:SerialNumber'] . "')
+                                '{$serial}','" . date('Y-m-d H:i:s') . "','{$dataWiadomosci}'                                
+                                ," . ($scantotal == '' ? 'null' : $scantotal) . ",
+                                (select rowid from agreements where serial='" . $serial . "' and activity=1),
+                                (select product_version FROM printers where serial = '" . $serial . "')
                                 )";
 
     if (!mysqli_query($mysqli, $query)) {
