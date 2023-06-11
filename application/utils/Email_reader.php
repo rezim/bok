@@ -329,6 +329,7 @@ function processCsv($filename, $attachment)
                     $scanCount = $data[CSV_SCAN_COUNT_INDEX];
                     $date = (date_create_from_format("d/m/Y H:i", $date))->format("Y-m-d H:i:s");
 
+                    deleteFromPages($serial, $date);
                     insertIntoPages($serial, $blackCount, $date, $colorCount, $totalCount);
                     insertScanCounter($serial, $scanCount, $date);
                 }
@@ -339,6 +340,16 @@ function processCsv($filename, $attachment)
     }
 }
 
+function deleteFromPages($serial, $date) {
+    $mysqli = getMySqlConn();
+    $query = "DELETE FROM `pages` WHERE datawiadomosci = '{$date}' AND serial = '{$serial}'";
+
+    $result = mysqli_query($mysqli, $query);
+    if (!$result) {
+        echo $mysqli->error;
+    }
+    return $result;
+}
 
 function insertIntoPages($serial, $blackCount, $date, $colorCount, $totalCount)
 {

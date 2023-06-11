@@ -51,17 +51,20 @@
                 <th scope="row">{$smarty.foreach.loopek.index+1}</th>
                 <td>{$item.serial|escape:'htmlall'}</td>
                 <td>{$item.model|escape:'htmlall'} </td>
-                <td class="text-right">{if $item.iloscstron==0}0{else}{$item.iloscstron|number_format:0:",":" "|replace:',00':''|escape:'htmlall'}{/if}</td>
-                <td class="text-right">{if $item.iloscstron_kolor==''}{else}{$item.iloscstron_kolor|number_format:0:",":" "|replace:',00':''|escape:'htmlall'}{/if}</td>
+                <td class="text-right">
+                    {if !isset($item.cnt_iloscstron) || $item.cnt_iloscstron==0}0{else}{$item.cnt_iloscstron|number_format:0:",":" "|replace:',00':''|escape:'htmlall'}{/if}
+                </td>
+                <td class="text-right">
+                    {if !isset($item.cnt_iloscstron_kolor) || $item.cnt_iloscstron_kolor==''}{else}{$item.cnt_iloscstron_kolor|number_format:0:",":" "|replace:',00':''|escape:'htmlall'}{/if}</td>
                 {if $czycolorbox==''}
                     <td onClick='showNewAgreementAdd("{$item.rowidumowa}")'>{$item.nrumowy|escape:'htmlall'}</td>
                     <td {if !empty($item.nazwaklient)}onClick='showNewClientAdd("{$item.rowidclient}")'{/if}>{$item.nazwaklient|escape:'htmlall'}</td>
                 {/if}
                 <td
-                        {if (!empty($item.datawiadomosci) && ($item.datawiadomosci|date_format:"%Y-%m-%d")<($smarty.now|date_format:"%Y-%m-%d"))}class="bg-danger text-light" {/if}
+                        {if (!empty($item.cnt_datawiadomosci) && ($item.cnt_datawiadomosci|date_format:"%Y-%m-%d")<($smarty.now|date_format:"%Y-%m-%d"))}class="bg-danger text-light" {/if}
                 >
-                    {if (!empty($item.datawiadomosci))}
-                        {assign var="dateTime" value=" "|explode:$item.datawiadomosci}
+                    {if (!empty($item.cnt_datawiadomosci))}
+                        {assign var="dateTime" value=" "|explode:$item.cnt_datawiadomosci}
                         {$dateTime[0]|escape:'htmlall'}<br />
                         <small>{$dateTime[1]|escape:'htmlall'}</small>
                     {/if}

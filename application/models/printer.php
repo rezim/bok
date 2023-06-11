@@ -68,6 +68,19 @@ class printer extends Model
         return $this->query($query, null, false);
 
     }
+    function getCounters() {
+        $query = "select * from counters order by datawiadomosci desc";
+        $counters = $this->query($query, null, false);
+
+        return array_reduce($counters, function ($result, $item) {
+            $key = $item['serial'];
+            if (!isset($result[$key])) {
+                $result[$key] = [];
+            }
+            $result[$key][] = $item;
+            return $result;
+        }, []);
+    }
 
     function getPrinterModels() {
         $query = "SELECT model FROM `printers` p inner join `agreements` a on p.serial = a.serial where a.rowid_type = 1 group by model order by model";
