@@ -444,8 +444,6 @@ function readDeviceCounters($notificationEmail = null)
 
         $ip = getIpAddress($email['detailed_header']);
 
-        // for My Slow Low, check if I found an image attachment
-
         // TR NOTE: check if body contains information indicates minolta service data
         if (
             (($minoltaMessage = isMinoltaServiceMessage($email['body'])) != null)
@@ -605,8 +603,12 @@ function _readKyocera($message, $dataWiadomosci, $ip)
     if (count($dataDevice) == 0) {
         return false;
     }
-    if ($dataDevice['system']['dd:SerialNumber'] != '')
+    if ($dataDevice['system']['dd:SerialNumber'] != '') {
         saveDataDevice($dataDevice, $dataWiadomosci, $ip);
+        if (isset($dataDevice['system']['scantotal'])) {
+            insertScanCounter($dataDevice['system']['dd:SerialNumber'], $dataDevice['system']['scantotal'], $dataWiadomosci);
+        }
+    }
 
     unset($message);
     unset($dataDevice);
@@ -1343,7 +1345,6 @@ function getDataDeviceKyocera($message, $dataWiadomosci, $ip)
         }
     }
 
-
     $dataDevice['system']['dd:SerialNumber'] = $data['Serial Number'];
 
     $dataDevice['system']['dd:MakeAndModel'] = mapKyoceraModelName($data['Model Name']);
@@ -1361,6 +1362,10 @@ function getDataDeviceKyocera($message, $dataWiadomosci, $ip)
         $dataDevice['system']['wydruk'] = $data['Counters by Function']['Printed Pages']['Total'];
         $dataDevice['system']['wydrukkolor'] = 0;
         $dataDevice['system']['wydruktotal'] = $data['Counters by Function']['Printed Pages']['Total'];
+    }
+
+    if (isset($data['Counters by Function']['Scanned Pages'])) {
+        $dataDevice['system']['scantotal'] = $data['Counters by Function']['Scanned Pages']['Total'];
     }
 
     $dataDevice['system']['black_toner'] = str_replace('%', '', $data['black']);
