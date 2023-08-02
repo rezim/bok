@@ -191,7 +191,8 @@ class clientsController extends InvoicesController
                 "email" => $client["mailfaktury"],
                 "street" => $client["ulica"],
                 "post_code" => $client["kodpocztowy"],
-                "city" => $client["miasto"]
+                "city" => $client["miasto"],
+                "payment_to_kind" => $client["terminplatnosci"]
             );
 
             $this->createOrUpdateClientByTaxNo($createOrUpdateClientData);
