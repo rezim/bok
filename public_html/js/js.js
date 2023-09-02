@@ -1979,6 +1979,28 @@ function showClients(czycolorbox) {
     return false;
 }
 
+function showClientPayments() {
+    const objCenter = document.getElementById('divRightCenter');
+
+    $.ajax({
+        url: sciezka + "/clientpayments/showdane/todiv",
+        type: 'POST',
+        data: {
+        },
+        success: function (data) {
+            objCenter.innerHTML = data;
+            $(objCenter).animate({opacity: 1}, 1500);
+        },
+        error: function () {
+            objCenter.innerHTML = 'Problem z pobraniem płatności klientów';
+        }
+    }).done(function () {
+        $("#tableClient").tablesorter();
+        uprawnienia();
+    });
+    return false;
+}
+
 function showMaterials() {
     const doc = document;
     const objCenterId = 'divRightCenter';

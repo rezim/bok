@@ -285,7 +285,7 @@ class SQLQuery
         }
     }
 
-    function query($query, $nameOfId, $czyObject)
+    function query($query, $nameOfId = null, $czyObject = false)
     {
         if ($stmt = $this->_dbHandle->prepare($query)) {
             if ($stmt->execute()) {

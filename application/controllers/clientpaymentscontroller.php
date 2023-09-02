@@ -24,16 +24,16 @@ class clientpaymentsController extends InvoicesController
 
         $csvHeader = array($statementNumber, $headerDate, $headerDate, null, null, '86 1090 2398 0000 0001 5252 1901', 'PLN', null, null, null, null, null, null, count($csvContent), 'N');
 
-        $fileCSV = 'Raport ' . $monthName .'.csv';
+        $fileCSV = 'Raport ' . $monthName . '.csv';
 
         $this->createCSVFile($fileCSV, $csvHeader, $csvContent);
 
         $topic = 'Raport platnosci za miesiac ' . $monthName . '.';
 
-        $message = 'Dzieñ Dobry,' . '<br/><br/>' .
-            'W za³¹czeniu znajduje siê plik z raportem.<br/><br/>' .
+        $message = 'Dzieï¿½ Dobry,' . '<br/><br/>' .
+            'W zaï¿½ï¿½czeniu znajduje siï¿½ plik z raportem.<br/><br/>' .
             'Pozdrawiamy,' . '<br/>' .
-            'Zespó³ Otus.pl';
+            'Zespï¿½ Otus.pl';
 
         $attachments = [["path" => $fileCSV, "filename" => $fileCSV]];
 
@@ -46,7 +46,8 @@ class clientpaymentsController extends InvoicesController
         unlink($fileCSV);
     }
 
-    function createCSVFile(&$fileName, $header, $content) {
+    function createCSVFile(&$fileName, $header, $content)
+    {
         $handle = fopen($fileName, 'w');
 
         fputs($handle, implode(',', $header) . "\n");
@@ -56,4 +57,105 @@ class clientpaymentsController extends InvoicesController
 
         fclose($handle);
     }
+
+    function getpaymentsbyclients()
+    {
+        $dateFrom = '2023-01-01';
+        $clients = $this->clientpayment->getClientTaxNbsFromPayments('8992901258'); // '8361676510';
+
+        foreach ($clients as $client) {
+            $tax_no = $client['nip'];
+            $extClient = $this->getClientByTaxNo($tax_no);
+            if (count($extClient) === 1) {
+                $extClientId = $extClient[0]['id'];
+                $invoices = $this->getAllInvoices("client_id={$extClientId}&date_from={$dateFrom}");
+                $invoiceKeys = array_map(function ($invoice) {
+                    return $invoice['id'];
+                }, $invoices);
+                $invoices = array_combine($invoiceKeys, $invoices);
+
+                $payments = $this->getClientPayments($extClientId, $dateFrom);
+
+                $paymentAndInvoice = array();
+
+                foreach ($payments as $payment) {
+                    $paymentId = $payment['id'];
+                    $invoiceId = $payment['invoice_id'];
+                    $invoice = $invoices[$invoiceId];
+                    $account = $invoice['buyer_mass_payment_code'];
+
+                    $results = array();
+
+                    if (strpos($account, 'SANTANDER') === 0) {
+
+                        $paidDate = $invoice['paid_date'];
+                        $amount = intval(floatval($invoice['paid']) * 100);
+                        $account = str_replace(array("SANTANDER", " "), "", $account);
+
+                        $updateResult = $this->clientpayment->updatePaymentsWithExternalInvoiceAndPayments($paidDate, $amount, $account, $invoiceId, $paymentId);
+
+                        array_push($paymentAndInvoice, $updateResult);
+                    }
+
+                }
+
+                echo json_encode(array("updates" => $paymentAndInvoice, "payments" => $payments, "invoices" => $invoices));
+            }
+        }
+
+
+//        echo(json_encode($clients));
+    }
+
+    function addClientsPayments()
+    {
+        $payments = $this->clientpayment->getPaymentsByDateRange('2023-09-01', '2023-09-01');
+
+        $allNewProcessedPayments = array();
+
+        $allNewProcessedPaymentsResults = array();
+
+        foreach ($payments as $payment) {
+
+            $tax_no = $payment['nip'];
+
+            $extClient = $this->getClientByTaxNo($tax_no);
+            $extClientId = $extClient[0]['id'];
+            $notPaidInvoices = $this->getInvoicesByClientId($extClientId, false);
+
+            $invoiceKeys = array_map(function ($invoice) {
+                return $invoice['id'];
+            }, $notPaidInvoices);
+            $notPaidInvoices = array_combine($invoiceKeys, $notPaidInvoices);
+
+            if (count($notPaidInvoices) > 0) {
+                $price = $payment['amount'] / 100;
+
+                $equalPriceInvoices = array_filter($notPaidInvoices, fn($inv) => floatval($inv['price_gross']) == $price && floatval($inv['paid'] == 0));
+                $invoice = count($equalPriceInvoices) > 0 ? array_values($equalPriceInvoices)[0] : array_values($notPaidInvoices)[0];
+
+                $externalPayments = $this->addPayment($price, $invoice['id'], $extClientId, $tax_no, "PÅ‚atnoÅ›Ä‡ za FV numer {$invoice['number']} - (automatyczna)", $payment['date'], $price);
+//            $allNewPayments = array_merge($allNewPayments, $externalPayments);
+
+                $processedPayments = array_map(function ($externalPayment) use (&$payment, &$notPaidInvoices) {
+                    $invoiceId = $externalPayment['invoice_id'];
+                    return array(
+                        "rowid_payments" => $payment['rowid'],
+                        "ext_invoice_id" => $invoiceId,
+                        "ext_invoice_nb" => $notPaidInvoices[$invoiceId]['number'],
+                        "ext_payment_id" => $externalPayment['id'],
+                        "ext_payment_name" => $externalPayment['name'],
+                        "ext_payment_desc" => $externalPayment['description']
+                    );
+                }, $externalPayments);
+
+                array_merge($allNewProcessedPaymentsResults, $this->clientpayment->addProcessedPayments($processedPayments));
+
+                $allNewProcessedPayments = array_merge($allNewProcessedPayments, $processedPayments);
+            }
+        }
+
+        echo(json_encode(array("payments" => $allNewProcessedPayments, "insertResults" => $allNewProcessedPaymentsResults)));
+    }
+
 }

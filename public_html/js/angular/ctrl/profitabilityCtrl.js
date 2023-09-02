@@ -110,7 +110,7 @@ ProfitabilityCtrl = function($scope, rest, $q, $filter, $interpolate, appConf) {
         if (date_from && date_to) {
             $scope.isPending = true;
             this.invalidate();
-            rest.post('getinvoices', {
+            rest.post('getclientinvoices', {
                 period: 'more',
                 date_from: date_from,
                 date_to: date_to

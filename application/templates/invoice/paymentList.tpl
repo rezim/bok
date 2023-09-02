@@ -21,7 +21,7 @@
                 <div class="row" ng-repeat="payment in $ctrl.getPayments($ctrl.data.clientId, $ctrl.data.dateFrom) | orderBy: '-paid_date' track by $index ">
                     <div class="col-sm-2" role="button">[[$ctrl.parseDate(payment.paid_date) | date : 'y-MM-dd']]</div>
                     <div class="col-sm-3" role="button">[[payment.name]]</div>
-                    <div class="col-sm-2" role="button">[[payment.price | currency: '']]</div>
+                    <div class="col-sm-2" role="button">[[payment.invoice.price_gross | currency: '']]</div>
                     <div class="col-sm-2" role="button">
                         <a href="[[payment.invoice.view_url]]" target="_blank" ng-click="$event.stopPropagation();">
                             [[payment.invoice.number]]

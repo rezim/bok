@@ -42,7 +42,6 @@ class clientinvoicesController extends InvoicesController
         }
 
         try {
-            // send all not paid invoices //$this->getOverdueInvoicesByClientId($_POST['client_id']);
             $clientOverdueInvoices = array_reverse($this->getInvoicesByClientId($_POST['client_id'], false));
 
             $clientInterestNotes = $this->resolveNotPaidInterestNotes($_POST['client_nip']);
@@ -55,38 +54,6 @@ class clientinvoicesController extends InvoicesController
         } catch(Exception $e) {
             header($_SERVER['SERVER_PROTOCOL'] . ' 500 Internal Server Error', true, 500);
             echo $e->getMessage();
-        }
-    }
-
-    function getnotpaidinvoices()
-    {
-        if ($_POST['period'] && $_POST['date_from'] && $_POST['date_to']) {
-
-            $trackedDeptors = $this->clientinvoice->getTrackedDeptors();
-
-            $invoices = $this->getNotPaidInvoicesByDateRange($_POST['period'], $_POST['date_from'], $_POST['date_to']);
-
-            foreach ($invoices as $key => $element) {
-                // remove invoices for not tracked clients
-                if (array_search($element["buyer_tax_no"], array_column($trackedDeptors, 'nip')) === false) {
-                    unset($invoices[$key]);
-                }
-            }
-
-            echo json_encode($invoices);
-        } else {
-            echo "błędne parametry wejściowe";
-        }
-    }
-
-    function getclientinvoices()
-    {
-        if ($_POST['client_id'] && $_POST['is_paid']) {
-            echo json_encode(
-                $this->getInvoicesByClientId($_POST['client_id'], ($_POST['is_paid'] === 'true') ? true : false)
-            );
-        } else {
-            echo "błędne parametry wejściowe";
         }
     }
 
@@ -247,7 +214,7 @@ class clientinvoicesController extends InvoicesController
     function splitclientpayments()
     {
         if (isset($_POST['client_id'])) {
-            echo $this->splitPayments($_POST['client_id']);
+            echo json_encode($this->splitPayments($_POST['client_id']));
         } else {
             echo "clientId is required";
         }

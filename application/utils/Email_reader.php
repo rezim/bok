@@ -1362,6 +1362,7 @@ function getDataDeviceKyocera($message, $dataWiadomosci, $ip)
         $dataDevice['system']['wydruk'] = $data['Counters by Function']['Printed Pages']['Total'];
         $dataDevice['system']['wydrukkolor'] = 0;
         $dataDevice['system']['wydruktotal'] = $data['Counters by Function']['Printed Pages']['Total'];
+        $dataDevice['system']['scans'] = $data['Counters by Function']['Scanned Pages']['Total'];
     }
 
     if (isset($data['Counters by Function']['Scanned Pages'])) {
