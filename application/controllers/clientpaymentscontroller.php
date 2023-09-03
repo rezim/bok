@@ -109,13 +109,15 @@ class clientpaymentsController extends InvoicesController
 
     function addClientsPayments()
     {
-        $payments = $this->clientpayment->getPaymentsByDateRange('2023-09-01', '2023-09-01');
+        // this is because for older payments we do not have records in `payments_processed` table,
+        // therefore we do not know if they were processed or not
+        $PROCESSED_PAYMENTS_START_DATE = '2023-09-01';
+
+        $notProcessedPayments = $this->clientpayment->getNotProcessedPaymentsFromDate($PROCESSED_PAYMENTS_START_DATE);
 
         $allNewProcessedPayments = array();
 
-        $allNewProcessedPaymentsResults = array();
-
-        foreach ($payments as $payment) {
+        foreach ($notProcessedPayments as $payment) {
 
             $tax_no = $payment['nip'];
 
@@ -135,7 +137,6 @@ class clientpaymentsController extends InvoicesController
                 $invoice = count($equalPriceInvoices) > 0 ? array_values($equalPriceInvoices)[0] : array_values($notPaidInvoices)[0];
 
                 $externalPayments = $this->addPayment($price, $invoice['id'], $extClientId, $tax_no, "Płatność za FV numer {$invoice['number']} - (automatyczna)", $payment['date'], $price);
-//            $allNewPayments = array_merge($allNewPayments, $externalPayments);
 
                 $processedPayments = array_map(function ($externalPayment) use (&$payment, &$notPaidInvoices) {
                     $invoiceId = $externalPayment['invoice_id'];
@@ -149,13 +150,15 @@ class clientpaymentsController extends InvoicesController
                     );
                 }, $externalPayments);
 
-                array_merge($allNewProcessedPaymentsResults, $this->clientpayment->addProcessedPayments($processedPayments));
+                $this->clientpayment->addProcessedPayments($processedPayments);
 
-                $allNewProcessedPayments = array_merge($allNewProcessedPayments, $processedPayments);
+                array_push($allNewProcessedPayments, $payment);
             }
         }
+        // check once again after processing operation is done, to get list of all not processed
+        $notProcessedPayments = $this->clientpayment->getNotProcessedPaymentsFromDate($PROCESSED_PAYMENTS_START_DATE);
 
-        echo(json_encode(array("payments" => $allNewProcessedPayments, "insertResults" => $allNewProcessedPaymentsResults)));
+        return array("succeedProcessedPayments" => $allNewProcessedPayments, "notProcessedPayments" => $notProcessedPayments);
     }
 
 }

@@ -190,7 +190,7 @@ class Email_reader
 }
 
 
-function processClientPayments()
+function importClientPaymentsFromEmailBox()
 {
     $emailReader = new Email_reader(SERWER, GEN_LOGIN, GEN_PASS);
 

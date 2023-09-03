@@ -23,7 +23,10 @@ class Controller
         $this->notemplate = 0;
         $czytoDivFrame = 0;
         if ($queryString != null && $queryString != '') {
-            $smarty->assign('queryString', $queryString);
+            // we call it also as an external method, without smarty
+            if (isset($smarty)) {
+                $smarty->assign('queryString', $queryString);
+            }
             switch ($queryString[sizeof($queryString) - 1]) {
                 case 'todiv':
                     $czyToDiv = 1;

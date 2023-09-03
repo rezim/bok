@@ -69,6 +69,17 @@ class clientpayment extends Model
         return $this->query($query, null, false);
     }
 
+    function getNotProcessedPaymentsFromDate($startDate)
+    {
+        $query = "SELECT p.*, substring(p.recipient_acount, -10) as nip, count(pp.rowid_payments) as ext_payments_count
+                  FROM `payments` p left outer join payments_processed pp on p.rowid = pp.rowid_payments
+                  WHERE date >= '${startDate}'
+                  GROUP BY pp.rowid_payments
+                  HAVING count(pp.rowid_payments) = 0";
+
+        return $this->query($query, null, false);
+    }
+
     function addProcessedPayments($processedPayments)
     {
         $results = array();
@@ -82,7 +93,6 @@ class clientpayment extends Model
                 $this->update("DELETE FROM `payments_processed` WHERE rowid_payments = ? and ext_payment_id = ?", 'ii', array($processedPayment['rowid_payments'], $processedPayment['ext_payment_id']));
 
             }
-
 
             $fieldNamesWihTypes = array(
                 "rowid_payments" => "integer",
