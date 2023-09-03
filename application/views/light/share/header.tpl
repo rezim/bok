@@ -314,9 +314,9 @@
                         {if isset($smarty.session.przypisanemenu['li_clientinvoicesshow'])}
                             <a href='{$smarty.const.SCIEZKA}/clientinvoices/show' class="dropdown-item">Płatności</a>
                         {/if}
-                        {if isset($smarty.session.przypisanemenu['li_clientinvoicesshow'])}
-                            <a href='{$smarty.const.SCIEZKA}/clientpayments/show' class="dropdown-item">Płatności Klientów</a>
-                        {/if}
+{*                        {if isset($smarty.session.przypisanemenu['li_clientinvoicesshow'])}*}
+{*                            <a href='{$smarty.const.SCIEZKA}/clientpayments/show' class="dropdown-item">Płatności Klientów</a>*}
+{*                        {/if}*}
                         {if isset($smarty.session.przypisanemenu['li_clientinvoicesdeptors'])}
                             <a href='{$smarty.const.SCIEZKA}/clientinvoices/deptors' class="dropdown-item">Dłużnicy</a>
                         {/if}

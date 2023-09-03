@@ -16,7 +16,7 @@ include 'application/models/clientpayment.php';
 include 'application/controllers/clientpaymentscontroller.php';
 include 'application/utils/ProcessClientPayments.php';
 
-//importClientPaymentsFromEmailBox();
+importClientPaymentsFromEmailBox();
 processClientPayments('tregimowicz@gmail.com');
 
 

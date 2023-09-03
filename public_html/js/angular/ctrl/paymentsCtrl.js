@@ -19,9 +19,9 @@ PaymentsCtrl = function ($scope, rest, $q, $filter, $uibModal, $interpolate, app
     };
 
     this.filters = {
-        show_paid_invoices: false,
+        show_paid_invoices: true,
         show_overpaid_invoices: true,
-        show_non_deptors: false,
+        show_non_deptors: true,
         invoiceNb: '',
         days_late: ''
     };
