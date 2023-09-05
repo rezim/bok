@@ -71,11 +71,9 @@ class clientpayment extends Model
 
     function getNotProcessedPaymentsFromDate($startDate)
     {
-        $query = "SELECT p.*, substring(p.recipient_acount, -10) as nip, count(pp.rowid_payments) as ext_payments_count
-                  FROM `payments` p left outer join payments_processed pp on p.rowid = pp.rowid_payments
-                  WHERE date >= '${startDate}'
-                  GROUP BY pp.rowid_payments
-                  HAVING count(pp.rowid_payments) = 0";
+        $query = "SELECT p.*, substring(p.recipient_acount, -10) as nip, pp.rowid_payments 
+                  FROM `payments` p left outer join payments_processed pp on p.rowid = pp.rowid_payments 
+                  WHERE date >= '${startDate}' and pp.rowid_payments is NULL;";
 
         return $this->query($query, null, false);
     }
