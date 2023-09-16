@@ -629,8 +629,8 @@ PaymentsCtrl = function ($scope, rest, $q, $filter, $uibModal, $interpolate, app
             }).then(async function (payment) {
 
                 const callback = () => {
-                    const clientTaxNo = payment.invoice_tax_no;
-                    const invoiceId = payment.invoice_id;
+                    const clientTaxNo = payment[0].invoice_tax_no;
+                    const invoiceId = payment[0].invoice_id;
                     const client = self.getClientInvoices().find(client => client.nip === clientTaxNo);
 
                     if (!client) {
