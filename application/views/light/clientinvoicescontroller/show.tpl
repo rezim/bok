@@ -1,5 +1,5 @@
 <div class="container-fluid" ng-app="app" ng-controller="PaymentsCtrl as ctrl" ng-cloak
-     ng-init="ctrl.loadData(date_from, date_to, true)">
+     ng-init="ctrl.loadData(date_from, date_to, false)">
 
     <div class="row">
         <div class="otus-sidebar col-12 col-xl-auto">

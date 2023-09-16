@@ -22,7 +22,7 @@ trait InterestNotesTrait
                 array(array("path" => $renamedFilePath, "filename" => "{$interestNoteNamePrefix}{$fileName}"))
             );
 
-            $customerMessage = "Nota odsetkowa {$fileName} zosta�a op�acona {$date} i wys�ana do biura rachunkowego.";
+            $customerMessage = "Nota odsetkowa {$fileName} została opłacona {$date} i wysłana do biura rachunkowego.";
             $customerMessageParams = array("client_nip" => $buyerTaxNo, "message_date" => date("Y-m-d"), "message" => $customerMessage);
             $this->clientinvoice->addPaymentMessage($customerMessageParams, 'payments_messages');
         }
@@ -39,7 +39,7 @@ trait InterestNotesTrait
         if (file_exists($filePath)) {
             unlink($filePath);
 
-            $customerMessage = "Nota odsetkowa {$fileName} zosta�a usuni�ta {$date}!.";
+            $customerMessage = "Nota odsetkowa {$fileName} została usunięta {$date}!.";
             $customerMessageParams = array("client_nip" => $buyerTaxNo, "message_date" => date("Y-m-d"), "message" => $customerMessage);
             $this->clientinvoice->addPaymentMessage($customerMessageParams, 'payments_messages');
         }
@@ -105,10 +105,10 @@ trait InterestNotesTrait
          * ...
          * 47: "Razem"
          * 48: "1,61PLN"
-         * 49: "S�ownie"
+         * 49: "Słownie"
          * ...
          */
-        $amountPosition = array_search("S�ownie", $textArr);
+        $amountPosition = array_search("Słownie", $textArr);
 
         $result['text'] = $textArr;
 
@@ -182,8 +182,8 @@ trait InterestNotesTrait
             "attachments" => array(array("path" => $filePath, "filename" => $fileName))
         );
 
-        // $customerMessage = "Wys�ano not� odsetkow� {$fileName} na adres email: {$mail['mailTo']}.";
-        $customerMessage = "Wystawiono not� odsetkow� {$fileName}.";
+        // $customerMessage = "Wysłano notę odsetkową {$fileName} na adres email: {$mail['mailTo']}.";
+        $customerMessage = "Wystawiono notę odsetkową {$fileName}.";
         $customerMessageParams = array("client_nip" => $buyerTaxNo, "message_date" => date("Y-m-d"), "message" => $customerMessage);
         if (file_exists($filePath)) {
             if (INTEREST_NOTE_SEND_EMAIL_TO_CLIENT) {
