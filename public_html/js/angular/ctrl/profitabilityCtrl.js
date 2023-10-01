@@ -327,26 +327,33 @@ ProfitabilityCtrl = function($scope, rest, $q, $filter, $interpolate, appConf) {
 
     var getInvoicesByIds = function (ids, clientId, callback) {
         // TODO: move it to configuration
-        var url = appConf.ENDPOINT + '/invoices/{id}.json?api_token=' + appConf.API_TOKEN;
-        var requests = [];
+        const url = appConf.ENDPOINT + '/invoices/{id}.json?api_token=' + appConf.API_TOKEN;
+        // var requests = [];
+        let result = {};
         angular.forEach(ids, function (invId) {
-            requests.push(rest.get(url.replace('{id}',invId)));
-        });
-
-
-        $q.all(requests).then(function(responses) {
-            var result = {};
-            angular.forEach(responses, function(response) {
+            rest.get(url.replace('{id}',invId)).then(function(response) {
                 result = mergeParsedInvoices(result, parseInvoice(response));
             });
-            invoiceDetails[clientId] = result;
-
-            if (callback) {
-                callback(invoiceDetails[clientId]);
-            }
         });
-    };
+        invoiceDetails[clientId] = result;
 
+        if (callback) {
+            callback(invoiceDetails[clientId]);
+        }
+
+
+        // $q.all(requests).then(function(responses) {
+        //     var result = {};
+        //     angular.forEach(responses, function(response) {
+        //         result = mergeParsedInvoices(result, parseInvoice(response));
+        //     });
+        //     invoiceDetails[clientId] = result;
+        //
+        //     if (callback) {
+        //         callback(invoiceDetails[clientId]);
+        //     }
+        // });
+    };
 
     var mergeParsedInvoices = function(inv1, inv2) {
         var result = inv1;
