@@ -1,5 +1,5 @@
 app.constant('appConf', {
-    ENDPOINT: 'http://otus.fakturownia.pl',
+    ENDPOINT: 'https://otus.fakturownia.pl',
     API_TOKEN: 'kVWaYhlLHXhWQNKDTSk/OTUS',
     EMAIL: {
         SERWIS: {
