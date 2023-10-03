@@ -174,21 +174,21 @@ class report extends Model
             ";
 
         $monthlyReport = $this->query($query,null,false);
-
-        $scans = $this->getScansMonthly();
-
-        $scanKeys = array_map(function ($scan) {
-            return $scan['skany_serial'];
-        }, $scans);
-        $scans = array_combine($scanKeys, $scans);
-
-        return array_map(function($report) use (&$scans) {
-            $serial = $report['currentserial'];
-            if (isset($scans[$serial])) {
-                return array_merge($report, $scans[$serial]);
-            }
-            return $report;
-        }, $monthlyReport);
+        return $monthlyReport;
+//        $scans = $this->getScansMonthly();
+//
+//        $scanKeys = array_map(function ($scan) {
+//            return $scan['skany_serial'];
+//        }, $scans);
+//        $scans = array_combine($scanKeys, $scans);
+//
+//        return array_map(function($report) use (&$scans) {
+//            $serial = $report['currentserial'];
+//            if (isset($scans[$serial])) {
+//                return array_merge($report, $scans[$serial]);
+//            }
+//            return $report;
+//        }, $monthlyReport);
     }
     function getReportsRoczne()
     { 
