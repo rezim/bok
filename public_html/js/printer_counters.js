@@ -73,12 +73,16 @@ const renderAgreementRows = (agreement, withCheckbox) => {
 
         const sumOfPageStats = serials.map((_, i) => pageStats[pageTypeIdx].pagesEnd[i] - pageStats[pageTypeIdx].pagesStart[i]).reduce((a, b) => a + b);
 
+        let fixDetails = '';
+        if (agreement.fix) {
+            const fixPagesCount = pageType === 'Czarne' ? agreement.fix.black : agreement.fix.color;
+            const fixMessageDate = agreement.fix.fixedDateTo;
 
-        const fixDetails = renderTableCells([`popraw na, data do:`], 1, ['text-right']) +
-            renderTableCells([agreement.fix.fixedDateTo], 1, ['text-danger']) +
-            renderTableCells(['wartość:']) +
-            renderTableCells([`${pageType === 'Czarne' ?  agreement.fix.black : agreement.fix.color}`], 1, ['text-left', 'font-weight-bold', 'text-danger']);
-
+            fixDetails = renderTableCells([`popraw na, data do:`], 1, ['text-right']) +
+                renderTableCells([fixMessageDate], 1, ['text-danger']) +
+                renderTableCells(['wartość:']) +
+                renderTableCells([fixPagesCount], 1, ['text-left', 'font-weight-bold', 'text-danger']);
+        }
         const statsSum = renderTableCells(['razem:'], 4, ['text-right', 'font-weight-bold']) +
             renderTableCells([sumOfPageStats], 2, ['text-left', 'font-weight-bold']);
 
