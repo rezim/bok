@@ -392,8 +392,10 @@ class reportsController extends InvoicesController
                     $agreement['blad'] = 1;
                 }
                 if ($hasError === 2) {
-                    if ($item['strony_black_koniec'][0] > $item['strony_black_start'][0] ||
-                        $item['strony_kolor_koniec'][0] > $item['strony_kolor_start'][0]) {
+                    if (
+                        ($item['strony_black_koniec'][0] >= $item['strony_black_start'][0] ||
+                            $item['strony_kolor_koniec'][0] >= $item['strony_kolor_start'][0]) &&
+                        ($item['data_wiadomosci_black_koniec'][0] !== $item['data_wiadomosci_black_start'][0] || $item['next_month_datawiadomosci'] !== "0000-00-00")) {
 
                         $blackEnd = $item['strony_black_koniec'][0];
                         $colorEnd = $item['strony_kolor_koniec'][0];
