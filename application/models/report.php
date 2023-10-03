@@ -61,6 +61,10 @@ class report extends Model
 
         $dateToPreviousMonth = date('Y-m-d', strtotime($dateTo . ' -1 month'));
 
+        $dateFromNextMonth = date('Y-m-d', strtotime($dateFrom . ' +1 month'));
+
+        $dateToNextMonth = date('Y-m-d', strtotime($dateTo . ' +1 month'));
+
         $query = "
                 select 
                 IFNULL(b.serial, bb.serial) as serial,
@@ -113,7 +117,10 @@ class report extends Model
 			    COALESCE(pp2.ilosckolor, pp3.ilosckolor, 0) as strony_kolor_start, 
 			    COALESCE(pp2.datawiadomosci, pp3.datawiadomosci, '0000-00-00') as data_wiadomosci_kolor_start, 
 			    IFNULL(pp1.ilosckolor,0) as strony_kolor_koniec, 
-			    IFNULL(pp1.datawiadomosci, '0000-00-00') as data_wiadomosci_kolor_koniec 
+			    IFNULL(pp1.datawiadomosci, '0000-00-00') as data_wiadomosci_kolor_koniec,			    
+                COALESCE(pp4.ilosc, 0) as next_month_black, 
+                COALESCE(pp4.ilosckolor, 0) as next_month_kolor, 
+                COALESCE(pp4.datawiadomosci, '0000-00-00') as next_month_datawiadomosci 
 
                 from (agreements a left outer join clients c on a.rowidclient=c.rowid and c.activity=1)  
                 
@@ -145,8 +152,18 @@ class report extends Model
                 group by serial, rowid_agreement, product_version) as p6 on p5.serial = p6.serial and p5.datawiadomosci = p6.datawiadomosci_start
                 group by p5.serial, p5.datawiadomosci, p5.ilosc, p5.ilosckolor, p5.rowid_agreement, p5.product_version) as pp3
                 
-                on pp1.serial = pp3.serial and pp1.rowid_agreement = pp3.rowid_agreement and pp1.product_version = pp3.product_version              
-                
+                on pp1.serial = pp3.serial and pp1.rowid_agreement = pp3.rowid_agreement and pp1.product_version = pp3.product_version
+                    
+                left outer join
+                    
+                (select p7.serial, p7.datawiadomosci, p7.ilosc, p7.ilosckolor, p7.rowid_agreement, p7.product_version from pages as p7 
+                inner join 
+                (select serial, min(datawiadomosci) as datawiadomosci_start from pages where datawiadomosci > '{$dateFromNextMonth}' and datawiadomosci < '{$dateToNextMonth}'
+                group by serial, rowid_agreement, product_version) as p8 on p7.serial = p8.serial and p7.datawiadomosci = p8.datawiadomosci_start
+                group by p7.serial, p7.datawiadomosci, p7.ilosc, p7.ilosckolor, p7.rowid_agreement, p7.product_version) as pp4    
+                                              
+                on pp1.serial = pp4.serial and pp1.rowid_agreement = pp4.rowid_agreement and pp1.product_version = pp4.product_version
+                    
                 left outer join printers b on b.serial = pp1.serial
                 left outer join printers bb on bb.serial = a.serial
                 
@@ -156,8 +173,22 @@ class report extends Model
                 order by c.nazwakrotka
             ";
 
-        return $this->query($query,null,false);
-        
+        $monthlyReport = $this->query($query,null,false);
+
+        $scans = $this->getScansMonthly();
+
+        $scanKeys = array_map(function ($scan) {
+            return $scan['skany_serial'];
+        }, $scans);
+        $scans = array_combine($scanKeys, $scans);
+
+        return array_map(function($report) use (&$scans) {
+            $serial = $report['currentserial'];
+            if (isset($scans[$serial])) {
+                return array_merge($report, $scans[$serial]);
+            }
+            return $report;
+        }, $monthlyReport);
     }
     function getReportsRoczne()
     { 

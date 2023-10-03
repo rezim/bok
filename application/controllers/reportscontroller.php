@@ -3,7 +3,8 @@
 class reportsController extends InvoicesController
 {
     private $REPORT_FIELD_NAMES = array('strony_black_koniec', 'strony_black_start', 'strony_kolor_koniec', 'strony_kolor_start',
-        'data_wiadomosci_black_koniec', 'data_wiadomosci_black_start', 'data_wiadomosci_kolor_koniec', 'data_wiadomosci_kolor_start', 'serials');
+        'data_wiadomosci_black_koniec', 'data_wiadomosci_black_start', 'data_wiadomosci_kolor_koniec', 'data_wiadomosci_kolor_start',
+        'serials');
 
     private $CLIENT_FIELD_NAMES = array('rowidclient', 'nazwapelna', 'nazwakrotka', 'terminplatnosci', 'nip',
         'mailfaktury', 'ulica', 'miasto', 'kodpocztowy', 'pokaznumerseryjny',
@@ -12,7 +13,7 @@ class reportsController extends InvoicesController
     private $AGREEMENT_FIELDS = array('rowidumowa', 'nrumowy', 'serial', 'model', 'rozliczenie', 'strony_black_start', 'data_wiadomosci_black_start', 'strony_black_koniec',
         'data_wiadomosci_black_koniec', 'strony_kolor_start', 'data_wiadomosci_kolor_start', 'strony_kolor_koniec', 'data_wiadomosci_kolor_koniec', 'strony_black_sum',
         'strony_kolor_sum', 'serials', 'nazwakrotka', 'lokalizacja_ulica', 'lokalizacja_miasto', 'lokalizacja_kodpocztowy', 'lokalizacja_telefon', 'lokalizacja_mail', 'lokalizacja_nazwa',
-        'typ_umowy', 'odbiorca_id');
+        'typ_umowy', 'odbiorca_id', 'next_month_black', 'next_month_kolor', 'next_month_datawiadomosci');
 
     function show()
     {
@@ -394,10 +395,25 @@ class reportsController extends InvoicesController
                     if ($item['strony_black_koniec'][0] > $item['strony_black_start'][0] ||
                         $item['strony_kolor_koniec'][0] > $item['strony_kolor_start'][0]) {
 
+                        $blackEnd = $item['strony_black_koniec'][0];
+                        $colorEnd = $item['strony_kolor_koniec'][0];
+                        $fixedDate = $item['data_wiadomosci_black_koniec'][0];
+
+
+                        if ($item['next_month_datawiadomosci'] !== "0000-00-00") {
+                            if ($item['next_month_black'] >= $blackEnd && $item['next_month_kolor'] >= $colorEnd) {
+
+                                $blackEnd = $item['next_month_black'];
+                                $colorEnd = $item['next_month_kolor'];
+                                $fixedDate = $item['next_month_datawiadomosci'];
+                            }
+                        }
+
                         $agreement['fix'] = array(
                             "dateTo" => $this->report->getDateTo(),
-                            "black" => $item['strony_black_koniec'][0],
-                            "color" => $item['strony_kolor_koniec'][0],
+                            "fixedDateTo" => $fixedDate,
+                            "black" => $blackEnd,
+                            "color" => $colorEnd,
                             "serial" => $item['currentserial']);
                     }
                 }

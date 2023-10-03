@@ -10,9 +10,6 @@ const renderTableBody = (value) => `<tbody>${value}</tbody>`;
 const renderTable = (value, classNames) => `<table class="${resolveClassNames(classNames)}">${value}</table>`;
 
 const renderAgreementRows = (agreement, withCheckbox) => {
-
-
-    console.log(agreement);
     // filter unique values
     const serials = agreement['serials'].filter((item, pos, self) => self.indexOf(item) === pos);
     const pageStats = [
@@ -37,7 +34,7 @@ const renderAgreementRows = (agreement, withCheckbox) => {
     } else {
 
         const dateToMillis = (new Date(agreement.fix.dateTo)).getTime();
-        const agreementBlackPagesLastMessageInMillis = (new Date(agreement['data_wiadomosci_black_koniec'])).getTime();
+        const agreementBlackPagesLastMessageInMillis = (new Date(agreement.fix.fixedDateTo)).getTime();
 
         const diff = dateToMillis - agreementBlackPagesLastMessageInMillis;
         const oneDayInMillis = 1000 * 60 * 60 * 24;
@@ -76,10 +73,16 @@ const renderAgreementRows = (agreement, withCheckbox) => {
 
         const sumOfPageStats = serials.map((_, i) => pageStats[pageTypeIdx].pagesEnd[i] - pageStats[pageTypeIdx].pagesStart[i]).reduce((a, b) => a + b);
 
+
+        const fixDetails = renderTableCells([`popraw na, data do:`], 1, ['text-right']) +
+            renderTableCells([agreement.fix.fixedDateTo], 1, ['text-danger']) +
+            renderTableCells(['wartość:']) +
+            renderTableCells([`${pageType === 'Czarne' ?  agreement.fix.black : agreement.fix.color}`], 1, ['text-left', 'font-weight-bold', 'text-danger']);
+
         const statsSum = renderTableCells(['razem:'], 4, ['text-right', 'font-weight-bold']) +
             renderTableCells([sumOfPageStats], 2, ['text-left', 'font-weight-bold']);
 
-        return renderTableRows([...headerCells, ...arrStatsCells, statsSum]);
+        return renderTableRows([...headerCells, ...arrStatsCells, statsSum, fixDetails]);
     });
 
     return [agreementRow, ...arrPageTables].join('');
