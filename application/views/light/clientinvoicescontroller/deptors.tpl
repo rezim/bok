@@ -1,4 +1,5 @@
-<div class="container-fluid" ng-app="app" ng-controller="PaymentsCtrl as ctrl" ng-cloak ng-init="ctrl.loadData(date_from, date_to, true)">
+<div class="container-fluid" ng-app="app" ng-controller="PaymentsCtrl as ctrl" ng-cloak
+     ng-init="ctrl.loadData(date_from, date_to, true)">
 
     <div class="row">
         <div class="otus-sidebar col-12 col-md-12 col-xl-auto">
@@ -8,18 +9,28 @@
                 </div>
                 <div class="form-group">
                     <div class="btn-toolbar" role="toolbar" aria-label="Toolbar with button groups">
-                        <div class="btn-group mr-2" role="group" aria-label="First group" aria-describedby="dateRangeHelp">
+                        <div class="btn-group mr-2" role="group" aria-label="First group"
+                             aria-describedby="dateRangeHelp">
                             <button type="button" class="btn btn-outline-secondary form-control"
-                                    ng-click="date_from=ctrl.getLastMonths(24); date_to=ctrl.getToday();ctrl.loadData(date_from, date_to, true)">24</button>
+                                    ng-click="date_from=ctrl.getLastMonths(24); date_to=ctrl.getToday();ctrl.loadData(date_from, date_to, true)">
+                                24
+                            </button>
                             <button type="button" class="btn btn-outline-secondary form-control"
-                                    ng-click="date_from=ctrl.getLastMonths(12); date_to=ctrl.getToday();ctrl.loadData(date_from, date_to, true)">12</button>
+                                    ng-click="date_from=ctrl.getLastMonths(12); date_to=ctrl.getToday();ctrl.loadData(date_from, date_to, true)">
+                                12
+                            </button>
                             <button type="button" class="btn btn-outline-secondary form-control"
-                                    ng-click="date_from=ctrl.getLastMonths(6); date_to=ctrl.getToday();ctrl.loadData(date_from, date_to, true)">&nbsp;6</button>
+                                    ng-click="date_from=ctrl.getLastMonths(6); date_to=ctrl.getToday();ctrl.loadData(date_from, date_to, true)">
+                                &nbsp;6
+                            </button>
                             <button type="button" class="btn btn-outline-secondary form-control"
-                                    ng-click="date_from=ctrl.getLastMonths(3); date_to=ctrl.getToday();ctrl.loadData(date_from, date_to, true)">&nbsp;3</button>
+                                    ng-click="date_from=ctrl.getLastMonths(3); date_to=ctrl.getToday();ctrl.loadData(date_from, date_to, true)">
+                                &nbsp;3
+                            </button>
                         </div>
                     </div>
-                    <small id="dateRangeHelp" class="form-text text-muted"><i class="fas fa-info-circle"></i> Podaj okres w miesiącach.</small>
+                    <small id="dateRangeHelp" class="form-text text-muted"><i class="fas fa-info-circle"></i> Podaj
+                        okres w miesiącach.</small>
                 </div>
 
                 <div class="form-group">
@@ -45,7 +56,7 @@
                 <div class="border-top my-4 otus-separator"></div>
 
                 <div class="w-100"></div>
-                
+
                 <div class="form-group">
                     <label for="txtklient">klient</label>
                 </div>
@@ -63,7 +74,8 @@
                 <div class="form-group">
                     <input type="text" id="txtclientnip" class="form-control"
                            aria-describedby="clienNiptHelp" ng-model="search.nip">
-                    <small id="clienNiptHelp" class="form-text text-muted"><i class="fas fa-info-circle"></i> Podaj NIP klienta</small>
+                    <small id="clienNiptHelp" class="form-text text-muted"><i class="fas fa-info-circle"></i> Podaj NIP
+                        klienta</small>
                 </div>
 
                 <div class="form-group">
@@ -72,7 +84,8 @@
                 <div class="form-group">
                     <input type="text" id="txtInvoiceNb" class="form-control"
                            aria-describedby="txtInvoiceNbHelp" ng-model="ctrl.filters.invoiceNb">
-                    <small id="txtInvoiceNbHelp" class="form-text text-muted"><i class="fas fa-info-circle"></i> Podaj numer Faktury VAT</small>
+                    <small id="txtInvoiceNbHelp" class="form-text text-muted"><i class="fas fa-info-circle"></i> Podaj
+                        numer Faktury VAT</small>
                 </div>
 
                 <div class="w-100"></div>
@@ -149,16 +162,21 @@
                                 </button>
                                 <div class="dropdown-menu dropdown-menu-right" aria-labelledby="dropdownMenuLink">
 
-                                    <a href="#" class="dropdown-item pointer" ng-click="ctrl.showDetails(clientInvoice);"><i class="fas fa-file-invoice"></i>&nbsp;&nbsp;faktury</a>
-                                    <a href="#" class="dropdown-item" ng-click="ctrl.paymentsClientMessages(clientInvoice);$event.stopPropagation();"><i class="fas fa-comment-dots"></i>&nbsp;&nbsp;notatki</a>
-                                </div>
+                                    <a href="#" class="dropdown-item pointer"
+                                       ng-click="ctrl.showDetails(clientInvoice);"><i class="fas fa-file-invoice"></i>&nbsp;&nbsp;faktury</a>
+                                    <a href="#" class="dropdown-item"
+                                       ng-click="ctrl.paymentsClientMessages(clientInvoice);$event.stopPropagation();"><i
+                                                class="fas fa-comment-dots"></i>&nbsp;&nbsp;notatki</a>
+                                    <a href="javascript:void(0)" class="dropdown-item"
+                                       ng-click="ctrl.sendPaymentReminderEmail(clientInvoice); $event.stopPropagation();"><i
+                                                class="fas fa-envelope"></i>&nbsp;&nbsp;wyślij przypomnienie</a></div>
                             </div>
                         </td>
                     </tr>
 
                     <tr ng-if="(ctrl.show_details[clientInvoice.nip] ) && clientInvoice.invoices.list.length">
                         <td colspan="6" class="inner-table">
-                            <table class='tablesorter displaytable invoices' id='tableReport' cellspacing=0 cellpadding=0>
+                            <table class='tablesorter displaytable invoices' id='tableReport'>
                                 <thead>
                                 <tr>
                                     <th width="200px">
