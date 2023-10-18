@@ -80,7 +80,7 @@ class clientinvoice extends Model
 
     function getClientByTaxNb($clientTaxNb)
     {
-        $query = "select * from clients where nip={$clientTaxNb}";
+        $query = "select * from clients where nip={$clientTaxNb} and activity=1";
         $clients = $this->query($query, null, false);
 
         if (!count($clients) === 1) {
