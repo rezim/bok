@@ -135,11 +135,19 @@ class printersController extends Controller
     {
         if (isset($_SERVER['HTTP_X_REQUESTED_WITH']) && ($_SERVER['HTTP_X_REQUESTED_WITH'] == 'XMLHttpRequest')) {
 
+            if (!isset($_POST['serial'])) {
+                $this->badRequest('Serial jest wymagany');
+            }
+            if (!isset($_POST['replacementDate']) || $_POST['replacementDate'] === '') {
+                $this->badRequest('Data wymiany jest wymagana');
+            }
+
             echo(json_encode($this->printer->replaceprinter($_POST['serial'],
                 $_POST['newSerial'],
                 $_POST['rowid_agreement'],
                 $_POST['counterEnd'], $_POST['counterStart'],
                 $_POST['counterColorEnd'], $_POST['counterColorStart'],
+                $_POST['scansEnd'], $_POST['scansStart'],
                 $_POST['replacementDate'])));
 
         }

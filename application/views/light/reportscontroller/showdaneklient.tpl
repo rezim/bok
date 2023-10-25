@@ -35,6 +35,9 @@
                 wart. kolor
             </th>
             <th class="text-center">
+                ilość scans
+            </th>
+            <th class="text-center">
                 netto
             </th>
             <th>
@@ -75,6 +78,9 @@
                 </td>
                 <td class='tdNumber' style='padding-right:20px;white-space: nowrap'>
                     {if isset($item.wartosckolor)} {$item.wartosckolor|number_format:2:",":" "|escape:'htmlall'}{/if}
+                </td>
+                <td class='tdNumber' style='padding-right:20px;white-space: nowrap'>
+                    {if isset($item.wartoscskans)} {$item.wartoscskans|number_format:2:",":" "|escape:'htmlall'}{/if}
                 </td>
                 <td class='tdNumber tdLink' title='Pokaż szczegóły'
                     style='padding-right:20px;font-weight: bold;color:blue;white-space: nowrap'

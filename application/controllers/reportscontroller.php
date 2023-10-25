@@ -141,29 +141,37 @@ class reportsController extends InvoicesController
         return $reports;
     }
 
-    function applyAgreementPrinters($reports, $agreementPrintersStart, $agreementPrintersEnd)
+    function applyAgreementPrinters($reports)
     {
+
+        $agreementPrintersStart = $this->getAgreementPrintersMap($this->report->getAgreementPrintersStart());
+        $agreementPrintersEnd = $this->getAgreementPrintersMap($this->report->getAgreementPrintersEnd());
+
         $result = array();
 
         foreach ($reports as $report) {
             $agreementPrintersKey = $report['serial'] . '-' . $report['rowidumowa'];
-            if (isset($agreementPrintersStart[$agreementPrintersKey])
-                && $report['rowidumowa'] == $agreementPrintersStart[$agreementPrintersKey]['rowid_agreement']) {
-                $report['strony_black_start'] = $agreementPrintersStart[$agreementPrintersKey]['ilosc_start'];
-                $report['strony_kolor_start'] = $agreementPrintersStart[$agreementPrintersKey]['ilosckolor_start'];
-                $report['data_wiadomosci_black_start'] = $agreementPrintersStart[$agreementPrintersKey]['date_start'];
-                $report['data_wiadomosci_kolor_start'] = $agreementPrintersStart[$agreementPrintersKey]['date_start'];
+            $start = $agreementPrintersStart[$agreementPrintersKey];
+            $end = $agreementPrintersEnd[$agreementPrintersKey];
+            if (isset($start)
+                && $report['rowidumowa'] == $start['rowid_agreement']) {
+                $report['strony_black_start'] = $start['ilosc_start'];
+                $report['strony_kolor_start'] = $start['ilosckolor_start'];
+                $report['iloscskans_start'] = $start['iloscskans_start'];
+                $report['data_wiadomosci_black_start'] = $start['date_start'];
+                $report['data_wiadomosci_kolor_start'] = $start['date_start'];
             }
-            if (isset($agreementPrintersEnd[$agreementPrintersKey])
-                && $report['rowidumowa'] == $agreementPrintersEnd[$agreementPrintersKey]['rowid_agreement']) {
-                $report['strony_black_koniec'] = $agreementPrintersEnd[$agreementPrintersKey]['ilosc_koniec'];
-                $report['strony_kolor_koniec'] = $agreementPrintersEnd[$agreementPrintersKey]['ilosckolor_koniec'];
-                $report['data_wiadomosci_black_koniec'] = $agreementPrintersEnd[$agreementPrintersKey]['date_koniec'];
-                $report['data_wiadomosci_kolor_koniec'] = $agreementPrintersEnd[$agreementPrintersKey]['date_koniec'];
+            if (isset($end)
+                && $report['rowidumowa'] == $end['rowid_agreement']) {
+                $report['strony_black_koniec'] = $end['ilosc_koniec'];
+                $report['strony_kolor_koniec'] = $end['ilosckolor_koniec'];
+                $report['iloscskans_koniec'] = $end['iloscskans_koniec'];
+                $report['data_wiadomosci_black_koniec'] = $end['date_koniec'];
+                $report['data_wiadomosci_kolor_koniec'] = $end['date_koniec'];
 
                 $dateEnd = new DateTime($report['data_wiadomosci_black_koniec']);
                 $daysInMoth = cal_days_in_month(CAL_GREGORIAN, date_format($dateEnd, 'm'), date_format($dateEnd, 'Y'));
-                $amountOfDays =  intval( $dateEnd->format('d') );
+                $amountOfDays = intval($dateEnd->format('d'));
 
                 $report['stronwabonamencie'] *= ($amountOfDays / $daysInMoth);
                 $report['iloscstron_kolor'] *= ($amountOfDays / $daysInMoth);
@@ -328,10 +336,7 @@ class reportsController extends InvoicesController
         $dataReportsMiesieczne = $this->report->getReportsMiesieczne();
         $dataReportsRoczne = $this->report->getReportsRoczne();
 
-        $agreementPrintersStart = $this->getAgreementPrintersMap($this->report->getAgreementPrintersStart());
-        $agreementPrintersEnd = $this->getAgreementPrintersMap($this->report->getAgreementPrintersEnd());
-
-        $dataReportsMiesieczne = $this->applyAgreementPrinters($dataReportsMiesieczne, $agreementPrintersStart, $agreementPrintersEnd);
+        $dataReportsMiesieczne = $this->applyAgreementPrinters($dataReportsMiesieczne);
 
         $dataPrinterService = $this->getPrinterServiceMap($this->report->getPrinterService());
 
@@ -446,6 +451,7 @@ class reportsController extends InvoicesController
             $client['wartosc'] = isset($client['wartosc']) ? $client['wartosc'] : 0;
             $client['wartoscblack'] = isset($client['wartoscblack']) ? $client['wartoscblack'] : 0;
             $client['wartosckolor'] = isset($client['wartosckolor']) ? $client['wartosckolor'] : 0;
+            $client['wartoscskans'] = isset($client['wartoscskans']) ? $client['wartoscskans'] : 0;
             $client['wartoscabonament'] = isset($client['wartoscabonament']) ? $client['wartoscabonament'] : 0;
             $client['kwotadowykorzystania'] = isset($client['kwotadowykorzystania']) ? $client['kwotadowykorzystania'] : 0;
 
@@ -470,6 +476,7 @@ class reportsController extends InvoicesController
             $blackPagesNb = (int)$item['strony_black_sum'];
             $colorPagesNb = (int)$item['strony_kolor_sum'];
             $allPagesNb = $blackPagesNb + $colorPagesNb;
+
 
             $blackPrice = (float)$item['cenazastrone'];
             $colorPrice = (float)$item['cenazastrone_kolor'];

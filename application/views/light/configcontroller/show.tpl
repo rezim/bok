@@ -1,4 +1,4 @@
-<div id="configModal" class="modal fade" tabindex="-1" role="dialog" aria-hidden="true">
+<div id="configModal" data-form class="modal fade" tabindex="-1" role="dialog" aria-hidden="true">
     <div class="modal-dialog modal-dialog-centered" role="document">
         <div class="modal-content">
             <div class="modal-header card-header">
@@ -92,12 +92,16 @@
 
             </div>
             <div class="modal-footer">
-                <button type="button" onclick="callServiceAction('/config/saveconfiguration/notemplate', 'configModal')"
+                <button id="saveAction" type="button"
                         class="btn btn-outline-success active"><i class="fas fa-save"></i> Zapisz
                 </button>
-                <button type="button" class="btn btn-outline-secondary" data-dismiss="modal">Anuluj</button>
+                <button type="button" class="btn btn-outline-secondary" data-dismiss="modal">Zamknij</button>
                 <small  class="form-text text-muted"><i class="fas fa-exclamation-triangle text-warning"></i> UWAGA: wyloguj się aby zmiany w konfiguracji zostały ponownie zaczytane.</small>
             </div>
         </div>
     </div>
 </div>
+
+<script>
+    $("#saveAction").on('click', () => callServiceAction('/config/saveconfiguration/notemplate', 'configModal'));
+</script>

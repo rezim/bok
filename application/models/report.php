@@ -27,6 +27,20 @@ class report extends Model
         return $this->query($query,null,false);
     }
 
+    function getScansMonthly() {
+        if($this->dataod=='' || $this->datado=='')
+        {
+            echo('Wybierz zakres dat');die();
+        }
+        $query = "
+                select `s`.`serial` AS `skany_serial`, min(`s`.`ilosctotal`) AS `skany_start`, 
+                       max(`s`.`ilosctotal`) AS `skany_koniec`, min(`s`.`datawiadomosci`) AS `data_wiadomosci_scans_start`,max(`s`.`datawiadomosci`) AS `data_wiadomosci_scans_koniec`,
+                       `p`.`model` AS `skany_model_urzadzenia` 
+                FROM ((`bok`.`scans` `s` join `bok`.`agreements` `a` on(`s`.`serial` = `a`.`serial`)) 
+                    join `bok`.`printers` `p` on(`s`.`serial` = `p`.`serial`)) 
+                WHERE `a`.`activity` = 1 and `s`.`datawiadomosci` >= '{$this->dataod}' and `s`.`datawiadomosci` <= '{$this->datado}' group by `s`.`serial` order by max(`s`.`ilosctotal`) - min(`s`.`ilosctotal`) desc;";
+        return $this->query($query,null,false);
+    }
 
     function getReportsMiesieczne()
     {
@@ -82,10 +96,12 @@ class report extends Model
                 IFNULL(b.mail, bb.mail) as 'lokalizacja_mail', 
                 IFNULL(b.nazwa, bb.nazwa) as 'lokalizacja_nazwa',
                 IFNULL(b.osobakontaktowa, bb.osobakontaktowa) as 'lokalizacja_osobakontaktowa',
-                IFNULL(a.stronwabonamencie,0) as 'stronwabonamencie', 
-                IFNULL(a.cenazastrone,0) as 'cenazastrone', 
+                IFNULL(a.stronwabonamencie,0) as 'stronwabonamencie',                 
                 IFNULL(a.iloscstron_color,0) as 'iloscstron_kolor',
+                IFNULL(a.iloscskans,0) as 'iloscskans',
+                IFNULL(a.cenazastrone,0) as 'cenazastrone', 
                 IFNULL(a.cenazastrone_kolor,0) as 'cenazastrone_kolor', 
+                IFNULL(a.cenazascan,0) as 'cenazascan', 
                 IFNULL(a.rabatdoabonamentu,0) as 'rabatdoabonamentu',
                 IFNULL(a.rabatdowydrukow,0) as 'rabatdowydrukow',
                 IFNULL(b.model, bb.model) as 'model', 
@@ -174,21 +190,21 @@ class report extends Model
             ";
 
         $monthlyReport = $this->query($query,null,false);
-        return $monthlyReport;
-//        $scans = $this->getScansMonthly();
-//
-//        $scanKeys = array_map(function ($scan) {
-//            return $scan['skany_serial'];
-//        }, $scans);
-//        $scans = array_combine($scanKeys, $scans);
-//
-//        return array_map(function($report) use (&$scans) {
-//            $serial = $report['currentserial'];
-//            if (isset($scans[$serial])) {
-//                return array_merge($report, $scans[$serial]);
-//            }
-//            return $report;
-//        }, $monthlyReport);
+
+        $scans = $this->getScansMonthly();
+
+        $scanKeys = array_map(function ($scan) {
+            return $scan['skany_serial'];
+        }, $scans);
+        $scans = array_combine($scanKeys, $scans);
+
+        return array_map(function($report) use (&$scans) {
+            $serial = $report['currentserial'];
+            if (isset($scans[$serial])) {
+                return array_merge($report, $scans[$serial]);
+            }
+            return $report;
+        }, $monthlyReport);
     }
     function getReportsRoczne()
     { 

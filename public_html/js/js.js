@@ -39,29 +39,6 @@ function showSzczegolyRaportRozwin(tr) {
     }
 }
 
-function saveConfiguration(success = successCallback, error = errorCallback) {
-    const data = getDataFromContainer('configModal');
-
-    $.ajax({
-        type: 'POST',
-        url: sciezka + "/config/saveconfiguration/notemplate",
-        async: true,
-        data,
-        success: function (dane) {
-            if (success) {
-                success(dane);
-            }
-            return false;
-        },
-        error: function (dane) {
-            if (error) {
-                error(dane);
-            }
-            return false;
-        }
-    });
-}
-
 function clearPaymentMonitoring() {
     if (confirm("Czy na pewno chcesz wyczyścić monitoring płatności swoich klientów?")) {
 
@@ -89,11 +66,6 @@ function clearPaymentMonitoring() {
         });
     }
 }
-
-function showConfiguration() {
-    openModal("/config/show/todiv");
-}
-
 
 function showPrinterMessages(serial, model) {
     const description = {
@@ -575,6 +547,8 @@ function zapiszUmowe(rowid) {
                 opis: doc.getElementById('txtopis').value,
                 iloscstron_kolor: doc.getElementById('txtiloscstron_kolor').value,
                 cenazastrone_kolor: doc.getElementById('txtcenazastrone_kolor').value,
+                iloscskanow: doc.getElementById('txtiloscskanow').value,
+                cenazaskan: doc.getElementById('txtcenazaskan').value,
                 cenainstalacji: doc.getElementById('txtcenainstalacji').value,
                 rabatdoabonamentu: doc.getElementById('txtrabatdoabonamentu').value,
                 rabatdowydrukow: doc.getElementById('txtrabatdowydrukow').value,
@@ -583,9 +557,11 @@ function zapiszUmowe(rowid) {
                 wartoscurzadzenia: doc.getElementById('txtwartoscurzadzenia').value,
                 counterstart: doc.getElementById("counterstart").value,
                 countercolorstart: doc.getElementById("countercolorstart").value,
+                counterscansstart: doc.getElementById("counterscansstart").value,
                 datacounterstart: doc.getElementById("datacounterstart").value,
                 counterend: doc.getElementById("counterend").value,
                 countercolorend: doc.getElementById("countercolorend").value,
+                counterscansend: doc.getElementById("counterscansend").value,
                 datacounterend: doc.getElementById("datacounterend").value,
                 prtcntrowid: doc.getElementById("prtcntrowid").value,
                 rowid_type: doc.getElementById("txttypumowy").value
@@ -1570,59 +1546,6 @@ function savePrinterCounters(previousBlack, previousColor, serial) {
     }
 }
 
-
-function replacePrinter(serial, newSerial, rowid_agreement) {
-    var data = {
-        serial: serial,
-        newSerial: newSerial,
-        rowid_agreement: rowid_agreement,
-        counterEnd: document.getElementById('counterEnd').value,
-        counterStart: document.getElementById('counterStart').value,
-        counterColorEnd: document.getElementById('counterColorEnd').value,
-        counterColorStart: document.getElementById('counterColorStart').value,
-        replacementDate: document.getElementById('replacementDate').value
-    };
-    $.ajax({
-        type: 'POST',
-        url: sciezka + "/printers/replacePrinter/notemplate",
-        async: true,
-        data: data,
-        success: function (dane) {
-            alert('Dane zapisane poprawnie');
-            return false;
-        },
-        error: function () {
-
-            // showError(objError, objLoad, null, objClick, 3000);
-            return false;
-        }
-    });
-}
-
-function showPrinterService(agreement, rowid_agreement) {
-    $.colorbox
-    ({
-        height: 650 + 'px',
-        width: 950 + 'px',
-        title: "Historia serwisu drukarek dla umowy : " + agreement,
-        data:
-            {
-                rowid_agreement: rowid_agreement
-            },
-
-        href: sciezka + "/printers/service/todiv",
-        onClosed: function () {
-
-
-        },
-        onComplete: function () {
-
-            uprawnienia();
-
-        }
-    });
-}
-
 function removePrinterService(rowid, serial) {
     if (confirm("Czy na pewno chcesz usunąć ? ")) {
 
@@ -2311,85 +2234,8 @@ function openModal(src, data = {}) {
         modal.modal({keyboard: true});
     });
 }
-
-
 const copyToClipboard = function(str) {
     if (navigator && navigator.clipboard && navigator.clipboard.writeText)
         return navigator.clipboard.writeText(str);
     return Promise.reject('The Clipboard API is not available.');
 };
-
-function callServiceAction(serviceUrl, dataContainerId, success = successCallback, error = errorCallback) {
-    const data = dataContainerId ? getDataFromContainer(dataContainerId) : {};
-
-    $.ajax({
-        type: 'POST',
-        url: sciezka + serviceUrl,
-        async: true,
-        data,
-        success: function (dane) {
-            if (success) {
-                try {
-                    success($.parseJSON(dane));
-                } catch (e) {
-                    // nop
-                }
-            }
-            return false;
-        },
-        error: function (dane) {
-            if (error) {
-                try {
-                    error($.parseJSON(dane));
-                } catch (e) {
-                    // nop
-                }
-            }
-            return false;
-        }
-    });
-}
-
-function successCallback(result, timeout = 3000) {
-    const defaultSuccessMessage = 'Dane zapisane poprawnie.';
-    const modalInstance = $(`.modal`);
-    if (modalInstance) {
-        const message = modalInstance.find('.alert-success');
-        if (result && result.info) {
-            message.html(result.info);
-        } else {
-            message.html(defaultSuccessMessage);
-        }
-        message.show();
-        setTimeout(() => {
-            message.hide();
-            modalInstance.modal('hide')
-        }, timeout);
-    }
-}
-
-function errorCallback(result, timeout = 3000) {
-    const defaultErrorMessage = 'Błąd zapisu danych.';
-    const modalInstance = $(`.modal`);
-    if (modalInstance) {
-        const message = modalInstance.find('alert-danger');
-        if (result && result.info) {
-            message.html(result.info);
-        } else {
-            message.html(defaultErrorMessage);
-        }
-        message.show();
-    }
-}
-
-function getDataFromContainer(containerId) {
-    const container = document.querySelector(`#${containerId}`);
-    const selectedData = Array.from(container.querySelectorAll('[data-ref]'));
-    return Object.fromEntries(selectedData.map(d => [d.id, d.value]));
-}
-
-function clearDataFromContainer(containerId) {
-    const container = document.querySelector(`#${containerId}`);
-    const selectedData = Array.from(container.querySelectorAll('[data-clear-ref]'));
-    selectedData.forEach(d => d.value = '');
-}

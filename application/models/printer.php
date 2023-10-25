@@ -319,16 +319,20 @@ class printer extends Model
 
     }
 
-    function replaceprinter($serial, $newSerial, $rowidAgreement, $counterEnd, $counterStart, $counterColorEnd, $counterColorStart, $replacementDate)
+    function replaceprinter($serial, $newSerial, $rowidAgreement, $counterEnd, $counterStart, $counterColorEnd, $counterColorStart, $scansEnd, $scansStart, $replacementDate)
     {
         $this->_table = 'printer_service';
-        $result = $this->insert("`serial`, `new_serial`, `rowid_agreement`, `ilosc_koniec`, `ilosc_start`, `ilosckolor_koniec`, `ilosckolor_start`, `date`",
-            'ssiiiiis',
-            array($serial, $newSerial, $rowidAgreement, $counterEnd, $counterStart, $counterColorEnd, $counterColorStart, $replacementDate)
+        $result = $this->insert("`serial`, `new_serial`, `rowid_agreement`, `ilosc_koniec`, `ilosc_start`, `ilosckolor_koniec`, `ilosckolor_start`, `iloscskan_koniec`, `iloscskan_start`, `date`",
+            'ssiiiiiiis',
+            array($serial, $newSerial, $rowidAgreement, $counterEnd, $counterStart, $counterColorEnd, $counterColorStart, $scansEnd, $scansStart, $replacementDate)
         );
         // printer replacement, update pages
         if ($serial != $newSerial) {
+            // update pages
             $this->update("UPDATE pages SET `rowid_agreement`=? WHERE `serial`=? AND `datawiadomosci` >= ?", 'iss', array($rowidAgreement, $newSerial, $replacementDate));
+
+            // update scans
+            $this->update("UPDATE scans SET `rowid_agreement`=? WHERE `serial`=? AND `datawiadomosci` >= ?", 'iss', array($rowidAgreement, $newSerial, $replacementDate));
 
             // copy contact information from p2 (old) to p1
             $this->update("UPDATE `printers` AS p1 JOIN `printers` AS p2 ON p2.serial = ?

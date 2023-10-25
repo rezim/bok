@@ -90,6 +90,7 @@
 <script type="text/javascript" src="{$smarty.const.SCIEZKA}/js/jquery-ui-1.10.4.custom.min.js"></script>
 <script type="text/javascript" src="{$smarty.const.SCIEZKA}/js/jquery-ui-timepicker-addon.js"></script>
 <script type="text/javascript" src="{$smarty.const.SCIEZKA}/js/js.js?{$smarty.const.APPVERSION}"></script>
+<script type="text/javascript" src="{$smarty.const.SCIEZKA}/js/service.js?{$smarty.const.APPVERSION}"></script>
 <script type="text/javascript" src="{$smarty.const.SCIEZKA}/js/acl.js"></script>
 <script type="text/javascript" src="{$smarty.const.SCIEZKA}/js/jquery.tablesorter.min.js"></script>
 <script type="text/javascript" src="{$smarty.const.SCIEZKA}/js/dropzone.js"></script>
@@ -412,7 +413,7 @@
                             <a class="dropdown-item" href='{$smarty.const.SCIEZKA}/shares/show'>Uprawnienia</a>
                         {/if}
                         {if isset($smarty.session.przypisanemenu['li_configuration'])}
-                        <a class="dropdown-item" href='#' onclick="showConfiguration()">Konfiguracja</a>
+                        <a id="showConfigurationAction" class="dropdown-item" href='#'>Konfiguracja</a>
                         {/if}
                         {if
                         isset($smarty.session.przypisanemenu['li_externallinks']) &&
@@ -430,6 +431,11 @@
         </ul>
     </div>
 </header>
+{if isset($smarty.session.przypisanemenu['li_configuration'])}
+<script>
+    $("#showConfigurationAction").on('click', () => openModal("/config/show/todiv"));
+</script>
+{/if}
 <div id='divContainer' class="content wide-content">
     {else}
     <div id='divContainer'>

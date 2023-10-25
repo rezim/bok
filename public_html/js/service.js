@@ -1,0 +1,81 @@
+const callServiceAction = (serviceUrl, dataContainerId, success = successCallback, error = errorCallback) => {
+    const dataContainer = getContainerById(dataContainerId);
+
+    if (!dataContainer) {
+        console.error(`Can't call service action. Form container: ${dataContainerSelector} NOT FOUND !!!`);
+        return;
+    }
+    const data = getDataFromContainer(dataContainer);
+
+    $.ajax({
+        type: 'POST',
+        url: sciezka + serviceUrl,
+        async: true,
+        data,
+        success: function (dane) {
+            if (success) {
+                try {
+                    success($.parseJSON(dane), dataContainerId);
+                } catch (e) {
+                    error(dane, dataContainerId);
+                }
+            }
+            return false;
+        },
+        error: function (dane) {
+            if (error) {
+                try {
+                    error($.parseJSON(dane), dataContainerId);
+                } catch (e) {
+                    error(dane, dataContainerId);
+                }
+            }
+            return false;
+        }
+    });
+}
+const successCallback = (success, dataFormId, timeout = 3000) => {
+    const defaultSuccessMessage = 'Dane zapisane poprawnie.';
+    const dataForm = $(`#${dataFormId}`);
+    if (dataForm) {
+        const message = dataForm.find('.alert-success');
+        if (success?.info) {
+            message.html(success.info);
+        } else {
+            message.html(defaultSuccessMessage);
+        }
+        message.show();
+        setTimeout(() => {
+            message.hide();
+        }, timeout);
+    }
+}
+const errorCallback = (error, dataFormId, timeout = 20000) => {
+    const dataForm = $(`#${dataFormId}`);
+    if (dataForm) {
+        const message = dataForm.find('.alert-danger');
+        if (error?.responseText) {
+            message.html(error.responseText);
+        } else {
+            message.html(error ?? 'Wystąpił nieoczekiwany błąd.');
+        }
+        message.show();
+        setTimeout(() => {
+            message.hide();
+        }, timeout);
+    }
+}
+const getContainerById = (containerId) => {
+    const containerSelector = `#${containerId}[data-form]`;
+
+    return document.querySelector(containerSelector);
+}
+const getDataFromContainer = (container) => {
+    const selectedData = Array.from(container.querySelectorAll('[data-ref]'));
+    return Object.fromEntries(selectedData.map(d => [d.id, d.value]));
+}
+const clearDataFromContainer = (containerId) => {
+    const container = document.querySelector(`#${containerId}`);
+    const selectedData = Array.from(container.querySelectorAll('[data-clear-ref]'));
+    selectedData.forEach(d => d.value = '');
+}

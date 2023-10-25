@@ -6,7 +6,7 @@
 
 <div class="container mt-3" id="notificationsAddEdit">
 
-{*    {include file="$templates/notification/manageConsumables.tpl"}*}
+    {*    {include file="$templates/notification/manageConsumables.tpl"}*}
 
     <span id="keyval" style='display:none;'>{$keyVal}</span>
 
@@ -102,7 +102,8 @@
                                     {/if}
                                     {/if}
                                     {if $item.type=='number'}
-                                        <input class="form-control form-control-md" type="number" min="0" max="20" step="1" onkeydown="return false" id='{$key}'
+                                        <input class="form-control form-control-md" type="number" min="0" max="20"
+                                               step="1" onkeydown="return false" id='{$key}'
                                                baza='{$item.baza}' name='editobj'
                                                {if isset($item.focus) && $item.focus=='1'}autofocus="true"{/if}
                                                 {if isset($item.wymagane) && $item.wymagane=='1'}wymagane="{$item.wymagane}"{/if}
@@ -290,7 +291,8 @@
                                     {/if}
                                     {/if}
                                     {if $item.type=='number'}
-                                        <input class="form-control form-control-md" type="number" min="0" max="20" step="1" onkeydown="return false" id='{$key}'
+                                        <input class="form-control form-control-md" type="number" min="0" max="20"
+                                               step="1" onkeydown="return false" id='{$key}'
                                                baza='{$item.baza}' name='editobj'
                                                {if isset($item.focus) && $item.focus=='1'}autofocus="true"{/if}
                                                 {if isset($item.wymagane) && $item.wymagane=='1'}wymagane="{$item.wymagane}"{/if}
@@ -400,18 +402,18 @@
                                             {/if}
                                     {/strip}</textarea>
                                     {/if}
-{*                                    {if $item.type=='consumables'}*}
-{*                                        {if isset($consumablesData)}*}
-{*                                            {$consumablesData|print_r}*}
-{*                                        {/if}*}
+                                    {*                                    {if $item.type=='consumables'}*}
+                                    {*                                        {if isset($consumablesData)}*}
+                                    {*                                            {$consumablesData|print_r}*}
+                                    {*                                        {/if}*}
 
-{*                                        {if isset($item.arr)}*}
-{*                                            {${$item.arr}|print_r}*}
-{*                                        {/if}*}
-{*                                            {foreach from=${$item.arr} item=consumable}*}
-{*                                                <div>{$consumable.quantity} x {$consumable.name}</div>*}
-{*                                            {/foreach}*}
-{*                                    {/if}*}
+                                    {*                                        {if isset($item.arr)}*}
+                                    {*                                            {${$item.arr}|print_r}*}
+                                    {*                                        {/if}*}
+                                    {*                                            {foreach from=${$item.arr} item=consumable}*}
+                                    {*                                                <div>{$consumable.quantity} x {$consumable.name}</div>*}
+                                    {*                                            {/foreach}*}
+                                    {*                                    {/if}*}
                                     {if $item.type=='link' && $item.readonly=='0'}
                                         <span id='{$item.idzewnetrznespan}'
                                               style="display:none;">{if isset($dane[0][$item.baza]) && (string)$dane[0][$item.baza]!=''}{$dane[0][$item.baza]}{/if}</span>
@@ -430,13 +432,13 @@
                         {/if}
                     {/foreach}
 
-{*                    <tr>*}
-{*                        <td colspan="2">*}
-{*                            <div ng-controller="NotificationCtrl as ctrl" ng-cloak>*}
-{*                                <button ng-click="ctrl.openManageConsumablesModal('{$agreementSerial}')">MATERIALY</button>*}
-{*                            </div>*}
-{*                        </td>*}
-{*                    </tr>*}
+                    {*                    <tr>*}
+                    {*                        <td colspan="2">*}
+                    {*                            <div ng-controller="NotificationCtrl as ctrl" ng-cloak>*}
+                    {*                                <button ng-click="ctrl.openManageConsumablesModal('{$agreementSerial}')">MATERIALY</button>*}
+                    {*                            </div>*}
+                    {*                        </td>*}
+                    {*                    </tr>*}
 
                     </tbody>
                 </table>
@@ -449,7 +451,8 @@
 
     {else}
         <div class="container text-right" wymaganylevel='w' wymaganyzrobiony='0'>
-            <a href="#" id="saveNotification" class="btn btn-outline-success active" role="button" aria-pressed="true"><i
+            <a href="#" id="saveNotification" class="btn btn-outline-success active" role="button"
+               aria-pressed="true"><i
                         class="fas fa-save"></i>&nbsp; Zapisz</a>
             <a href="#" class="btn btn-outline-secondary" role="button" onclick="$.colorbox.close();">Anuluj</a>
         </div>
@@ -457,7 +460,13 @@
 
     <div id="accordion" class="mt-5 mb-3 container">
         {if isset($dane) }
-            <div class="card">
+            <div class="card" id="replacePrinterContainer" data-form>
+
+                <input type="hidden" id="serial" value="{$dane[0]['serial']}" data-ref/>
+                <input type="hidden" id="newSerial" value="{$agreementSerial}" data-ref/>
+                <input type="hidden" id="rowid_agreement" value="{$dane[0]['rowid_agreements']}" data-ref/>
+                <input type="hidden" id="umowadane" value="{$dane[0]['umowadane']}"/>
+
                 <div class="card-header" id="headingOne">
                     <h5 class="mb-0">
                         <button class="btn collapsed" data-toggle="collapse" data-target="#collapseOne"
@@ -471,17 +480,31 @@
                 <div id="collapseOne" class="collapse" aria-labelledby="headingOne" data-parent="#accordion">
                     <div class="card-body">
                         <div class="row">
+                            <div class="container">
+                                <div class="alert alert-success collapse font-weight-bold" role="alert"></div>
+                                <div class="alert alert-danger collapse font-weight-bold" role="alert"></div>
+                            </div>
+                        </div>
+
+
+                        <div class="row">
                             <div class="col">
                                 <table class="table bok-two-column-layout">
                                     <tr>
                                         <th class='tdOpis thead-dark' scope="row"><span>C/B Koniec:</span></th>
-                                        <td class='tdWartosc'><input class="form-control" id="counterEnd" type="text"/>
+                                        <td class='tdWartosc'><input class="form-control" id="counterEnd" type="text"
+                                                                     data-ref/>
                                         </td>
                                     </tr>
                                     <tr>
                                         <th class='tdOpis thead-dark'><span>Kolor Koniec:</span></th>
                                         <td class='tdWartosc'><input class="form-control" id="counterColorEnd"
-                                                                     type="text"/></td>
+                                                                     type="text" data-ref/></td>
+                                    </tr>
+                                    <tr>
+                                        <th class='tdOpis thead-dark'><span>Skany Koniec:</span></th>
+                                        <td class='tdWartosc'><input class="form-control" id="scansEnd"
+                                                                     type="text" data-ref/></td>
                                     </tr>
                                     <tr>
                                         <th class='tdOpis thead-dark'><span>Serial (stara)</span></th>
@@ -492,7 +515,7 @@
                                     <tr>
                                         <th class='tdOpis thead-dark'><span>Data:</span></th>
                                         <td class='tdWartosc'><input class="form-control" id="replacementDate"
-                                                                     type="text"/></td>
+                                                                     type="text" data-ref/></td>
                                     </tr>
                                 </table>
                             </div>
@@ -501,13 +524,19 @@
                                 <table class="table bok-two-column-layout">
                                     <tr>
                                         <th class='tdOpis'><span>C/B Start:</span></th>
-                                        <td class='tdWartosc'><input class="form-control" id="counterStart"
-                                                                     type="text"/></td>
+                                        <td class='tdWartosc'>
+                                            <input class="form-control" id="counterStart" type="text" data-ref/>
+                                        </td>
                                     </tr>
                                     <tr>
                                         <th class='tdOpis'><span>Kolor Start:</span></th>
                                         <td class='tdWartosc'><input class="form-control" id="counterColorStart"
-                                                                     type="text"/></td>
+                                                                     type="text" data-ref/></td>
+                                    </tr>
+                                    <tr>
+                                        <th class='tdOpis'><span>Skany Start:</span></th>
+                                        <td class='tdWartosc'><input class="form-control" id="scansStart"
+                                                                     type="text" data-ref/></td>
                                     </tr>
                                     {if $dane[0]['serial'] != $agreementSerial}
                                         <tr>
@@ -523,14 +552,14 @@
                                     {/if}
                                     <tr>
                                         <td colspan="2" style="text-align: right">
-                                            <a href="#" class="btn btn-outline-success active" role="button"
-                                               aria-pressed="true"
-                                               onclick='replacePrinter("{$dane[0]['serial']}", "{$agreementSerial}", {$dane[0]['rowid_agreements']})'>
+                                            <a id="replacePrinter" href="#" class="btn btn-outline-success active"
+                                               role="button"
+                                               aria-pressed="true">
                                                 <i class="fas fa-save"></i>&nbsp; Zapisz</a>
-                                            <a href="#" class="btn btn-outline-warning" role="button"
-                                               aria-pressed="true"
-                                               onclick='showPrinterService("{$dane[0]['umowadane']}", "{$dane[0]['rowid_agreements']}")'><i
-                                                        class="fas fa-history"></i>&nbsp;Historia</a>
+                                            <a id="showPrinterService" href="#" class="btn btn-outline-warning"
+                                               role="button"
+                                               aria-pressed="true">
+                                                <i class="fas fa-history"></i>&nbsp;Historia</a>
                                         </td>
                                     </tr>
 
@@ -640,16 +669,38 @@
 </script>
 
 <script>
-    $("#saveNotification").on('click',function() {
-        zapiszNoti('0','{$smarty.const.SCIEZKA}/notifications/save/notemplate');
+
+    const dataContainerId = 'replacePrinterContainer';
+
+    $("#saveNotification").on('click', () => {
+        zapiszNoti('0', '{$smarty.const.SCIEZKA}/notifications/save/notemplate');
         return false;
     });
-</script>
 
-{*<script type="text/javascript">*}
-{*    angular.module('notificationsAddEditApp', [])*}
-{*        .factory("rest", ['$http', '$q', rest])*}
-{*        .controller('NotificationCtrl', NotificationCtrl);*}
-{*    angular.bootstrap(document.getElementById('notificationsAddEdit'), ['notificationsAddEditApp', 'ui.bootstrap']);*}
-{*</script>*}
+    $("#replacePrinter").on('click', () => callServiceAction("/printers/replacePrinter/notemplate", dataContainerId));
+
+
+    $("#showPrinterService").on('click', () => {
+        const dataContainer = getContainerById(dataContainerId);
+        const agreement = dataContainer.querySelector('#umowadane')?.value;
+        const rowid_agreement = dataContainer.querySelector('#rowid_agreement')?.value;
+
+        $.colorbox
+        ({
+            height: 650 + 'px',
+            width: 1000 + 'px',
+            title: "Historia serwisu drukarek dla umowy : " + agreement,
+            data: {
+                rowid_agreement: rowid_agreement
+            },
+            href: sciezka + "/printers/service/todiv",
+            onClosed: function () {
+            },
+            onComplete: function () {
+                uprawnienia();
+            }
+        });
+    });
+
+</script>
 

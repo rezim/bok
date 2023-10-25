@@ -528,7 +528,7 @@ body {
     
     
 }
-.actionerror
+.actionerror, .actionError
 {
     border: 2px solid #E4422A;
     border-radius:4px;
@@ -550,7 +550,7 @@ body {
     display:block;
     margin-top: 15px;
 }
-.actionok
+.actionok, .actionOk
 {
     border: 2px solid green;
     border-radius:4px;

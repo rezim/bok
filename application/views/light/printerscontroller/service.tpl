@@ -28,6 +28,12 @@
                 Kolor Start
             </th>
             <th style='min-width: 80px;width:80px;'>
+                Skans Koniec
+            </th>
+            <th style='min-width: 80px;width:80px;'>
+                Skans Start
+            </th>
+            <th style='min-width: 80px;width:80px;'>
                 Data Serwisu
             </th>
             <th style='min-width: 50px;width:50px;'></th>
@@ -48,6 +54,8 @@
 
                     <td>{$item.ilosckolor_koniec}</td>
                     <td>{$item.ilosckolor_start}</td>
+                    <td>{$item.iloscskan_koniec}</td>
+                    <td>{$item.iloscskan_start}</td>
 
                     <td>{$item.date}</td>
 

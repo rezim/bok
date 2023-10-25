@@ -5,6 +5,8 @@ class agreement extends Model
              $rowidclient='',$opis='',$rozliczenie='',$abonament='',$kwotawabonamencie='',$odbiorca_id,
             $iloscstron_kolor='',
             $cenazastrone_kolor='',
+            $iloscskanow='',
+            $cenazaskan='',
             $cenainstalacji='',
             $rabatdoabonamentu='',
             $rabatdowydrukow='',
@@ -14,8 +16,8 @@ class agreement extends Model
      protected $filternrumowy='',$filterserial='',$filternazwaklienta='',$clientrowid='',$pokazzakonczone=0;
 
      protected $prtcntrowid=0,
-         $counterstart, $countercolorstart, $datacounterstart,
-         $counterend, $countercolorend, $datacounterend;
+         $counterstart, $countercolorstart, $counterscansstart, $datacounterstart,
+         $counterend, $countercolorend, $counterscansend, $datacounterend;
 
       function delete()
     {
@@ -110,6 +112,8 @@ class agreement extends Model
                                     `rozliczenie`=?,
                                     `iloscstron_color`=?,
                                     `cenazastrone_kolor`=?,
+                                    `iloscskans`=?,
+                                    `cenazascan`=?,
                                     `cenainstalacji`=?,
                                     `rabatdoabonamentu`=?,
                                     `rabatdowydrukow`=?,
@@ -119,7 +123,7 @@ class agreement extends Model
                                     `jakczarne`=?,
                                     `rowid_type`=?
                                      where `rowid`=?"
-                    , 'sssidddssisssidddddidiii',
+                    , 'sssidddssisssidddddddidiii',
                     array
                     (
                         $this->nrumowy == '' ? "NULL" : $this->nrumowy,
@@ -137,6 +141,8 @@ class agreement extends Model
                         $this->rozliczenie == '' ? "NULL" : $this->rozliczenie,
                         $this->iloscstron_kolor == '' ? "NULL" : str_replace(' ', '', str_replace(',', '.', $this->iloscstron_kolor)),
                         $this->cenazastrone_kolor == '' ? "NULL" : str_replace(' ', '', str_replace(',', '.', $this->cenazastrone_kolor)),
+                        $this->iloscskanow == '' ? "NULL" : str_replace(' ', '', str_replace(',', '.', $this->iloscskanow)),
+                        $this->cenazaskan == '' ? "NULL" : str_replace(' ', '', str_replace(',', '.', $this->cenazaskan)),
                         $this->cenainstalacji == '' ? "NULL" : str_replace(' ', '', str_replace(',', '.', $this->cenainstalacji)),
                         $this->rabatdoabonamentu == '' ? "NULL" : str_replace(' ', '', str_replace(',', '.', $this->rabatdoabonamentu)),
                         $this->rabatdowydrukow == '' ? "NULL" : str_replace(' ', '', str_replace(',', '.', $this->rabatdowydrukow)),
@@ -162,6 +168,8 @@ class agreement extends Model
                             `rowidclient`,`odbiorca_id`,`dateinsert`,`opis`,`rozliczenie`,
                              `iloscstron_color`,
                                     `cenazastrone_kolor`,
+                             `iloscskans`,
+                                    `cenazascan`,                                    
                                     `cenainstalacji`,
                                     `rabatdoabonamentu`,
                                     `rabatdowydrukow`,
@@ -172,7 +180,7 @@ class agreement extends Model
                                     `rowid_type`
                             ";
                 $this->_table = 'agreements';
-                $result = $this->insert($columnList, 'sssidddsissssidddddidii',
+                $result = $this->insert($columnList, 'sssidddsissssidddddddidii',
                     array(
                         $this->nrumowy == '' ? "NULL" : $this->nrumowy,
                         ($this->dataod == '' || $this->dataod == '0000-00-00') ? "NULL" : $this->dataod,
@@ -187,6 +195,8 @@ class agreement extends Model
                         date('Y-m-d H:i:s'), $this->opis == '' ? "NULL" : $this->opis, $this->rozliczenie == '' ? "NULL" : $this->rozliczenie,
                         $this->iloscstron_kolor == '' ? "NULL" : str_replace(' ', '', str_replace(',', '.', $this->iloscstron_kolor)),
                         $this->cenazastrone_kolor == '' ? "NULL" : str_replace(' ', '', str_replace(',', '.', $this->cenazastrone_kolor)),
+                        $this->iloscskanow == '' ? "NULL" : str_replace(' ', '', str_replace(',', '.', $this->iloscskanow)),
+                        $this->cenazaskan == '' ? "NULL" : str_replace(' ', '', str_replace(',', '.', $this->cenazaskan)),
                         $this->cenainstalacji == '' ? "NULL" : str_replace(' ', '', str_replace(',', '.', $this->cenainstalacji)),
                         $this->rabatdoabonamentu == '' ? "NULL" : str_replace(' ', '', str_replace(',', '.', $this->rabatdoabonamentu)),
                         $this->rabatdowydrukow == '' ? "NULL" : str_replace(' ', '', str_replace(',', '.', $this->rabatdowydrukow)),
@@ -218,9 +228,11 @@ class agreement extends Model
             `ilosc_start`,
             `ilosc_koniec`,
             `ilosckolor_start`,
-            `ilosckolor_koniec`";
+            `ilosckolor_koniec`,
+            `iloscskans_start`,
+            `iloscskans_koniec`";
                 $this->_table = 'agreement_printers';
-                $this->insert($columnList, "isssiiii", array(
+                $this->insert($columnList, "isssiiiiii", array(
                     $this->rowid,
                     $this->serial,
                     ($this->datacounterstart == '' || $this->datacounterstart == '0000-00-00') ? "NULL" : $this->datacounterstart,
@@ -228,7 +240,9 @@ class agreement extends Model
                     str_replace(' ', '', $this->counterstart),
                     str_replace(' ', '', $this->counterend),
                     str_replace(' ', '', $this->countercolorstart),
-                    str_replace(' ', '', $this->countercolorend)
+                    str_replace(' ', '', $this->countercolorend),
+                    str_replace(' ', '', $this->counterscansstart),
+                    str_replace(' ', '', $this->counterscansend),
                 ));
             } else {
                 $this->update("update agreement_printers 
@@ -237,9 +251,11 @@ class agreement extends Model
                                              `ilosc_start`=?,
                                              `ilosc_koniec`=?,
                                              `ilosckolor_start`=?,
-                                             `ilosckolor_koniec`=? 
+                                             `ilosckolor_koniec`=?,
+                                             `iloscskans_start`=?,
+                                             `iloscskans_koniec`=?
                                          where `rowid`=?",
-                    'ssiiiii',
+                    'ssiiiiiii',
                     array(
                         ($this->datacounterstart == '' || $this->datacounterstart == '0000-00-00') ? "NULL" : $this->datacounterstart,
                         ($this->datacounterend == '' || $this->datacounterend == '0000-00-00') ? "NULL" : $this->datacounterend,
@@ -247,6 +263,8 @@ class agreement extends Model
                         str_replace(' ', '', $this->counterend),
                         str_replace(' ', '', $this->countercolorstart),
                         str_replace(' ', '', $this->countercolorend),
+                        str_replace(' ', '', $this->counterscansstart),
+                        str_replace(' ', '', $this->counterscansend),
                         $this->prtcntrowid
                     )
                 );

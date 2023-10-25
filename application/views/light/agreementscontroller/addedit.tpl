@@ -189,6 +189,26 @@
                     </td>
                 </tr>
 
+                <tr id="trtxtiloscskanow">
+                    <th class='tdOpis'>
+                        skanów w abonam.
+                    </th>
+                    <td class='tdWartosc'>
+                        <input type="text" id='txtiloscskanow'
+                               class="form-control form-control-md" maxlength="10"
+                               {if $rowid!=0 && !empty($dataUmowa[0].iloscskans)}value="{$dataUmowa[0].iloscskans|number_format:0:",":" "|escape:'htmlall'}"{/if}>
+                    </td>
+
+                    <th class='tdOpis'>
+                        cena za skan
+                    </th>
+                    <td class='tdWartosc'>
+                        <input type="text" id='txtcenazaskan'
+                               class="form-control form-control-md" maxlength="10"
+                               {if $rowid!=0 && !empty($dataUmowa[0].cenazascan)}value="{$dataUmowa[0].cenazascan|number_format:3:",":" "|escape:'htmlall'}"{/if}>
+                    </td>
+                </tr>
+
 
                 <tr id="trtxtcenazastrone">
                     <th class='tdOpis'>
@@ -267,18 +287,23 @@
             <table class='table table-sm bok-two-column-layout'>
 
                 <tr>
-                    <th class="text-center" colspan="6">stan początkowy licznika</th>
+                    <th class="text-center" colspan="8">stan początkowy licznika</th>
                 </tr>
                 <tr>
-                    <td class="align-middle text-muted"><small>czarno/biały:</small></td>
+                    <td class="align-middle text-muted"><small>c/b:</small></td>
                     <td class="tdWartosc">
                         <input type="text" id='counterstart' class="form-control form-control-md" maxlength="10"
                                {if $prtcntrowid!=0 && !empty($dataCounters[0].ilosc_start)}value="{$dataCounters[0].ilosc_start|number_format:0:",":" "|escape:'htmlall'}"{/if}
                     </td>
-                    <td class="align-middle text-muted"><small>kolor:</small></td>
+                    <td class="align-middle text-muted"><small>kol:</small></td>
                     <td class="tdWartosc">
                         <input type="text" id='countercolorstart' class="form-control form-control-md" maxlength="10"
                                {if $prtcntrowid!=0 && !empty($dataCounters[0].ilosckolor_start)}value="{$dataCounters[0].ilosckolor_start|number_format:0:",":" "|escape:'htmlall'}"{/if}>
+                    </td>
+                    <td class="align-middle text-muted"><small>skan:</small></td>
+                    <td class="tdWartosc">
+                        <input type="text" id='counterscansstart' class="form-control form-control-md" maxlength="10"
+                               {if $prtcntrowid!=0 && !empty($dataCounters[0].iloscskans_start)}value="{$dataCounters[0].iloscskans_start|number_format:0:",":" "|escape:'htmlall'}"{/if}>
                     </td>
                     <td class="align-middle text-muted"><small>data:</small></td>
                     <td class="tdWartosc">
@@ -292,18 +317,23 @@
         <div class="col">
             <table class='table table-sm bok-two-column-layout'>
                 <tr>
-                    <th class="text-center" colspan="6">stan końcowy licznika</th>
+                    <th class="text-center" colspan="8">stan końcowy licznika</th>
                 </tr>
                 <tr>
-                    <td class="align-middle text-muted"><small>czarno/biały:</small></td>
+                    <td class="align-middle text-muted"><small>c/b:</small></td>
                     <td class="tdWartosc">
                         <input type="text" id='counterend' class="form-control form-control-md" maxlength="10"
                                {if $prtcntrowid!=0 && !empty($dataCounters[0].ilosc_koniec)}value="{$dataCounters[0].ilosc_koniec|number_format:0:",":" "|escape:'htmlall'}"{/if}>
                     </td>
-                    <td class="align-middle text-muted"><small>kolor:</small></td>
+                    <td class="align-middle text-muted"><small>kol:</small></td>
                     <td class="tdWartosc">
                         <input type="text" id='countercolorend' class="form-control form-control-md" maxlength="10"
                                {if $prtcntrowid!=0 && !empty($dataCounters[0].ilosckolor_koniec)}value="{$dataCounters[0].ilosckolor_koniec|number_format:0:",":" "|escape:'htmlall'}"{/if}>
+                    </td>
+                    <td class="align-middle text-muted"><small>skan:</small></td>
+                    <td class="tdWartosc">
+                        <input type="text" id='counterscansend' class="form-control form-control-md" maxlength="10"
+                               {if $prtcntrowid!=0 && !empty($dataCounters[0].iloscskans_koniec)}value="{$dataCounters[0].iloscskans_koniec|number_format:0:",":" "|escape:'htmlall'}"{/if}>
                     </td>
                     <td class="align-middle text-muted"><small>data:</small></td>
                     <td class="tdWartosc">
