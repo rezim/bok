@@ -322,7 +322,7 @@ class printer extends Model
     function replaceprinter($serial, $newSerial, $rowidAgreement, $counterEnd, $counterStart, $counterColorEnd, $counterColorStart, $scansEnd, $scansStart, $replacementDate)
     {
         $this->_table = 'printer_service';
-        $result = $this->insert("`serial`, `new_serial`, `rowid_agreement`, `ilosc_koniec`, `ilosc_start`, `ilosckolor_koniec`, `ilosckolor_start`, `iloscskan_koniec`, `iloscskan_start`, `date`",
+        $result = $this->insert("`serial`, `new_serial`, `rowid_agreement`, `ilosc_koniec`, `ilosc_start`, `ilosckolor_koniec`, `ilosckolor_start`, `iloscskans_koniec`, `iloscskans_start`, `date`",
             'ssiiiiiiis',
             array($serial, $newSerial, $rowidAgreement, $counterEnd, $counterStart, $counterColorEnd, $counterColorStart, $scansEnd, $scansStart, $replacementDate)
         );
