@@ -498,9 +498,9 @@ InvoiceManager = function (invoice_number_length) {
 
     this.showClientWithAllIssuedInvoices = function (show) {
         if (show) {
-            $('.allInvoicesIssued').show();
+            $('.allInvoicesIssued:not(.hasError)').show();
         } else {
-            $('.allInvoicesIssued').hide();
+            $('.allInvoicesIssued:not(.hasError)').hide();
         }
     };
 
