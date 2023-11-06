@@ -1,11 +1,11 @@
 const callServiceAction = (serviceUrl, dataContainerId, success = successCallback, error = errorCallback) => {
     const dataContainer = getContainerById(dataContainerId);
 
-    if (!dataContainer) {
-        console.error(`Can't call service action. Form container: ${dataContainerSelector} NOT FOUND !!!`);
+    if (!dataContainer && dataContainerId) {
+        console.error(`Can't call service action. Form container: ${dataContainerId} NOT FOUND !!!`);
         return;
     }
-    const data = getDataFromContainer(dataContainer);
+    const data = dataContainer ? getDataFromContainer(dataContainer) : {};
 
     $.ajax({
         type: 'POST',
