@@ -129,6 +129,9 @@ InvoiceManager = function (invoice_number_length) {
 
             for (const agrIds of groupedAgreementIds) {
                 const params = getInvoiceParams(invoice, agrIds);
+
+                console.log(params);
+
                 let newInvoice;
                 try {
                     newInvoice = await loadAsyncData('/clientinvoices/addnewinvoice/notemplate', params);
@@ -697,6 +700,20 @@ InvoiceManager = function (invoice_number_length) {
                         "discount_percent": 0
                     });
                 }
+
+                if (agreement["wartoscscans"] > 0) {
+                    positions.push({
+                        "name": getPositionDesc("Skany powyżej abonamentu", agreement, invoice['pokaznumerseryjny'], false),
+                        "additional_info": getLocalization(agreement),
+                        "tax": 23,
+                        "quantity": agreement["scanspowyzej"],
+                        "quantity_unit": "szt",
+                        "total_price_gross": agreement["scanspowyzej"] * agreement["cenazascan"] * 1.23,
+                        "discount_percent": 0
+                    });
+                }
+
+
             }
         });
 
