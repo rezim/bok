@@ -1,36 +1,46 @@
 <?php
-class report extends Model 
-{
-    protected $dataod='',$datado='',$filterklient='',$filterdrukarka='',$nazwakrotka='';
 
-    function getPrinterService() {
-        $query = "select * from `printer_service` 
+const EMPTY_SCANS_ENTRY = array("next_month_skany" => 0, "next_month_data_wiadomosci_skany" => '0000-00-00',
+    "skany_start" => 0, "skany_koniec" => 0, "data_wiadomosci_scans_start" => '0000-00-00', "data_wiadomosci_scans_koniec" => '0000-00-00');
+
+class report extends Model
+{
+    protected $dataod = '', $datado = '', $filterklient = '', $filterdrukarka = '', $nazwakrotka = '';
+
+    function getPrinterService()
+    {
+        // TODO: update scans column names
+        $query = "select *, iloscskans_start as 'skany_start', iloscskans_koniec as 'skany_koniec' from `printer_service` 
                   where DATE(date) >= '{$this->dataod}' and DATE(date) <= '{$this->datado}' 
                   order by date asc";
 
-        return $this->query($query,null,false);
+        return $this->query($query, null, false);
     }
 
-    function getAgreementPrintersStart() {
-        $query = "select * from `agreement_printers` 
+    function getAgreementPrintersStart()
+    {
+        // TODO: update scans column names
+        $query = "select *, iloscskans_start as 'skany_start', iloscskans_koniec as 'skany_koniec' from `agreement_printers` 
                   where DATE(date_start) >= '{$this->dataod}' and DATE(date_start) <= '{$this->datado}' 
                   order by date_start asc";
 
-        return $this->query($query,null,false);
+        return $this->query($query, null, false);
     }
 
-    function getAgreementPrintersEnd() {
+    function getAgreementPrintersEnd()
+    {
         $query = "select * from `agreement_printers` 
                   where DATE(date_koniec) >= '{$this->dataod}' and DATE(date_koniec) <= '{$this->datado}' 
                   order by date_koniec asc";
 
-        return $this->query($query,null,false);
+        return $this->query($query, null, false);
     }
 
-    function getScansMonthly() {
-        if($this->dataod=='' || $this->datado=='')
-        {
-            echo('Wybierz zakres dat');die();
+    function getScansMonthly($dateFrom, $dateTo)
+    {
+        if ($dateFrom == '' || $dateTo == '') {
+            echo('Wybierz zakres dat');
+            die();
         }
         $query = "
                 select `s`.`serial` AS `skany_serial`, min(`s`.`ilosctotal`) AS `skany_start`, 
@@ -38,32 +48,28 @@ class report extends Model
                        `p`.`model` AS `skany_model_urzadzenia` 
                 FROM ((`bok`.`scans` `s` join `bok`.`agreements` `a` on(`s`.`serial` = `a`.`serial`)) 
                     join `bok`.`printers` `p` on(`s`.`serial` = `p`.`serial`)) 
-                WHERE `a`.`activity` = 1 and `s`.`datawiadomosci` >= '{$this->dataod}' and `s`.`datawiadomosci` <= '{$this->datado}' group by `s`.`serial` order by max(`s`.`ilosctotal`) - min(`s`.`ilosctotal`) desc;";
-        return $this->query($query,null,false);
+                WHERE `a`.`activity` = 1 and `s`.`datawiadomosci` >= '{$dateFrom}' and `s`.`datawiadomosci` < '{$dateTo}' group by `s`.`serial` order by max(`s`.`ilosctotal`) - min(`s`.`ilosctotal`) desc;";
+        return $this->query($query, null, false);
     }
 
     function getReportsMiesieczne()
     {
-        if($this->dataod=='' || $this->datado=='')
-        {
-            echo('Wybierz zakres dat');die();
+        if ($this->dataod == '' || $this->datado == '') {
+            echo('Wybierz zakres dat');
+            die();
         }
         $where = " where a.rowid!=0 and a.activity=1 and a.rozliczenie='miesieczne' and c.activity = 1 and
                   DATE_FORMAT(a.dataod, '%Y-%m') <= DATE_FORMAT('{$this->dataod}', '%Y-%m')
                 ";
-            if($this->filterklient!='')
-            {
-                $where.=" and (c.nazwakrotka like '%{$this->filterklient}%' or c.nazwapelna like '%$this->filterklient%')";
-            }
-            if($this->nazwakrotka!='')
-            {
-                $where.=" and (c.nazwakrotka ='{$this->nazwakrotka}')";
-            }
-            if($this->filterdrukarka!='')
-            {
-                $where.=" and (a.serial ='{$this->filterdrukarka}')";
-            }
-
+        if ($this->filterklient != '') {
+            $where .= " and (c.nazwakrotka like '%{$this->filterklient}%' or c.nazwapelna like '%$this->filterklient%')";
+        }
+        if ($this->nazwakrotka != '') {
+            $where .= " and (c.nazwakrotka ='{$this->nazwakrotka}')";
+        }
+        if ($this->filterdrukarka != '') {
+            $where .= " and (a.serial ='{$this->filterdrukarka}')";
+        }
 
 
         $dateFrom = $this->dataod;
@@ -189,47 +195,65 @@ class report extends Model
                 order by c.nazwakrotka
             ";
 
-        $monthlyReport = $this->query($query,null,false);
+        $monthlyReport = $this->query($query, null, false);
 
-        $scans = $this->getScansMonthly();
+        $scans = $this->getScansMonthly($dateFrom, $dateTo);
 
         $scanKeys = array_map(function ($scan) {
             return $scan['skany_serial'];
         }, $scans);
         $scans = array_combine($scanKeys, $scans);
 
-        return array_map(function($report) use (&$scans) {
+        $nextMonthScans = $this->getScansMonthly($dateFromNextMonth, $dateToNextMonth);
+        $nextMonthScans = array_map(function ($scan) {
+            return array("skany_serial" => $scan["skany_serial"], "next_month_skany" => $scan["skany_start"], "next_month_data_wiadomosci_skany" => $scan["data_wiadomosci_scans_start"]);
+        }, $nextMonthScans);
+
+        $scanKeys = array_map(function ($scan) {
+            return $scan['skany_serial'];
+        }, $nextMonthScans);
+        $nextMonthScans = array_combine($scanKeys, $nextMonthScans);
+
+        // empty scans entry to add to $report in case there are no scans for serial
+        $emptyScansArray = EMPTY_SCANS_ENTRY;
+
+        return array_map(function ($report) use (&$scans, &$nextMonthScans, &$emptyScansArray) {
             $serial = $report['currentserial'];
             if (isset($scans[$serial])) {
-                return array_merge($report, $scans[$serial]);
+                $arrScans = $scans[$serial];
+
+                if (isset($nextMonthScans[$serial])) {
+                    $arrScans = array_merge($scans[$serial], $nextMonthScans[$serial]);
+                }
+
+                return array_merge($report, $arrScans);
             }
-            return $report;
+            // merge empty scans, this is to avoid many ifs in controller
+            return array_merge($report, array_merge(array("skany_serial" => $serial, "skany_model_urzadzenia" => $report['model']), $emptyScansArray));
         }, $monthlyReport);
     }
+
     function getReportsRoczne()
-    { 
-        if($this->dataod=='' || $this->datado=='')
-        {
-            echo('Wybierz zakres dat');die();
+    {
+        if ($this->dataod == '' || $this->datado == '') {
+            echo('Wybierz zakres dat');
+            die();
         }
         $where = " where a.rowid!=0 and a.activity=1 and a.rozliczenie='roczne' and 
                   ((DATE_FORMAT(a.dataod, '%Y') <= DATE_FORMAT('{$this->dataod}', '%Y') and (DATE_FORMAT(a.dataod, '%m'))=DATE_FORMAT('{$this->dataod}', '%m')) or 
                   (DATE_FORMAT(a.dataod, '%Y') = DATE_FORMAT('{$this->dataod}', '%Y') and (DATE_FORMAT(a.dataod, '%m'))=DATE_FORMAT('{$this->dataod}', '%m')))
                 ";
-            if($this->filterklient!='')
-            {
-                $where.=" and (c.nazwakrotka like '%{$this->filterklient}%' or c.nazwapelna like '%$this->filterklient%')";
-            }
-            if($this->nazwakrotka!='')
-            {
-                $where.=" and (c.nazwakrotka ='{$this->nazwakrotka}')";
-            }
-            if($this->filterdrukarka!='')
-            {
-                $where.=" and (a.serial ='{$this->filterdrukarka}')";
-            }
-            
-         $query = "
+        if ($this->filterklient != '') {
+            $where .= " and (c.nazwakrotka like '%{$this->filterklient}%' or c.nazwapelna like '%$this->filterklient%')";
+        }
+        if ($this->nazwakrotka != '') {
+            $where .= " and (c.nazwakrotka ='{$this->nazwakrotka}')";
+        }
+        if ($this->filterdrukarka != '') {
+            $where .= " and (a.serial ='{$this->filterdrukarka}')";
+        }
+
+        $query = "
                 select 
      
                 '{$this->dataod}' as 'dacik',
@@ -249,7 +273,9 @@ class report extends Model
                 IFNULL(a.iloscstron_color,0) as 'iloscstron_kolor',
                 IFNULL(a.cenazastrone_kolor,0) as 'cenazastrone_kolor', 
                 IFNULL(a.rabatdoabonamentu,0) as 'rabatdoabonamentu',
-                IFNULL(a.rabatdowydrukow,0) as 'rabatdowydrukow',
+                IFNULL(a.rabatdowydrukow,0) as 'rabatdowydrukow',                
+                IFNULL(a.cenazascan,0) as 'cenazaskan',
+                IFNULL(a.iloscskans, 0) as 'skanowwabonamencie',                
                 a.serial as 'serial', 
                 b.model as 'model', 
                 a.rowidclient as 'rowidclient', 
@@ -296,10 +322,11 @@ class report extends Model
                 order by c.nazwakrotka
             ";
 
-        return $this->query($query,null,false); 
+        return $this->query($query, null, false);
     }
 
-    function getDateTo() {
+    function getDateTo()
+    {
         return $this->datado;
     }
 }

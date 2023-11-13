@@ -1,17 +1,32 @@
 <?php
 
+const
+SCAN_START = 'skany_start',
+SCAN_END = 'skany_koniec',
+SCAN_SERIAL = 'skany_serial',
+SCAN_DATE_START = 'data_wiadomosci_scans_start',
+SCAN_DATE_END = 'data_wiadomosci_scans_koniec',
+SCAN_PRICE = 'cenazascan',
+SCAN_AMOUNT_FOR_FREE = 'iloscskans',
+SCAN_SUM = 'skany_sum',
+SCANS_NEXT_MONTH = 'next_month_skany',
+SCANS_VALUE = 'wartoscscans',
+SCANS_AMOUNT_PAID = 'scanspowyzej';
+
 class reportsController extends InvoicesController
 {
     private $REPORT_FIELD_NAMES = array('strony_black_koniec', 'strony_black_start', 'strony_kolor_koniec', 'strony_kolor_start',
         'data_wiadomosci_black_koniec', 'data_wiadomosci_black_start', 'data_wiadomosci_kolor_koniec', 'data_wiadomosci_kolor_start',
-        'serials');
+        'serials', SCAN_START, SCAN_END, SCAN_DATE_START, SCAN_DATE_END);
 
     private $CLIENT_FIELD_NAMES = array('rowidclient', 'nazwapelna', 'nazwakrotka', 'terminplatnosci', 'nip',
         'mailfaktury', 'ulica', 'miasto', 'kodpocztowy', 'pokaznumerseryjny',
         'pokazstanlicznika', 'fakturadlakazdejumowy', 'bank', 'numerrachunku');
 
     private $AGREEMENT_FIELDS = array('rowidumowa', 'nrumowy', 'serial', 'model', 'rozliczenie', 'strony_black_start', 'data_wiadomosci_black_start', 'strony_black_koniec',
-        'data_wiadomosci_black_koniec', 'strony_kolor_start', 'data_wiadomosci_kolor_start', 'strony_kolor_koniec', 'data_wiadomosci_kolor_koniec', 'strony_black_sum',
+        'data_wiadomosci_black_koniec', 'strony_kolor_start', 'data_wiadomosci_kolor_start', 'strony_kolor_koniec', 'data_wiadomosci_kolor_koniec',
+        SCAN_START, SCAN_END, SCAN_DATE_START, SCAN_DATE_END, SCAN_SUM,
+        'strony_black_sum',
         'strony_kolor_sum', 'serials', 'nazwakrotka', 'lokalizacja_ulica', 'lokalizacja_miasto', 'lokalizacja_kodpocztowy', 'lokalizacja_telefon', 'lokalizacja_mail', 'lokalizacja_nazwa',
         'typ_umowy', 'odbiorca_id', 'next_month_black', 'next_month_kolor', 'next_month_datawiadomosci');
 
@@ -45,11 +60,15 @@ class reportsController extends InvoicesController
                     $collectiveAgreement['lista_umow'] = array();
                     $collectiveAgreement['strony_black_sum'] = 0;
                     $collectiveAgreement['strony_kolor_sum'] = 0;
+                    // scans
+                    $collectiveAgreement[SCAN_SUM] = 0;
                 }
                 mergeArrays($collectiveAgreement, $report, $this->REPORT_FIELD_NAMES);
                 $collectiveAgreement['lista_umow'][$key] = $report;
                 $collectiveAgreement['strony_black_sum'] += sumOfArrayRanges($report, 'strony_black_koniec', 'strony_black_start');
                 $collectiveAgreement['strony_kolor_sum'] += sumOfArrayRanges($report, 'strony_kolor_koniec', 'strony_kolor_start');
+                // scans
+                $collectiveAgreement[SCAN_SUM] += sumOfArrayRanges($report, SCAN_END, SCAN_START);
             } else {
                 // it could happen it was already added
                 if (!isset($result[$key])) {
@@ -83,6 +102,8 @@ class reportsController extends InvoicesController
 
                 $result[$report['rowidumowa']]['strony_black_sum'] += ($report['strony_black_sum']);
                 $result[$report['rowidumowa']]['strony_kolor_sum'] += ($report['strony_kolor_sum']);
+                // scans
+                $result[$report['rowidumowa']][SCAN_SUM] += ($report[SCAN_SUM]);
 
                 $result[$report['rowidumowa']]['serials'][] = $report['serial'];
             }
@@ -102,27 +123,41 @@ class reportsController extends InvoicesController
                 if ($indexSerial !== false) {
                     $reports[$agr_id]['strony_black_koniec'][$indexSerial] = $replacement['ilosc_koniec'];
                     $reports[$agr_id]['strony_kolor_koniec'][$indexSerial] = $replacement['ilosckolor_koniec'];
+                    // scans
+                    $reports[$agr_id][SCAN_END][$indexSerial] = $replacement[SCAN_END];
 
                     $reports[$agr_id]['data_wiadomosci_black_koniec'][$indexSerial] = $replacement['date'];
                     $reports[$agr_id]['data_wiadomosci_kolor_koniec'][$indexSerial] = $replacement['date'];
+                    // scans
+                    $reports[$agr_id][SCAN_DATE_END][$indexSerial] = $replacement['date'];
                 }
 
                 if ($indexNewSerial !== false) {
                     $reports[$agr_id]['strony_black_start'][$indexNewSerial] = $replacement['ilosc_start'];
                     $reports[$agr_id]['strony_kolor_start'][$indexNewSerial] = $replacement['ilosckolor_start'];
+                    // scans
+                    $reports[$agr_id][SCAN_START][$indexNewSerial] = $replacement[SCAN_START];
 
                     $reports[$agr_id]['data_wiadomosci_black_start'][$indexNewSerial] = $replacement['date'];
                     $reports[$agr_id]['data_wiadomosci_kolor_start'][$indexNewSerial] = $replacement['date'];
+                    // scans
+                    $reports[$agr_id][SCAN_DATE_START][$indexNewSerial] = $replacement['date'];
                 } else {
                     $reports[$agr_id]['strony_black_start'][] = $replacement['ilosc_start'];
                     $reports[$agr_id]['strony_black_koniec'][] = 0;
                     $reports[$agr_id]['strony_kolor_start'][] = $replacement['ilosckolor_start'];
                     $reports[$agr_id]['strony_kolor_koniec'][] = 0;
+                    // scans
+                    $reports[$agr_id][SCAN_START][] = $replacement[SCAN_START];
+                    $reports[$agr_id][SCAN_END][] = 0;
 
                     $reports[$agr_id]['data_wiadomosci_black_start'][] = $replacement['date'];
                     $reports[$agr_id]['data_wiadomosci_black_koniec'][] = $replacement['date'];
                     $reports[$agr_id]['data_wiadomosci_kolor_start'][] = $replacement['date'];
                     $reports[$agr_id]['data_wiadomosci_kolor_koniec'][] = $replacement['date'];
+                    // scans
+                    $reports[$agr_id][SCAN_DATE_START][] = $replacement['date'];
+                    $reports[$agr_id][SCAN_DATE_END][] = $replacement['date'];
 
                     $reports[$agr_id]['serials'][] = $replacement['new_serial'];
                 }
@@ -134,6 +169,9 @@ class reportsController extends InvoicesController
                     $reports[$agr_id]['strony_kolor_sum'] =
                         $reports[$agr_id]['strony_kolor_koniec'][$indexSerial] - $reports[$agr_id]['strony_kolor_start'][$indexSerial] +
                         $reports[$agr_id]['strony_kolor_koniec'][$indexNewSerial] - $reports[$agr_id]['strony_kolor_start'][$indexNewSerial];
+                    $reports[$agr_id][SCAN_SUM] =
+                        $reports[$agr_id][SCAN_END][$indexSerial] - $reports[$agr_id][SCAN_START][$indexSerial] +
+                        $reports[$agr_id][SCAN_END][$indexNewSerial] - $reports[$agr_id][SCAN_START][$indexNewSerial];
                 }
             }
         }
@@ -151,21 +189,23 @@ class reportsController extends InvoicesController
 
         foreach ($reports as $report) {
             $agreementPrintersKey = $report['serial'] . '-' . $report['rowidumowa'];
-            $start = $agreementPrintersStart[$agreementPrintersKey];
-            $end = $agreementPrintersEnd[$agreementPrintersKey];
-            if (isset($start)
-                && $report['rowidumowa'] == $start['rowid_agreement']) {
+            $start = $agreementPrintersStart[$agreementPrintersKey] ?? null;
+            $end = $agreementPrintersEnd[$agreementPrintersKey] ?? null;
+            if ($start !== null && $report['rowidumowa'] == $start['rowid_agreement']) {
                 $report['strony_black_start'] = $start['ilosc_start'];
                 $report['strony_kolor_start'] = $start['ilosckolor_start'];
-                $report['iloscskans_start'] = $start['iloscskans_start'];
+                // scans
+                $report[SCAN_START] = $start[SCAN_START];
+
                 $report['data_wiadomosci_black_start'] = $start['date_start'];
                 $report['data_wiadomosci_kolor_start'] = $start['date_start'];
+                // scans
+                $report[SCAN_DATE_START] = $start['date_start'];
             }
-            if (isset($end)
-                && $report['rowidumowa'] == $end['rowid_agreement']) {
+            if ($end !== null && $report['rowidumowa'] == $end['rowid_agreement']) {
                 $report['strony_black_koniec'] = $end['ilosc_koniec'];
                 $report['strony_kolor_koniec'] = $end['ilosckolor_koniec'];
-                $report['iloscskans_koniec'] = $end['iloscskans_koniec'];
+
                 $report['data_wiadomosci_black_koniec'] = $end['date_koniec'];
                 $report['data_wiadomosci_kolor_koniec'] = $end['date_koniec'];
 
@@ -173,9 +213,16 @@ class reportsController extends InvoicesController
                 $daysInMoth = cal_days_in_month(CAL_GREGORIAN, date_format($dateEnd, 'm'), date_format($dateEnd, 'Y'));
                 $amountOfDays = intval($dateEnd->format('d'));
 
-                $report['stronwabonamencie'] *= ($amountOfDays / $daysInMoth);
-                $report['iloscstron_kolor'] *= ($amountOfDays / $daysInMoth);
-                $report['abonament'] *= ($amountOfDays / $daysInMoth);
+                // scans
+                $report[SCAN_END] = $start[SCAN_END];
+                $report[SCAN_DATE_END] = $start[SCAN_DATE_END];
+
+                // calculate part of the month which is paid (if not entire month)
+                $partOfTheMonth = ($amountOfDays / $daysInMoth);
+                $report['stronwabonamencie'] *= $partOfTheMonth;
+                $report['iloscstron_kolor'] *= $partOfTheMonth;
+                $report['abonament'] *= $partOfTheMonth;
+                $report[SCAN_AMOUNT_FOR_FREE] *= $partOfTheMonth;
             }
 
             $result[$report['serial']] = $report;
@@ -200,11 +247,17 @@ class reportsController extends InvoicesController
                 $result[$report['serial']]['strony_black_start'] = array($report['strony_black_start']);
                 $result[$report['serial']]['strony_kolor_koniec'] = array();
                 $result[$report['serial']]['strony_kolor_start'] = array($report['strony_kolor_start']);
+                // scans
+                $result[$report['serial']][SCAN_END] = array();
+                $result[$report['serial']][SCAN_START] = array($report[SCAN_START]);
 
                 $result[$report['serial']]['data_wiadomosci_black_koniec'] = array();
                 $result[$report['serial']]['data_wiadomosci_black_start'] = array($report['data_wiadomosci_black_start']);
                 $result[$report['serial']]['data_wiadomosci_kolor_koniec'] = array();
                 $result[$report['serial']]['data_wiadomosci_kolor_start'] = array($report['data_wiadomosci_kolor_start']);
+                // scans
+                $result[$report['serial']][SCAN_DATE_END] = array();
+                $result[$report['serial']][SCAN_DATE_START] = array($report[SCAN_DATE_START]);
 
                 $result[$report['serial']]['serials'] = array($report['serial']);
                 foreach ($srvs as $srv) {
@@ -212,25 +265,39 @@ class reportsController extends InvoicesController
                     $result[$report['serial']]['strony_black_start'][] = $srv['ilosc_start'];
                     $result[$report['serial']]['strony_kolor_koniec'][] = $srv['ilosckolor_koniec'];
                     $result[$report['serial']]['strony_kolor_start'][] = $srv['ilosckolor_start'];
+                    // scans
+                    $result[$report['serial']][SCAN_END][] = $srv[SCAN_END];
+                    $result[$report['serial']][SCAN_START][] = $srv[SCAN_START];
 
                     $result[$report['serial']]['data_wiadomosci_black_koniec'][] = $srv['date'];
                     $result[$report['serial']]['data_wiadomosci_black_start'][] = $srv['date'];
                     $result[$report['serial']]['data_wiadomosci_kolor_koniec'][] = $srv['date'];
                     $result[$report['serial']]['data_wiadomosci_kolor_start'][] = $srv['date'];
+                    // scans
+                    $result[$report['serial']][SCAN_DATE_END][] = $srv['date'];
+                    $result[$report['serial']][SCAN_DATE_START][] = $srv['date'];
 
                     $result[$report['serial']]['serials'][] = $report['serial'];
                 }
                 $result[$report['serial']]['strony_black_koniec'][] = $report['strony_black_koniec'];
                 $result[$report['serial']]['strony_kolor_koniec'][] = $report['strony_kolor_koniec'];
+                // scans
+                $result[$report['serial']][SCAN_END][] = $report[SCAN_END];
 
                 $result[$report['serial']]['data_wiadomosci_black_koniec'][] = $report['data_wiadomosci_black_koniec'];
                 $result[$report['serial']]['data_wiadomosci_kolor_koniec'][] = $report['data_wiadomosci_kolor_koniec'];
+                // scans
+                $result[$report['serial']][SCAN_DATE_END][] = $report[SCAN_DATE_END];
 
                 $result[$report['serial']]['strony_black_sum'] = 0;
                 $result[$report['serial']]['strony_kolor_sum'] = 0;
+                // scans
+                $result[$report['serial']][SCAN_SUM] = 0;
                 for ($i = 0; $i < count($result[$report['serial']]['strony_black_koniec']); $i++) {
                     $result[$report['serial']]['strony_black_sum'] += $result[$report['serial']]['strony_black_koniec'][$i] - $result[$report['serial']]['strony_black_start'][$i];
                     $result[$report['serial']]['strony_kolor_sum'] += $result[$report['serial']]['strony_kolor_koniec'][$i] - $result[$report['serial']]['strony_kolor_start'][$i];
+                    // scans
+                    $result[$report['serial']][SCAN_SUM] += $result[$report['serial']][SCAN_END][$i] - $result[$report['serial']][SCAN_START][$i];
                 }
 
             } else {
@@ -239,14 +306,22 @@ class reportsController extends InvoicesController
                 $result[$report['serial']]['strony_black_start'] = array($report['strony_black_start']);
                 $result[$report['serial']]['strony_kolor_koniec'] = array($report['strony_kolor_koniec']);
                 $result[$report['serial']]['strony_kolor_start'] = array($report['strony_kolor_start']);
+                // scans
+                $result[$report['serial']][SCAN_END] = array($report[SCAN_END]);
+                $result[$report['serial']][SCAN_START] = array($report[SCAN_START]);
 
                 $result[$report['serial']]['data_wiadomosci_black_koniec'] = array($report['data_wiadomosci_black_koniec']);
                 $result[$report['serial']]['data_wiadomosci_black_start'] = array($report['data_wiadomosci_black_start']);
                 $result[$report['serial']]['data_wiadomosci_kolor_koniec'] = array($report['data_wiadomosci_kolor_koniec']);
                 $result[$report['serial']]['data_wiadomosci_kolor_start'] = array($report['data_wiadomosci_kolor_start']);
+                // scans
+                $result[$report['serial']][SCAN_DATE_END] = array($report[SCAN_DATE_END]);
+                $result[$report['serial']][SCAN_DATE_START] = array($report[SCAN_DATE_START]);
 
                 $result[$report['serial']]['strony_black_sum'] = $report['strony_black_koniec'] - $report['strony_black_start'];
                 $result[$report['serial']]['strony_kolor_sum'] = $report['strony_kolor_koniec'] - $report['strony_kolor_start'];
+                // scans
+                $result[$report['serial']][SCAN_SUM] = $report[SCAN_END] - $report[SCAN_START];
 
                 $result[$report['serial']]['serials'] = array($report['serial']);
             }
@@ -398,21 +473,31 @@ class reportsController extends InvoicesController
                 }
                 if ($hasError === 2) {
                     if (
-                        ($item['strony_black_koniec'][0] >= $item['strony_black_start'][0] ||
-                            $item['strony_kolor_koniec'][0] >= $item['strony_kolor_start'][0]) &&
-                        ($item['data_wiadomosci_black_koniec'][0] !== $item['data_wiadomosci_black_start'][0] || $item['next_month_datawiadomosci'] !== "0000-00-00")) {
+                        (   // black
+                            $item['strony_black_koniec'][0] >= $item['strony_black_start'][0] ||
+                            // color
+                            $item['strony_kolor_koniec'][0] >= $item['strony_kolor_start'][0] ||
+                            // scans
+                            $item[SCAN_END][0] >= $item[SCAN_START][0]) &&
+                        (   // black
+                            $item['data_wiadomosci_black_koniec'][0] !== $item['data_wiadomosci_black_start'][0] ||
+                            $item['next_month_datawiadomosci'] !== "0000-00-00")) {
 
                         $blackEnd = $item['strony_black_koniec'][0];
                         $colorEnd = $item['strony_kolor_koniec'][0];
+                        // scans
+                        $scanEnd = $item[SCAN_END][0];
                         $fixedDate = $item['data_wiadomosci_black_koniec'][0];
-
 
                         if ($item['next_month_datawiadomosci'] !== "0000-00-00") {
                             if ($item['next_month_black'] >= $blackEnd && $item['next_month_kolor'] >= $colorEnd) {
-
                                 $blackEnd = $item['next_month_black'];
                                 $colorEnd = $item['next_month_kolor'];
                                 $fixedDate = $item['next_month_datawiadomosci'];
+                            }
+
+                            if ($item[SCANS_NEXT_MONTH] >= $scanEnd) {
+                                $scanEnd = $item[SCANS_NEXT_MONTH];
                             }
                         }
 
@@ -421,6 +506,7 @@ class reportsController extends InvoicesController
                             "fixedDateTo" => $fixedDate,
                             "black" => $blackEnd,
                             "color" => $colorEnd,
+                            "scans" => $scanEnd,
                             "serial" => $item['currentserial']);
                     }
                 }
@@ -436,11 +522,13 @@ class reportsController extends InvoicesController
                     }
                     if ($hasError === 2) {
                         if ($agr['strony_black_koniec'][0] > $agr['strony_black_start'][0] ||
-                            $agr['strony_kolor_koniec'][0] > $agr['strony_kolor_start'][0]) {
+                            $agr['strony_kolor_koniec'][0] > $agr['strony_kolor_start'][0] ||
+                            $agr[SCAN_END][0] > $agr[SCAN_START][0]) {
                             $agreement['lista_umow'][$agrKey]['fix'] = array(
                                 "dateTo" => $this->report->getDateTo(),
                                 "black" => $agr['strony_black_koniec'][0],
                                 "color" => $agr['strony_kolor_koniec'][0],
+                                "scans" => $agr[SCAN_END][0],
                                 "serial" => $agr['currentserial']);
                         }
                     }
@@ -451,7 +539,7 @@ class reportsController extends InvoicesController
             $client['wartosc'] = isset($client['wartosc']) ? $client['wartosc'] : 0;
             $client['wartoscblack'] = isset($client['wartoscblack']) ? $client['wartoscblack'] : 0;
             $client['wartosckolor'] = isset($client['wartosckolor']) ? $client['wartosckolor'] : 0;
-            $client['wartoscskans'] = isset($client['wartoscskans']) ? $client['wartoscskans'] : 0;
+            $client[SCANS_VALUE] = $client[SCANS_VALUE] ?? 0;
             $client['wartoscabonament'] = isset($client['wartoscabonament']) ? $client['wartoscabonament'] : 0;
             $client['kwotadowykorzystania'] = isset($client['kwotadowykorzystania']) ? $client['kwotadowykorzystania'] : 0;
 
@@ -471,23 +559,32 @@ class reportsController extends InvoicesController
             if ($dayOfDateRange != 0) {
                 $item['stronwabonamencie'] = $item['stronwabonamencie'] - ($dayOfDateRange * ($item['stronwabonamencie'] / $daysAmount));
                 $item['iloscstron_kolor'] = $item['iloscstron_kolor'] - ($dayOfDateRange * ($item['iloscstron_kolor'] / $daysAmount));
+                $item[SCAN_AMOUNT_FOR_FREE] = $item[SCAN_AMOUNT_FOR_FREE] - ($dayOfDateRange * ($item[SCAN_AMOUNT_FOR_FREE] / $daysAmount));
             }
 
             $blackPagesNb = (int)$item['strony_black_sum'];
             $colorPagesNb = (int)$item['strony_kolor_sum'];
+            $scansNb = (int)$item[SCAN_SUM];
             $allPagesNb = $blackPagesNb + $colorPagesNb;
-
 
             $blackPrice = (float)$item['cenazastrone'];
             $colorPrice = (float)$item['cenazastrone_kolor'];
+            $scanPrice = (float)$item[SCAN_PRICE];
+
+            // TODO: discount is no longer used
             $discount = $item['rabatdowydrukow'] / 100;
 
             $allPagesValue = ($blackPagesNb * $blackPrice + $colorPagesNb * $colorPrice);
 
             $client['kwotadowykorzystania'] += $hasAmountInSubscription ? max($allPagesValue - $amountInSubscription, 0) : 0;
 
-            $contract = array("black" => !$hasAmountInSubscription ? $item['stronwabonamencie'] : 0, "color" => !$hasAmountInSubscription ? $item['iloscstron_kolor'] : 0);
+            $contract = array(
+                "black" => !$hasAmountInSubscription ? $item['stronwabonamencie'] : 0,
+                "color" => !$hasAmountInSubscription ? $item['iloscstron_kolor'] : 0,
+                SCAN_AMOUNT_FOR_FREE => $item[SCAN_AMOUNT_FOR_FREE]
+            );
 
+            // TODO: it seems we no longer use `jakczarne`, probably we can remove
             if (isset($item['jakczarne']) && !empty($item['jakczarne']) && $item['jakczarne'] == 1) {
                 // black
                 $blackExceeded = round(max($allPagesNb - $contract["black"], 0));
@@ -496,7 +593,11 @@ class reportsController extends InvoicesController
                 $client['wartoscblack'] += !$hasAmountInSubscription ? $blackValue : 0;
                 // color
                 $colorValue = 0;
+                $colorExceeded = 0;
                 $client['wartosckolor'] = !$hasAmountInSubscription ? $colorValue : 0;
+                // scans
+                $scansValue = 0;
+                $scansExceeded = 0;
             } else {
                 // black
                 $blackExceeded = round(max($blackPagesNb - $contract["black"], 0));
@@ -508,26 +609,34 @@ class reportsController extends InvoicesController
                 $colorValue = $colorExceeded * $colorPrice;
                 $colorValue = $colorValue - ($colorValue * $discount);
                 $client['wartosckolor'] += !$hasAmountInSubscription ? $colorValue : 0;
+                // scans
+                $scansExceeded = round(max($scansNb - $contract[SCAN_AMOUNT_FOR_FREE], 0));
+                $scansValue = $scansExceeded * $scanPrice;
+                $client[SCANS_VALUE] += $scansValue;
             }
 
             $totalValue = $hasAmountInSubscription ?
-                $subscription + max($allPagesValue - $amountInSubscription, 0) :
-                $subscription + $blackValue + $colorValue + $setupFee;
+                $subscription + max(($allPagesValue + $scansValue) - $amountInSubscription, 0) :
+                $subscription + $blackValue + $colorValue + $scansValue + $setupFee;
             $client['wartosc'] += $totalValue;
 
             $dataReports['suma'] += $totalValue;
 
             $agreement['stronwabonamencie'] = $contract["black"];
             $agreement['stronwabonamencie_kolor'] = $contract["color"];
+            $agreement[SCAN_AMOUNT_FOR_FREE] = $contract[SCAN_AMOUNT_FOR_FREE];
 
             $agreement['wartoscblack'] = $blackValue;
             $agreement['wartosckolor'] = $colorValue;
+            $agreement[SCANS_VALUE] = $scansValue;
 
             $agreement['stronblackpowyzej'] = $blackExceeded;
             $agreement['stronkolorpowyzej'] = $colorExceeded;
+            $agreement[SCANS_AMOUNT_PAID] = $scansExceeded;
 
             $agreement['cenazastrone'] = $blackPrice;
             $agreement['cenazastrone_kolor'] = $colorPrice;
+            $agreement[SCAN_PRICE] = $scanPrice;
             $agreement['wartoscabonament'] = $subscription;
             $agreement['kwotadowykorzystania'] = $amountInSubscription;
 

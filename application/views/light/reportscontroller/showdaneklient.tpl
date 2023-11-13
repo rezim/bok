@@ -80,7 +80,7 @@
                     {if isset($item.wartosckolor)} {$item.wartosckolor|number_format:2:",":" "|escape:'htmlall'}{/if}
                 </td>
                 <td class='tdNumber' style='padding-right:20px;white-space: nowrap'>
-                    {if isset($item.wartoscskans)} {$item.wartoscskans|number_format:2:",":" "|escape:'htmlall'}{/if}
+                    {if isset($item.wartoscscans)} {$item.wartoscscans|number_format:2:",":" "|escape:'htmlall'}{/if}
                 </td>
                 <td class='tdNumber tdLink' title='Pokaż szczegóły'
                     style='padding-right:20px;font-weight: bold;color:blue;white-space: nowrap'
@@ -121,6 +121,9 @@
                                     <th class="text-center border-left border-right border-top-0" colspan="4">
                                         kolor
                                     </th>
+                                    <th class="text-center border-left border-right border-top-0" colspan="4">
+                                        skany
+                                    </th>
                                     <th colspan="3" class="border-top-0">
                                     </th>
                                 </tr>
@@ -152,6 +155,18 @@
                                         cena
                                     </th>
                                     <th class="text-right pr-3">
+                                        wartość
+                                    </th>
+                                    <th class="text-right pr-3 border-left">
+                                        szt/abon.
+                                    </th>
+                                    <th class="text-right pr-3">
+                                        sztuk
+                                    </th>
+                                    <th class="text-right pr-3">
+                                        cena
+                                    </th>
+                                    <th class="text-right pr-3 border-right">
                                         wartość
                                     </th>
                                     <th class="text-right pr-3 border-left">
@@ -227,6 +242,22 @@
                                     <td class='text-right pr-3 border-right'>
                                         {if isset($item2.wartosckolor)} {$item2.wartosckolor|number_format:3:",":" "|escape:'htmlall'}{/if}
                                     </td>
+
+                                    {* scans *}
+                                    <td class='text-right pr-3 border-left'>
+                                        {if isset($item2.iloscskans)} {$item2.iloscskans|number_format:0:",":" "|escape:'htmlall'}{/if}
+                                    </td>
+                                    <td class='text-right pr-3'>
+                                        {if isset($item2.scanspowyzej)} {$item2.scanspowyzej|number_format:0:",":" "|escape:'htmlall'}{/if}
+                                    </td>
+                                    <td class='text-right pr-3'>
+                                        {if isset($item2.cenazascan)} {$item2.cenazascan|number_format:3:",":" "|escape:'htmlall'}{/if}
+                                    </td>
+                                    {* end scans *}
+                                    <td class='text-right pr-3 border-right'>
+                                        {if isset($item2.wartoscscans)} {$item2.wartoscscans|number_format:3:",":" "|escape:'htmlall'}{/if}
+                                    </td>
+
                                     <td class='text-right pr-3'>
                                         {if isset($item2.oplatainstalacyjna)} {$item2.oplatainstalacyjna|number_format:2:",":" "|escape:'htmlall'}{/if}
                                     </td>

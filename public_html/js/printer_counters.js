@@ -24,6 +24,12 @@ const renderAgreementRows = (agreement, withCheckbox) => {
             pagesEnd: agreement['strony_kolor_koniec'],
             dateStart: agreement['data_wiadomosci_kolor_start'],
             dateEnd: agreement['data_wiadomosci_kolor_koniec']
+        },
+        {
+            pagesStart: agreement['skany_start'],
+            pagesEnd: agreement['skany_koniec'],
+            dateStart: agreement['data_wiadomosci_scans_start'],
+            dateEnd: agreement['data_wiadomosci_scans_koniec']
         }
     ];
 
@@ -50,12 +56,12 @@ const renderAgreementRows = (agreement, withCheckbox) => {
 
     const agreementRow = renderTableRows([agreementCells]);
 
-    const arrPageTables = ['Czarne', 'Kolorowe'].map((pageType, pageTypeIdx) => {
+    const arrPageTables = ['Czarne', 'Kolorowe', 'Skany'].map((pageType, pageTypeIdx) => {
 
         const headerCells =
             [
                 renderTableCells([pageType], 6, ['text-center', 'font-weight-bold']),
-                renderTableCells(['data od', 'data do', 'strony od', 'strony do', 'suma', 'serial'])
+                renderTableCells(['data od', 'data do', 'start', 'koniec', 'suma', 'serial'])
             ];
 
         const arrStatsCells = serials.map(
