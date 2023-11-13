@@ -709,9 +709,9 @@ InvoiceManager = function (invoice_number_length) {
         return {
             "kind": "vat",
             "number": invNumber,
-            "sell_date": dateFormat(getLastDayInMonth(currentPeriodInvoices.period.dateFrom)),
-            "issue_date": dateFormat(getLastDayInMonth(currentPeriodInvoices.period.dateFrom)),
-            "payment_to": dateFormat(addDaysToDate(getLastDayInMonth(currentPeriodInvoices.period.dateFrom), invoice['terminplatnosci'])),
+            "sell_date": dateFormat(getTodayOrLastDayInMonth(currentPeriodInvoices.period.dateFrom)),
+            "issue_date": dateFormat(getTodayOrLastDayInMonth(currentPeriodInvoices.period.dateFrom)),
+            "payment_to": dateFormat(addDaysToDate(getTodayOrLastDayInMonth(currentPeriodInvoices.period.dateFrom), invoice['terminplatnosci'])),
             "buyer_name": invoice["nazwapelna"],
             "buyer_tax_no": invoice["nip"],
             "buyer_email": invoice["mailfaktury"],
@@ -753,14 +753,12 @@ InvoiceManager = function (invoice_number_length) {
         return [year, month, day].join('-');
     };
 
-    /**
-     * @param {string} date
-     */
-    var getLastDayInMonth = function (date) {
-        var d = new Date(date);
-        var dd = new Date(d.getFullYear(), d.getMonth() + 1, 1);
-
-        return new Date(dd - 1);
+    const getTodayOrLastDayInMonth = function (date) {
+        const d = new Date(date);
+        const dd = new Date(d.getFullYear(), d.getMonth() + 1, 1);
+        const today = new Date();
+        const lastDayOfMonth = new Date(dd - 1);
+        return [lastDayOfMonth, today].reduce((a,b) => a < b ? a:b);
     };
 
     var dateFormat = function (date) {
