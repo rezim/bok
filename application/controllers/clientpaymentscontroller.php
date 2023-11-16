@@ -30,10 +30,10 @@ class clientpaymentsController extends InvoicesController
 
         $topic = 'Raport platnosci za miesiac ' . $monthName . '.';
 
-        $message = 'Dzie� Dobry,' . '<br/><br/>' .
-            'W za��czeniu znajduje si� plik z raportem.<br/><br/>' .
+        $message = 'Dzień Dobry,' . '<br/><br/>' .
+            'W załączeniu znajduje się plik z raportem.<br/><br/>' .
             'Pozdrawiamy,' . '<br/>' .
-            'Zesp� Otus.pl';
+            'Zespół Otus.pl';
 
         $attachments = [["path" => $fileCSV, "filename" => $fileCSV]];
 
@@ -44,6 +44,8 @@ class clientpaymentsController extends InvoicesController
         unset($mailing);
 
         unlink($fileCSV);
+
+        echo json_encode("OK");
     }
 
     function createCSVFile(&$fileName, $header, $content)
