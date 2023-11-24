@@ -266,8 +266,9 @@ function readEmailNotifications()
         $sender = $email['header']->from[0]->mailbox;
         $subject = (!empty($email['header']->subject) ? imap_utf8($email['header']->subject) : '');
 
+        $isAutoresponder = strpos($subject, "[autoresponder]") !== false || strpos($subject, "Automatyczna odpowiedź");
 
-        if (empty($subject) || $subject == '' || strpos($subject, 'Undelivered') !== false) {
+        if (empty($subject) || $subject == '' || strpos($subject, 'Undelivered') !== false || $isAutoresponder) {
             $emailReader->move($email['index'], 'INBOX.Rejected');
             sleep(2);
             continue;
