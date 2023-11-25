@@ -268,7 +268,11 @@ function readEmailNotifications()
 
         $isAutoresponder = strpos($subject, "[autoresponder]") !== false || strpos($subject, "Automatyczna odpowiedź");
 
-        if (empty($subject) || $subject == '' || strpos($subject, 'Undelivered') !== false || $isAutoresponder) {
+        // [TR] there are some client sending emails without subject, lets try to no reject them
+        $rejectEmptySubjects = false;
+        $isEmptySubject = empty($subject) || $subject == '';
+
+        if (($isEmptySubject && $rejectEmptySubjects) || strpos($subject, 'Undelivered') !== false || $isAutoresponder) {
             $emailReader->move($email['index'], 'INBOX.Rejected');
             sleep(2);
             continue;
