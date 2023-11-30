@@ -223,7 +223,7 @@ class notificationsController extends InvoicesController
 
                 $mailing = new mailing();
                 $mailing->sendMailPrzydzielonoZlecenie($wynik['keyval'], $dataMail[0]['mail'], nl2br($this->$nameOfModel->_filedsToEdit['tresc_wiadomosci']['value']),
-                    $clientName . " [Ticket#{$wynik['keyval']}] " . $this->$nameOfModel->_filedsToEdit['temat']['value'] . " #Ktokolwiek",
+                    $clientName . " [Ticket#{$wynik['keyval']}] " . $this->$nameOfModel->_filedsToEdit['temat']['value'] . " #nieprzypisane",
                     $clientName,
                     $this->$nameOfModel->_filedsToEdit['osobazglaszajaca']['value'],
                     $this->$nameOfModel->_filedsToEdit['nr_telefonu']['value'], $priority,
