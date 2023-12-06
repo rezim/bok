@@ -9,7 +9,7 @@
                 <div>{{$data.description.subtitle}}</div>
             </div>
             <div class="modal-body">
-                <form class="form-horizontal" role="form" id="messageDataContainer">
+                <form class="form-horizontal" role="form" id="messageDataContainer" data-form>
                     <div class="container-fluid">
                         <div class="row">
                             <div class="form-group col-sm-3">

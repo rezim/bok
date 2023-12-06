@@ -5,7 +5,7 @@
     </div>
 
 
-    <form class="form-horizontal" role="form" id="messageDataContainer">
+    <form class="form-horizontal" role="form" id="messageDataContainer" data-form>
         <div class="container mt-3">
             <div class="row">
                 <div class="form-group col-sm-3">
