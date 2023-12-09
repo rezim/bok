@@ -1,30 +1,43 @@
 /* tables */
 table.tablesorter {
-	
+
 }
+
 table.tablesorter thead tr th, table.tablesorter tfoot tr th {
-	
+
 }
+
 table.tablesorter thead tr .header {
-	
-	background-repeat: no-repeat;
-	background-position: center left;
-	cursor: pointer;
-        cursor:hand;
-        padding-left: 15px;
+
+    background-repeat: no-repeat;
+    background-position: center left;
+    cursor: pointer;
+    cursor: hand;
+    padding-left: 15px;
 }
+
 table.tablesorter tbody td {
-	
+
 }
+
 table.tablesorter tbody tr.odd td {
-	
+
 }
-table.tablesorter thead tr .headerSortUp {
-	background-image: url(asc.gif);
+
+table.tablesorter thead tr .headerSortUp:before {
+    content: "\25bc";
+    font-size: 10px;
+    color: white;
+    margin-right: 3px;
 }
-table.tablesorter thead tr .headerSortDown {
-	background-image: url(desc.gif);
+
+table.tablesorter thead tr .headerSortDown:before {
+    content: "\25b2";
+    font-size: 10px;
+    color: white;
+    margin-right: 3px;
 }
+
 table.tablesorter thead tr .headerSortDown, table.tablesorter thead tr .headerSortUp {
 
 }

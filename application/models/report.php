@@ -7,6 +7,8 @@ class report extends Model
 {
     protected $dataod = '', $datado = '', $filterklient = '', $filterdrukarka = '', $nazwakrotka = '';
 
+    protected ?string $startDate = null, $endDate = null, $month = null, $clientName = null, $serial = null;
+
     function getPrinterService()
     {
         // TODO: update scans column names
@@ -328,5 +330,27 @@ class report extends Model
     function getDateTo()
     {
         return $this->datado;
+    }
+
+    function getScansByDate($orderBy = 'ilosc', $desc = true): array
+    {
+        $where = "WHERE a.activity = 1 and
+                        s.datawiadomosci >= '{$this->startDate}' and s.datawiadomosci <= '{$this->endDate}'";
+        if ($this->clientName != '') {
+            $where .= " and (c.nazwakrotka like '%{$this->clientName}%' or c.nazwapelna like '%$this->clientName%')";
+        }
+        if ($this->serial != '') {
+            $where .= " and (s.serial ='{$this->serial}')";
+        }
+
+        $query = "SELECT c.nazwakrotka, a.nrumowy, s.serial, max(ilosctotal) - min(ilosctotal) as ilosc, min(s.datawiadomosci) as data_od, max(s.datawiadomosci) as `data_do` 
+                  FROM (((scans s join agreements a on(s.serial = a.serial)) join clients c on(a.rowidclient = c.rowid)) join printers p on(s.serial = p.serial))
+                  {$where}
+                  GROUP BY s.serial
+                  ORDER BY {$orderBy}";
+
+        $query .= $desc ? " DESC" : " ASC";
+
+        return $this->query($query, null, null);
     }
 }

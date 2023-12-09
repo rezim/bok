@@ -11,7 +11,7 @@
     {*    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.4.0/css/font-awesome.min.css?{$smarty.const.APPVERSION}">*}
     {*<link rel="stylesheet" href="{$smarty.const.SCIEZKA}/{$smarty.const.SMARTVERSION}/css/font-awesome.min.css">*}
 
-    <link rel="shortcut icon" href="https://www.otus.pl/favicon.ico" />
+    <link rel="shortcut icon" href="https://www.otus.pl/favicon.ico"/>
 
     <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.6.3/css/all.css"
           integrity="sha384-UHRtZLI+pbxtHCWp1t77Bi1L4ZtiqrqD80Kn4Z8NTSRyMA2Fd33n5dQ8lWUE00s/" crossorigin="anonymous">
@@ -108,7 +108,8 @@
         src="{$smarty.const.SCIEZKA}/js/angular/ctrl/paymentsCtrl.js?{$smarty.const.APPVERSION}"></script>
 <script type="text/javascript"
         src="{$smarty.const.SCIEZKA}/js/angular/ctrl/userSharesCtrl.js?{$smarty.const.APPVERSION}"></script>
-<script type="text/javascript" src="{$smarty.const.SCIEZKA}/js/angular/ctrl/serviceCtrl.js?{$smarty.const.APPVERSION}"></script>
+<script type="text/javascript"
+        src="{$smarty.const.SCIEZKA}/js/angular/ctrl/serviceCtrl.js?{$smarty.const.APPVERSION}"></script>
 
 <script type="text/javascript"
         src="{$smarty.const.SCIEZKA}/js/angular/common/dropdownCtrl.js?{$smarty.const.APPVERSION}"></script>
@@ -315,9 +316,9 @@
                         {if isset($smarty.session.przypisanemenu['li_clientinvoicesshow'])}
                             <a href='{$smarty.const.SCIEZKA}/clientinvoices/show' class="dropdown-item">Płatności</a>
                         {/if}
-{*                        {if isset($smarty.session.przypisanemenu['li_clientinvoicesshow'])}*}
-{*                            <a href='{$smarty.const.SCIEZKA}/clientpayments/show' class="dropdown-item">Płatności Klientów</a>*}
-{*                        {/if}*}
+                        {*                        {if isset($smarty.session.przypisanemenu['li_clientinvoicesshow'])}*}
+                        {*                            <a href='{$smarty.const.SCIEZKA}/clientpayments/show' class="dropdown-item">Płatności Klientów</a>*}
+                        {*                        {/if}*}
                         {if isset($smarty.session.przypisanemenu['li_clientinvoicesdeptors'])}
                             <a href='{$smarty.const.SCIEZKA}/clientinvoices/deptors' class="dropdown-item">Dłużnicy</a>
                         {/if}
@@ -346,6 +347,14 @@
                                class="dropdown-item">Wydatki</a>
                             <a target="_blank" href='https://rejestr-bdo.mos.gov.pl/User/ChooseCompany'
                                class="dropdown-item">BDO</a>
+                        {/if}
+                        {if
+                        isset($smarty.session.przypisanemenu['li_scansreport']) &&
+                        $smarty.session.przypisanemenu['li_scansreport']['permission'] === 'rw'
+                        }
+                            <div class="dropdown-divider"></div>
+                            <a href='{$smarty.const.SCIEZKA}/reports/scansreport' class="dropdown-item">Raporty
+                                Skanów</a>
                         {/if}
                     </div>
                 </li>
@@ -413,7 +422,7 @@
                             <a class="dropdown-item" href='{$smarty.const.SCIEZKA}/shares/show'>Uprawnienia</a>
                         {/if}
                         {if isset($smarty.session.przypisanemenu['li_configuration'])}
-                        <a id="showConfigurationAction" class="dropdown-item" href='#'>Konfiguracja</a>
+                            <a id="showConfigurationAction" class="dropdown-item" href='#'>Konfiguracja</a>
                         {/if}
                         {if
                         isset($smarty.session.przypisanemenu['li_externallinks']) &&
@@ -423,7 +432,9 @@
                         {/if}
                         {if isset($smarty.session.przypisanemenu['li_pullcountersshow'])}
                             <div class="dropdown-divider"></div>
-                            <a href="javascript:void(0)" onclick="callServiceAction('/emails/readdevicecounters/notemplate', null, null, null)" class="dropdown-item">Liczniki urządzeń</a>
+                            <a href="javascript:void(0)"
+                               onclick="callServiceAction('/emails/readdevicecounters/notemplate', null, null, null)"
+                               class="dropdown-item">Liczniki urządzeń</a>
                         {/if}
                     </div>
                 </li>
@@ -432,9 +443,9 @@
     </div>
 </header>
 {if isset($smarty.session.przypisanemenu['li_configuration'])}
-<script>
-    $("#showConfigurationAction").on('click', () => openModal("/config/show/todiv"));
-</script>
+    <script>
+        $("#showConfigurationAction").on('click', () => openModal("/config/show/todiv"));
+    </script>
 {/if}
 <div id='divContainer' class="content wide-content">
     {else}

@@ -944,6 +944,17 @@ function setDateDefault() {
     $('#txtdatado').val($.datepicker.formatDate('yy-mm-dd', data));
 }
 
+function getStartAndEndDate(date = null) {
+    const startDate = date ? new Date(date) : new Date();
+    const endDate = date ? new Date(date) : new Date();
+    startDate.setDate(1);
+
+    endDate.setDate(1);
+    endDate.setMonth(endDate.getMonth() + 1, 1);
+
+    return {startDate, endDate};
+}
+
 function changeMiesiac(obj) {
     var data = $(obj).val();
 
@@ -1652,7 +1663,7 @@ function sendPaymentsReport() {
         alert('Wiadomość została wysłana');
     };
     const errorCallback = () => {
-        alert('Nie można wysłać wiadomośći');
+        alert('Nie można wysłać wiadomości');
     };
 
     callServiceAction(actionUrl, null, successCallback, errorCallback);

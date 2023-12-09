@@ -40,6 +40,33 @@ class reportsController extends InvoicesController
         $smarty->assign('fakturownia_conf_file_path', ROOT . DS . 'config' . DS . 'fakturownia.conf');
     }
 
+    function scansreport()
+    {
+        global $smarty;
+        global $months;
+        $smarty->assign('months', $months);
+        $smarty->assign('rok', date("Y"));
+    }
+
+    function scansreportdata()
+    {
+        global $smarty;
+        $this->report->populateWithPost();
+        $scans = $this->report->getScansByDate();
+
+        if (count($scans) === 0) {
+            $smarty->assign('isEmptyMessage', 'Dla podanych filtrów nie ma żadnych danych do wyświetlenia.');
+        } else {
+            $columnNames = array_keys($scans[0]);
+
+            $columnSummaries = array_map(fn($columnName) => array_sum(array_map(fn($val) => is_numeric($val) ? $val : 0, array_column($scans, $columnName))), $columnNames);
+
+            $smarty->assign('columnNames', $columnNames);
+            $smarty->assign('columnSummaries', $columnSummaries);
+            $smarty->assign('scans', $scans);
+        }
+    }
+
     function groupByCollectiveAgreements($reports)
     {
         $result = array();

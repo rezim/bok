@@ -70,6 +70,11 @@ const getContainerById = (containerId) => {
 
     return document.querySelector(containerSelector);
 }
+const getTemplateContainerById = (containerId) => {
+    const containerSelector = `#${containerId}`;
+
+    return document.querySelector(containerSelector);
+}
 const getDataFromContainer = (container) => {
     const selectedData = Array.from(container.querySelectorAll('[data-ref]'));
     return Object.fromEntries(selectedData.map(d => [d.id, d.value]));
@@ -78,4 +83,37 @@ const clearDataFromContainer = (containerId) => {
     const container = document.querySelector(`#${containerId}`);
     const selectedData = Array.from(container.querySelectorAll('[data-clear-ref]'));
     selectedData.forEach(d => d.value = '');
+}
+const renderTemplateAction = (templateUrl, dataContainerId, templateContainerId, areDataSortable) => {
+    const dataContainer = getContainerById(dataContainerId);
+
+    if (!dataContainer && dataContainerId) {
+        console.error(`Can't call template action. Form container: ${dataContainerId} NOT FOUND !!!`);
+        return;
+    }
+
+    const templateContainer = getTemplateContainerById(templateContainerId);
+
+    if (!templateContainer) {
+        console.error(`Can't find template container. Template container: ${templateContainerId} NOT FOUND !!!`);
+        return;
+    }
+
+    const data = dataContainer ? getDataFromContainer(dataContainer) : {};
+
+    $.ajax({
+        type: 'POST',
+        url: sciezka + templateUrl,
+        async: true,
+        data,
+        success: function (template) {
+            templateContainer.innerHTML = template;
+            $(".tablesorter").tablesorter();
+            return false;
+        },
+        error: function (dane) {
+            templateContainer.innerHTML = "Nie można pobrać templatu.";
+            return false;
+        }
+    });
 }
