@@ -198,7 +198,7 @@ function importClientPaymentsFromEmailBox()
         $email = $emailReader->get();
         $emailDate = date("Y-m-d H:i:s", $email['header']->udate);
 
-        $isDailyPaymentsReport = $email['header']->subject === TEMATRAPORTDZIENNYOPERACJI;
+        $isDailyPaymentsReport = strpos($email['header']->subject, TEMATRAPORTDZIENNYOPERACJI);
         if (!$isDailyPaymentsReport) {
             $emailReader->rejected($email);
             return;//  continue;
