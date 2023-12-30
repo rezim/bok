@@ -7,7 +7,7 @@ class report extends Model
 {
     protected $dataod = '', $datado = '', $filterklient = '', $filterdrukarka = '', $nazwakrotka = '';
 
-    protected ?string $startDate = null, $endDate = null, $month = null, $clientName = null, $serial = null;
+    protected ?string $startDate = null, $endDate = null, $month = null, $clientName = null, $clientNip = null, $serial = null, $notProcessed = null;
 
     function getPrinterService()
     {
@@ -347,6 +347,43 @@ class report extends Model
                   FROM (((scans s join agreements a on(s.serial = a.serial)) join clients c on(a.rowidclient = c.rowid)) join printers p on(s.serial = p.serial))
                   {$where}
                   GROUP BY s.serial
+                  ORDER BY {$orderBy}";
+
+        $query .= $desc ? " DESC" : " ASC";
+
+        return $this->query($query, null, null);
+    }
+
+    function getPaymentsImportsReportByDate($orderBy = 'created', $desc = true): array {
+        $where = "WHERE created >= '{$this->startDate}' and created <= '{$this->endDate}'";
+
+        $query = "SELECT created as 'Data Importu', processed_count as 'Dodane do fakturowni', notprocessed_count as 'Nie dodane do fakturowni'
+                  FROM payments_import
+                  {$where}
+                  ORDER BY {$orderBy}";
+
+        $query .= $desc ? " DESC" : " ASC";
+
+        return $this->query($query, null, null);
+    }
+
+    function getPaymentsReport($orderBy = 'p.date', $desc = true): array {
+        $where = "WHERE p.date >= '{$this->startDate}' and p.date <= '{$this->endDate}'";
+
+        if ($this->clientName != '') {
+            $where .= " and (c.nazwakrotka like '%{$this->clientName}%' or c.nazwapelna like '%$this->clientName%')";
+        }
+        if ($this->clientNip != '') {
+            $where .= " and (c.nip like '%{$this->clientNip}%')";
+        }
+        if ($this->notProcessed === "true") {
+            $where .= " and (pp.rowid_payments is null)";
+        }
+
+        $query = "SELECT p.details as 'TYTUŁEM', TRUNCATE(p.amount / 100, 2) as 'KWOTA', pp.ext_invoice_nb as 'FAKTURA', CONCAT(c.nazwakrotka, CONCAT(' NIP: ', c.nip)) as 'KUPUJĄCY', p.date as 'DATA PŁATNOŚCI' FROM `payments` p 
+                    inner join clients c on substring(p.recipient_acount, -10) = c.nip
+                    left outer join payments_processed pp on p.rowid = pp.rowid_payments
+                  {$where}
                   ORDER BY {$orderBy}";
 
         $query .= $desc ? " DESC" : " ASC";

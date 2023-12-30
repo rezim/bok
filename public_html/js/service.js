@@ -77,7 +77,7 @@ const getTemplateContainerById = (containerId) => {
 }
 const getDataFromContainer = (container) => {
     const selectedData = Array.from(container.querySelectorAll('[data-ref]'));
-    return Object.fromEntries(selectedData.map(d => [d.id, d.value]));
+    return Object.fromEntries(selectedData.map(d => [d.id, d.type === 'checkbox' ? d.checked : d.value]));
 }
 const clearDataFromContainer = (containerId) => {
     const container = document.querySelector(`#${containerId}`);

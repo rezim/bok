@@ -67,6 +67,59 @@ class reportsController extends InvoicesController
         }
     }
 
+    function paymentsimportsreport()
+    {
+        global $smarty;
+        global $months;
+        $smarty->assign('months', $months);
+        $smarty->assign('rok', date("Y"));
+    }
+    function paymentsimportsreportdata() {
+        global $smarty;
+        $this->report->populateWithPost();
+        $imports = $this->report->getPaymentsImportsReportByDate();
+
+        if (count($imports) === 0) {
+            $smarty->assign('isEmptyMessage', 'Dla podanych filtrów nie ma żadnych danych do wyświetlenia.');
+        } else {
+            $columnNames = array_keys($imports[0]);
+
+            $columnSummaries = array_map(fn($columnName) => array_sum(array_map(fn($val) => is_numeric($val) ? $val : 0, array_column($imports, $columnName))), $columnNames);
+
+            $smarty->assign('columnNames', $columnNames);
+            $smarty->assign('columnSummaries', $columnSummaries);
+            $smarty->assign('data', $imports);
+            $smarty->assign('showFooter', false);
+        }
+    }
+
+    function paymentsreport()
+    {
+        global $smarty;
+        global $months;
+        $smarty->assign('months', $months);
+        $smarty->assign('rok', date("Y"));
+    }
+    function paymentsreportdata() {
+        global $smarty;
+        $this->report->populateWithPost();
+        $data = $this->report->getPaymentsReport();
+
+        if (count($data) === 0) {
+            $smarty->assign('isEmptyMessage', 'Dla podanych filtrów nie ma żadnych danych do wyświetlenia.');
+        } else {
+            $columnNames = array_keys($data[0]);
+
+            $columnSummaries = array_map(fn($columnName) => array_sum(array_map(fn($val) => is_numeric($val) ? $val : 0, array_column($data, $columnName))), $columnNames);
+
+            $smarty->assign('columnNames', $columnNames);
+            $smarty->assign('columnSummaries', $columnSummaries);
+            $smarty->assign('data', $data);
+            $smarty->assign('showFooter', true);
+        }
+    }
+
+
     function groupByCollectiveAgreements($reports)
     {
         $result = array();
