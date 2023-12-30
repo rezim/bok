@@ -353,8 +353,15 @@
                         $smarty.session.przypisanemenu['li_scansreport']['permission'] === 'rw'
                         }
                             <div class="dropdown-divider"></div>
-                            <a href='{$smarty.const.SCIEZKA}/reports/scansreport' class="dropdown-item">Raporty
+                            <a href='{$smarty.const.SCIEZKA}/reports/scansreport' class="dropdown-item">Raport
                                 Skanów</a>
+                        {/if}
+                        {if
+                        isset($smarty.session.przypisanemenu['li_paymentsreport']) &&
+                        $smarty.session.przypisanemenu['li_paymentsreport']['permission'] === 'rw'
+                        }
+                            <a href='{$smarty.const.SCIEZKA}/reports/paymentsreport' class="dropdown-item">Raport
+                                Płatności</a>
                         {/if}
                     </div>
                 </li>

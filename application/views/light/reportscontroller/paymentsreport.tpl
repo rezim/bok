@@ -117,4 +117,5 @@
     const templateId = 'divRightCenter';
 
     $("#applyFilter").on('click', () => renderTemplateAction("/reports/paymentsreportdata/todiv", dataContainerId, templateId));
+    renderTemplateAction("/reports/paymentsreportdata/todiv", dataContainerId, templateId);
 </script>
