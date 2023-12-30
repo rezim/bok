@@ -367,7 +367,7 @@ class report extends Model
         return $this->query($query, null, null);
     }
 
-    function getPaymentsReport($orderBy = 'p.date', $desc = true): array {
+    function getPaymentsReport($orderBy = 'p.date DESC, c.nazwakrotka ASC'): array {
         $where = "WHERE p.date >= '{$this->startDate}' and p.date <= '{$this->endDate}'";
 
         if ($this->clientName != '') {
@@ -386,8 +386,7 @@ class report extends Model
                   {$where}
                   ORDER BY {$orderBy}";
 
-        $query .= $desc ? " DESC" : " ASC";
-
         return $this->query($query, null, null);
     }
 }
+// SELECT c.nip, p.* FROM `payments` p inner join clients c on substring(p.recipient_acount, -10) = c.nip WHERE p.date >= '2023-10-01' and p.date <= '2023-11-30';
