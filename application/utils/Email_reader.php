@@ -1,4 +1,7 @@
 <?php
+
+require_once "mysql_conn.php";
+
 $mysqli = new mysqli(DB_HOST, DB_USER, DB_PASSWORD, DB_NAME);
 $typ = 1;
 
@@ -2037,18 +2040,18 @@ function startWith($str, $subStr)
     return (substr($str, 0, strlen($subStr)) === $subStr);
 }
 
-function getMySqlConn()
-{
-    global $mysqli;
-
-    if ($mysqli === null) {
-        $mysqli = new mysqli(DB_HOST, DB_USER, DB_PASSWORD, DB_NAME);
-        $mysqli->query("SET NAMES 'utf8'");
-        return $mysqli;
-    }
-
-    return $mysqli;
-}
+//function getMySqlConn()
+//{
+//    global $mysqli;
+//
+//    if ($mysqli === null) {
+//        $mysqli = new mysqli(DB_HOST, DB_USER, DB_PASSWORD, DB_NAME);
+//        $mysqli->query("SET NAMES 'utf8'");
+//        return $mysqli;
+//    }
+//
+//    return $mysqli;
+//}
 
 
 function w1250_to_utf8($text)
