@@ -1,5 +1,5 @@
 <div class="container-fluid" ng-app="app" ng-controller="PaymentsCtrl as ctrl" ng-cloak
-     ng-init="ctrl.loadData(date_from, date_to, true)">
+     ng-init="ctrl.loadData(date_from, date_to, true, null, true)">
 
     <div class="row">
         <div class="otus-sidebar col-12 col-md-12 col-xl-auto">
@@ -12,19 +12,19 @@
                         <div class="btn-group mr-2" role="group" aria-label="First group"
                              aria-describedby="dateRangeHelp">
                             <button type="button" class="btn btn-outline-secondary form-control"
-                                    ng-click="date_from=ctrl.getLastMonths(24); date_to=ctrl.getToday();ctrl.loadData(date_from, date_to, true)">
+                                    ng-click="date_from=ctrl.getLastMonths(24); date_to=ctrl.getToday();ctrl.loadData(date_from, date_to, true, null, true)">
                                 24
                             </button>
                             <button type="button" class="btn btn-outline-secondary form-control"
-                                    ng-click="date_from=ctrl.getLastMonths(12); date_to=ctrl.getToday();ctrl.loadData(date_from, date_to, true)">
+                                    ng-click="date_from=ctrl.getLastMonths(12); date_to=ctrl.getToday();ctrl.loadData(date_from, date_to, true, null, true)">
                                 12
                             </button>
                             <button type="button" class="btn btn-outline-secondary form-control"
-                                    ng-click="date_from=ctrl.getLastMonths(6); date_to=ctrl.getToday();ctrl.loadData(date_from, date_to, true)">
+                                    ng-click="date_from=ctrl.getLastMonths(6); date_to=ctrl.getToday();ctrl.loadData(date_from, date_to, true, null, true)">
                                 &nbsp;6
                             </button>
                             <button type="button" class="btn btn-outline-secondary form-control"
-                                    ng-click="date_from=ctrl.getLastMonths(3); date_to=ctrl.getToday();ctrl.loadData(date_from, date_to, true)">
+                                    ng-click="date_from=ctrl.getLastMonths(3); date_to=ctrl.getToday();ctrl.loadData(date_from, date_to, true, null, true)">
                                 &nbsp;3
                             </button>
                         </div>
@@ -94,7 +94,7 @@
 
                 <div class="form-group">
                     <button class="btn btn-info btn-block" type="submit"
-                            ng-click='ctrl.loadData(date_from, date_to, true)'>
+                            ng-click='ctrl.loadData(date_from, date_to, true, null, true)'>
                         Pokaż
                     </button>
                 </div>
@@ -134,7 +134,8 @@
                         </th>
                     </tr>
                     </thead>
-                    <tbody ng-repeat="clientInvoice in ctrl.getClientInvoices() | filter:search | filter: ctrl.clientInvoicesFilter() | orderBy:orderBy.propertyName:orderBy.reverse">
+                    <!-- TODO: monitoring platnosci should be filtered on server side, see: filter: ctrl.paymentMonitoringFilter() -->
+                    <tbody ng-repeat="clientInvoice in ctrl.getClientInvoices() | filter: ctrl.paymentMonitoringFilter() | filter:search | filter: ctrl.clientInvoicesFilter() | orderBy:orderBy.propertyName:orderBy.reverse">
 
                     <tr>
                         <td class='tdLink' ng-click="ctrl.sortBy('name')">[[clientInvoice.name]]</td>

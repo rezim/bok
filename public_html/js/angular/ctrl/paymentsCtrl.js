@@ -59,6 +59,13 @@ PaymentsCtrl = function ($scope, rest, $q, $filter, $uibModal, $interpolate, app
         }
     };
 
+    this.paymentMonitoringFilter = function () {
+
+        return function (item) {
+            return item.monitoringplatnosci === 1;
+        }
+    };
+
     this.notPaidInvoicesOnlyFilter = function () {
         return function (item) {
             return !self.filters.show_paid_invoices ? !item.is_paid : true;
@@ -114,7 +121,7 @@ PaymentsCtrl = function ($scope, rest, $q, $filter, $uibModal, $interpolate, app
 
     let invoices;
 
-    this.loadData = async function (date_from, date_to, notPaidInvoicesOnly, callback) {
+    this.loadData = async function (date_from, date_to, notPaidInvoicesOnly, callback, excludeInterestNotes) {
         if (date_from && date_to) {
             $scope.isPending = true;
             const serviceName = 'getinvoices';
@@ -131,7 +138,7 @@ PaymentsCtrl = function ($scope, rest, $q, $filter, $uibModal, $interpolate, app
 
             const overpaidPaymentsPromise = !notPaidInvoicesOnly ? rest.post('getoverpaidpayments', {}) : [];
 
-            const interestNotes = rest.post('getallinterestnotes', {});
+            const interestNotes = excludeInterestNotes === true ? [] : rest.post('getallinterestnotes', {});
 
             $q.all([invoicesPromise, agreementsPromise, overpaidPaymentsPromise, interestNotes]).then(result => {
 
@@ -148,7 +155,7 @@ PaymentsCtrl = function ($scope, rest, $q, $filter, $uibModal, $interpolate, app
         }
     };
 
-    const initClientInvoice = function (name, nip, phone, agreementClientId, mailFaktury, naliczacOdsetki) {
+    const initClientInvoice = function (name, nip, phone, agreementClientId, mailFaktury, naliczacOdsetki, monitoringplatnosci) {
         return {
             name,
             nip,
@@ -156,6 +163,7 @@ PaymentsCtrl = function ($scope, rest, $q, $filter, $uibModal, $interpolate, app
             agreementClientId,
             mailFaktury,
             naliczacOdsetki,
+            monitoringplatnosci,
             clientId: null,
             agreements: {},
             invoices: {
@@ -185,7 +193,7 @@ PaymentsCtrl = function ($scope, rest, $q, $filter, $uibModal, $interpolate, app
 
             if (!objClientInvoice[agreement['client_nip']]) {
                 objClientInvoice[agreement['client_nip']] =
-                    initClientInvoice(agreement['client_name'], agreement['client_nip'], agreement['client_phone'], agreement['client_id'], agreement['client_mailfaktury'], agreement['client_naliczacodsetki']);
+                    initClientInvoice(agreement['client_name'], agreement['client_nip'], agreement['client_phone'], agreement['client_id'], agreement['client_mailfaktury'], agreement['client_naliczacodsetki'], agreement['client_monitoringplatnosci']);
 
                 let client = objClientInvoice[agreement['client_nip']];
 
