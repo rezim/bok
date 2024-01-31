@@ -380,9 +380,8 @@ class report extends Model
             $where .= " and (pp.rowid_payments is null)";
         }
 
-        $query = "SELECT p.details as 'TYTUŁEM', TRUNCATE(p.amount / 100, 2) as 'KWOTA', pp.ext_invoice_nb as 'FAKTURA', CONCAT(c.nazwakrotka, CONCAT(' NIP: ', c.nip)) as 'KUPUJĄCY', p.date as 'DATA PŁATNOŚCI' FROM `payments` p 
+        $query = "SELECT p.details as 'TYTUŁEM', TRUNCATE(p.amount / 100, 2) as 'KWOTA', (select GROUP_CONCAT(pp.ext_invoice_nb separator ', ') from payments_processed pp where pp.rowid_payments = p.rowid) as 'FAKTURA', CONCAT(c.nazwakrotka, CONCAT(' NIP: ', c.nip)) as 'KUPUJĄCY', p.date as 'DATA PŁATNOŚCI' FROM `payments` p 
                     inner join clients c on substring(p.recipient_acount, -10) = c.nip
-                    left outer join payments_processed pp on p.rowid = pp.rowid_payments
                   {$where}
                   ORDER BY {$orderBy}";
 
