@@ -16,12 +16,11 @@ class mailing
         return preg_replace('#<br\s*/?>#i', "\n", $html);
     }
 
-    function sendMailPrzydzielonoZlecenie($rowid, $mail, $tresc, $temat, $clientname,
+    function sendMailPrzydzielonoZlecenie($rowid, $mail, $tresc, $temat, $clientname, $clientEmail = '',
                                           $osobazglaszajaca = '', $nrkontaktowy = '', $priority = '', $modelurzadzenia = '', $nrseryjny = '', $lokalizacja = '', $uwagi = '', $przebieg = '', $stantonera = '', $adresip = '', $firmware = '', $terminwykonania = '',
                                           $printerLogs, $dataZalacznikiFirst
     )
     {
-
 
         if (empty($mail) || $mail == '')
             return;
@@ -42,7 +41,12 @@ class mailing
         $mailek->FromName = NAME_CASE;
         $mailek->CharSet = 'UTF-8';
         $mailek->WordWrap = 50;                                 // Set word wrap to 50 characters
-        $mailek->addReplyTo(FROM_CASE, NAME_CASE);
+
+        if ($mail === TO_FRESHDESK_SUPPORT && $clientEmail !== '') {
+            $mailek->addReplyTo($clientEmail, $clientname);
+        } else {
+            $mailek->addReplyTo(FROM_CASE, NAME_CASE);
+        }
         $mailek->isHTML(true);
 
 
