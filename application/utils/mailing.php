@@ -70,13 +70,18 @@ class mailing
                                 Przydzielono nowe zgłoszenie do wykonania :<br/>
                                 -Nr zgłoszenia: {$rowid}<br/>
                                 -Nazwa klienta : {$clientname}<br/>
-                                -Osoba zgłaszająca :{$osobazglaszajaca}<br/>
+                                -Email klienta :  {$clientEmail}<br/>
+                                -Osoba zgłaszająca : {$osobazglaszajaca}<br/>
                                 -Nr kontaktowy do osoby zgłaszającej:<a href='tel:{$nrkontaktowy}'>{$nrkontaktowy}</a><br/>
                                 -Model urządzenia:{$modelurzadzenia}<br/>
                                 -NR Seryjny urządzenia:{$nrseryjny}<br/>
                                 -Lokalizacja urządzenia: <a href='http://maps.google.com/maps?q={$lokalizacja}'>{$lokalizacja}</a><br/> 
                                 -Uwagi:{$uwagi}<br/>
                             ";
+
+        if ($mail === TO_FRESHDESK_SUPPORT && $clientEmail !== '') {
+            $mailek->Body .= '-ReplayTo: ' . $mail;
+        }
 
         $mailek->AltBody =
             "
