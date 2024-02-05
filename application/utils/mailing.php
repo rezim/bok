@@ -79,10 +79,6 @@ class mailing
                                 -Uwagi:{$uwagi}<br/>
                             ";
 
-        if ($mail === TO_FRESHDESK_SUPPORT && $clientEmail !== '') {
-            $mailek->Body .= '-ReplayTo: ' . $mail;
-        }
-
         $mailek->AltBody =
             "
                                  Pojawiło się nowe zgłoszenie :
