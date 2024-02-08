@@ -42,7 +42,7 @@ class mailing
         $mailek->CharSet = 'UTF-8';
         $mailek->WordWrap = 50;                                 // Set word wrap to 50 characters
 
-        if ($mail === TO_FRESHDESK_SUPPORT && $clientEmail !== '') {
+        if ($mail === TO_HELPDESK && $clientEmail !== '') {
             $mailek->addReplyTo($clientEmail, $clientname);
         } else {
             $mailek->addReplyTo(FROM_CASE, NAME_CASE);
