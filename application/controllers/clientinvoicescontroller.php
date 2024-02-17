@@ -152,6 +152,9 @@ class clientinvoicesController extends InvoicesController
 
     function getallinterestnotes()
     {
+        if (DISABLE_INTEREST_NOTES) {
+            return json_encode([]);
+        }
         echo json_encode($this->resolveAllInterestNotes());
     }
 
