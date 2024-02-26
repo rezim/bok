@@ -388,22 +388,24 @@ class printer extends Model
         return $insert;
     }
 
-    function saveScans($serial, $dateinsert, $datawiadomosci, $ilosctotal, $rowagreement) {
+    function saveScans($serial, $dateinsert, $datawiadomosci, $ilosctotal, $rowagreement)
+    {
         $scans = array(
             'serial' => $serial,
             'dateinsert' => $dateinsert,
             'datawiadomosci' => $datawiadomosci,
-            'ilosctotal' => $ilosctotal,
-            'rowid_agreement' => $rowagreement
+            'ilosctotal' => $ilosctotal
         );
-
         $scansWihTypes = array(
             'serial' => 'string',
             'dateinsert' => 'date',
             'datawiadomosci' => 'date',
-            'ilosctotal' => 'number',
-            'rowid_agreement' => 'number'
+            'ilosctotal' => 'number'
         );
+        if ($rowagreement) {
+            $scans['rowid_agreement'] = $rowagreement;
+            $scansWihTypes['rowid_agreement'] = 'string';
+        }
 
         $this->update("DELETE FROM `scans` WHERE datawiadomosci = ? AND serial = ? ", 'ss', array($datawiadomosci, $serial));
 
