@@ -10,9 +10,9 @@
                 Serial
             </td>
             <td class='tdWartosc'>
-                <input type="text" id='txtserial' autofocus
+                <input data-ref type="text" id='txtserial' autofocus
                        class='textBoxForm' maxlength="50" style='width:120px;min-width:120px;'
-                       {if $serial!=''}value="{$dataPrinter[0].serial|escape:'htmlall'}"{/if}>
+                       {if $serial!=''}value="{$dataPrinter.serial|escape:'htmlall'}"{/if}>
             </td>
         </tr>
         <tr>
@@ -24,9 +24,9 @@
                 Model
             </td>
             <td class='tdWartosc'>
-                <input type="text" id='txtmodel'
+                <input data-ref type="text" id='txtmodel'
                        class='textBoxForm' maxlength="100" style='width:200px;min-width:200px;'
-                       {if $serial!=''}value="{$dataPrinter[0].model|escape:'htmlall'}"{/if}>
+                       {if $serial!=''}value="{$dataPrinter.model|escape:'htmlall'}"{/if}>
             </td>
         </tr>
         <tr>
@@ -38,9 +38,9 @@
                 Product number
             </td>
             <td class='tdWartosc'>
-                <input type="text" id='txtproduct_number'
+                <input data-ref type="text" id='txtproduct_number'
                        class='textBoxForm' maxlength="100" style='width:120px;min-width:120px;'
-                       {if $serial!=''}value="{$dataPrinter[0].product_number|escape:'htmlall'}"{/if}>
+                       {if $serial!=''}value="{$dataPrinter.product_number|escape:'htmlall'}"{/if}>
             </td>
         </tr>
         <tr>
@@ -52,9 +52,9 @@
                 Nr firmware
             </td>
             <td class='tdWartosc'>
-                <input type="text" id='txtnr_firmware'
+                <input data-ref type="text" id='txtnr_firmware'
                        class='textBoxForm' maxlength="100" style='width:120px;min-width:120px;'
-                       {if $serial!=''}value="{$dataPrinter[0].nr_firmware|escape:'htmlall'}"{/if}>
+                       {if $serial!=''}value="{$dataPrinter.nr_firmware|escape:'htmlall'}"{/if}>
             </td>
         </tr>
         <tr>
@@ -67,9 +67,9 @@
                 Data firmware
             </td>
             <td class='tdWartosc'>
-                <input type="text" id='txtdate_firmware'
+                <input data-ref type="text" id='txtdate_firmware'
                        class='textBoxForm' maxlength="100" style='width:120px;min-width:120px;'
-                       {if $serial!=''}value="{$dataPrinter[0].date_firmware|escape:'htmlall'}"{/if}>
+                       {if $serial!=''}value="{$dataPrinter.date_firmware|escape:'htmlall'}"{/if}>
             </td>
         </tr>
         <tr>
@@ -82,9 +82,9 @@
                 Ip
             </td>
             <td class='tdWartosc'>
-                <input type="text" id='txtip'
+                <input data-ref type="text" id='txtip'
                        class='textBoxForm' maxlength="100" style='width:120px;min-width:120px;'
-                       {if $serial!=''}value="{$dataPrinter[0].address_ip|escape:'htmlall'}"{/if}>
+                       {if $serial!=''}value="{$dataPrinter.address_ip|escape:'htmlall'}"{/if}>
             </td>
         </tr>
         <tr>
@@ -96,10 +96,10 @@
                 Stan fuser
             </td>
             <td class='tdWartosc'>
-                <input type="text" id='txtstan_fuser'
+                <input data-ref type="text" id='txtstan_fuser'
                        class='textBoxForm' maxlength="100"
                        style='width:70px;min-width:70px;text-align: right;padding-right: 10px;'
-                       {if $serial!='' && !empty($dataPrinter[0].stan_fuser)}value="{$dataPrinter[0].stan_fuser|number_format:2:",":" "|replace:',00':''|escape:'htmlall'}"{/if}>
+                       {if $serial!='' && !empty($dataPrinter.stan_fuser)}value="{$dataPrinter.stan_fuser|number_format:2:",":" "|replace:',00':''|escape:'htmlall'}"{/if}>
                 %
             </td>
         </tr>
@@ -112,10 +112,10 @@
                 Stan ADF
             </td>
             <td class='tdWartosc'>
-                <input type="text" id='txtstan_adf'
+                <input data-ref type="text" id='txtstan_adf'
                        class='textBoxForm' maxlength="100"
                        style='width:70px;min-width:70px;text-align: right;padding-right: 10px;'
-                       {if $serial!='' && !empty($dataPrinter[0].stan_adf)}value="{$dataPrinter[0].stan_adf|number_format:2:",":" "|replace:',00':''|escape:'htmlall'}"{/if}>
+                       {if $serial!='' && !empty($dataPrinter.stan_adf)}value="{$dataPrinter.stan_adf|number_format:2:",":" "|replace:',00':''|escape:'htmlall'}"{/if}>
                 %
             </td>
         </tr>
@@ -128,10 +128,10 @@
                 Toner czarny
             </td>
             <td class='tdWartosc'>
-                <input type="text" id='txtblack_toner'
+                <input data-ref type="text" id='txtblack_toner'
                        class='textBoxForm' maxlength="100"
                        style='width:70px;min-width:70px;text-align: right;padding-right: 10px;'
-                       {if $serial!=''}value="{$dataPrinter[0].black_toner|number_format:2:",":" "|replace:',00':''|escape:'htmlall'}"{/if}>
+                       {if $serial!=''}value="{$dataPrinter.black_toner|number_format:2:",":" "|replace:',00':''|escape:'htmlall'}"{/if}>
                 %
             </td>
         </tr>
@@ -145,16 +145,15 @@
                 Ilość stron black
             </td>
             <td class='tdWartosc' colspan="3">
-                <input type="text" id='txtiloscstron'
+                <input data-ref type="text" id='txtiloscstron'
                        class='textBoxForm' maxlength="100"
                        style='width:70px;min-width:70px;text-align: right;padding-right: 10px;'
-                       {if $serial!=''}value="{$dataPrinter[0].iloscstron|number_format:0:",":" "|replace:',00':''|escape:'htmlall'}"{/if}>
-                <font style='font-size: 12px;color:black'>Stan na</font>
-                <input type="text" id='txtstanna' class='textBoxForm' maxlength="10"
+                       {if $serial!=''}value="{$dataPrinter.iloscstron|number_format:0:",":" "|replace:',00':''|escape:'htmlall'}"{/if}>
+                <span style='font-size: 12px;color:black'>Stan na</span>
+                <input data-ref type="text" id='txtstanna' class='textBoxForm' maxlength="10"
                        style='width:100px;min-width:100px;'>
-                <font style='font-size: 12px;color:gray;cursor:hand;cursor:pointer;'
-                      onClick="zapiszStanNa('{$serial}');">zapisz</font>
-
+                <button class="btn btn-info" type="button"
+                      onClick="zapiszStanNa('{$serial}');">zapisz</button>
             </td>
         </tr>
         <tr>
@@ -165,10 +164,10 @@
                 Ilość stron kolor
             </td>
             <td class='tdWartosc'>
-                <input type="text" id='txtiloscstronkolor'
+                <input data-ref type="text" id='txtiloscstronkolor'
                        class='textBoxForm' maxlength="100"
                        style='width:70px;min-width:70px;text-align: right;padding-right: 10px;'
-                       {if $serial!=''}value="{$dataPrinter[0].iloscstron_kolor|number_format:0:",":" "|replace:',00':''|escape:'htmlall'}"{/if}>
+                       {if $serial!=''}value="{$dataPrinter.iloscstron_kolor|number_format:0:",":" "|replace:',00':''|escape:'htmlall'}"{/if}>
             </td>
         </tr>
         <tr>
@@ -179,10 +178,24 @@
                 Ilość stron total
             </td>
             <td class='tdWartosc'>
-                <input type="text" id='txtiloscstrontotal'
+                <input data-ref type="text" id='txtiloscstrontotal'
                        class='textBoxForm' maxlength="100"
                        style='width:70px;min-width:70px;text-align: right;padding-right: 10px;'
-                       {if $serial!=''}value="{$dataPrinter[0].iloscstron_total|number_format:0:",":" "|replace:',00':''|escape:'htmlall'}"{/if}>
+                       {if $serial!=''}value="{$dataPrinter.iloscstron_total|number_format:0:",":" "|replace:',00':''|escape:'htmlall'}"{/if}>
+            </td>
+        </tr>
+        <tr>
+            <td style='height:5px;min-height: 5px;' colspan=2></td>
+        </tr>
+        <tr>
+            <td class='tdOpis'>
+                Ilość skanów
+            </td>
+            <td class='tdWartosc'>
+                <input data-ref type="text" id='txtiloscscans'
+                       class='textBoxForm' maxlength="100"
+                       style='width:70px;min-width:70px;text-align: right;padding-right: 10px;'
+                       {if $serial!=''}value="{$dataPrinter.iloscscans|number_format:0:",":" "|replace:',00':''|escape:'htmlall'}"{/if}>
             </td>
         </tr>
         <tr>
@@ -195,7 +208,7 @@
             </td>
             <td class='tdWartosc'>
                                    <textarea id="txtopis" class="textareaForm" style='height:80px;min-height: 80px;'
-                                             maxlength="500">{if $serial!=''}{$dataPrinter[0].opis|escape:'htmlall'}{/if}</textarea>
+                                             maxlength="500">{if $serial!=''}{$dataPrinter.opis|escape:'htmlall'}{/if}</textarea>
             </td>
         </tr>
         <tr>
@@ -207,8 +220,8 @@
                 Kolorowa
             </td>
             <td class='tdWartosc'>
-                <input type="checkbox" id='checkKolorowa' class='checkBoxNormal'
-                       {if $dataPrinter[0].type_color}checked{/if}
+                <input data-ref type="checkbox" id='checkKolorowa' class='checkBoxNormal'
+                       {if $dataPrinter.type_color}checked{/if}
                 />
             </td>
         </tr>
@@ -233,9 +246,9 @@
             nazwa
         </td>
         <td class='tdWartosc' colspan="3">
-            <input type="text" id='txtnazwa'
+            <input data-ref type="text" id='txtnazwa'
                    class='textBoxForm' maxlength="100" style='min-width:130px;'
-                   {if $serial!=''}value="{$dataPrinter[0].nazwa|escape:'htmlall'}"{/if}>
+                   {if $serial!=''}value="{$dataPrinter.nazwa|escape:'htmlall'}"{/if}>
         </td>
     </tr>
     <tr>
@@ -248,9 +261,9 @@
             ulica
         </td>
         <td class='tdWartosc' colspan="3">
-            <input type="text" id='txtulica'
+            <input data-ref type="text" id='txtulica'
                    class='textBoxForm' maxlength="100" style='min-width:130px;'
-                   {if $serial!=''}value="{$dataPrinter[0].ulica|escape:'htmlall'}"{/if}>
+                   {if $serial!=''}value="{$dataPrinter.ulica|escape:'htmlall'}"{/if}>
         </td>
     </tr>
     <tr>
@@ -263,9 +276,9 @@
             miasto
         </td>
         <td class='tdWartosc' colspan="3">
-            <input type="text" id='txtmiasto'
+            <input data-ref type="text" id='txtmiasto'
                    class='textBoxForm' maxlength="70" style='min-width:130px;'
-                   {if $serial!=''}value="{$dataPrinter[0].miasto|escape:'htmlall'}"{/if}>
+                   {if $serial!=''}value="{$dataPrinter.miasto|escape:'htmlall'}"{/if}>
         </td>
     </tr>
     <tr>
@@ -278,9 +291,9 @@
             kod pocztowy
         </td>
         <td class='tdWartosc' colspan="3">
-            <input type="text" id='txtkodpocztowy'
+            <input data-ref type="text" id='txtkodpocztowy'
                    class='textBoxForm' maxlength="10" style='min-width:130px;'
-                   {if $serial!=''}value="{$dataPrinter[0].kodpocztowy|escape:'htmlall'}"{/if}>
+                   {if $serial!=''}value="{$dataPrinter.kodpocztowy|escape:'htmlall'}"{/if}>
         </td>
     </tr>
     <tr>
@@ -302,9 +315,9 @@
             osoba kontaktowa
         </td>
         <td class='tdWartosc' colspan="3">
-            <input type="text" id='txtosobakontaktowa'
+            <input data-ref type="text" id='txtosobakontaktowa'
                    class='textBoxForm' maxlength="100" style='min-width:130px;'
-                   {if $serial!=''}value="{$dataPrinter[0].osobakontaktowa|escape:'htmlall'}"{/if}>
+                   {if $serial!=''}value="{$dataPrinter.osobakontaktowa|escape:'htmlall'}"{/if}>
         </td>
     </tr>
     <tr>
@@ -316,9 +329,9 @@
             telefon
         </td>
         <td class='tdWartosc' colspan="3">
-            <input type="text" id='txttelefon'
+            <input data-ref type="text" id='txttelefon'
                    class='textBoxForm' maxlength="50" style='min-width:130px;'
-                   {if $serial!=''}value="{$dataPrinter[0].telefon|escape:'htmlall'}"{/if}>
+                   {if $serial!=''}value="{$dataPrinter.telefon|escape:'htmlall'}"{/if}>
         </td>
     </tr>
     <tr>
@@ -331,9 +344,9 @@
             adres email
         </td>
         <td class='tdWartosc' colspan="3">
-            <input type="text" id='txtmail'
+            <input data-ref type="text" id='txtmail'
                    class='textBoxForm' maxlength="50" style='min-width:130px;'
-                   {if $serial!=''}value="{$dataPrinter[0].mail|escape:'htmlall'}"{/if}>
+                   {if $serial!=''}value="{$dataPrinter.mail|escape:'htmlall'}"{/if}>
         </td>
     </tr>
     <tr>
@@ -347,7 +360,7 @@
         <td class='tdWartosc'>
                                    <textarea id="txtlokalizacja" class="textareaForm"
                                              style='height:80px;min-height: 80px;'
-                                             maxlength="500">{if $serial!=''}{$dataPrinter[0].lokalizacja|escape:'htmlall'}{/if}</textarea>
+                                             maxlength="500">{if $serial!=''}{$dataPrinter.lokalizacja|escape:'htmlall'}{/if}</textarea>
         </td>
     </tr>
 

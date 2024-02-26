@@ -64,7 +64,7 @@ class printersController extends Controller
         global $smarty;
         if ($_POST['serial'] != '') {
             $dataPrinter = $this->printer->getPrinterBySerial($_POST['serial']);
-            $smarty->assign('dataPrinter', $dataPrinter);
+            $smarty->assign('dataPrinter', $dataPrinter[0]);
             unset($dataPrinter);
         }
         $smarty->assign('serial', $_POST['serial']);

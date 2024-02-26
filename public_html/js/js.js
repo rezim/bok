@@ -652,6 +652,7 @@ function zapiszStanNa(serial) {
                 serial: doc.getElementById('txtserial').value,
                 iloscstron: doc.getElementById('txtiloscstron').value,
                 iloscstron_kolor: doc.getElementById('txtiloscstronkolor').value,
+                iloscscans: doc.getElementById('txtiloscscans').value,
                 stanna: doc.getElementById('txtstanna').value,
             },
         success: function (dane) {

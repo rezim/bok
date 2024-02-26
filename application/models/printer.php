@@ -5,7 +5,7 @@ class printer extends Model
     protected $filterserial = '', $filtermodel = '', $filternumber = '', $filternip = '', $filterlokalizacja, $clientrowid, $filterklient = '';
     protected $serial = '', $model = '', $product_number = '', $nr_firmware = '', $date_firmware = '', $ip = '', $stan_fuser = '', $stan_adf = '',
         $black_toner = '', $date_insert = '', $cyan_toner = '', $magenta_toner = '', $yellow_toner = '', $blackdrum_toner = '', $cyandrum_toner = '',
-        $magentadrum_toner = '', $yellowdrum_toner = '', $dateupdate = '', $iloscstron = '', $opis = '', $lokalizacja = '', $iloscstron_kolor = '', $iloscstron_total = '', $stanna = '',
+        $magentadrum_toner = '', $yellowdrum_toner = '', $dateupdate = '', $iloscstron = '', $iloscscans = '', $opis = '', $lokalizacja = '', $iloscstron_kolor = '', $iloscstron_total = '', $stanna = '',
         // device localization
         $ulica = '', $miasto = '', $kodpocztowy = '', $telefon = '', $mail = '', $nazwa = '', $osobakontaktowa = '', $type_color;
 
@@ -145,7 +145,7 @@ class printer extends Model
 
     function getPrinterBySerial($serial)
     {
-        $query = "select * from printers where serial='{$serial}'";
+        $query = "select *, (select max(ilosctotal) from scans where serial = '{$serial}') as iloscscans  from printers where serial='{$serial}'";
         return $this->query($query, null, false);
     }
 
@@ -369,13 +369,44 @@ class printer extends Model
                 `ilosc`,`ilosckolor`,`ilosctotal`,
                 `dateinsert`,
                 `datawiadomosci`, `rowid_agreement`, `product_version`";
-        return $this->insert($columnList, 'sdddssii',
+
+        $datawiadomosci = $this->stanna . ' 12:00';
+        $dateinsert = date('Y-m-d H:i:s');
+
+        $insert[] = $this->insert($columnList, 'sdddssii',
             array(
                 $this->serial,
                 $this->iloscstron == '' ? "NULL" : str_replace(' ', '', str_replace(',', '.', $this->iloscstron)),
                 $this->iloscstron_kolor == '' ? "NULL" : str_replace(' ', '', str_replace(',', '.', $this->iloscstron_kolor)),
                 $this->iloscstron_total == '' ? "NULL" : str_replace(' ', '', str_replace(',', '.', $this->iloscstron_total)),
-                date('Y-m-d H:i:s'), $this->stanna . ' 12:00', $agreement_rowid, $product_version
+                $dateinsert, $datawiadomosci, $agreement_rowid, $product_version
             ));
+
+        if ($this->iloscscans != '' && $this->iloscscans > 0) {
+            $insert[] = $this->saveScans($this->serial, $dateinsert, $datawiadomosci, $this->iloscscans, $agreement_rowid);
+        }
+        return $insert;
+    }
+
+    function saveScans($serial, $dateinsert, $datawiadomosci, $ilosctotal, $rowagreement) {
+        $scans = array(
+            'serial' => $serial,
+            'dateinsert' => $dateinsert,
+            'datawiadomosci' => $datawiadomosci,
+            'ilosctotal' => $ilosctotal,
+            'rowid_agreement' => $rowagreement
+        );
+
+        $scansWihTypes = array(
+            'serial' => 'string',
+            'dateinsert' => 'date',
+            'datawiadomosci' => 'date',
+            'ilosctotal' => 'number',
+            'rowid_agreement' => 'number'
+        );
+
+        $this->update("DELETE FROM `scans` WHERE datawiadomosci = ? AND serial = ? ", 'ss', array($datawiadomosci, $serial));
+
+        return $this->insertIntoTable('scans', $scansWihTypes, $scans);
     }
 }
