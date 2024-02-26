@@ -150,6 +150,8 @@ class SQLQuery
                     return $data[$fieldName] * 100;
                 case 'integer':
                     return $data[$fieldName] === null ? 'NULL' : $data[$fieldName];
+                case 'boolean':
+                    return $data[$fieldName] === true ? 1 : 0;
                 default:
                     return $data[$fieldName];
             }
@@ -178,6 +180,7 @@ class SQLQuery
             } else {
                 $dane['status'] = 0;
                 $dane['info'] = "Błąd wykonania polecenia : " . $this->getError();
+                $dane['query'] = $query;
                 $dane['rowid'] = $this->getLastId();
                 $dane['isnew'] = '1';
                 return $dane;
@@ -186,6 +189,7 @@ class SQLQuery
         } else {
             $dane['status'] = 0;
             $dane['info'] = "Błędne polecenie : " . $this->getError();
+            $dane['query'] = $query;
             $dane['rowid'] = $this->getLastId();
             $dane['isnew'] = '1';
             return $dane;
