@@ -9,7 +9,7 @@
                 serial
             </th>
             <th>
-                toner
+                zdarzenie
             </th>
 
             <th>
@@ -48,7 +48,11 @@
                                  src='{$smarty.const.SCIEZKA}/{$smarty.const.SMARTVERSION}/img/fake.png'/>
                             {$item.toner_type|escape:'htmlall'}
                         {else}
-                            {$item.toner_type|escape:'htmlall'}
+                            {if $item.toner_type == '?'}
+                                {$item.eventcode|escape:'htmlall'}
+                            {else}
+                                {$item.toner_type|escape:'htmlall'}
+                            {/if}
                         {/if}
                     </td>
                     <td>{$item.product_number|escape:'htmlall'}&nbsp;{$item.model|escape:'htmlall'}</td>
