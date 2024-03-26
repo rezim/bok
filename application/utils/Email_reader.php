@@ -315,9 +315,9 @@ const CSV_BLACK_COUNT_INDEX = 8;
 const CSV_SCAN_COUNT_INDEX = 9;
 function processCsv($filename, $attachment)
 {
-    file_put_contents(SCIEZKAZALACZNIKI.$filename, $attachment);
+    file_put_contents(SCIEZKAZALACZNIKI . $filename, $attachment);
 
-    if (($handle = fopen(SCIEZKAZALACZNIKI.$filename, "r")) !== false) {
+    if (($handle = fopen(SCIEZKAZALACZNIKI . $filename, "r")) !== false) {
         while (($data = fgetcsv($handle, 1000, ",")) !== false) {
 
             $customer = $data[CSV_CUSTOMER_INDEX] ?? null;
@@ -343,7 +343,8 @@ function processCsv($filename, $attachment)
     }
 }
 
-function deleteFromPages($serial, $date) {
+function deleteFromPages($serial, $date)
+{
     $mysqli = getMySqlConn();
     $query = "DELETE FROM `pages` WHERE datawiadomosci = '{$date}' AND serial = '{$serial}'";
 
@@ -393,6 +394,9 @@ function readDeviceCounters($notificationEmail = null)
             break;
         }
 
+        $emailHeader = $email['header'];
+        $emailFromAddress = $emailHeader->fromaddress;
+        $emailSubject = $emailHeader->subject;
         $attachments = array();
 
 
@@ -479,7 +483,27 @@ function readDeviceCounters($notificationEmail = null)
                 $emailReader->move($email['index'], 'INBOX.Rejected');
                 continue;
             }
+        } else if ($emailFromAddress === emailFromCanonDevice) {
+
+            // currently we don't want to process group emails
+            if ($emailSubject === emailFromCanonGroupEventMailSubject) {
+                $emailReader->move($email['index'], 'INBOX.Rejected');
+                continue;
+            }
+            $canonData = readCanonReport($email['body']);
+
+            $result = saveCanonData($canonData);
+
+            if (!$result) {
+                $emailReader->move($email['index'], 'INBOX.Rejected');
+                continue;
+            }
+
+            $emailReader->move($email['index'], 'INBOX.Processed');
+            continue;
+
         } else {
+
             $found_img = FALSE;
             foreach ($attachments as $a) {
 
@@ -492,8 +516,7 @@ function readDeviceCounters($notificationEmail = null)
                         $found_img = TRUE;
                         processCsv($a['filename'], $a['attachment']);
                         break;
-                    }
-                    // check if the file is a jpg, png, or gif
+                    } // check if the file is a jpg, png, or gif
                     else if (preg_match('/(xml)/i', $finfo['extension'], $n)) {
 
                         $found_img = TRUE;
@@ -1296,7 +1319,6 @@ function getDataDeviceMinolta($message)
     return $dataDevice;
 }
 
-
 function getDataDeviceKyocera($message, $dataWiadomosci, $ip)
 {
     $messageRows = preg_split('/\r\n|\r|\n/', $message);
@@ -1404,10 +1426,63 @@ function getDataDeviceKyocera($message, $dataWiadomosci, $ip)
     return $dataDevice;
 }
 
+function readCanonReport($message)
+{
+    $messageRows = preg_split('/\r\n|\r|\n/', $message);
+
+    $content = array();
+    foreach ($messageRows as $messageRow) {
+        $property = explode(":", $messageRow);
+        if (count($property) >= 2) {
+            $propertyName = trim($property[0]);
+            // for value which also contains ':' separator
+            $propertyValue = trim(implode(":", array_slice($property, 1)));
+
+            if ($propertyName === 'Device ID') {
+                $content['serial'] = $propertyValue;
+            } else if ($propertyName === 'Reference Number') {
+                $content['revision'] = $propertyValue;
+            } else if ($propertyName === 'Time Received from RDS') {
+                $dateTimeWithTimeZone = explode(" ", $propertyValue);
+                $content['timestamp'] = $dateTimeWithTimeZone[0] . " " . $dateTimeWithTimeZone[1];
+                $content['timestamp'] = (new DateTime($content['timestamp']))->format('Y-m-d H:i:s');
+            } else if ($propertyName === 'Description' || $propertyName === 'Error Description') {
+                $content['eventcode'] = $propertyValue;
+            } else if ($propertyName === 'https') {
+                $content['description'] .= implode(":", $property);
+            }
+        }
+    }
+
+    if (!isset($content['sequencenumber'])) {
+        // default value
+        $content['sequencenumber'] = -1;
+    }
+
+    if (!isset($content['valuefloat'])) {
+        // default value
+        $content['valuefloat'] = -1;
+    }
+
+    return $content;
+}
+
 function validateDate($date, $format)
 {
     $d = DateTime::createFromFormat($format, $date);
     return $d && $d->format($format) == $date;
+}
+
+function saveCanonData($canonData)
+{
+    $mysqli = getMySqlConn();
+    $statement = $mysqli->prepare("INSERT INTO logs (sequencenumber, eventcode, description,timestamp,valuefloat,revision,dateinsert,serial)
+                                    VALUES (?,?,?,?,?,?,?,?)");
+
+    $statement->bind_param("isssdsss", $canonData['sequencenumber'], $canonData['eventcode'], $canonData['description'],
+        $canonData['timestamp'], $canonData['valuefloat'], $canonData['revision'], date('Y-m-d H:i:s'), $canonData['serial']);
+
+    return $statement->execute();
 }
 
 function saveMinoltaDataDevice($minoltaMessage)
