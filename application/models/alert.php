@@ -7,9 +7,13 @@ class alert extends Model
         $toner_left = 10;
         $query =
             "
-            Select t.serial, t.toner_type, t.date, t.toner_left, p.model, p.product_number, p.ulica, p.miasto, p.kodpocztowy, p.telefon, p.mail, p.nazwa, p.osobakontaktowa, n.rowid as notification_rowid From 
+            Select t.serial, t.toner_type, t.date,
+                   t.toner_left, p.model, p.product_number, p.ulica, p.miasto,
+                   p.kodpocztowy, p.telefon, p.mail, p.nazwa, p.osobakontaktowa, n.rowid as notification_rowid,
+                   description 
+            From 
             (
-            SELECT l1.serial as serial, l2.toner as toner_type, l1.timestamp as date, '" . $toner_left ."' as toner_left from `logs` l1
+            SELECT l1.serial as serial, l2.toner as toner_type, l1.timestamp as date, '" . $toner_left ."' as toner_left, l1.description AS description from `logs` l1
             INNER JOIN (
                 SELECT MAX(timestamp) as maxtimestamp, serial, eventcode, 
                     IF(INSTR(eventcode, 'Cyan') > 0, 'Cyan', 
@@ -27,9 +31,16 @@ class alert extends Model
             
             UNION 
             
-            select serial, 'Black' as toner_type, date_insert as date, black_toner as toner_left
+            select serial, 'Black' as toner_type, date_insert as date, black_toner as toner_left, '-' as description
             from printers
-            where black_toner <= " . $toner_left . " and date_insert BETWEEN DATE_SUB(NOW(), INTERVAL " . $days . " DAY) AND NOW()            
+            where black_toner <= " . $toner_left . " and date_insert BETWEEN DATE_SUB(NOW(), INTERVAL " . $days . " DAY) AND NOW()
+            
+            
+                	UNION 
+        
+            select l3.serial as serial, '?' as toner_type, l3.timestamp as date, '?' as toner_left, l3.description as description from `logs` l3
+    	    where l3.description like 'https://rcm-ec1.srv.ygles.com%'
+                        
             ) t
             
             INNER JOIN printers p on p.serial = t.serial

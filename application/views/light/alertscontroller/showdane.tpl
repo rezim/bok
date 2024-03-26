@@ -23,6 +23,9 @@
                 kontakt
             </th>
             <th>
+                zdarzenie urządzenia
+            </th>
+            <th>
                 data
             </th>
             <th>
@@ -39,7 +42,7 @@
                     <td>{$item.serial|escape:'htmlall'}</td>
                     <td>
 
-                        {if ($item.toner_type !== 'Wymiana pojemnika')}
+                        {if ($item.toner_type !== 'Wymiana pojemnika' && $item.toner_type !== '?')}
                             {$item.toner_left} %
                             <img class='{if $item.toner_type !== 'Black'}imgColor{else}imgBlack{/if}'
                                  src='{$smarty.const.SCIEZKA}/{$smarty.const.SMARTVERSION}/img/fake.png'/>
@@ -59,6 +62,11 @@
                         <br/>{$item.osobakontaktowa|escape:'htmlall'}
                     </td>
                     <td>
+                        {if !empty($item.description) && $item.description|strpos:'https://' === 0}
+                            <a href="{$item.description}" target="_blank">link do zdarzenia</a>
+                        {/if}
+                    </td>
+                    <td>
                         {if !empty($item.date)} {$item.date|date_format:"%Y-%m-%d"}{/if}
                     </td>
                     <td>
@@ -69,7 +77,9 @@
                                 <i class="fas fa-cog"></i>
                             </button>
                             <div class="dropdown-menu dropdown-menu-right" aria-labelledby="dropdownMenuLink">
-                                <a class="dropdown-item" href="#" onClick='showNewNotiAdd("0", "{$item.serial}", "{$item.toner_type}")'><i class="fas fa-plus"></i>&nbsp;&nbsp;Dodaj Zgłoszenie</a>
+                                <a class="dropdown-item" href="#"
+                                   onClick='showNewNotiAdd("0", "{$item.serial}", "{$item.toner_type}")'><i
+                                            class="fas fa-plus"></i>&nbsp;&nbsp;Dodaj Zgłoszenie</a>
                             </div>
                         </div>
                     </td>
