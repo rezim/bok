@@ -456,29 +456,56 @@ class reportsController extends InvoicesController
     function hasError($agreement)
     {
 
-        for ($idx = 0; $idx < count($agreement['strony_black_koniec']); $idx++) {
-            if ($agreement['strony_black_koniec'][$idx] == 0 && $agreement['strony_black_start'][$idx] == 0) {
-                return 1;
+        $isPrinter = $agreement['typ_umowy'] === 'wynajem drukarki';
+        $isScanner = $agreement['typ_umowy'] === 'wynajem skanera';
+
+        if ($isPrinter) {
+            for ($idx = 0; $idx < count($agreement['strony_black_koniec']); $idx++) {
+                if ($agreement['strony_black_koniec'][$idx] == 0 && $agreement['strony_black_start'][$idx] == 0) {
+                    return 1;
+                }
+                if (($agreement['strony_black_koniec'][$idx] - $agreement['strony_black_start'][$idx]) < 0) {
+                    return 1;
+                }
+                if (($agreement['strony_kolor_koniec'][$idx] - $agreement['strony_kolor_start'][$idx]) < 0) {
+                    return 1;
+                }
             }
-            if (($agreement['strony_black_koniec'][$idx] - $agreement['strony_black_start'][$idx]) < 0) {
-                return 1;
-            }
-            if (($agreement['strony_kolor_koniec'][$idx] - $agreement['strony_kolor_start'][$idx]) < 0) {
-                return 1;
+        } else if ($isScanner) {
+            for ($idx = 0; $idx < count($agreement['skany_koniec']); $idx++) {
+                if ($agreement['skany_koniec'][$idx] == 0 && $agreement['skany_start'][$idx] == 0) {
+                    return 1;
+                }
+                if (($agreement['skany_koniec'][$idx] - $agreement['skany_start'][$idx]) < 0) {
+                    return 1;
+                }
             }
         }
 
-        // check for date for black and color,
-        if ($this->isDateIncorrect($agreement['data_wiadomosci_black_koniec'][0], $this->report->getDateTo())) {
-            return 2;
-        }
-        // check for date for color,
-        if ($this->isDateIncorrect($agreement['data_wiadomosci_kolor_koniec'][0], $this->report->getDateTo())) {
-            return 2;
+        if ($isPrinter) {
+            // check for date for black and color,
+            if ($this->isDateIncorrect($agreement['data_wiadomosci_black_koniec'][0], $this->report->getDateTo())) {
+                return 2;
+            }
+            // check for date for color,
+            if ($this->isDateIncorrect($agreement['data_wiadomosci_kolor_koniec'][0], $this->report->getDateTo())) {
+                return 2;
+            }
+        } else if ($isScanner) {
+            // check for date for black and color,
+            if ($this->isDateIncorrect($agreement['data_wiadomosci_scans_koniec'][0], $this->report->getDateTo())) {
+                return 2;
+            }
         }
 
-        if ($agreement['strony_black_sum'] == 0) {
-            return 1;
+        if ($isPrinter) {
+            if ($agreement['strony_black_sum'] == 0) {
+                return 1;
+            }
+        } else if ($isScanner) {
+            if ($agreement['skany_sum'] == 0) {
+                return 1;
+            }
         }
 
         return 0;
@@ -543,7 +570,7 @@ class reportsController extends InvoicesController
             }
 
             // only for printers check for errors
-            if ($item['typ_umowy'] === 'wynajem drukarki') {
+            if ($item['typ_umowy'] === 'wynajem drukarki' || $item['typ_umowy'] === 'wynajem skanera') {
 
                 $hasError = $this->hasError($item);
 
@@ -591,6 +618,7 @@ class reportsController extends InvoicesController
                     }
                 }
             }
+
             // check for error for collective agreements
             if ($item['typ_umowy'] === 'umowa zbiorcza' && isset($item['lista_umow'])) {
                 foreach ($item['lista_umow'] as $agrKey => $agr) {
