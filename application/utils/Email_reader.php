@@ -307,12 +307,48 @@ function reportPaymentsProcessingMessage($message, $error, $date)
     }
 }
 
+const PRINCITY_SERIAL_NUMBER_INDEX = 0;
+const PRINCITY_DEVICE_NAME_INDEX = 1;
+const PRINCITY_CITY_NAME_INDEX = 2;
+const PRINCITY_BLACK_COUNT_INDEX = 3;
+const PRINCITY_COLOR_COUNT_INDEX = 4;
+const PRINCITY_DATE_INDEX = 5;
+
+function processPrintCity($filename, $attachment) {
+    file_put_contents(SCIEZKAZALACZNIKI . $filename, $attachment);
+
+    if (($handle = fopen(SCIEZKAZALACZNIKI . $filename, "r")) !== false) {
+        while (($data = fgetcsv($handle, 1000, ",")) !== false) {
+
+            $serial = $data[PRINCITY_SERIAL_NUMBER_INDEX] ?? null;
+            // NOTE: there is some strange white character on the beginning of file, ﻿
+            if (strpos($serial, "Numer seryjny") === false) {
+                $date = $data[PRINCITY_DATE_INDEX];
+                if ($date) {
+                    $blackCount = intval(preg_replace('/[^0-9]/', '', $data[PRINCITY_BLACK_COUNT_INDEX]));
+                    $colorCount = intval(preg_replace('/[^0-9]/', '', $data[PRINCITY_COLOR_COUNT_INDEX]));
+                    $totalCount = $blackCount - $colorCount;
+                    $scanCount = 0;
+                    $date = (date_create_from_format("Y-m-d", $date))->format("Y-m-d H:i:s");
+
+                    deleteFromPages($serial, $date);
+                    insertIntoPages($serial, $blackCount, $date, $colorCount, $totalCount);
+                    // insertScanCounter($serial, $scanCount, $date);
+                }
+            }
+
+        }
+        fclose($handle);
+    }
+}
+
 const CSV_CUSTOMER_INDEX = 0;
 const CSV_SERIAL_INDEX = 3;
 const CSV_DATE_INDEX = 6;
 const CSV_TOTAL_INDEX = 7;
 const CSV_BLACK_COUNT_INDEX = 8;
 const CSV_SCAN_COUNT_INDEX = 9;
+
 function processCsv($filename, $attachment)
 {
     file_put_contents(SCIEZKAZALACZNIKI . $filename, $attachment);
@@ -504,7 +540,7 @@ function readDeviceCounters($notificationEmail = null)
 
         } else {
 
-            $found_img = FALSE;
+            $processedSuccessfully = FALSE;
             foreach ($attachments as $a) {
 
                 if ($a['is_attachment'] == 1) {
@@ -513,19 +549,24 @@ function readDeviceCounters($notificationEmail = null)
                     $extension = pathinfo($a['filename'], PATHINFO_EXTENSION);
 
                     if ($extension === 'csv') {
-                        $found_img = TRUE;
-                        processCsv($a['filename'], $a['attachment']);
+                        if ($emailFromAddress === emailFromPrincity) {
+                            processPrintCity($a['filename'], $a['attachment']);
+                        } else {
+                            processCsv($a['filename'], $a['attachment']);
+                        }
+                        // TODO [TR]: change this meaning nothing name
+                        $processedSuccessfully = TRUE;
                         break;
                     } // check if the file is a jpg, png, or gif
                     else if (preg_match('/(xml)/i', $finfo['extension'], $n)) {
 
-                        $found_img = TRUE;
+                        $processedSuccessfully = TRUE;
                         // process the image (save, resize, crop, etc.)
                         _process_xml($a['attachment'], $n[1]);
 
                         if (!_readfileXML($datawiadomosc, $ip)) {
 
-                            $found_img = FALSE;
+                            $processedSuccessfully = FALSE;
                         }
                         break;
                     }
@@ -533,7 +574,7 @@ function readDeviceCounters($notificationEmail = null)
             }
 
             // if there was no image, move the email to the Rejected folder on the server
-            if (!$found_img) {
+            if (!$processedSuccessfully) {
 
                 $emailReader->move($email['index'], 'INBOX.Rejected');
                 continue;
