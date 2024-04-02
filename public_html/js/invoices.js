@@ -610,9 +610,12 @@ InvoiceManager = function (invoice_number_length) {
     };
 
     var getCounterState = function (agreement) {
-        var counterState = "licznik:" + agreement["strony_black_koniec"];
+        let counterState = `licznik: ${agreement['strony_black_koniec']}`;
         if (agreement["strony_kolor_koniec"]) {
-            counterState += "/" + agreement["strony_kolor_koniec"];
+            counterState += `/ ${agreement['strony_kolor_koniec']}`;
+        }
+        if (agreement["skany_koniec"]) {
+            counterState += `, skany: ${agreement['skany_koniec']}`;
         }
 
         return counterState;
