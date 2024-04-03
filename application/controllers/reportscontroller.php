@@ -185,7 +185,7 @@ class reportsController extends InvoicesController
                 // scans
                 $result[$report['rowidumowa']][SCAN_SUM] += ($report[SCAN_SUM]);
 
-                $result[$report['rowidumowa']]['serials'][] = $report['serial'];
+//                $result[$report['rowidumowa']]['serials'][] = $report['serial'];
             }
         }
 

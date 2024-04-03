@@ -11,7 +11,7 @@ const renderTable = (value, classNames) => `<table class="${resolveClassNames(cl
 
 const renderAgreementRows = (agreement, withCheckbox) => {
     // filter unique values
-    const serials = agreement['serials'].filter((item, pos, self) => self.indexOf(item) === pos);
+    const serials = agreement['serials']; //.filter((item, pos, self) => self.indexOf(item) === pos);
     const pageStats = [
         {
             pagesStart: agreement['strony_black_start'],
