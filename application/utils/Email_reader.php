@@ -312,7 +312,8 @@ const PRINCITY_DEVICE_NAME_INDEX = 1;
 const PRINCITY_CITY_NAME_INDEX = 2;
 const PRINCITY_BLACK_COUNT_INDEX = 3;
 const PRINCITY_COLOR_COUNT_INDEX = 4;
-const PRINCITY_DATE_INDEX = 5;
+const PRINCITY_SCANS_INDEX = 5;
+const PRINCITY_DATE_INDEX = 6;
 
 function processPrintCity($filename, $attachment) {
     file_put_contents(SCIEZKAZALACZNIKI . $filename, $attachment);
@@ -328,12 +329,12 @@ function processPrintCity($filename, $attachment) {
                     $blackCount = intval(preg_replace('/[^0-9]/', '', $data[PRINCITY_BLACK_COUNT_INDEX]));
                     $colorCount = intval(preg_replace('/[^0-9]/', '', $data[PRINCITY_COLOR_COUNT_INDEX]));
                     $totalCount = $blackCount - $colorCount;
-                    $scanCount = 0;
+                    $scanCount = intval(preg_replace('/[^0-9]/', '', $data[PRINCITY_SCANS_INDEX]));;
                     $date = (date_create_from_format("Y-m-d", $date))->format("Y-m-d H:i:s");
 
                     deleteFromPages($serial, $date);
                     insertIntoPages($serial, $blackCount, $date, $colorCount, $totalCount);
-                    // insertScanCounter($serial, $scanCount, $date);
+                    insertScanCounter($serial, $scanCount, $date);
                 }
             }
 
