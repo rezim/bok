@@ -2,6 +2,17 @@
 
 trait ExternalClientsTrait
 {
+
+    function getClientIdByTaxNo($clientTaxNo): ?int {
+        $client = $this->getClientByTaxNo($clientTaxNo);
+        if (empty($client)) {
+            return null;
+        }
+        $client = $client[0];
+
+        return $client['id'];
+    }
+
     /**
      * @param $clientTaxNo
      * @return ExternalClient

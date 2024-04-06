@@ -78,12 +78,15 @@ class clientinvoice extends Model
         return $this->insertIntoTable('interest_notes', $namesWihTypes, $interestNote);
     }
 
-    function getClientByTaxNb($clientTaxNb)
+    function getClientByTaxNb($clientTaxNb, $activeOnly = true)
     {
-        $query = "select * from clients where nip={$clientTaxNb} and activity=1";
+        $query = "select * from clients where nip={$clientTaxNb}";
+        if ($activeOnly === true) {
+            $query .= " and activity=1";
+        }
         $clients = $this->query($query, null, false);
 
-        if (!count($clients) === 1) {
+        if (!count($clients) == 1) {
             return null;
         }
 
@@ -111,4 +114,23 @@ class clientinvoice extends Model
         return implode(' ', array($controlNb, implode(' ', $arrAccountNb)));
     }
 
+
+    function getClientsWithChargeInterest() {
+        $query = "SELECT * FROM `clients` where naliczacodsetki = 1 and activity = 1";
+
+        return $this->query($query, null, false);
+    }
+
+    function getPaymentsByClientTaxNo($clientTaxNo, $startDate, $endDate)
+    {
+        $where = "WHERE p.date >= '{$startDate}' and p.date <= '{$endDate}' and c.nip = '{$clientTaxNo}'";
+        $orderBy = 'p.date DESC';
+
+        $query = "SELECT p.details as 'content', TRUNCATE(p.amount / 100, 2) as 'price_gross', (select GROUP_CONCAT(pp.ext_invoice_nb separator ', ') from payments_processed pp where pp.rowid_payments = p.rowid) as 'invoice', CONCAT(c.nazwakrotka, CONCAT(' NIP: ', c.nip)) as 'client', p.date as 'issue_date' FROM `payments` p 
+                        inner join clients c on substring(p.recipient_acount, -10) = c.nip
+                      {$where}
+                      ORDER BY {$orderBy}";
+
+        return $this->query($query, null, null);
+    }
 }

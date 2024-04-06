@@ -33,6 +33,46 @@ class InvoicesController extends Controller
         return getResultsByUrlQuery($url);
     }
 
+    function getInvoicesByClientTaxNo($taxNo, $dateFrom, $dateTo): array
+    {
+        $clientId = $this->getClientIdByTaxNo($taxNo);
+
+        if ($clientId === null) {
+            return [];
+        }
+
+        $url = FAKTUROWNIA_ENDPOINT . '/invoices.json?'
+            . 'period=more'
+            . '&date_from=' . $dateFrom
+            . '&date_to=' . $dateTo
+            . '&client_id=' . $clientId
+            . 'search_date_type=issue_date'
+            . '&order=issue_date.desc'
+            . '&api_token=' . FAKTUROWNIA_APITOKEN;
+        return getResultsByUrlQuery($url);
+    }
+
+
+    function getInvoiceByNumber($number, $period = 'all')
+    {
+        $ch = curl_init();
+        $url = FAKTUROWNIA_ENDPOINT . '/invoices.json?'
+            . 'number=' . $number
+            . '&period=' . $period
+            . '&api_token=' . FAKTUROWNIA_APITOKEN;
+
+        curl_setopt($ch, CURLOPT_URL, $url);
+        curl_setopt($ch, CURLOPT_RETURNTRANSFER, TRUE);
+        if (USE_PROXY) {
+            curl_setopt($ch, CURLOPT_PROXY, '127.0.0.1:8888');
+        }
+        $invoice = json_decode(curl_exec($ch), true);
+
+        curl_close($ch);
+
+        return count($invoice) > 0 ? $invoice[0] : null;
+    }
+
     function getInvoicesByDateRange($period, $dateFrom, $dateTo, $additionalFilters = ''): array
     {
         $url = FAKTUROWNIA_ENDPOINT . '/invoices.json?'
@@ -179,7 +219,7 @@ class InvoicesController extends Controller
             }, $interestNotes));
 
             $interestNotesSummary = join('<br/>', array_map(function ($note) use (&$fmt) {
-                $normalizedName = str_replace("-", "/", substr($note['name'], 0, -4)) ;
+                $normalizedName = str_replace("-", "/", substr($note['name'], 0, -4));
                 return "nota odsetkowa do faktury numer $normalizedName na kwotę {$fmt->format($note['amount'])}";
             },
                 $interestNotes));
@@ -217,17 +257,17 @@ class InvoicesController extends Controller
 
     function isNIP($nip)
     {
-        if(strlen($nip) == 10){
+        if (strlen($nip) == 10) {
             $aWeight = array(0 => 6, 5, 7, 2, 3, 4, 5, 6, 7);
 
             $iSum = 0;
-            for($i = 0; $i < strlen($nip)-1; $i++){
+            for ($i = 0; $i < strlen($nip) - 1; $i++) {
                 $iSum += (int)$nip[$i] * $aWeight[$i];
             }
 
             $iCheck = $iSum % 11;
 
-            return (int)$nip[strlen($nip)-1] == $iCheck ? true : false;
+            return (int)$nip[strlen($nip) - 1] == $iCheck ? true : false;
         }
 
         return false;

@@ -12,11 +12,37 @@ class clientinvoicesController extends InvoicesController
         $smarty->assign('fakturownia_conf_file_path', ROOT . DS . 'config' . DS . 'fakturownia.conf');
     }
 
+    function vindication()
+    {
+        global $smarty;
+        global $months;
+        $smarty->assign('months', $months);
+        $smarty->assign('rok', date("Y"));
+    }
+
+    function vindicationdata()
+    {
+        global $smarty;
+        $this->clientinvoice->populateWithPost();
+        $agreements = $this->clientinvoice->getPaymentMonitoredAgreements();
+
+        if (count($agreements) === 0) {
+            $smarty->assign('isEmptyMessage', 'Dla podanych filtrów nie ma żadnych danych do wyświetlenia.');
+        } else {
+            $columnNames = array_keys($agreements[0]);
+
+            $columnSummaries = array_map(fn($columnName) => array_sum(array_map(fn($val) => is_numeric($val) ? $val : 0, array_column($agreements, $columnName))), $columnNames);
+
+            $smarty->assign('columnNames', $columnNames);
+            $smarty->assign('columnSummaries', $columnSummaries);
+            $smarty->assign('data', $agreements);
+        }
+    }
+
     function getagreements()
     {
         echo $this->clientinvoice->getAgreements();
     }
-
 
     function getinvoices()
     {
@@ -51,7 +77,7 @@ class clientinvoicesController extends InvoicesController
             $this->sendOverduePaymentsReminder($clientOverdueInvoices, $clientInterestNotes, $_POST['client_nip'], $clientEmail);
 
             echo "OK";
-        } catch(Exception $e) {
+        } catch (Exception $e) {
             header($_SERVER['SERVER_PROTOCOL'] . ' 500 Internal Server Error', true, 500);
             echo $e->getMessage();
         }
@@ -143,8 +169,9 @@ class clientinvoicesController extends InvoicesController
      */
     function getinterestnotes()
     {
-        if ($_POST['nip']) {
-            echo json_encode($this->resolveInterestNotes($_POST['nip']));
+        $nip = $_POST['nip'];
+        if ($nip) {
+            echo json_encode($this->clientinvoice->getInterestNotesByNip($nip));
         } else {
             echo "błędne parametry wyjściowe";
         }
@@ -156,6 +183,107 @@ class clientinvoicesController extends InvoicesController
             return json_encode([]);
         }
         echo json_encode($this->resolveAllInterestNotes());
+    }
+//    function getallinterestnotes()
+//    {
+//
+//        if (DISABLE_INTEREST_NOTES) {
+//            return json_encode([]);
+//        }
+//
+//        $allInterestNotes = $this->clientinvoice->getInterestNotes();
+//
+//        $groupedByNip = array();
+//        foreach ($allInterestNotes as $interestNote) {
+//            $groupedByNip[$interestNote['nip']][] = $interestNote;
+//        }
+//
+//        echo json_encode($groupedByNip);
+//    }
+
+    function moveInterestNotesFromFileIntoDB()
+    {
+        $allInterestNotes = array_merge(...$this->resolveAllInterestNotes());
+
+        $externalClients = array();
+
+        foreach ($allInterestNotes as $interestNote) {
+            $clientNip = $interestNote['nip'];
+            if (!isset($externalClients[$clientNip])) {
+                $externalClients[$clientNip] = $this->getClientByTaxNo($clientNip);
+            }
+            $invoiceNb = $interestNote['number'];
+            $invoice = $this->getInvoiceByNumber($invoiceNb);
+
+            $invoicePaidDate = $invoice ? $invoice['paid_date'] : null;
+
+            $externalClient = $externalClients[$clientNip];
+            $externalClientId = $externalClient ? $externalClient[0]['id'] : -1;
+            $fileName = $interestNote['name'];
+            $filePath = $interestNote['path'];
+            $issueDate = $interestNote['issueDate'];
+            $paymentToDate = $interestNote['paymentToDate']; // termin płatności
+            $paidDate = $interestNote['paidDate'];
+            $amount = $interestNote['amount'];
+            $paid = $interestNote['paid']; // false
+            $invoiceIssueDate = $interestNote["invoiceIssueDate"];
+            $invoicePaymentToDate = $interestNote["invoicePaidDate"];
+            $invoiceAmount = $interestNote["invoiceAmount"];
+            $interestNotePaidDate = $this->getInterestNotePaidDate($fileName);
+
+            $this->clientinvoice->createInterestNote($clientNip, $externalClientId, $clientNip, $fileName, $filePath, $issueDate, $paymentToDate, $paidDate, $amount, $invoiceNb,
+                $invoiceIssueDate, $invoicePaymentToDate, $invoicePaidDate, $invoiceAmount, $interestNotePaidDate,
+                $paid);
+        }
+
+
+        echo json_encode($this->resolveAllInterestNotes());
+    }
+
+    function generateMissingInterestNotes()
+    {
+        $allOverdueInvoices = $this->getInvoicesByDateRange('more', '2023-07-01', '2023-11-30', $additionalFilters = '&status=overdue_paid');
+
+        $clients = $this->clientinvoice->getClientsWithChargeInterest();
+
+        $clientsGroupedByNip = array();
+        foreach ($clients as $client) {
+            $clientsGroupedByNip[$client['nip']][] = $client;
+        }
+
+        $allInterestNotes = $this->clientinvoice->getInterestNotes();
+
+        $groupedByInvoiceNb = array();
+        foreach ($allInterestNotes as $interestNote) {
+            $groupedByInvoiceNb[$interestNote['invoice_nb']][] = $interestNote;
+        }
+
+        $count = 0;
+
+        foreach ($allOverdueInvoices as $invoice) {
+            if (!isset($groupedByInvoiceNb[$invoice['number']]) && isset($clientsGroupedByNip[$invoice['buyer_tax_no']])) {
+
+                $id = $invoice['id'];
+                $number = $invoice['number'];
+                $buyerTaxNo = $invoice['buyer_tax_no'];
+                $sellDate = $invoice['sell_date'];
+                $paymentTo = $invoice['payment_to'];
+                $paidDate = $invoice['paid_date'];
+
+                $date1 = new DateTime($invoice['payment_to']);
+                $date2 = new DateTime($paidDate);
+                $interval = $date1->diff($date2);
+                $isLateDays = $interval->days;
+
+//                const {id, number, buyer_tax_no, sell_date, payment_to, paid_date, is_late_days} = invoice;
+                $this->issueInterestNote($id, $number, $buyerTaxNo, '', $sellDate, $paymentTo, $paidDate, $isLateDays);
+                $count++;
+            }
+        }
+
+        echo $count;
+
+        return;
     }
 
     /**
@@ -240,4 +368,62 @@ class clientinvoicesController extends InvoicesController
             echo "błędne parametry wejściowe";
         }
     }
+
+
+    function showclient()
+    {
+        global $smarty;
+        global $months;
+        $smarty->assign('months', $months);
+        $smarty->assign('rok', date("Y"));
+        $smarty->assign('clientNIP', $this->_queryString[0]);
+    }
+
+    function showclientdata()
+    {
+        global $smarty;
+        $clientTaxNo = $_POST['clientNIP'];
+        $dateFrom = $_POST['startDate'];
+        $dateTo = $_POST['endDate'];
+
+        $invoices = $this->getInvoicesByClientTaxNo($clientTaxNo, $dateFrom, $dateTo);
+
+        $client = $this->clientinvoice->getClientByTaxNb($clientTaxNo, $activeOnly = false);
+        $smarty->assign('client', $client);
+
+        $invoices = array_map(
+            fn($invoice) => array(
+                'data' => $invoice['issue_date'],
+                'winien' => $invoice['price_gross'],
+                'ma' => null,
+                'treść' => $invoice['number']), $invoices);
+
+
+        $payments = $this->clientinvoice->getPaymentsByClientTaxNo($clientTaxNo, $dateFrom, $dateTo);
+
+        $payments = array_map(
+            fn($payment) => array(
+                'data' => $payment['issue_date'],
+                'winien' => null,
+                'ma' => $payment['price_gross'],
+                'treść' => $payment['content']), $payments);
+
+        $accountingSettlements = array_merge($invoices, $payments);
+
+        if (empty($accountingSettlements)) {
+            $smarty->assign('isEmptyMessage', 'Dla podanego zakresu dat nie ma żadnych dokumentów.');
+            return;
+        }
+
+        usort($accountingSettlements, fn($a, $b) => strcmp($b['data'], $a['data']));
+
+        $columnNames = array_keys($accountingSettlements[0]);
+
+        $columnSummaries = array_map(fn($columnName) => array_sum(array_map(fn($val) => is_numeric($val) ? $val : 0, array_column($accountingSettlements, $columnName))), $columnNames);
+
+        $smarty->assign('columnNames', $columnNames);
+        $smarty->assign('columnSummaries', $columnSummaries);
+        $smarty->assign('accountingSettlements', $accountingSettlements);
+    }
+
 }

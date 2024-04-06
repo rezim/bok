@@ -200,11 +200,12 @@
                                                 class="fas fa-balance-scale"></i></span>
                                 </button>
                                 <div class="dropdown-menu dropdown-menu-right" aria-labelledby="dropdownMenuLink">
-
-                                    <a href="javascript:void(0)" class="dropdown-item pointer"
-                                       ng-click="ctrl.showDetails(clientInvoice);"><i
-                                                class="fas fa-clipboard-list"></i></i>&nbsp;&nbsp;rozliczenie
-                                        szczegółowe</a>
+                                    <a href='{$smarty.const.SCIEZKA}/clientinvoices/showclient/[[clientInvoice.nip]]' class="dropdown-item pointer"><i
+                                                class="fas fa-clipboard-list"></i></i>&nbsp;rozliczenie&nbsp;winien/ma</a>
+{*                                    <a href="javascript:void(0)" class="dropdown-item pointer"*}
+{*                                       ng-click="ctrl.showDetails(clientInvoice);"><i*}
+{*                                                class="fas fa-clipboard-list"></i></i>&nbsp;&nbsp;rozliczenie*}
+{*                                        szczegółowe</a>*}
                                     <a href="javascript:void(0)" class="dropdown-item"
                                        ng-click="ctrl.paymentsClientMessages(clientInvoice);$event.stopPropagation();"><i
                                                 class="fas fa-comment-dots"></i>&nbsp;&nbsp;notatki</a>
