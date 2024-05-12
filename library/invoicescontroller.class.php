@@ -238,8 +238,11 @@ class InvoicesController extends Controller
                 . $mailingBody;
 
             $mailing = new mailing();
+
+            $overduePaymentsClientEmail = OVERDUE_PAYMENTS_DEBUG_MODE ? $clientEmail : OVERDUE_PAYMENTS_DEBUG_EMAIL;
+
             $mailing->sendNewOverduePaymentsMail(
-                $clientEmail,
+                $overduePaymentsClientEmail,
                 $mailingBody,
                 "Przypomnienie o zaległych płatnościach"
             );
@@ -252,7 +255,10 @@ class InvoicesController extends Controller
 
         }
         $customerMessageParams = array("client_nip" => $buyerTaxNo, "message_date" => date("Y-m-d"), "message" => $customerMessage);
-        $this->clientinvoice->addPaymentMessage($customerMessageParams, 'payments_messages');
+
+        if (!OVERDUE_PAYMENTS_DEBUG_MODE) {
+            $this->clientinvoice->addPaymentMessage($customerMessageParams, 'payments_messages');
+        }
     }
 
     function isNIP($nip)
