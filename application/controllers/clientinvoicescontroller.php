@@ -167,11 +167,19 @@ class clientinvoicesController extends InvoicesController
      * getInterestNotes()
      * get interest notes by client NIP
      */
+//    function getinterestnotes()
+//    {
+//        $nip = $_POST['nip'];
+//        if ($nip) {
+//            echo json_encode($this->clientinvoice->getInterestNotesByNip($nip));
+//        } else {
+//            echo "błędne parametry wyjściowe";
+//        }
+//    }
     function getinterestnotes()
     {
-        $nip = $_POST['nip'];
-        if ($nip) {
-            echo json_encode($this->clientinvoice->getInterestNotesByNip($nip));
+        if ($_POST['nip']) {
+            echo json_encode($this->resolveInterestNotes($_POST['nip']));
         } else {
             echo "błędne parametry wyjściowe";
         }
