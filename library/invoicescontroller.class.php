@@ -239,7 +239,7 @@ class InvoicesController extends Controller
 
             $mailing = new mailing();
 
-            $overduePaymentsClientEmail = OVERDUE_PAYMENTS_DEBUG_MODE ? $clientEmail : OVERDUE_PAYMENTS_DEBUG_EMAIL;
+            $overduePaymentsClientEmail = !OVERDUE_PAYMENTS_DEBUG_MODE ? $clientEmail : OVERDUE_PAYMENTS_DEBUG_EMAIL;
 
             $mailing->sendNewOverduePaymentsMail(
                 $overduePaymentsClientEmail,
