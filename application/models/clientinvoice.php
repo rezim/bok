@@ -107,6 +107,9 @@ class clientinvoice extends Model
 
     function formatIBAN($iban)
     {
+        // remove whitespaces before formatting, it could happen iban is already formatted
+        $iban = preg_replace('/\s+/', '', $iban);
+
         $controlNb = substr($iban, 0, 2);
 
         $arrAccountNb = str_split(substr($iban, 2, 6 * 4), 4);
