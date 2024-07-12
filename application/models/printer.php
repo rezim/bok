@@ -10,8 +10,8 @@ class printer extends Model
         $ulica = '', $miasto = '', $kodpocztowy = '', $telefon = '', $mail = '', $nazwa = '', $osobakontaktowa = '', $type_color;
 
 
-
-    function getPrinterCounters($serial) {
+    function getPrinterCounters($serial)
+    {
         $query = "select serial, ilosc as black, ilosckolor as color, datawiadomosci as date from `pages`
                    where serial = '{$serial}'
                    order by datawiadomosci desc
@@ -68,8 +68,17 @@ class printer extends Model
         return $this->query($query, null, false);
 
     }
-    function getCounters() {
-        $query = "select * from counters order by datawiadomosci desc";
+
+    function getCounters()
+    {
+        $query = "SELECT `p1`.`serial` AS `serial`,`p1`.`ilosc` AS `ilosc`,
+                         `p1`.`dateinsert` AS `dateinsert`,`p1`.`rowid` AS `rowid`,
+                         `p1`.`datawiadomosci` AS `datawiadomosci`,`p1`.`ilosckolor` AS `ilosckolor`,
+                         `p1`.`ilosctotal` AS `ilosctotal`,`p1`.`rowid_agreement` AS `rowid_agreement`,
+                         `p1`.`product_version` AS `product_version` 
+                  FROM (`bok`.`pages` `p1` join (select max(`bok`.`pages`.`datawiadomosci`) AS `max_date`,`bok`.`pages`.`serial` AS `SERIAL` from `bok`.`pages` group by `bok`.`pages`.`serial`) `p2` 
+                      ON(`p1`.`serial` = `p2`.`SERIAL` and `p1`.`datawiadomosci` = `p2`.`max_date`)) 
+                  ORDER BY `p1`.`datawiadomosci` desc";
         $counters = $this->query($query, null, false);
 
         return array_reduce($counters, function ($result, $item) {
@@ -82,7 +91,8 @@ class printer extends Model
         }, []);
     }
 
-    function getPrinterModels() {
+    function getPrinterModels()
+    {
         $query = "SELECT model FROM `printers` p inner join `agreements` a on p.serial = a.serial where a.rowid_type = 1 group by model order by model";
 
         return $this->query($query, null, false);

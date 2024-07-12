@@ -36,6 +36,38 @@ trait ExternalClientsTrait
         return $client;
     }
 
+    /**
+     * @param $clientId
+     * @return array|null
+     */
+    function getClientById($clientId): ?array
+    {
+
+        if (!$clientId) {
+            return null;
+        }
+
+        $ch = curl_init();
+        $url = FAKTUROWNIA_ENDPOINT . "/clients/{$clientId}.json?"
+            . 'api_token=' . FAKTUROWNIA_APITOKEN;
+
+        curl_setopt($ch, CURLOPT_URL, $url);
+        curl_setopt($ch, CURLOPT_RETURNTRANSFER, TRUE);
+        if (USE_PROXY) {
+            curl_setopt($ch, CURLOPT_PROXY, '127.0.0.1:8888');
+        }
+        $client = json_decode(curl_exec($ch), true);
+
+        curl_close($ch);
+
+        if ($client['status'] === 404) {
+            // not found
+            return null;
+        }
+
+        return $client;
+    }
+
     function createClient($clientData)
     {
         $ch = curl_init();
@@ -100,7 +132,11 @@ trait ExternalClientsTrait
      * @param $clientData
      * @return mixed|void
      */
-    function createOrUpdateClientByTaxNo($clientData) {
+    function createOrUpdateClientByTaxNoOrClientId($clientData) {
+        if ($clientData['client_id']) {
+
+        }
+
         $taxNo = $clientData['tax_no'];
         $client = $this->getClientByTaxNo($taxNo);
         $isNewClient = empty($client);

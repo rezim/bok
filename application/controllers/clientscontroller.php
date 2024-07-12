@@ -125,6 +125,7 @@ class clientsController extends InvoicesController
             }
 
             $clientNip = $_POST['nip'] ?? null;
+
             if ($isCreateClientRequest) {
                 if (empty($clientNip)) {
                     $this->badRequest('Numer NIP klienta jest wymagany.');
@@ -136,12 +137,31 @@ class clientsController extends InvoicesController
                 $client = $this->client->getClientByNip($clientNip);
                 if (!empty($client)) {
                     $clientName = $client[0]['nazwakrotka'];
-                    $this->badRequest("Klient o numerze NIP: '$clientNip' już istnieje, nazwa istnięjącego klienta: '$clientName'!");
+                    $extClient = $this->getClientById($_POST['client_id']);
+
+                    if ($extClient === null || count($extClient) === 0) {
+                        $this->badRequest("NIP klienta nie jest unikalny: '$clientNip', istnieje: '$clientName'!,<br />
+                                           Możesz zapisać klienta podając poprawny id klienta w fakturowni.");
+                    }
                 }
             } else {
                 // for edit client nip could not present in the request
-                if (!empty($clientNip) && !$this->isNIP($clientNip)) {
-                    $this->badRequest('Niepoprawny numer NIP');
+                if (!empty($clientNip)) {
+                    if (!$this->isNIP($clientNip)) {
+                        $this->badRequest('Niepoprawny numer NIP');
+                    } else {
+                        $client = $this->client->getClientByNip($clientNip);
+
+                        if (count($client) > 1) {
+                            $clientName = $client[0]['nazwakrotka'];
+                            $extClient = $this->getClientById($_POST['client_id']);
+
+                            if ($extClient === null || count($extClient) === 0) {
+                                $this->badRequest("NIP klienta nie jest unikalny: '$clientNip', istnieje: '$clientName'!,<br />
+                                           Możesz zapisać klienta podając poprawny id klienta w fakturowni.");
+                            }
+                        }
+                    }
                 }
             }
 
@@ -192,10 +212,11 @@ class clientsController extends InvoicesController
                 "street" => $client["ulica"],
                 "post_code" => $client["kodpocztowy"],
                 "city" => $client["miasto"],
-                "payment_to_kind" => $client["terminplatnosci"]
+                "payment_to_kind" => $client["terminplatnosci"],
+                "client_id" => $client["client_id"]
             );
 
-            $this->createOrUpdateClientByTaxNo($createOrUpdateClientData);
+            $this->createOrUpdateClientByTaxNoOrClientId($createOrUpdateClientData);
 
             echo(json_encode($saveUpdateResult));
         } else {

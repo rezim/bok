@@ -28,7 +28,7 @@ class notimailsController extends Controller
                 $smarty->assign('czyedit',$_POST['czyedit']);
                 $smarty->assign('noti_rowid',$_POST['noti_rowid']);
                 $smarty->assign('replyrowid',$_POST['replyrowid']);
-                $smarty->assign('uniqueid',getUniqueIdNumber());
+                $smarty->assign('uniqueid',getUniqueIdNumber());getMailByRowid
                 
                 
                 unset($noti);

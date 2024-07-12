@@ -45,9 +45,9 @@
       title="default"/>
 
 <!-- bootstrap -->
-<link rel="stylesheet"
-      href="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/css/bootstrap.min.css?{$smarty.const.APPVERSION}"
-      integrity="sha384-Vkoo8x4CGsO3+Hhxv8T/Q5PaXtkKtu6ug5TOeNV6gBiFeWPGFN9MuhOf23Q9Ifjh" crossorigin="anonymous"/>
+{*<link rel="stylesheet"*}
+{*      href="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/css/bootstrap.min.css?{$smarty.const.APPVERSION}"*}
+{*      integrity="sha384-Vkoo8x4CGsO3+Hhxv8T/Q5PaXtkKtu6ug5TOeNV6gBiFeWPGFN9MuhOf23Q9Ifjh" crossorigin="anonymous"/>*}
 
 <link rel="stylesheet" type="text/css" href="{$smarty.const.SCIEZKA}/css/bok.css?{$smarty.const.APPVERSION}"
       title="default"/>
@@ -57,7 +57,56 @@
 
 
 <!-- Latest compiled and minified CSS -->
-<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-select@1.13.18/dist/css/bootstrap-select.min.css">
+{*<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-select@1.13.18/dist/css/bootstrap-select.min.css">*}
+
+<!-- ===============================================-->
+<!-- Phoenix Stylesheets-->
+<!-- ===============================================-->
+
+<script src="{$smarty.const.SCIEZKA}/vendors/simplebar/simplebar.min.js"></script>
+<script src="{$smarty.const.SCIEZKA}/assets/js/config.js"></script>
+
+{*<link rel="preconnect" href="https://fonts.googleapis.com">*}
+{*<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin="">*}
+{*<link href="https://fonts.googleapis.com/css2?family=Nunito+Sans:wght@300;400;600;700;800;900&amp;display=swap" rel="stylesheet">*}
+{*<link href="{$smarty.const.SCIEZKA}/vendors/simplebar/simplebar.min.css" rel="stylesheet">*}
+{*<link rel="stylesheet" href="https://unicons.iconscout.com/release/v4.0.8/css/line.css">*}
+{*<link href="{$smarty.const.SCIEZKA}/assets/css/theme-rtl.min.css" type="text/css" rel="stylesheet" id="style-rtl">*}
+{*<link href="{$smarty.const.SCIEZKA}/assets/css/theme.min.css" type="text/css" rel="stylesheet" id="style-default">*}
+{*<link href="{$smarty.const.SCIEZKA}/assets/css/user-rtl.min.css" type="text/css" rel="stylesheet" id="user-style-rtl">*}
+{*<link href="{$smarty.const.SCIEZKA}/assets/css/user.min.css" type="text/css" rel="stylesheet" id="user-style-default">*}
+
+
+<link href="{$smarty.const.SCIEZKA}/vendors/prism/prism-okaidia.css" rel="stylesheet">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin="">
+<link href="https://fonts.googleapis.com/css2?family=Nunito+Sans:wght@300;400;600;700;800;900&amp;display=swap" rel="stylesheet">
+<link href="{$smarty.const.SCIEZKA}/vendors/simplebar/simplebar.min.css" rel="stylesheet">
+<link rel="stylesheet" href="https://unicons.iconscout.com/release/v4.0.8/css/line.css">
+<link href="{$smarty.const.SCIEZKA}/assets/css/theme-rtl.min.css" type="text/css" rel="stylesheet" id="style-rtl">
+<link href="{$smarty.const.SCIEZKA}/assets/css/theme.min.css" type="text/css" rel="stylesheet" id="style-default">
+<link href="{$smarty.const.SCIEZKA}/assets/css/user-rtl.min.css" type="text/css" rel="stylesheet" id="user-style-rtl">
+<link href="{$smarty.const.SCIEZKA}/assets/css/user.min.css" type="text/css" rel="stylesheet" id="user-style-default">
+
+
+{*<script>*}
+{*    var phoenixIsRTL = window.config.config.phoenixIsRTL;*}
+{*    if (phoenixIsRTL) {*}
+{*        var linkDefault = document.getElementById('style-default');*}
+{*        var userLinkDefault = document.getElementById('user-style-default');*}
+{*        linkDefault.setAttribute('disabled', true);*}
+{*        userLinkDefault.setAttribute('disabled', true);*}
+{*        document.querySelector('html').setAttribute('dir', 'rtl');*}
+{*    } else {*}
+{*        var linkRTL = document.getElementById('style-rtl');*}
+{*        var userLinkRTL = document.getElementById('user-style-rtl');*}
+{*        linkRTL.setAttribute('disabled', true);*}
+{*        userLinkRTL.setAttribute('disabled', true);*}
+{*    }*}
+{*</script>*}
+
+<!-- end phoenix -->
+
 
 <script type="text/javascript">
     function loadScript(src, callback) {

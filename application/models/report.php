@@ -343,7 +343,7 @@ class report extends Model
             $where .= " and (s.serial ='{$this->serial}')";
         }
 
-        $query = "SELECT c.nazwakrotka, a.nrumowy, s.serial, max(ilosctotal) - min(ilosctotal) as ilosc, min(s.datawiadomosci) as data_od, max(s.datawiadomosci) as `data_do` 
+        $query = "SELECT c.nazwakrotka, a.nrumowy, s.serial, max(ilosctotal) - min(ilosctotal) as ilosc, min(s.datawiadomosci) as data_od, max(s.datawiadomosci) as data_do 
                   FROM (((scans s join agreements a on(s.serial = a.serial)) join clients c on(a.rowidclient = c.rowid)) join printers p on(s.serial = p.serial))
                   {$where}
                   GROUP BY s.serial

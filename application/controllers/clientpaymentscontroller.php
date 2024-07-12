@@ -120,7 +120,6 @@ class clientpaymentsController extends InvoicesController
         $allNewProcessedPayments = array();
 
         foreach ($notProcessedPayments as $payment) {
-
             $tax_no = $payment['nip'];
 
             $extClient = $this->getClientByTaxNo($tax_no);

@@ -415,7 +415,8 @@ function zapiszKlienta(rowid) {
         fakturyuwagi: doc.getElementById('txtFakturyUwagi').value,
         imienazwisko: doc.getElementById('txtKontaktImieNazwisko').value,
         zamowieniaimienazwisko: doc.getElementById('txtZamowieniaImieNazwisko').value,
-        mailfaktury: doc.getElementById('txtMailFaktury').value
+        mailfaktury: doc.getElementById('txtMailFaktury').value,
+        client_id: doc.getElementById('txtClientId').value,
     };
 
     if (doc.getElementById("checkPokazNumerSeryjny")) {

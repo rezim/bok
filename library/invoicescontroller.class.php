@@ -14,7 +14,8 @@ class InvoicesController extends Controller
         parent::__destruct();
     }
 
-    function getAllInvoices($filters = null): array {
+    function getAllInvoices($filters = null): array
+    {
         $url = FAKTUROWNIA_ENDPOINT . '/invoices.json?'
             . 'api_token=' . FAKTUROWNIA_APITOKEN
             . '&order=issue_date'

@@ -125,11 +125,10 @@ PaymentsCtrl = function ($scope, rest, $q, $filter, $uibModal, $interpolate, app
         if (date_from && date_to) {
             $scope.isPending = true;
             const serviceName = 'getinvoices';
-            const filters = !notPaidInvoicesOnly ? '' : "&status=not_paid";
-            const invoicesPromise =
-                rest.post(serviceName, {
+            const filters = "&status=not_paid"; // !notPaidInvoicesOnly ? '' :
+            const invoicesPromise = rest.post(serviceName, {
                     period: 'more',
-                    date_from: date_from,
+                    date_from: date_from, // '2023-12-01'
                     date_to: date_to,
                     filters
                 });
@@ -392,20 +391,20 @@ PaymentsCtrl = function ($scope, rest, $q, $filter, $uibModal, $interpolate, app
     };
 
     this.interestNoteList = async function (clientInvoice) {
-        const {nip, invoices} = clientInvoice;
+        const {nip, clientId, name: clientName} = clientInvoice;
         const interestNotes = await rest.post('getinterestnotes', {nip});
         const paidNoteNamePrefixRegExp = /^paid-\(.*\)-/;
 
-        const getInvoicesByNote = (note) => invoices.list.find(
-            inv => note.name.replace(paidNoteNamePrefixRegExp, '').replaceAll('-', '/').startsWith(inv.number)
-        );
+        // const getInvoicesByNote = (note) => invoices.list.find(
+        //     inv => note.name.replace(paidNoteNamePrefixRegExp, '').replaceAll('-', '/').startsWith(inv.number)
+        // );
 
-        const interestNotesWithInvoices = interestNotes.map(note => (
-            {
-                ...note,
-                invoice: getInvoicesByNote(note)
-            }
-        ));
+        // const interestNotesWithInvoices = interestNotes.map(note => (
+        //     {
+        //         ...note,
+        //         invoice: getInvoicesByNote(note)
+        //     }
+        // ));
 
 
         let modalInstance = $uibModal.open({
@@ -418,9 +417,9 @@ PaymentsCtrl = function ($scope, rest, $q, $filter, $uibModal, $interpolate, app
                 let self = this;
 
                 this.data = {
-                    clientId: clientInvoice.clientId,
-                    clientName: clientInvoice.name,
-                    interestNotesWithInvoices,
+                    clientId,
+                    clientName,
+                    interestNotes,
                     paymentDate: $.datepicker.formatDate('yy-mm-dd', new Date())
                 };
 

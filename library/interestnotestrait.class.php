@@ -63,17 +63,32 @@ trait InterestNotesTrait
         $interestNoteFolderName = INTEREST_NOTE_FOLDER_NAME;
         $dir = "./{$interestNoteFolderName}/{$buyerTaxNo}/";
 
-        // return $this->attachInterestNotesToInvoice('158136955', $dir, ['nota_1.pdf', 'nota_2.pdf', 'nota_3.pdf', 'nota_4.pdf']);
-
         $noteNames = glob("$dir/*.pdf");
 
         $notesWithDate = array_map(function ($filePath) {
 
-            $parsedInterestNote = $this->readInterestNote($filePath);
+            $interestNote = $this->readInterestNote($filePath);
 
             $fileName = basename($filePath);
             $timestamp = filemtime($filePath);
-            return array("name" => $fileName, "path" => $filePath, "date" => date("Y-m-d H:i:s", $timestamp), "timestamp" => $timestamp, "amount" => $parsedInterestNote['amount'], "text" => $parsedInterestNote["text"], "number" => $parsedInterestNote["number"], "nip" => $parsedInterestNote["nip"]);
+            return array(
+                "name" => $fileName,
+                "path" => $filePath,
+                "date" => date("Y-m-d H:i:s", $timestamp),
+                "issueDate" => $interestNote['issueDate'],
+                "paymentToDate" => $interestNote['paymentToDate'],
+                "paidDate" => $interestNote["paidDate"],
+                "timestamp" => $timestamp,
+                "amount" => $interestNote['amount'],
+                "text" => $interestNote["text"],
+                "number" => $interestNote["number"],
+                "nip" => $interestNote["nip"],
+                "invoiceIssueDate" => $interestNote["invoiceIssueDate"],
+                "invoicePaidDate" => $interestNote["invoicePaidDate"],
+                "invoiceAmount" => $interestNote["invoiceAmount"],
+                "interestNotePaidDate" => $interestNote["paidDate"],
+                "paid" => $this->isInterestNotePaid($fileName)
+            );
         }, $noteNames);
 
         usort($notesWithDate, function ($a, $b) {
@@ -83,10 +98,28 @@ trait InterestNotesTrait
         return $notesWithDate;
     }
 
+    function getInterestNotePaidDate($name): ?string {
+        if (!$this->isInterestNotePaid($name)) {
+            return null;
+        }
+        preg_match("/\(.*\)/", $name, $matches);
+
+        if (!$matches || count($matches) < 1) {
+            return null;
+        }
+
+        return str_replace(array("(", ")"), "", $matches[0]);
+    }
+
+    function isInterestNotePaid($name): bool
+    {
+        return startsWith($name, 'paid-(');
+    }
+
     function resolveNotPaidInterestNotes($buyerTaxNo)
     {
         $filterPaidInterestNotes = function ($interestNote) {
-            return !startsWith($interestNote['name'], 'paid-(');
+            return !$this->$this->isInterestNotePaid($interestNote['name']);
         };
 
         return array_filter($this->resolveInterestNotes($buyerTaxNo), $filterPaidInterestNotes);
@@ -94,13 +127,14 @@ trait InterestNotesTrait
 
     function readInterestNote($filePath)
     {
+        $stringToFloat = fn($string): float => floatval(str_replace(",", ".", $string));
 
         $parser = new \Smalot\PdfParser\Parser();
         $pdf = $parser->parseFile($filePath);
         $textArr = array_map(fn($lineOfText) => preg_replace("/\s+/", "", $lineOfText), preg_split('/\r\n|\r|\n/', $pdf->getText()));
 
-        $result = array();
-
+        $fileName = basename($filePath);
+        $paidDate = $this->getInterestNotePaidDate($fileName);
         /**
          * ...
          * 47: "Razem"
@@ -110,32 +144,48 @@ trait InterestNotesTrait
          */
         $amountPosition = array_search("Słownie", $textArr);
 
-        $result['text'] = $textArr;
-
-
-        if ($amountPosition && count($textArr) > 2 && $textArr[$amountPosition - 2] === "Razem") {
-            $result['amount'] = floatval(str_replace(",", ".", $textArr[$amountPosition - 1]));
-        } else {
-            $result['amount'] = -1;
-        }
-
         $invoiceNumber = '';
         $nip = '';
+        $paymentToDate = '';
+        $issueDate = '';
+        $amount = -1;
+        $invoiceIssueDate = '';
+        $invoicePaidDate = '';
+        $invoiceAmount = -1;
 
-        foreach ($textArr as $value) {
+        if ($amountPosition && count($textArr) > 2 && $textArr[$amountPosition - 2] === "Razem") {
+            $amount = $stringToFloat($textArr[$amountPosition - 1]);
+        }
+
+        foreach ($textArr as $key => $value) {
             if (strpos($value, '1Fakturanumer') === 0) {
                 $invoiceNumber = str_replace('1Fakturanumer', '', $value);
+                $invoiceIssueDate = $textArr[$key + 1];
+                $invoicePaidDate = $textArr[$key + 2];
+                $invoiceAmount = $stringToFloat($textArr[$key + 3]);
             }
             if (strpos($value, 'NIP') === 0) {
                 $nip = str_replace('NIP', '', $value);
             }
+            if (strpos($value, 'Datawystawienia') === 0 && $issueDate === '') {
+                $issueDate = $textArr[$key + 1];
+            }
+            if (strpos($value, 'Terminpłatności') === 0 && $paymentToDate === '') {
+                $paymentToDate = $textArr[$key + 1];
+            }
         }
 
-        $result['number'] = $invoiceNumber;
-
-        $result['nip'] = $nip;
-
-        return $result;
+        return array(
+            'number' => $invoiceNumber,
+            'nip' => $nip,
+            'amount' => $amount,
+            'issueDate' => $issueDate,
+            'paymentToDate' => $paymentToDate,
+            'paidDate' => $paidDate,
+            'invoiceIssueDate' => $invoiceIssueDate,
+            'invoicePaidDate' => $invoicePaidDate,
+            'invoiceAmount' => $invoiceAmount,
+            'text' => $textArr);
     }
 
 
@@ -151,9 +201,13 @@ trait InterestNotesTrait
         $clientNips = scandir($interestNoteDir);
 
         $nipToInterestNotesMap = array();
-        array_walk($clientNips, function (&$nip, $key) use (&$nipToInterestNotesMap) {
-            if ($nip !== '.' && $nip !== '..') {
+
+        $break = false;
+
+        array_walk($clientNips, function (&$nip, $key) use (&$nipToInterestNotesMap, &$break) {
+            if ($nip !== '.' && $nip !== '..' && !$break) {
                 $nipToInterestNotesMap[$nip] = $this->resolveInterestNotes($nip);
+                $break = false;
             }
         });
         return $nipToInterestNotesMap;
@@ -176,8 +230,10 @@ trait InterestNotesTrait
         $result = array('status' => 0, 'path' => $filePath, 'file_name' => $fileName);
 
         $mail = array(
-            "mailTo" => INTEREST_NOTE_DEBUG_SEND_TO !== '' ? INTEREST_NOTE_DEBUG_SEND_TO : $buyerEmail,
-            "message" => "Dzie� Dobry,<br /><br /> W za��czniku przesy�amy not� odsetkow� do faktury vat numer: {$number}.<br />Termin p�atno�ci faktury: {$paymentTo},<br />Data p�atno�ci faktury: {$paidDate},<br />Op�nienie w p�atno�ci dni: {$isLateDays}.<br /><br />Prosimy o terminowe p�atno�ci,<br />pozdrawiamy,<br />Otus.pl",
+            "mailTo" => INTEREST_NOTE_DEBUG_SEND_TO !== '' ? INTEREST_NOTE_DEBUG_SEND_TO : 'tregimowicz@gmail.com', // $buyerEmail,
+            "message" => "Dzień Dobry,<br /><br /> W załączniku przesyłamy notę odsetkową do faktury vat numer: {$number}.<br />" .
+                         "Termin płatności faktury: {$paymentTo},<br />Data płatności faktury: {$paidDate},<br />" .
+                         "Opóżnienie w płatności dni: {$isLateDays}.<br /><br />Prosimy o terminowe płatności,<br />pozdrawiamy,<br />Otus.pl",
             "topic" => "Nota odsetkowa do faktury vat {$number}.",
             "attachments" => array(array("path" => $filePath, "filename" => $fileName))
         );
@@ -305,13 +361,13 @@ trait InterestNotesTrait
         return array("message" => "OK");
     }
 
-    function getUpdatedPaymentsWithInvoiceId($clients) {
-        foreach($clients as $client) {
+    function getUpdatedPaymentsWithInvoiceId($clients)
+    {
+        foreach ($clients as $client) {
             $client_tax_no = $client['nip'];
             $externalClient = $this->getClientByTaxNo($client_tax_no);
             // $externalClient['id']
 
         }
     }
-
 }

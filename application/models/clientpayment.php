@@ -2,7 +2,7 @@
 
 class clientpayment extends Model
 {
-    function getPayments($startDate, $endDate, $statementNb): array
+    function invoicePaymentToDate($startDate, $endDate, $statementNb): array
     {
 
         $query = "SELECT 
