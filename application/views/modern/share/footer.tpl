@@ -18,7 +18,6 @@
 <!-- Common Bootstrap Modal Placeholder  -->
 <div id="commonModalPlaceholder"></div>
 
-
 <!-- ===============================================-->
 <!--    JavaScripts-->
 <!-- ===============================================-->
@@ -38,7 +37,6 @@
 <script src="{$smarty.const.SCIEZKA}/assets/js/phoenix.js"></script>
 <script src="{$smarty.const.SCIEZKA}/vendors/echarts/echarts.min.js"></script>
 <script src="{$smarty.const.SCIEZKA}/assets/js/ecommerce-dashboard.js"></script>
-
 
 </body>
 </html> 

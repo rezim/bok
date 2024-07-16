@@ -2,111 +2,87 @@
     <div class="row">
         <div class="otus-sidebar col-12 col-md-12 col-xl-auto">
             <form id="dataFilter" data-form>
-                <div class="form-group">
-                    <label for="startDate">data od</label>
-                </div>
-                <div class="form-group">
-                    <input data-ref type="text" id='startDate' class="form-control"
-                           aria-describedby="dateFromHelp">
-                    <small id="dateFromHelp" class="form-text text-muted"><i class="fas fa-info-circle"></i> Podaj datę
-                        początkową.</small>
+                <div class="form-group" style="max-width: 300px;">
+                    <label for="startDate" class="form-label">Data od</label>
+                    <input data-ref type="text" id="startDate" class="form-control w-100" aria-describedby="dateFromHelp">
+                    <small id="dateFromHelp" class="form-text text-muted"><i class="fas fa-info-circle"></i> Podaj datę początkową.</small>
                 </div>
 
-                <div class="form-group">
-                    <label for="endDate">data do</label>
-                </div>
-                <div class="form-group">
-                    <input data-ref type="text" id='endDate' class="form-control"
-                           aria-describedby="dateToHelp">
-                    <small id="dateToHelp" class="form-text text-muted"><i class="fas fa-info-circle"></i> Podaj datę
-                        końcową.</small>
+                <div class="form-group" style="max-width: 300px;">
+                    <label for="endDate" class="form-label">Data do</label>
+                    <input data-ref type="text" id="endDate" class="form-control w-100" aria-describedby="dateToHelp">
+                    <small id="dateToHelp" class="form-text text-muted"><i class="fas fa-info-circle"></i> Podaj datę końcową.</small>
                 </div>
 
-                <div class="form-group">
-                    <label for="endDate">miesiąc</label>
-                </div>
-                <div class="form-group">
-                    <select data-ref id='month' class="form-control" aria-describedby="monthHelp">
+                <div class="form-group" style="max-width: 300px;">
+                    <label for="month" class="form-label">Miesiąc</label>
+                    <select data-ref id="month" class="form-control w-100" aria-describedby="monthHelp">
                         <option value="" selected></option>
                         {foreach from=$months item=item key=key}
                             <option value="{$rok}-{$key}-01">{$item}</option>
                         {/foreach}
                     </select>
-                    <small id="monthHelp" class="form-text text-muted"><i class="fas fa-info-circle"></i> Wybierz
-                        miesiąc.</small>
+                    <small id="monthHelp" class="form-text text-muted"><i class="fas fa-info-circle"></i> Wybierz miesiąc.</small>
                 </div>
 
                 <div class="border-top my-4 otus-separator"></div>
 
                 <div class="w-100"></div>
 
-                <div class="form-group">
-                    <label for="clientName">klient</label>
-                </div>
-                <div class="form-group">
-                    <input data-ref type="text" id='clientName' class="form-control"
-                           aria-describedby="clientHelp">
-                    <small id="clientHelp" class="form-text text-muted"><i class="fas fa-info-circle"></i> Podaj nazwę
-                        klienta</small>
+                <div class="form-group" style="max-width: 300px;">
+                    <label for="clientName" class="form-label">Klient</label>
+                    <input data-ref type="text" id="clientName" class="form-control w-100" aria-describedby="clientHelp">
+                    <small id="clientHelp" class="form-text text-muted"><i class="fas fa-info-circle"></i> Podaj nazwę klienta.</small>
                 </div>
 
-                <div class="form-group">
-                    <label for="serial">drukarka</label>
-                </div>
-                <div class="form-group">
-                    <input data-ref type="text" id='serial' class="form-control"
-                           aria-describedby="deviceHelp">
-                    <small id="deviceHelp" class="form-text text-muted"><i class="fas fa-info-circle"></i> Podaj serial
-                        urządzenia</small>
+                <div class="form-group" style="max-width: 300px;">
+                    <label for="serial" class="form-label">Drukarka</label>
+                    <input data-ref type="text" id="serial" class="form-control w-100" aria-describedby="deviceHelp">
+                    <small id="deviceHelp" class="form-text text-muted"><i class="fas fa-info-circle"></i> Podaj serial urządzenia.</small>
                 </div>
 
                 <div class="border-top my-4 otus-separator"></div>
 
-                <div class="form-group">
-                    <button id="applyFilter" class="btn btn-info btn-block" type="button">
-                    Filtruj
+                <div class="form-group otus-addnew otus-section mt-2" style="max-width: 300px;">
+                    <button id="applyFilter" class="btn btn-primary w-100 d-flex align-items-center" type="button">
+                        Filtruj
                     </button>
                 </div>
             </form>
         </div>
 
-        <main id='divRightCenter' class="col-12 col-md-12 col-xl">
+        <main id="divRightCenter" class="col-12 col-md-12 col-xl">
+            <script>
+                const startAndEndDate = getStartAndEndDate();
 
-        </main>
-    </div>
-</div>
+                $("#startDate").datepicker($.datepicker.regional["pl"], {
+                    dateFormat: "yy-mm-dd",
+                    changeMonth: true,
+                    changeYear: true,
+                    showOtherMonths: true,
+                    selectOtherMonths: true
+                }).val($.datepicker.formatDate("yy-mm-dd", startAndEndDate.startDate));
 
+                $("#endDate").datepicker($.datepicker.regional["pl"], {
+                    dateFormat: "yy-mm-dd",
+                    changeMonth: true,
+                    changeYear: true,
+                    showOtherMonths: true,
+                    selectOtherMonths: true
+                }).val($.datepicker.formatDate("yy-mm-dd", startAndEndDate.endDate));
 
-<script>
-    const startAndEndDate = getStartAndEndDate();
+                $("#month").on("change", (event) => {
+                    const selectedDate = $(event.target).val();
+                    const startAndEndDate = getStartAndEndDate(selectedDate);
+                    $("#startDate").val($.datepicker.formatDate("yy-mm-dd", startAndEndDate.startDate));
+                    $("#endDate").val($.datepicker.formatDate("yy-mm-dd", startAndEndDate.endDate));
+                });
+            </script>
 
-    $("#startDate").datepicker
-    ($.datepicker.regional['pl'], {
-        dateFormat: "yy-mm-dd",
-        changeMonth: true,
-        changeYear: true,
-        showOtherMonths: true,
-        selectOtherMonths: true
-    }).val($.datepicker.formatDate('yy-mm-dd', startAndEndDate.startDate));
-    $("#endDate").datepicker($.datepicker.regional['pl'], {
-        dateFormat: "yy-mm-dd",
-        changeMonth: true,
-        changeYear: true,
-        showOtherMonths: true,
-        selectOtherMonths: true
-    }).val($.datepicker.formatDate('yy-mm-dd', startAndEndDate.endDate));
+            <script>
+                const dataContainerId = "dataFilter";
+                const templateId = "divRightCenter";
 
-    $("#month").on('change', (event) => {
-        const selectedDate = $(event.target).val();
-        const startAndEndDate = getStartAndEndDate(selectedDate);
-        $("#startDate").val($.datepicker.formatDate('yy-mm-dd', startAndEndDate.startDate));
-        $("#endDate").val($.datepicker.formatDate('yy-mm-dd', startAndEndDate.endDate));
-    });
-</script>
-
-<script>
-    const dataContainerId = 'dataFilter';
-    const templateId = 'divRightCenter';
-
-    $("#applyFilter").on('click', () => renderTemplateAction("/reports/scansreportdata/todiv", dataContainerId, templateId));
-</script>
+                $("#applyFilter").on("click", () => renderTemplateAction("/reports/scansreportdata/todiv", dataContainerId, templateId));
+            </script>
+            

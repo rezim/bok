@@ -18,8 +18,6 @@
 
     <script src="{$smarty.const.SCIEZKA}/vendors/simplebar/simplebar.min.js"></script>
     <script src="{$smarty.const.SCIEZKA}/assets/js/config.js"></script>
-
-
     <link href="{$smarty.const.SCIEZKA}/vendors/prism/prism-okaidia.css" rel="stylesheet">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin="">
@@ -33,8 +31,6 @@
           id="user-style-rtl">
     <link href="{$smarty.const.SCIEZKA}/assets/css/user.min.css" type="text/css" rel="stylesheet"
           id="user-style-default">
-
-
     <!-- ===============================================-->
     <!--    Stylesheets-->
     <!-- ===============================================-->
@@ -156,7 +152,8 @@
         <nav class="navbar navbar-top navbar-expand-lg">
             <div class="navbar-logo">
                 <a class="navbar-brand" href="/bok/">
-                    <i class="fas fa-cogs"></i>&nbsp;OTUS
+                    </i>
+                    <img src="https://www.otus.pl/wp-content/uploads/2021/06/logo_ot1.png" alt="Logo Otus">
                 </a>
             </div>
             <div class="collapse navbar-collapse navbar-top-collapse order-1 order-lg-0 justify-content-center"
@@ -166,80 +163,81 @@
                                                      role="button" data-bs-toggle="dropdown"
                                                      data-bs-auto-close="outside" aria-haspopup="true"
                                                      aria-expanded="false"><span
-                                    class="uil fs-0 me-2 uil-chart-pie"></span>Strona Domowa</a>
+                                    class="uil fs-0 me-2 uil-chart-pie"></span>Kartoteki</a>
                         <ul class="dropdown-menu navbar-dropdown-caret">
-                            <li><a class="dropdown-item" href="../index.html">
                                     <div class="dropdown-item-wrapper">
-                                        <svg xmlns="http://www.w3.org/2000/svg" width="16px" height="16px"
-                                             viewBox="0 0 24 24" fill="none" stroke="currentColor"
-                                             stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
-                                             class="feather feather-shopping-cart me-2 uil">
-                                            <circle cx="9" cy="21" r="1"></circle>
-                                            <circle cx="20" cy="21" r="1"></circle>
-                                            <path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"></path>
-                                        </svg>
-                                        E commerce
+                                        {/if}
+                                        {if isset($smarty.session.przypisanemenu['li_printersshow'])}
+                                        <a href='{$smarty.const.SCIEZKA}/printers/show' class="dropdown-item">Urządzenia</a>
+                                    </div>
+
+                                </a></li>
+                                    <div class="dropdown-item-wrapper">
+                                            {/if}
+                                            {if isset($smarty.session.przypisanemenu['li_clientsshow'])}
+                                            <a href='{$smarty.const.SCIEZKA}/clients/show' class="dropdown-item">Klienci</a>
                                     </div>
                                 </a></li>
-                            <li><a class="dropdown-item" href="../dashboard/project-management.html">
-                                    <div class="dropdown-item-wrapper">
-                                        <svg xmlns="http://www.w3.org/2000/svg" width="16px" height="16px"
-                                             viewBox="0 0 24 24" fill="none" stroke="currentColor"
-                                             stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
-                                             class="feather feather-clipboard me-2 uil">
-                                            <path d="M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2"></path>
-                                            <rect x="8" y="2" width="8" height="4" rx="1" ry="1"></rect>
-                                        </svg>
-                                        Project management
-                                    </div>
-                                </a></li>
-                            <li><a class="dropdown-item" href="../dashboard/crm.html">
-                                    <div class="dropdown-item-wrapper">
-                                        <svg xmlns="http://www.w3.org/2000/svg" width="16px" height="16px"
-                                             viewBox="0 0 24 24" fill="none" stroke="currentColor"
-                                             stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
-                                             class="feather feather-phone me-2 uil">
-                                            <path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"></path>
-                                        </svg>
-                                        CRM
-                                    </div>
-                                </a></li>
-                            <li><a class="dropdown-item" href="../apps/social/feed.html">
-                                    <div class="dropdown-item-wrapper">
-                                        <svg xmlns="http://www.w3.org/2000/svg" width="16px" height="16px"
-                                             viewBox="0 0 24 24" fill="none" stroke="currentColor"
-                                             stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
-                                             class="feather feather-share-2 me-2 uil">
-                                            <circle cx="18" cy="5" r="3"></circle>
-                                            <circle cx="6" cy="12" r="3"></circle>
-                                            <circle cx="18" cy="19" r="3"></circle>
-                                            <line x1="8.59" y1="13.51" x2="15.42" y2="17.49"></line>
-                                            <line x1="15.41" y1="6.51" x2="8.59" y2="10.49"></line>
-                                        </svg>
-                                        Social feed
-                                    </div>
-                                </a></li>
+                            <li>
+                                        {/if}
+                                        {if isset($smarty.session.przypisanemenu['li_agreementsshow'])}
+                                            <a href='{$smarty.const.SCIEZKA}/agreements/show' class="dropdown-item">Umowy</a>
+
+                             </li>
                         </ul>
                     </li>
                     <li class="nav-item dropdown"><a class="nav-link dropdown-toggle lh-1" href="#!"
                                                      role="button" data-bs-toggle="dropdown"
                                                      data-bs-auto-close="outside" aria-haspopup="true"
                                                      aria-expanded="false"><span
-                                    class="uil fs-0 me-2 uil-cube"></span>Apps</a>
+                                    class="uil fs-0 me-2 uil-cube"></span>Serwis</a>
+
+
                         <ul class="dropdown-menu navbar-dropdown-caret">
+                            <li class="dropdown"><a class="dropdown-item dropdown-toggle" id="email" href="#"
+                                                    data-bs-toggle="dropdown" data-bs-auto-close="outside">
+                                    <div class="dropdown-item-wrapper"></span><span>Raporty</span>
+                                    </div>
+                                </a>
+                                <ul class="dropdown-menu">
+                                    <li><a>
+                                            <div> {if
+                                                isset($smarty.session.przypisanemenu['li_scansreport']) &&
+                                                $smarty.session.przypisanemenu['li_scansreport']['permission'] === 'rw'
+                                                }
+                                                <a href='{$smarty.const.SCIEZKA}/reports/scansreport' class="dropdown-item">Raport Skanów</a>{/if}
+                                            </div>
+                                        </a></li>
+                                    <li><a class="dropdown-item" href="../apps/email/email-detail.html">
+                                            <div></span>Raport wydruków
+                                            </div>
+                                        </a></li>
+                                    <li><a class="dropdown-item" href="../apps/email/compose.html">
+                                            <div></span>Poczta
+                                            </div>
+                                        </a></li>
+                                </ul>
+                            </li>
+
+
+
+
                             <li class="dropdown"><a class="dropdown-item dropdown-toggle" id="e-commerce"
                                                     href="#" data-bs-toggle="dropdown"
                                                     data-bs-auto-close="outside">
                                     <div class="dropdown-item-wrapper"><span
-                                                class="uil fs-0 uil-angle-right lh-1 dropdown-indicator-icon"></span><span><svg
+                                                class="uil fs-0 uil-angle-right lh-1 dropdown-indicator-icon"></span>
+                                        <span><svg
                                                     xmlns="http://www.w3.org/2000/svg" width="16px"
                                                     height="16px" viewBox="0 0 24 24" fill="none"
                                                     stroke="currentColor" stroke-width="2"
                                                     stroke-linecap="round" stroke-linejoin="round"
-                                                    class="feather feather-shopping-cart me-2 uil"><circle
+                                                    class="feather feather-shopping-cart me-2 uil">
+                                                <circle
                                                         cx="9" cy="21" r="1"></circle><circle cx="20" cy="21"
-                                                                                              r="1"></circle><path
-                                                        d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"></path></svg>E commerce</span>
+                                                                                              r="1"></circle>
+                                                <path
+                                                        d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"></path></svg>Raporty</span>
                                     </div>
                                 </a>
                                 <ul class="dropdown-menu">
@@ -248,13 +246,13 @@
                                                             data-bs-auto-close="outside">
                                             <div class="dropdown-item-wrapper"><span
                                                         class="uil fs-0 uil-angle-right lh-1 dropdown-indicator-icon"></span><span><span
-                                                            class="me-2 uil"></span>Admin</span></div>
+                                                            class="me-2 uil"></span>Rapoty</span></div>
                                         </a>
                                         <ul class="dropdown-menu">
                                             <li><a class="dropdown-item"
                                                    href="../apps/e-commerce/admin/add-product.html">
-                                                    <div class="dropdown-item-wrapper"><span
-                                                                class="me-2 uil"></span>Add product
+                                                    <div class="dropdown-item-wrapper"><span class="me-2 uil"></span>Raport skanów
+
                                                     </div>
                                                 </a></li>
                                             <li><a class="dropdown-item"
@@ -488,35 +486,6 @@
                                         Chat
                                     </div>
                                 </a></li>
-                            <li class="dropdown"><a class="dropdown-item dropdown-toggle" id="email" href="#"
-                                                    data-bs-toggle="dropdown" data-bs-auto-close="outside">
-                                    <div class="dropdown-item-wrapper"><span
-                                                class="uil fs-0 uil-angle-right lh-1 dropdown-indicator-icon"></span><span><svg
-                                                    xmlns="http://www.w3.org/2000/svg" width="16px"
-                                                    height="16px" viewBox="0 0 24 24" fill="none"
-                                                    stroke="currentColor" stroke-width="2"
-                                                    stroke-linecap="round" stroke-linejoin="round"
-                                                    class="feather feather-mail me-2 uil"><path
-                                                        d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"></path><polyline
-                                                        points="22,6 12,13 2,6"></polyline></svg>Email</span>
-                                    </div>
-                                </a>
-                                <ul class="dropdown-menu">
-                                    <li><a class="dropdown-item" href="../apps/email/inbox.html">
-                                            <div class="dropdown-item-wrapper"><span class="me-2 uil"></span>Inbox
-                                            </div>
-                                        </a></li>
-                                    <li><a class="dropdown-item" href="../apps/email/email-detail.html">
-                                            <div class="dropdown-item-wrapper"><span class="me-2 uil"></span>Email
-                                                detail
-                                            </div>
-                                        </a></li>
-                                    <li><a class="dropdown-item" href="../apps/email/compose.html">
-                                            <div class="dropdown-item-wrapper"><span class="me-2 uil"></span>Compose
-                                            </div>
-                                        </a></li>
-                                </ul>
-                            </li>
                             <li class="dropdown"><a class="dropdown-item dropdown-toggle" id="events" href="#"
                                                     data-bs-toggle="dropdown" data-bs-auto-close="outside">
                                     <div class="dropdown-item-wrapper"><span
@@ -626,7 +595,7 @@
                                                      role="button" data-bs-toggle="dropdown"
                                                      data-bs-auto-close="outside" aria-haspopup="true"
                                                      aria-expanded="false"><span
-                                    class="uil fs-0 me-2 uil-files-landscapes-alt"></span>Pages</a>
+                                    class="uil fs-0 me-2 uil-files-landscapes-alt"></span>CRM</a>
                         <ul class="dropdown-menu navbar-dropdown-caret">
                             <li><a class="dropdown-item" href="../pages/starter.html">
                                     <div class="dropdown-item-wrapper">
@@ -1010,7 +979,7 @@
                                                      role="button" data-bs-toggle="dropdown"
                                                      data-bs-auto-close="outside" aria-haspopup="true"
                                                      aria-expanded="false"><span
-                                    class="uil fs-0 me-2 uil-document-layout-right"></span>Documentation</a>
+                                    class="uil fs-0 me-2 uil-document-layout-right"></span>Administracja</a>
                         <ul class="dropdown-menu navbar-dropdown-caret">
                             <li><a class="dropdown-item" href="../documentation/getting-started.html">
                                     <div class="dropdown-item-wrapper">
@@ -1167,18 +1136,17 @@
                     </li>
                 </ul>
             </div>
+
+
+            <div class="avatar avatar-xl ">
+                <img class="rounded-circle " src="https://media.licdn.com/dms/image/D5603AQGfCXD5aIriZw/profile-displayphoto-shrink_400_400/0/1686568108038?e=1726099200&v=beta&t=nxHbW_A7P0GRY1xQ7Wyi6YzCgawLOMkR0wSRi0P8Orc" alt="">
+
+            </div>
+
         </nav>
-
-
-
-
-
-        <div class="content">
-            <!--  content goes here-->
-        </div>
-
     </main>
 </header>
+
 {if isset($smarty.session.przypisanemenu['li_configuration'])}
     <script>
         $("#showConfigurationAction").on('click', () => openModal("/config/show/todiv"));
