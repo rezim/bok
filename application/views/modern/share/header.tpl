@@ -10,7 +10,12 @@
           content="{if !isset($description) || $description==''}{$smarty.const.DESCRIPTION}{else}{$description}{/if}"/>
 
     <link rel="shortcut icon" href="https://www.otus.pl/favicon.ico"/>
-
+    <link rel="stylesheet" type="text/css"
+          href="{$smarty.const.SCIEZKA}/{$smarty.const.SMARTVERSION}/css/jquery-ui-1.10.4.custom.min.css?{$smarty.const.APPVERSION}"
+          title="default"/>
+    <link rel="stylesheet" type="text/css"
+          href="{$smarty.const.SCIEZKA}/{$smarty.const.SMARTVERSION}/css/colorbox.css?{$smarty.const.APPVERSION}"
+          title="default"/>
 
     <!-- ===============================================-->
     <!-- Phoenix Stylesheets-->
@@ -47,6 +52,11 @@
           id="user-style-rtl" disabled="true">
     <link href="{$smarty.const.SCIEZKA}/assets/css/user.min.css" type="text/css" rel="stylesheet"
           id="user-style-default">
+    <!-- bootstrap -->
+    {*<link rel="stylesheet"*}
+    {*      href="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/css/bootstrap.min.css?{$smarty.const.APPVERSION}"*}
+    {*      integrity="sha384-Vkoo8x4CGsO3+Hhxv8T/Q5PaXtkKtu6ug5TOeNV6gBiFeWPGFN9MuhOf23Q9Ifjh" crossorigin="anonymous"/>*}
+
     <script>
         var phoenixIsRTL = window.config.config.phoenixIsRTL;
         if (phoenixIsRTL) {

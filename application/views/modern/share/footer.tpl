@@ -18,9 +18,16 @@
 <!-- Common Bootstrap Modal Placeholder  -->
 <div id="commonModalPlaceholder"></div>
 
+
+
 <!-- ===============================================-->
 <!--    JavaScripts-->
 <!-- ===============================================-->
+<script type="text/javascript">
+    loadScript('{$smarty.const.SCIEZKA}/js/jquery.colorbox.js');
+</script>
+
+
 <script src="{$smarty.const.SCIEZKA}/vendors/popper/popper.min.js"></script>
 <script src="{$smarty.const.SCIEZKA}/vendors/bootstrap/bootstrap.min.js"></script>
 <script src="{$smarty.const.SCIEZKA}/vendors/anchorjs/anchor.min.js"></script>

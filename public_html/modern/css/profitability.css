@@ -1,0 +1,20 @@
+.profit {
+	color: green;
+}
+
+.profit:hover, .cost:hover {
+	font-weight: bold;
+}
+
+.cost {
+	color: red;
+}
+
+.inactive-agreement {
+	text-decoration: line-through;
+}
+
+.inner-table {
+	background-color: #EDEDED;
+	padding: 20px;
+}
