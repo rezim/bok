@@ -205,7 +205,7 @@
                                                 isset($smarty.session.przypisanemenu['li_scansreport']) &&
                                                 $smarty.session.przypisanemenu['li_scansreport']['permission'] === 'rw'
                                                 }
-                                                <a href='{$smarty.const.SCIEZKA}/reports/scansreport' class="dropdown-item">Raport Skanów</a>{/if}
+                                                <a href='{$smarty.const.SCIEZKA}/reports/scansreport' class="dropdown-item">Raport Skanówi</a>{/if}
                                             </div>
                                         </a></li>
                                     <li><a class="dropdown-item" href="../apps/email/email-detail.html">
