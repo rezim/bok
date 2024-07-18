@@ -84,7 +84,7 @@ const clearDataFromContainer = (containerId) => {
     const selectedData = Array.from(container.querySelectorAll('[data-clear-ref]'));
     selectedData.forEach(d => d.value = '');
 }
-const renderTemplateAction = (templateUrl, dataContainerId, templateContainerId, areDataSortable) => {
+const renderTemplateAction = (templateUrl, dataContainerId, templateContainerId, skeletonLoaderId) => {
     const dataContainer = getContainerById(dataContainerId);
 
     if (!dataContainer && dataContainerId) {
@@ -92,6 +92,12 @@ const renderTemplateAction = (templateUrl, dataContainerId, templateContainerId,
         return;
     }
 
+    const data = dataContainer ? getDataFromContainer(dataContainer) : {};
+
+    renderTemplateWithDataAction(templateUrl, data, templateContainerId, skeletonLoaderId);
+}
+
+const renderTemplateWithDataAction = (templateUrl, data, templateContainerId, skeletonLoaderId) => {
     const templateContainer = getTemplateContainerById(templateContainerId);
 
     if (!templateContainer) {
@@ -99,7 +105,10 @@ const renderTemplateAction = (templateUrl, dataContainerId, templateContainerId,
         return;
     }
 
-    const data = dataContainer ? getDataFromContainer(dataContainer) : {};
+    const skeletonLoaderContainer = getTemplateContainerById(skeletonLoaderId);
+
+    $(skeletonLoaderContainer).show();
+    templateContainer.innerHTML = '';
 
     $.ajax({
         type: 'POST',
@@ -107,8 +116,9 @@ const renderTemplateAction = (templateUrl, dataContainerId, templateContainerId,
         async: true,
         data,
         success: function (template) {
+            $(skeletonLoaderContainer).hide();
             templateContainer.innerHTML = template;
-            $(".tablesorter").tablesorter();
+            // $(".tablesorter").tablesorter();
             return false;
         },
         error: function (dane) {

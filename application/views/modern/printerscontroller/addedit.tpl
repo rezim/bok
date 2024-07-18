@@ -368,17 +368,20 @@
         <td style='text-align: right;' colspan="2">
 
             <div class='divSave'>
-                <div id='actionerror' class='actionerror'><span>Błąd zapisu danych.</span></div>
-                <div id='actionok' class='actionok'><span style='margin-top:6px;'>Dane zapisane poprawnie</span></div>
-                <div wymaganylevel='r' wymaganyzrobiony='0' id='actionbuttonclick' class="actionbuttonZapisz"
-                     onmousedown='zapiszDrukarke("{$serial}");return false;'>
-                    <span>Zapisz >></span>
-                </div>
-                <div id='actionloader' class="actionloader">
-                    <img src="{$smarty.const.SCIEZKA}/{$smarty.const.SMARTVERSION}/img/smallLoader.GIF"
-                         style='display:inline;'/>przetwarzanie
-                </div>
-                <div style='clear:both'></div>
+{*                <div id='actionerror' class='actionerror'><span>Błąd zapisu danych.</span></div>*}
+{*                <div id='actionok' class='actionok'><span style='margin-top:6px;'>Dane zapisane poprawnie</span></div>*}
+{*                <button wymaganylevel='r' wymaganyzrobiony='0' id='actionbuttonclick' class="actionbuttonZapisz"*}
+{*                     onmousedown='zapiszDrukarke("{$serial}");return false;'>*}
+{*                    <span>Zapisz >></span>*}
+{*                </button>*}
+
+                <button id="saveAction" class="btn btn-success" type="button" data-serial="" onclick="zapiszDrukarke('{$serial}');">zapisz</button>
+
+{*                <div id='actionloader' class="actionloader">*}
+{*                    <img src="{$smarty.const.SCIEZKA}/{$smarty.const.SMARTVERSION}/img/smallLoader.GIF"*}
+{*                         style='display:inline;'/>przetwarzanie*}
+{*                </div>*}
+{*                <div style='clear:both'></div>*}
             </div>
         </td>
     </tr>

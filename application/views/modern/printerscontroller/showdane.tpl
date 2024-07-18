@@ -60,7 +60,7 @@
                                     <i class="fas fa-ellipsis"></i>
                                 </button>
                                 <div class="dropdown-menu dropdown-menu-end py-2">
-                                    <a class="dropdown-item" href="#" onClick='showNewPrinterAdd("{$item.serial}")'><i class="fas fa-edit"></i>&nbsp;&nbsp;Edycja</a>
+                                    <a class="editAction dropdown-item" href="#" onclick="onAddEditAction('{$item.serial}')"><i class="fas fa-edit"></i>&nbsp;&nbsp;Edycja</a>
                                     <div class="my-1"></div>
                                     <a href="javascript:void(0)" class="dropdown-item" onClick="showPrinterMessages('{$item.serial}', '{$item.model}')"><i class="fas fa-comment-dots"></i>&nbsp;&nbsp;Notatki</a>
                                     <a class="dropdown-item" href="#" onClick='pokazLogi("{$item.serial}")'><i class="fas fa-history"></i>&nbsp;&nbsp;Logi</a>

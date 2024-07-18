@@ -244,26 +244,45 @@ function showNewAgreementAdd(rowid) {
 
 function showNewPrinterAdd(serial) {
 
-    $.colorbox
-    ({
-        height: 850 + 'px',
-        width: 600 + 'px',
-        title: "Dodawanie/Edycja drukarki",
+    const objCenter = getElementById('divRightCenter', false);
+
+    $.ajax({
+        url: sciezka + "/printers/addedit/todiv",
+        type: 'POST',
         data:
             {
                 serial: serial
             },
-
-        href: sciezka + "/printers/addedit/todiv",
-        onClosed: function () {
-
+        success: function (data) {
+            objCenter.innerHTML = '';
+            objCenter.innerHTML = data;
+            $(objCenter).animate({opacity: 1}, 1500);
         },
-        onComplete: function () {
-
-            $("#txtserial").focus();
-            uprawnienia();
+        error: function () {
+            objCenter.innerHTML = 'Problem z pobraniem danych';
         }
-    });
+    })
+
+    // $.colorbox
+    // ({
+    //     height: 850 + 'px',
+    //     width: 600 + 'px',
+    //     title: "Dodawanie/Edycja drukarki",
+    //     data:
+    //         {
+    //             serial: serial
+    //         },
+    //
+    //     href: sciezka + "/printers/addedit/todiv",
+    //     onClosed: function () {
+    //
+    //     },
+    //     onComplete: function () {
+    //
+    //         $("#txtserial").focus();
+    //         uprawnienia();
+    //     }
+    // });
 }
 
 function checkReplay(objError, objLoad, info, objClick, dane, objOk, czyreload, showtime, adtrestoredirect) {
@@ -622,6 +641,9 @@ function zapiszDrukarke(serial) {
             },
         success: function (dane) {
             checkReplay(objError, objLoad, null, objClick, dane, objOk, 1, 3000, null);
+
+            show('/printers/show');
+
             return false;
         },
         error: function () {
@@ -2183,7 +2205,6 @@ function dataRowSelectedHandler(targetElement) {
 function getElementById(id, isPopup) {
     return document.getElementById(isPopup ? id + isPopup : id);
 }
-
 
 function loadAsyncData(url, data, callback) {
     return $.ajax({
