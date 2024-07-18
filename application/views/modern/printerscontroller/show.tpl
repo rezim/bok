@@ -9,7 +9,7 @@
                 }
                     <div class="form-group otus-addnew otus-section mt-2 w-100">
                         <button type="button" class="btn btn-success w-100 d-flex align-items-center otus-action-btn"
-                                onclick="showNewPrinterAdd(&quot;&quot;);return false;">
+                                onclick="onAddEditAction(&quot;&quot;);return false;">
                             <i class="fas fa-plus"></i>&nbsp;Nowe Urządzenie
                         </button>
                     </div>
