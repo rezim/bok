@@ -133,4 +133,15 @@ class Controller
         header('X-PHP-Response-Code: 500', true, 500);
         die($message);
     }
+
+    public function fetchContent($filePath) {
+        if (file_exists($filePath)) {
+            ob_start();
+            include $filePath;
+            $content = ob_get_clean();
+            return $content;
+        } else {
+            return "Plik $filePath nie istnieje.";
+        }
+    }
 }

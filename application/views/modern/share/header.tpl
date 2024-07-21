@@ -192,8 +192,10 @@
                                         {/if}
                                         {if isset($smarty.session.przypisanemenu['li_agreementsshow'])}
                                             <a href='{$smarty.const.SCIEZKA}/agreements/show' class="dropdown-item">Umowy</a>
-
                              </li>
+                            <li>
+                                <a href='{$smarty.const.SCIEZKA}/customized/show/cars/display_cars.php' class="dropdown-item">Samochody</a>
+                            </li>
                         </ul>
                     </li>
                     <li class="nav-item dropdown"><a class="nav-link dropdown-toggle lh-1" href="#!"

@@ -1,8 +1,7 @@
-<div class="container-xl">
-    <div id="divRightCenter">
-    </div>
+<div class="container-fluid">
+    <main id='divRightCenter' class="col-12">
+    </main>
 </div>
-
 <script type="text/javascript">
     const templateUrl = "/customized/showfile/{$folderName}/{$fileName}/notemplate";
     const templateContainerId = 'divRightCenter';
