@@ -42,8 +42,18 @@ class printersController extends Controller
             }
         }
 
-        $smarty->assign('dataPrinters', $dataPrinters);
-        $smarty->assign('czycolorbox', isset($_POST['czycolorbox']) ? $_POST['czycolorbox'] : '');
+//        $smarty->assign('dataPrinters', $dataPrinters);
+//        $smarty->assign('czycolorbox', isset($_POST['czycolorbox']) ? $_POST['czycolorbox'] : '');
+//        unset($dataPrinters);
+
+        $columnNames = array_keys($dataPrinters[0]);
+
+        $columnSummaries = array_map(fn($columnName) => array_sum(array_map(fn($val) => is_numeric($val) ? $val : 0, array_column($dataPrinters, $columnName))), $columnNames);
+
+        $smarty->assign('columnNames', $columnNames);
+        $smarty->assign('columnSummaries', $columnSummaries);
+        $smarty->assign('data', $dataPrinters);
+
         unset($dataPrinters);
     }
 
