@@ -62,6 +62,11 @@
                                 <a class="dropdown-item" href="#" onClick='showNewClientAdd("{$item.rowid}")'><i
                                             class="fas fa-edit"></i>&nbsp;&nbsp;Edycja</a>
                                 <div class="border-top my-1"></div>
+
+                                <a href='{$smarty.const.SCIEZKA}/clientinvoices/showclient/{$item.nip}' class="dropdown-item pointer"><i
+                                            class="fas fa-clipboard-list"></i></i>&nbsp;&nbsp;rozliczenie&nbsp;winien/ma</a>
+
+
                                 <a href="javascript:void(0)" class="dropdown-item"
                                    onClick="showClientMessages('{$item.nip}', '{$item.nazwakrotka}')"><i
                                             class="fas fa-comment-dots"></i>&nbsp;&nbsp;notatki</a>
