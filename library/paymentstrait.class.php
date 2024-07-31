@@ -96,7 +96,7 @@ trait PaymentsTrait
 
         return $result;
     }
-    function getClientPayments($clientId, $dateFrom)
+    function getClientPayments($clientId, $dateFrom, int $perPage = 100)
     {
         $payments = array();
 
@@ -107,7 +107,7 @@ trait PaymentsTrait
             . '&date_from=' . $dateFrom
             . '&api_token=' . FAKTUROWNIA_APITOKEN;
         do {
-            curl_setopt($ch, CURLOPT_URL, $url . '&page=' . $pageNb);
+            curl_setopt($ch, CURLOPT_URL, $url . '&page=' . $pageNb . '&per_page=' . $perPage);
             curl_setopt($ch, CURLOPT_RETURNTRANSFER, TRUE);
             if (USE_PROXY) {
                 curl_setopt($ch, CURLOPT_PROXY, '127.0.0.1:8888');
@@ -116,7 +116,7 @@ trait PaymentsTrait
 
             $payments = array_merge($payments, $data);
             $pageNb++;
-        } while (count($data) == 50);
+        } while (count($data) == $perPage);
 
         curl_close($ch);
 

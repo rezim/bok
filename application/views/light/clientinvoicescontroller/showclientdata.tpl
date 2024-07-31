@@ -11,7 +11,11 @@
         </tr>
         </thead>
         <tbody>
-
+        <tr class="table-dark">
+            {foreach $columnSummaries as $columnSummary}
+                <th>{if $columnSummary != 0}{$columnSummary}{else}-{/if}</th>
+            {/foreach}
+        </tr>
         {foreach $accountingSettlements as $rowScan}
             <tr>
                 {foreach $rowScan as $colScan}
@@ -19,13 +23,6 @@
                 {/foreach}
             </tr>
         {/foreach}
-        <tfoot>
-        <tr class="table-dark">
-            {foreach $columnSummaries as $columnSummary}
-                <th>{if $columnSummary > 0}{$columnSummary}{else}-{/if}</th>
-            {/foreach}
-        </tr>
-        </tfoot>
         </tbody>
     </table>
     {/if}

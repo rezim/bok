@@ -406,15 +406,15 @@ class clientinvoicesController extends InvoicesController
                 'ma' => null,
                 'treść' => $invoice['number']), $invoices);
 
-
-        $payments = $this->clientinvoice->getPaymentsByClientTaxNo($clientTaxNo, $dateFrom, $dateTo);
+        $clientId = $this->getClientIdByTaxNo($clientTaxNo);
+        $payments = $this->getClientPayments($clientId, $dateFrom);
 
         $payments = array_map(
             fn($payment) => array(
-                'data' => $payment['issue_date'],
+                'data' => (new DateTime($payment['paid_date']))->format('Y-m-d'),
                 'winien' => null,
-                'ma' => $payment['price_gross'],
-                'treść' => $payment['content']), $payments);
+                'ma' => $payment['price'],
+                'treść' => $payment['name']), $payments);
 
         $accountingSettlements = array_merge($invoices, $payments);
 
@@ -428,6 +428,8 @@ class clientinvoicesController extends InvoicesController
         $columnNames = array_keys($accountingSettlements[0]);
 
         $columnSummaries = array_map(fn($columnName) => array_sum(array_map(fn($val) => is_numeric($val) ? $val : 0, array_column($accountingSettlements, $columnName))), $columnNames);
+
+        $columnSummaries[count($columnSummaries)-1] = round( $columnSummaries[count($columnSummaries)-2] - $columnSummaries[count($columnSummaries)-3], 2);
 
         $smarty->assign('columnNames', $columnNames);
         $smarty->assign('columnSummaries', $columnSummaries);

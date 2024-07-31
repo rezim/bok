@@ -56,11 +56,11 @@
 
 <script>
     const startAndEndDate = {
-        startDate: new Date(),
+        startDate: new Date('2019-12-31'),
         endDate: new Date()
     };
 
-    startAndEndDate.startDate.setMonth(0,1);
+    // startAndEndDate.startDate.setMonth(0,1);
 
     $("#startDate").datepicker
     ($.datepicker.regional['pl'], {
