@@ -17,9 +17,11 @@
             {/foreach}
         </tr>
         {foreach $accountingSettlements as $rowScan}
-            <tr>
-                {foreach $rowScan as $colScan}
+            <tr{if isset($rowScan[$rowClassName])} class="{$rowScan[$rowClassName]}"{/if}>
+                {foreach $rowScan as $key=>$colScan}
+                    {if $key !== $rowClassName}
                     <td>{$colScan}</td>
+                    {/if}
                 {/foreach}
             </tr>
         {/foreach}

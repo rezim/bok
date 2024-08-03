@@ -113,7 +113,7 @@ class clientpaymentsController extends InvoicesController
     {
         // this is because for older payments we do not have records in `payments_processed` table,
         // therefore we do not know if they were processed or not
-        $PROCESSED_PAYMENTS_START_DATE = '2023-09-01';
+        $PROCESSED_PAYMENTS_START_DATE = PROCESSED_PAYMENTS_START_DATE;
 
         $notProcessedPayments = $this->clientpayment->getNotProcessedPaymentsFromDate($PROCESSED_PAYMENTS_START_DATE);
 
