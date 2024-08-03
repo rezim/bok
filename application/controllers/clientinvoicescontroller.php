@@ -419,7 +419,7 @@ class clientinvoicesController extends InvoicesController
                 'winien' => null,
                 'ma' => $payment['price_gross'],
                 'treść' => $payment['content'],
-                'uwagi' => 'Nie przeprocesowana!',
+                'uwagi' => 'Nieprzeprocesowana!',
                 'className' => 'text-danger'),
             $notProcessedPayments);
 
