@@ -350,6 +350,43 @@ const CSV_TOTAL_INDEX = 7;
 const CSV_BLACK_COUNT_INDEX = 8;
 const CSV_SCAN_COUNT_INDEX = 9;
 
+function cleanScans($filename)
+{
+    if (($handle = fopen(SCIEZKAZALACZNIKI . $filename, "r")) !== false) {
+        while (($data = fgetcsv($handle, 1000, ",")) !== false) {
+
+            $customer = $data[CSV_CUSTOMER_INDEX] ?? null;
+            if ($customer === "OTUS") {
+                $date = $data[CSV_DATE_INDEX];
+                if ($date !== "N/A") {
+
+                    $serial = $data[CSV_SERIAL_INDEX];
+                    $blackCount = $data[CSV_BLACK_COUNT_INDEX];
+                    $totalCount = $data[CSV_TOTAL_INDEX];
+                    $colorCount = $totalCount - $blackCount;
+                    $scanCount = $data[CSV_SCAN_COUNT_INDEX];
+                    $date = (date_create_from_format("d/m/Y H:i", $date))->format("Y-m-d H:i:s");
+
+                    deleteFromScans($serial, $date);
+                }
+            }
+
+        }
+        fclose($handle);
+    }
+}
+function deleteFromScans($serial, $date)
+{
+    $mysqli = getMySqlConn();
+    $query = "DELETE FROM `scans` WHERE datawiadomosci = '{$date}' AND serial = '{$serial}'";
+
+    $result = mysqli_query($mysqli, $query);
+    if (!$result) {
+        echo $mysqli->error;
+    }
+    return $result;
+}
+
 function processCsv($filename, $attachment)
 {
     file_put_contents(SCIEZKAZALACZNIKI . $filename, $attachment);
