@@ -1,7 +1,5 @@
 <?php
 
-include '../../config/config.php';
-
 $local_conn = new mysqli(DB_HOST, DB_USER, DB_PASSWORD, DB_NAME);
 // Sprawdzenie połączenia
 if ($local_conn->connect_error) {
@@ -12,11 +10,12 @@ if ($local_conn->connect_error) {
 $log_file = '../../public_html/log/hesk-bok.log';
 
 // Otwieranie pliku logu w trybie zapisu, co usuwa wcześniejsze dane
-$log_handle = fopen($log_file, 'w');
+$log_handle = null; // fopen($log_file, 'w');
 
 // Funkcja do zapisywania logu
 function log_message($message, $log_handle) {
-    fwrite($log_handle, $message . "\n");
+//    fwrite($log_handle, $message . "\n");
+    echo $message . "\n";
 }
 
 // Połączenie z bazą danych HESK
@@ -64,7 +63,7 @@ if ($result->num_rows > 0) {
         $rowid_agreements = null;
 
         // Pobranie wartości serial i rowidclient z tabeli agreements
-        $serial_sql = "SELECT serial, rowidclient, rowid FROM agreements WHERE serial LIKE '%$custom1%'";
+        $serial_sql = "SELECT serial, rowidclient, rowid FROM agreements WHERE serial LIKE '%$custom1%' and activity=1";
         $serial_result = $local_conn->query($serial_sql);
         if ($serial_result->num_rows == 1) {
             $serial_row = $serial_result->fetch_assoc();
@@ -106,7 +105,13 @@ if ($result->num_rows > 0) {
             } else {
                 $update_sql .= ",email='$email', temat='$subject', nr_telefonu='$custom2', date_insert='$date_insert', addres_custom3='$custom3', rowid_priority='$priority', status=$status_update ";
             }
+
             $update_sql .= "WHERE trackid='$trackid'";
+
+            // jeżeli aktualizacja z hesk na status nie rozliczone, aktualizuj tylko jeżeli w bazie nie zamknięte
+            if ($status_update === 4) {
+                $update_sql .= " and status <> 3";
+            }
 
             if ($local_conn->query($update_sql) === TRUE) {
                 log_message("Zaktualizowano zgłoszenie o trackid: $trackid", $log_handle);
@@ -126,7 +131,7 @@ $sql_closed = "SELECT trackid, closedat FROM hesk_tickets WHERE status = 3 AND c
 $result_closed = $conn->query($sql_closed);
 
 if ($result_closed->num_rows > 0) {
-    include 'local_config.php';
+    $local_conn = new mysqli(DB_HOST, DB_USER, DB_PASSWORD, DB_NAME);
     $local_conn->set_charset("utf8mb4");
 
     while ($row_closed = $result_closed->fetch_assoc()) {
@@ -159,5 +164,5 @@ if ($result_closed->num_rows > 0) {
 }
 
 $conn->close();
-fclose($log_handle);
+//fclose($log_handle);
 
