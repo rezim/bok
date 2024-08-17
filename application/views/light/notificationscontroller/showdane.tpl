@@ -9,6 +9,9 @@
                 Ticket
             </th>
             <th>
+                Hesk
+            </th>
+            <th>
                 Klient
             </th>
             <th>
@@ -31,11 +34,11 @@
         </tr>
         </thead>
         <tbody>
-
         {foreach from=$dataNoti item=item key=key name=loopek}
             <tr>
                 <th>{$smarty.foreach.loopek.index+1}</th>
                 <td>{$item.rowid}</td>
+                <td><a target="_blank" href="https://helpdesk.otus.pl/admin/admin_ticket.php?track={$item.hesk_trackid}"</td>
                 <td {if $item.rowid_client!=''}onClick='showNewClientAdd("{$item.rowid_client}")'{/if}>
                     {$item.nazwakrotka|escape:'htmlall'}
                 </td>
@@ -67,8 +70,6 @@
                 </td>
             </tr>
         {/foreach}
-
-
         </tbody>
 
     </table>

@@ -705,6 +705,7 @@ a.SLA-(( unix_timestamp(now())
                 a.rowid_priority as 'rowid_priority',
                 a.date_insert as 'date_insert',
                 a.date_zakonczenia as 'date_zakonczenia',
+                a.trackid as 'hesk_trackid',
                 c.sla as 'sla',
                 TIMESTAMPDIFF(HOUR, a.date_insert, IFNULL(a.date_zakonczenia,now())) as `czas_trwania`
                 from
