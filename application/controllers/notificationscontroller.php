@@ -162,6 +162,9 @@ class notificationsController extends InvoicesController
 
         $wynik = parent::save();
 
+        if ($wynik['rows_affected'] !== 0) {
+            $this->updateHeskNotification($wynik['keyval']);
+        }
 
         if ((string)$this->$nameOfModel->_filedsToEdit['wykonuje']['value'] != '0' && (string)$this->$nameOfModel->_filedsToEdit['wykonuje']['value'] != '' && $czyjuzbylo == 0) {
             $dataMail = $this->$nameOfModel->getMailByRowid($this->$nameOfModel->_filedsToEdit['wykonuje']['value']);
@@ -321,6 +324,32 @@ class notificationsController extends InvoicesController
                     unset($notPaidInvoices);
                 }
             }
+        }
+    }
+
+    function updateHeskNotification($notificationRowId) {
+        $notification = $this->notification->getNotificationByRowid2($notificationRowId)[0];
+
+        $serial = $notification['serial'];
+        $trackId = $notification['trackid'];
+
+        if ($serial !== null and $trackId !== null) {
+
+            $device = $this->notification->getPrinterWithClientAndAgreementBySerial($serial)[0];
+
+            $message = "klient: {$device['nazwakrotka']} <br/>
+                        serial: {$device['serial']} <br/>
+                        model: {$device['model']} <br/>
+                        umowa: {$device['nrumowy']} <br/>
+                        ulica: {$device['ulica']} <br/>
+                        miasto: {$device['miasto']} <br/>
+                        kod: {$device['kodpocztowy']} <br/>
+                        telefon: {$device['telefon']} <br/>
+                        email: {$device['mail']} <br/>
+                        nazwa: {$device['nazwa']} <br/>
+                        osoba kotaktowa: {$device['osobakontaktowa']} <br/>";
+
+            $this->notification->updateHesk($trackId, $message);
         }
     }
 

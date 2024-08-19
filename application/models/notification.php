@@ -771,4 +771,60 @@ a.SLA-(( unix_timestamp(now())
 
         return $this->query($query, null, false);
     }
+
+    function getPrinterWithClientAndAgreementBySerial($serial) {
+        $query = "SELECT c.nazwakrotka, p.serial, p.model, a.nrumowy, p.ulica, p.miasto, p.kodpocztowy, p.telefon, p.mail, p.nazwa, p.osobakontaktowa
+                  FROM `printers` p INNER JOIN `agreements` a on p.serial = a.serial INNER JOIN `clients` c on a.rowidclient = c.rowid 
+                  WHERE p.serial = '{$serial}'";
+        return $this->query($query, null, false);
+    }
+
+    function updateHesk($trackId, $message) {
+        $dbHandle = new mysqli(HESK_HOST, HESK_DB_USER, HESK_DB_PASSWORD, HESK_DB_NAME);
+
+        if ($dbHandle->connect_errno) {
+            die($dbHandle->connect_error);
+        } else {
+            $dbHandle->query("SET NAMES 'utf8'");
+        }
+
+        $ticketId = $this->executeQuery("SELECT id FROM `hesk_tickets` WHERE trackid = '" . $trackId . "'", $dbHandle);
+        $who = $this->executeQuery("SELECT id FROM `hesk_users` WHERE user = 'bok'", $dbHandle);
+        $attachments = "";
+
+        $exists = $this->executeQuery("SELECT count(id) FROM `hesk_notes` WHERE ticket = '" . $ticketId . "' AND who='" . $who . "'", $dbHandle);
+
+
+        if ($exists === 0) {
+            $sql = "INSERT INTO hesk_notes (ticket, who, message, attachments) VALUES (?, ?, ?, ?)";
+            $stmt = $dbHandle->prepare($sql);
+            $stmt->bind_param("iiss", $ticketId, $who, $message, $attachments);
+        } else {
+            $sql = "UPDATE hesk_notes SET message = ?";
+            $stmt = $dbHandle->prepare($sql);
+            $stmt->bind_param("s", $message);
+        }
+
+        if (!$stmt->execute()) {
+            die("Nie można dodać/zaktualizować notatki w systemie hesk");
+        }
+
+        $dbHandle->close();
+    }
+
+    function executeQuery($query, $dbHandle) {
+        $stmt = $dbHandle->prepare($query);
+        if ($stmt === false) {
+            die("Błąd przygotowania zapytania: " . $query);
+        }
+        global $result;
+        $stmt->execute();
+        $stmt->bind_result($result);
+
+        if (!$stmt->fetch()) {
+            die("Nie można wykonać zapytania:" . $query);
+        }
+
+        return $result;
+    }
 }
