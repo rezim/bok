@@ -161,10 +161,10 @@ class notificationsController extends InvoicesController
         }
 
         $wynik = parent::save();
-
-        if ($wynik['rows_affected'] !== 0) {
+//TODO TR: confirm if this is working
+//        if ($wynik['rows_affected'] !== 0) {
             $this->updateHeskNotification($wynik['keyval']);
-        }
+//        }
 
         if ((string)$this->$nameOfModel->_filedsToEdit['wykonuje']['value'] != '0' && (string)$this->$nameOfModel->_filedsToEdit['wykonuje']['value'] != '' && $czyjuzbylo == 0) {
             $dataMail = $this->$nameOfModel->getMailByRowid($this->$nameOfModel->_filedsToEdit['wykonuje']['value']);
@@ -223,20 +223,19 @@ class notificationsController extends InvoicesController
                     }
                     unset($printer);
                 }
-
-                $mailing = new mailing();
-                $mailing->sendMailPrzydzielonoZlecenie($wynik['keyval'], $dataMail[0]['mail'], nl2br($this->$nameOfModel->_filedsToEdit['tresc_wiadomosci']['value']),
-                    $clientName . " [Ticket#{$wynik['keyval']}] " . $this->$nameOfModel->_filedsToEdit['temat']['value'],
-                    $clientName,
-                    $this->$nameOfModel->_filedsToEdit['email']['value'],
-                    $this->$nameOfModel->_filedsToEdit['osobazglaszajaca']['value'],
-                    $this->$nameOfModel->_filedsToEdit['nr_telefonu']['value'], $priority,
-                    $modelurzadzenia, $nrseryjny, $lokalizacja, $uwagi, $przebieg, $stantonera, $adresip, $firmware, $this->$nameOfModel->_filedsToEdit['data_planowana']['value'],
-                    $printerLogs,
-                    $dataZalacznikiFirst
-                );
-                unset($mailing);
-
+// TODO TR: no confirmation emails from BOK
+//                $mailing = new mailing();
+//                $mailing->sendMailPrzydzielonoZlecenie($wynik['keyval'], $dataMail[0]['mail'], nl2br($this->$nameOfModel->_filedsToEdit['tresc_wiadomosci']['value']),
+//                    $clientName . " [Ticket#{$wynik['keyval']}] " . $this->$nameOfModel->_filedsToEdit['temat']['value'],
+//                    $clientName,
+//                    $this->$nameOfModel->_filedsToEdit['email']['value'],
+//                    $this->$nameOfModel->_filedsToEdit['osobazglaszajaca']['value'],
+//                    $this->$nameOfModel->_filedsToEdit['nr_telefonu']['value'], $priority,
+//                    $modelurzadzenia, $nrseryjny, $lokalizacja, $uwagi, $przebieg, $stantonera, $adresip, $firmware, $this->$nameOfModel->_filedsToEdit['data_planowana']['value'],
+//                    $printerLogs,
+//                    $dataZalacznikiFirst
+//                );
+//                unset($mailing);
             }
 
 
@@ -270,15 +269,15 @@ class notificationsController extends InvoicesController
 
             }
 
-
-            if ($this->$nameOfModel->_filedsToEdit['email']['value'] != '') {
-
-
-                $mailing = new mailing();
-                $mailing->sendMailZarejestrowano($wynik['keyval'], $this->$nameOfModel->_filedsToEdit['email']['value'], nl2br($this->$nameOfModel->_filedsToEdit['tresc_wiadomosci']['value']),
-                    "[Ticket#{$wynik['keyval']}] " . $this->$nameOfModel->_filedsToEdit['temat']['value']);
-                unset($mailing);
-            }
+// TODO TR: no confirmation emails from BOK
+//            if ($this->$nameOfModel->_filedsToEdit['email']['value'] != '') {
+//
+//
+//                $mailing = new mailing();
+//                $mailing->sendMailZarejestrowano($wynik['keyval'], $this->$nameOfModel->_filedsToEdit['email']['value'], nl2br($this->$nameOfModel->_filedsToEdit['tresc_wiadomosci']['value']),
+//                    "[Ticket#{$wynik['keyval']}] " . $this->$nameOfModel->_filedsToEdit['temat']['value']);
+//                unset($mailing);
+//            }
         }
 
         echo(json_encode($wynik));

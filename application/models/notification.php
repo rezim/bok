@@ -796,11 +796,11 @@ a.SLA-(( unix_timestamp(now())
 
 
         if ($exists === 0) {
-            $sql = "INSERT INTO hesk_notes (ticket, who, message, attachments) VALUES (?, ?, ?, ?)";
+            $sql = "INSERT INTO hesk_notes (ticket, who, message, attachments) VALUES (?, ?, ?, ?) WHERE ticket = '" . $ticketId . "' AND who='" . $who . "'";
             $stmt = $dbHandle->prepare($sql);
             $stmt->bind_param("iiss", $ticketId, $who, $message, $attachments);
         } else {
-            $sql = "UPDATE hesk_notes SET message = ?";
+            $sql = "UPDATE hesk_notes SET message = ? WHERE ticket = '" . $ticketId . "' AND who='" . $who . "'";
             $stmt = $dbHandle->prepare($sql);
             $stmt->bind_param("s", $message);
         }
