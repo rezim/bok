@@ -779,6 +779,22 @@ a.SLA-(( unix_timestamp(now())
         return $this->query($query, null, false);
     }
 
+
+    function updateHeskNoteMessages($allHeskNotes) {
+        $dbHandle = new mysqli(HESK_HOST, HESK_DB_USER, HESK_DB_PASSWORD, HESK_DB_NAME);
+        $dbHandle->query("SET NAMES 'utf8'");
+
+        foreach ($allHeskNotes as $heskNote) {
+
+            $sql = "UPDATE hesk_notes SET message = ? WHERE id = '" . $heskNote['id'] . "'";
+            $stmt = $dbHandle->prepare($sql);
+            $stmt->bind_param("s", $heskNote['message']);
+
+            $stmt->execute();
+        }
+        $dbHandle->close();
+    }
+
     function updateHesk($trackId, $message) {
         $dbHandle = new mysqli(HESK_HOST, HESK_DB_USER, HESK_DB_PASSWORD, HESK_DB_NAME);
 
@@ -796,7 +812,7 @@ a.SLA-(( unix_timestamp(now())
 
 
         if ($exists === 0) {
-            $sql = "INSERT INTO hesk_notes (ticket, who, message, attachments) VALUES (?, ?, ?, ?) WHERE ticket = '" . $ticketId . "' AND who='" . $who . "'";
+            $sql = "INSERT INTO hesk_notes (ticket, who, message, attachments) VALUES (?, ?, ?, ?)";
             $stmt = $dbHandle->prepare($sql);
             $stmt->bind_param("iiss", $ticketId, $who, $message, $attachments);
         } else {
@@ -826,5 +842,10 @@ a.SLA-(( unix_timestamp(now())
         }
 
         return $result;
+    }
+
+    function getAllHeskNotes() {
+        $query = "SELECT id, message from hesk_notes order by id";
+        return $this->query($query, null, false);
     }
 }
