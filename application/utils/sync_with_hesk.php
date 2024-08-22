@@ -149,7 +149,12 @@ if ($result_closed->num_rows > 0) {
 
             // Aktualizacja statusu w tabeli notifications, tylko jeśli jest to konieczne
             if ($current_status != $status_update) {
+
                 $update_sql = "UPDATE notifications SET status=$status_update WHERE trackid='$trackid'";
+
+                if ($status_update === 4) {
+                    $update_sql .= " and status <> 3";
+                }
 
                 if ($local_conn->query($update_sql) === TRUE) {
                     log_message("Zaktualizowano status na $status_update dla zgłoszenia o trackid: $trackid", $log_handle);
