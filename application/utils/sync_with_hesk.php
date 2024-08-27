@@ -53,6 +53,7 @@ if ($result->num_rows > 0) {
         $priority = $row['priority'];
 
         $date_insert = date('Y-m-d H:i:s', strtotime($dt));
+        // 2 - w trakcie realizacji, 4 - nierozliczone
         $status_update = is_null($closedat) ? 2 : 4;
 
         $check_sql = "SELECT * FROM notifications WHERE trackid = '$trackid'";
@@ -139,6 +140,7 @@ if ($result_closed->num_rows > 0) {
         $closedat = $row_closed['closedat'];
 
         // Ustalenie statusu na podstawie closedat
+        // 2 - w trakcie realizacji, 4 - nierozliczone
         $status_update = is_null($closedat) ? 2 : 4;
 
         // Sprawdzenie obecnego statusu w BOK

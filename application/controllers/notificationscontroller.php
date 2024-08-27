@@ -136,19 +136,19 @@ class notificationsController extends InvoicesController
             die();
 
         }
-        if ($this->$nameOfModel->_filedsToEdit['status']['value'] == '3' && $this->$nameOfModel->_filedsToEdit['user_zakonczenia']['value'] == '') {
-
-            $this->$nameOfModel->_filedsToEdit['user_zakonczenia']['value'] = $_SESSION['user']['rowid'];
-            $this->$nameOfModel->_filedsToEdit['date_zakonczenia']['value'] = date('Y-m-d H:i:s');
-            if ((string)$this->$nameOfModel->_filedsToEdit['email']['value'] != '' && (string)$this->$nameOfModel->_filedsToEdit['rowid']['value'] != '') {
-                $mailing = new mailing();
-                $mailing->sendMailZakonczono((string)$this->$nameOfModel->_filedsToEdit['rowid']['value'],
-                    $this->$nameOfModel->_filedsToEdit['email']['value'],
-                    $this->$nameOfModel->_filedsToEdit['tresc_wiadomosci']['value'],
-                    $this->$nameOfModel->_filedsToEdit['temat']['value']);
-                unset($mailing);
-            }
-        }
+        // TODO TR: no confirmation emails from BOK
+        //        if ($this->$nameOfModel->_filedsToEdit['status']['value'] == '3' && $this->$nameOfModel->_filedsToEdit['user_zakonczenia']['value'] == '') {
+        //            $this->$nameOfModel->_filedsToEdit['user_zakonczenia']['value'] = $_SESSION['user']['rowid'];
+        //            $this->$nameOfModel->_filedsToEdit['date_zakonczenia']['value'] = date('Y-m-d H:i:s');
+        //            if ((string)$this->$nameOfModel->_filedsToEdit['email']['value'] != '' && (string)$this->$nameOfModel->_filedsToEdit['rowid']['value'] != '') {
+        //                $mailing = new mailing();
+        //                $mailing->sendMailZakonczono((string)$this->$nameOfModel->_filedsToEdit['rowid']['value'],
+        //                    $this->$nameOfModel->_filedsToEdit['email']['value'],
+        //                    $this->$nameOfModel->_filedsToEdit['tresc_wiadomosci']['value'],
+        //                    $this->$nameOfModel->_filedsToEdit['temat']['value']);
+        //                unset($mailing);
+        //            }
+        //        }
         $czyjuzbylo = 0;
 
 
