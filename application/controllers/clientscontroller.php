@@ -129,9 +129,9 @@ class clientsController extends InvoicesController
                 if (empty($clientNip)) {
                     $this->badRequest('Numer NIP klienta jest wymagany.');
                 }
-                if (!$this->isNIP($clientNip)) {
-                    $this->badRequest('Niepoprawny numer NIP');
-                }
+//                if (!$this->isNIP($clientNip)) {
+//                    $this->badRequest('Niepoprawny numer NIP');
+//                }
 
                 $client = $this->client->getClientByNip($clientNip);
                 if (!empty($client)) {
@@ -140,9 +140,9 @@ class clientsController extends InvoicesController
                 }
             } else {
                 // for edit client nip could not present in the request
-                if (!empty($clientNip) && !$this->isNIP($clientNip)) {
-                    $this->badRequest('Niepoprawny numer NIP');
-                }
+//                if (!empty($clientNip) && !$this->isNIP($clientNip)) {
+//                    $this->badRequest('Niepoprawny numer NIP');
+//                }
             }
 
             if (!$this->areClientPaymentOptionsPermitted) {
