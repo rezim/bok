@@ -12,7 +12,7 @@ $sql = "
         c.Rok_produkcji, 
         c.kierowca, 
         COALESCE(cr.przebieg, 0) AS przebieg, 
-        c.przegląd, 
+        c.przeglad, 
         c.ubezpieczenie,
         c.data_ost_przegladu
     FROM cars c
@@ -117,7 +117,7 @@ function highlightDate($date) {
                         <td onclick=\"editRow(" . $row["id"] . ")\">" . $row["Rok_produkcji"]. "</td>
                         <td onclick=\"editRow(" . $row["id"] . ")\">" . $row["kierowca"]. "</td>
                         <td class='link' onclick=\"viewRequests(" . $row["id"] . ")\">" . $row["przebieg"]. "</td>
-                        <td " . highlightDate($row["przegląd"]) . " onclick=\"editRow(" . $row["id"] . ")\">" . $row["przegląd"]. "</td>
+                        <td " . highlightDate($row["przeglad"]) . " onclick=\"editRow(" . $row["id"] . ")\">" . $row["przeglad"]. "</td>
                         <td " . highlightDate($row["ubezpieczenie"]) . " onclick=\"editRow(" . $row["id"] . ")\">" . $row["ubezpieczenie"]. "</td>
                         <td onclick=\"editRow(" . $row["id"] . ")\">" . $row["data_ost_przegladu"]. "</td>
                       </tr>";
