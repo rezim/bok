@@ -66,15 +66,16 @@ if ($result->num_rows > 0) {
 
         $needle = "SN:";
         $position = strpos($message, $needle);
-        $serial = '';
+        $serial = '-';
         if ($position !== false) {
             $position += strlen($needle);
             $remainingString = substr($message, $position);
-            $serial = strtok($remainingString, " ");
+            $serial = strtok($remainingString, " <");
         }
 
         // Pobranie wartości serial i rowidclient z tabeli agreements
-        $serial_sql = "SELECT serial, rowidclient, rowid FROM agreements WHERE (serial LIKE '%$custom1%' or serial LIKE '%$serial%') and activity=1";
+        $serialLike = $custom1 !== '' ? $custom1 : $serial;
+        $serial_sql = "SELECT serial, rowidclient, rowid FROM agreements WHERE serial LIKE '%$serialLike%' and activity=1";
         $serial_result = $local_conn->query($serial_sql);
         if ($serial_result->num_rows == 1) {
             $serial_row = $serial_result->fetch_assoc();
