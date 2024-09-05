@@ -245,7 +245,8 @@ PaymentsCtrl = function ($scope, rest, $q, $filter, $uibModal, $interpolate, app
 
                     objClientInvoice[invoice.buyer_tax_no]['invoices'].sum.all += parseFloat(invoice.price_gross);
                     objClientInvoice[invoice.buyer_tax_no]['invoices'].count.all++;
-                    if (!invoice.is_paid) {
+                    const isPaid = invoice.price_gross === invoice.paid;
+                    if (!isPaid) {
                         objClientInvoice[invoice.buyer_tax_no]['invoices'].sum.notPaid +=
                             parseFloat(invoice.price_gross) - parseFloat(invoice.paid);
                         objClientInvoice[invoice.buyer_tax_no]['invoices'].count.notPaid++;
