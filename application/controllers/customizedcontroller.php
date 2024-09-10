@@ -22,7 +22,7 @@ class customizedController extends Controller {
         $fileName = $this->_queryString[1];
         $query = $this->_queryString[3];
         $url = ROOT . DS . 'application' . DS . 'apps' . DS . $folderName . DS . $fileName;
-        $content = $this->fetchContent($url . "?" . $query);
+        $content = $this->fetchContent($url , $query);
 
         echo $content;
     }

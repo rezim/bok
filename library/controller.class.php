@@ -134,11 +134,22 @@ class Controller
         die($message);
     }
 
-    public function fetchContent($filePath) {
+    public function fetchContent($filePath, $params) {
         if (file_exists($filePath)) {
+            // Zapisanie oryginalnych wartości $_GET, aby móc je później przywrócić
+            $originalGet = $_GET;
+
+            // Przekazanie nowych parametrów GET
+            $_GET = array_merge($_GET, $params);
+
+            // Buforowanie wyjścia
             ob_start();
             include $filePath;
             $content = ob_get_clean();
+
+            // Przywrócenie oryginalnych wartości $_GET
+            $_GET = $originalGet;
+
             return $content;
         } else {
             return "Plik $filePath nie istnieje.";
