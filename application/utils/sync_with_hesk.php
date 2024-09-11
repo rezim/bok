@@ -105,8 +105,21 @@ if ($result->num_rows > 0) {
                 $insert_sql .= "NULL, NULL, NULL, '$email', '$subject', '$custom2', '$date_insert', '$custom3', '$priority')";
             }
 
-            if ($local_conn->query($insert_sql) === TRUE) {
+            if ($local_conn->query($insert_sql) === TRUE && $serial) {
                 log_message("Nowe zgłoszenie zostało dodane do bazy danych bok.", $log_handle);
+
+                // Pobranie ostatnio dodanego ID
+                $last_id = $local_conn->insert_id;
+                $model = 'notification';
+                $controller = 'notificationsController';
+                $action = 'updateHeskNotification';
+                $queryString = array('notemplate');
+                $dispatch = new $controller($model, $controller, $action, $queryString);
+
+                if ((int)method_exists($controller, $action)) {
+                    $result = call_user_func_array(array($dispatch, $action), [$last_id]);
+                }
+
             } else {
                 log_message("Błąd: " . $insert_sql . " - " . $local_conn->error, $log_handle);
             }
