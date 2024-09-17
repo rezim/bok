@@ -28,6 +28,8 @@ if ($conn->connect_error) {
     die();
 }
 
+$notificationIdsToUpdateInHESK = array();
+
 // Ustawienie kodowania znaków na UTF-8
 $conn->set_charset("utf8mb4");
 
@@ -110,15 +112,8 @@ if ($result->num_rows > 0) {
 
                 // Pobranie ostatnio dodanego ID
                 $last_id = $local_conn->insert_id;
-                $model = 'notification';
-                $controller = 'notificationsController';
-                $action = 'updateHeskNotification';
-                $queryString = array('notemplate');
-                $dispatch = new $controller($model, $controller, $action, $queryString);
 
-                if ((int)method_exists($controller, $action)) {
-                    $result = call_user_func_array(array($dispatch, $action), [$last_id]);
-                }
+                $notificationIdsToUpdateInHESK[] = $last_id;
 
             } else {
                 log_message("Błąd: " . $insert_sql . " - " . $local_conn->error, $log_handle);
@@ -195,5 +190,26 @@ if ($result_closed->num_rows > 0) {
 }
 
 $conn->close();
+
+// aktualizacja HESK, dodanie notatek z danymi klientów
+
+$model = 'notification';
+$controller = 'notificationsController';
+$action = 'updateHeskNotification';
+$queryString = array('notemplate');
+$dispatch = new $controller($model, $controller, $action, $queryString);
+
+if ((int)method_exists($controller, $action)) {
+    foreach ($notificationIdsToUpdateInHESK as $last_id) {
+
+
+        $result = call_user_func_array(array($dispatch, $action), [$last_id]);
+
+        log_message("Dodano notatkę w HESK dla zgłoszenia: " . $last_id, $log_handle);
+
+    }
+}
+
+
 //fclose($log_handle);
 
