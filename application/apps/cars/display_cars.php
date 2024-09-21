@@ -77,14 +77,6 @@ function highlightDate($date) {
             text-decoration: underline;
         }
     </style>
-    <script>
-        function editRow(id) {
-            window.location.href = 'addedit.php?id=' + id;
-        }
-        function viewRequests(car_id) {
-            window.location.href = 'display_requests.php?car_id=' + car_id;
-        }
-    </script>
 </head>
 <body>
     <h1>Tabela Cars</h1>
@@ -95,6 +87,7 @@ function highlightDate($date) {
     <a href="addedit.php">Dodaj Pojazd</a>
     <table>
         <tr>
+            <th> link </th>
             <th>Model</th>
             <th>VIN</th>
             <th>Nr Rejestracyjny</th>
@@ -110,6 +103,7 @@ function highlightDate($date) {
         if ($result->num_rows > 0) {
             while($row = $result->fetch_assoc()) {
                 echo "<tr>
+                        <td><a href='addedit.php?id=" . $row["id"] . "'>" . $row["model"] .  "</a></td>
                         <td onclick=\"editRow(" . $row["id"] . ")\">" . $row["model"]. "</td>
                         <td onclick=\"editRow(" . $row["id"] . ")\">" . $row["VIN"]. "</td>
                         <td onclick=\"editRow(" . $row["id"] . ")\">" . $row["nr_rej"]. "</td>
@@ -128,5 +122,13 @@ function highlightDate($date) {
         $conn->close();
         ?>
     </table>
+    <script>
+        function editRow(id) {
+            window.location.href = 'addedit.php?id=' + id;
+        }
+        function viewRequests(car_id) {
+            window.location.href = 'display_requests.php?car_id=' + car_id;
+        }
+    </script>
 </body>
 </html>
