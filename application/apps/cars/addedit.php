@@ -31,7 +31,7 @@ if ($id) {
 }
 
 // Zapisz dane po przesłaniu formularza
-if ($_SERVER["REQUEST_METHOD"] == "POST") {
+if ($_POST["isSubbmited"] == "true") {
     if (isset($_POST['delete'])) {
         $sql = "DELETE FROM cars WHERE id=$id";
         if ($conn->query($sql) === TRUE) {
@@ -41,7 +41,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             echo "Error: " . $sql . "<br>" . $conn->error;
         }
     } else {
-        $model = $_POST['model'];
+        $model = isset($model) ? $model :  $_POST['model'];
         $vin = $_POST['vin'];
         $nr_rej = $_POST['nr_rej'];
         $paliwo = $_POST['paliwo'];
@@ -66,13 +66,13 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                         paliwo='$paliwo', 
                         kierowca='$kierowca', 
                         status='$status', 
-                        przegląd='$przeglad', 
+                        przeglad='$przeglad', 
                         ubezpieczenie='$ubezpieczenie', 
                         notatki='$notatki',
                         Rok_produkcji='$rok_produkcji',
                         Data1rej='$data1rej',
                         moc='$moc',
-                        własność='$własność',
+                        wlasnosc='$własność',
                         koniec_leasignu=NULLIF('$koniec_leasingu', ''),
                         data_ost_przegladu='$data_ost_przegladu'
                     WHERE id=$id";
@@ -160,6 +160,8 @@ $conn->close();
 
         <label for="notatki">Notatki:</label>
         <textarea id="notatki" name="notatki"><?php echo $notatki; ?></textarea><br>
+
+        <input type="hidden" name="isSubbmited" value="true" />
 
         <button type="submit"><?php echo $id ? "Zaktualizuj" : "Dodaj"; ?></button>
         <?php if ($id): ?>
