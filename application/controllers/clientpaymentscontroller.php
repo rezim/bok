@@ -131,10 +131,6 @@ class clientpaymentsController extends InvoicesController
             }
             $notPaidInvoices = $this->getInvoicesByClientId($extClientId, false);
 
-
-            echo "Klient NIP: [" . $tax_no . "]";
-            echo print_r($notPaidInvoices);
-
             $invoiceKeys = array_map(function ($invoice) {
                 return $invoice['id'];
             }, $notPaidInvoices);
