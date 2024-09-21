@@ -123,9 +123,17 @@ class clientpaymentsController extends InvoicesController
 
             $tax_no = $payment['nip'];
 
-            $extClient = $this->getClientByTaxNo($tax_no);
-            $extClientId = $extClient[0]['id'];
+            if ($tax_no != '9102113580') {
+                $extClient = $this->getClientByTaxNo($tax_no);
+                $extClientId = $extClient[0]['id'];
+            } else {
+                $extClientId = '158948316';
+            }
             $notPaidInvoices = $this->getInvoicesByClientId($extClientId, false);
+
+
+            echo "Klient NIP: [" . $tax_no . "]";
+            echo print_r($notPaidInvoices);
 
             $invoiceKeys = array_map(function ($invoice) {
                 return $invoice['id'];
