@@ -60,7 +60,7 @@
                             {/if}
                         </button>
                         <div class="dropdown-menu dropdown-menu-right" aria-labelledby="dropdownMenuLink">
-                            <a class="dropdown-item" href="#" onClick='editNotification("{$item.rowid}")'><i class="fas fa-edit"></i> Edycja</a>
+                            <a class="dropdown-item" href="#" onClick='onAddEditAction("{$item.rowid}")'><i class="fas fa-edit"></i> Edycja</a>
                             {if $item.serial!=''}
                                 <div class="border-top my-1"></div>
                                 <a class="dropdown-item" href="#" onClick='pokazLogi("{$item.serial}")'><i class="fas fa-history"></i>&nbsp;&nbsp;Pokaż logi</a>

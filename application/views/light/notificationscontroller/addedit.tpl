@@ -452,9 +452,9 @@
     {else}
         <div class="container text-right" wymaganylevel='w' wymaganyzrobiony='0'>
             <a href="#" id="saveNotification" class="btn btn-outline-success active" role="button"
-               aria-pressed="true"><i
+               aria-pressed="true" onclick="zapiszNoti('0', '{$smarty.const.SCIEZKA}/notifications/save/notemplate');return false;"><i
                         class="fas fa-save"></i>&nbsp; Zapisz</a>
-            <a href="#" class="btn btn-outline-secondary" role="button" onclick="$.colorbox.close();">Anuluj</a>
+            <a href="#" class="btn btn-outline-secondary" role="button" onclick="showListOfNotifications();return false;">Anuluj</a>
         </div>
     {/if}
 

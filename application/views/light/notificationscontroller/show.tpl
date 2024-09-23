@@ -10,7 +10,7 @@
                 }
                     <div class="form-group otus-addnew otus-section">
                         <button type="button" class="btn btn-block btn-outline-warning otus-action-btn"
-                                onclick="editNotification('0');return false;"><i class="fas fa-plus"></i>&nbsp;Nowe
+                                onclick="onAddEditAction('0');return false;"><i class="fas fa-plus"></i>&nbsp;Nowe
                             Zgłoszenie
                         </button>
                     </div>
@@ -139,4 +139,21 @@
         $("#divFilterNoti").show();
         showListOfNotifications();
         {/if}
+    </script>
+
+
+    <script>
+        const dataContainerId = 'dataFilter';
+        const templateId = 'divRightCenter';
+        const skeletonLoader = 'listSkeletonLoader';
+
+        // const renderTemplate = () => renderTemplateAction("/printers/showdane/todiv", dataContainerId, templateId, skeletonLoader);
+        //
+        // $("#applyFilter").on('click', renderTemplate);
+        //
+        // renderTemplate();
+        const onAddEditAction = (rowid) => {
+            const data = {literal}{keyname: 'rowid', keyVal: {/literal}rowid{literal}}{/literal}
+            renderTemplateWithDataAction("/notifications/addedit/todiv", data, templateId, skeletonLoader);
+        }
     </script>
