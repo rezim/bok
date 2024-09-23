@@ -133,4 +133,30 @@ class Controller
         header('X-PHP-Response-Code: 500', true, 500);
         die($message);
     }
+
+    public function fetchContent($filePath, $strParams, $postParams) {
+        if (file_exists($filePath)) {
+            $originalGet = $_GET;
+
+            if ($strParams !== null) {
+                parse_str($strParams, $params);
+//                parse_str($strPostParams, $postParams);
+
+                $_GET = array_merge($_GET, $params);
+                $_POST = array_merge($_POST, $postParams);
+            }
+
+            // Buforowanie wyjścia
+            ob_start();
+            include $filePath;
+            $content = ob_get_clean();
+
+            // Przywrócenie oryginalnych wartości $_GET
+            $_GET = $originalGet;
+
+            return $content;
+        } else {
+            return "Plik $filePath nie istnieje.";
+        }
+    }
 }

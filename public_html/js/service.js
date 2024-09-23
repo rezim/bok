@@ -117,3 +117,34 @@ const renderTemplateAction = (templateUrl, dataContainerId, templateContainerId,
         }
     });
 }
+
+const renderTemplateWithDataAction = (templateUrl, data, templateContainerId, skeletonLoaderId) => {
+    const templateContainer = getTemplateContainerById(templateContainerId);
+
+    if (!templateContainer) {
+        console.error(`Can't find template container. Template container: ${templateContainerId} NOT FOUND !!!`);
+        return;
+    }
+
+    const skeletonLoaderContainer = getTemplateContainerById(skeletonLoaderId);
+
+    $(skeletonLoaderContainer).show();
+    templateContainer.innerHTML = '';
+
+    $.ajax({
+        type: 'POST',
+        url: sciezka + templateUrl,
+        async: true,
+        data,
+        success: function (template) {
+            $(skeletonLoaderContainer).hide();
+            templateContainer.innerHTML = template;
+            // $(".tablesorter").tablesorter();
+            return false;
+        },
+        error: function (dane) {
+            templateContainer.innerHTML = "Nie można pobrać templatu.";
+            return false;
+        }
+    });
+}
