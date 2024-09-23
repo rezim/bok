@@ -84,7 +84,7 @@ const clearDataFromContainer = (containerId) => {
     const selectedData = Array.from(container.querySelectorAll('[data-clear-ref]'));
     selectedData.forEach(d => d.value = '');
 }
-const renderTemplateAction = (templateUrl, dataContainerId, templateContainerId, areDataSortable) => {
+const renderTemplateAction = (templateUrl, dataContainerId, templateContainerId, skeletonLoaderId) => {
     const dataContainer = getContainerById(dataContainerId);
 
     if (!dataContainer && dataContainerId) {
@@ -92,30 +92,9 @@ const renderTemplateAction = (templateUrl, dataContainerId, templateContainerId,
         return;
     }
 
-    const templateContainer = getTemplateContainerById(templateContainerId);
-
-    if (!templateContainer) {
-        console.error(`Can't find template container. Template container: ${templateContainerId} NOT FOUND !!!`);
-        return;
-    }
-
     const data = dataContainer ? getDataFromContainer(dataContainer) : {};
 
-    $.ajax({
-        type: 'POST',
-        url: sciezka + templateUrl,
-        async: true,
-        data,
-        success: function (template) {
-            templateContainer.innerHTML = template;
-            $(".tablesorter").tablesorter();
-            return false;
-        },
-        error: function (dane) {
-            templateContainer.innerHTML = "Nie można pobrać templatu.";
-            return false;
-        }
-    });
+    renderTemplateWithDataAction(templateUrl, data, templateContainerId, skeletonLoaderId);
 }
 
 const renderTemplateWithDataAction = (templateUrl, data, templateContainerId, skeletonLoaderId) => {
