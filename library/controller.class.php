@@ -134,13 +134,18 @@ class Controller
         die($message);
     }
 
-    public function fetchContent($filePath, $params) {
+    public function fetchContent($filePath, $strParams, $postParams) {
         if (file_exists($filePath)) {
             // Zapisanie oryginalnych wartości $_GET, aby móc je później przywrócić
             $originalGet = $_GET;
 
-            // Przekazanie nowych parametrów GET
-            $_GET = array_merge($_GET, $params);
+            if ($strParams !== null) {
+                parse_str($strParams, $params);
+//                parse_str($strPostParams, $postParams);
+                // Przekazanie nowych parametrów GET
+                $_GET = array_merge($_GET, $params);
+                $_POST = array_merge($_POST, $postParams);
+            }
 
             // Buforowanie wyjścia
             ob_start();
