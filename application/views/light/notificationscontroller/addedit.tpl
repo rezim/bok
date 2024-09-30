@@ -554,7 +554,8 @@
                                         <td colspan="2" style="text-align: right">
                                             <a id="replacePrinter" href="#" class="btn btn-outline-success active"
                                                role="button"
-                                               aria-pressed="true">
+                                               aria-pressed="true"
+                                            onclick="callServiceAction('/printers/replacePrinter/notemplate', 'replacePrinterContainer')">
                                                 <i class="fas fa-save"></i>&nbsp; Zapisz</a>
                                             <a id="showPrinterService" href="#" class="btn btn-outline-warning"
                                                role="button"
@@ -670,14 +671,14 @@
 
 <script>
 
-    const dataContainerId = 'replacePrinterContainer';
+    // const dataContainerId = 'replacePrinterContainer';
 
-    $("#saveNotification").on('click', () => {
-        zapiszNoti('0', '{$smarty.const.SCIEZKA}/notifications/save/notemplate');
-        return false;
-    });
+    // $("#saveNotification").on('click', () => {
+    //        zapiszNoti('0', '$smarty.const.SCIEZKA/notifications/save/notemplate');
+    //        return false;
+    // });
 
-    $("#replacePrinter").on('click', () => callServiceAction("/printers/replacePrinter/notemplate", dataContainerId));
+    // $("#replacePrinter").on('click', () => callServiceAction("/printers/replacePrinter/notemplate", dataContainerId));
 
 
     // $("#showPrinterService").on('click', () => {
