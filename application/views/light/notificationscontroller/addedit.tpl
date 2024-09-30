@@ -558,7 +558,7 @@
                                                 <i class="fas fa-save"></i>&nbsp; Zapisz</a>
                                             <a id="showPrinterService" href="#" class="btn btn-outline-warning"
                                                role="button"
-                                               aria-pressed="true">
+                                               aria-pressed="true" onclick="showPrinterService()">
                                                 <i class="fas fa-history"></i>&nbsp;Historia</a>
                                         </td>
                                     </tr>
@@ -680,27 +680,27 @@
     $("#replacePrinter").on('click', () => callServiceAction("/printers/replacePrinter/notemplate", dataContainerId));
 
 
-    $("#showPrinterService").on('click', () => {
-        const dataContainer = getContainerById(dataContainerId);
-        const agreement = dataContainer.querySelector('#umowadane')?.value;
-        const rowid_agreement = dataContainer.querySelector('#rowid_agreement')?.value;
-
-        $.colorbox
-        ({
-            height: 650 + 'px',
-            width: 1000 + 'px',
-            title: "Historia serwisu drukarek dla umowy : " + agreement,
-            data: {
-                rowid_agreement: rowid_agreement
-            },
-            href: sciezka + "/printers/service/todiv",
-            onClosed: function () {
-            },
-            onComplete: function () {
-                uprawnienia();
-            }
-        });
-    });
+    // $("#showPrinterService").on('click', () => {
+    //     const dataContainer = getContainerById(dataContainerId);
+    //     const agreement = dataContainer.querySelector('#umowadane')?.value;
+    //     const rowid_agreement = dataContainer.querySelector('#rowid_agreement')?.value;
+    //
+    //     $.colorbox
+    //     ({
+    //         height: 650 + 'px',
+    //         width: 1000 + 'px',
+    //         title: "Historia serwisu drukarek dla umowy : " + agreement,
+    //         data: {
+    //             rowid_agreement: rowid_agreement
+    //         },
+    //         href: sciezka + "/printers/service/todiv",
+    //         onClosed: function () {
+    //         },
+    //         onComplete: function () {
+    //             uprawnienia();
+    //         }
+    //     });
+    // });
 
 </script>
 

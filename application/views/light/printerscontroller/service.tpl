@@ -54,8 +54,8 @@
 
                     <td>{$item.ilosckolor_koniec}</td>
                     <td>{$item.ilosckolor_start}</td>
-                    <td>{$item.iloscskan_koniec}</td>
-                    <td>{$item.iloscskan_start}</td>
+                    <td>{if isset($item.iloscskan_koniec)}{$item.iloscskan_koniec}{/if}</td>
+                    <td>{if isset($item.iloscskan_start)}{$item.iloscskan_start}{/if}</td>
 
                     <td>{$item.date}</td>
 

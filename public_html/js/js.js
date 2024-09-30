@@ -2251,3 +2251,28 @@ const copyToClipboard = function(str) {
         return navigator.clipboard.writeText(str);
     return Promise.reject('The Clipboard API is not available.');
 };
+
+
+function showPrinterService() {
+    const dataContainerId = 'replacePrinterContainer';
+    const dataContainer = getContainerById(dataContainerId);
+    const agreement = dataContainer.querySelector('#umowadane')?.value;
+    const rowid_agreement = dataContainer.querySelector('#rowid_agreement')?.value;
+
+    $.colorbox
+    ({
+        height: 650 + 'px',
+        width: 1000 + 'px',
+        title: "Historia serwisu drukarek dla umowy : " + agreement,
+        data: {
+            rowid_agreement: rowid_agreement
+        },
+        href: sciezka + "/printers/service/todiv",
+        onClosed: function () {
+        },
+        onComplete: function () {
+            uprawnienia();
+        }
+    });
+
+}

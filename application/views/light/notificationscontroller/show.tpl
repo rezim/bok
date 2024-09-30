@@ -17,40 +17,45 @@
                     <div class="border-top mt-4 mb-2 otus-separator"></div>
                 {/if}
                 <div class="form-group">
-                <label for="txtfilterklient">Klient</label>
+                    <label for="txtfilterklient">Klient</label>
                 </div>
                 <div class="form-group">
-                <input type="text" id='txtfilterklient' class="form-control" aria-describedby="clientHelp">
-                    <small id="clientHelp" class="form-text text-muted"><i class="fas fa-info-circle"></i> Podaj nazwę klient.</small>
+                    <input type="text" id='txtfilterklient' class="form-control" aria-describedby="clientHelp">
+                    <small id="clientHelp" class="form-text text-muted"><i class="fas fa-info-circle"></i> Podaj nazwę
+                        klient.</small>
                 </div>
                 <div class="form-group">
-                <label for="txtfilternrseryjny">Nr seryjny</label>
+                    <label for="txtfilternrseryjny">Nr seryjny</label>
                 </div>
                 <div class="form-group">
-                <input type="text" id='txtfilternrseryjny' class="form-control" aria-describedby="modelHelp">
-                    <small id="clientHelp" class="form-text text-muted"><i class="fas fa-info-circle"></i> Podaj numer seryjny.</small>
+                    <input type="text" id='txtfilternrseryjny' class="form-control" aria-describedby="modelHelp">
+                    <small id="clientHelp" class="form-text text-muted"><i class="fas fa-info-circle"></i> Podaj numer
+                        seryjny.</small>
                 </div>
                 <div class="form-group">
-                <label for="txtfilternrzlecenia">Nr zlecenia</label>
+                    <label for="txtfilternrzlecenia">Nr zlecenia</label>
                 </div>
                 <div class="form-group">
-                <input type="text" id='txtfilternrzlecenia' class="form-control" aria-describedby="modelHelp">
-                    <small id="clientHelp" class="form-text text-muted"><i class="fas fa-info-circle"></i> Podaj numer zlecenia.</small>
+                    <input type="text" id='txtfilternrzlecenia' class="form-control" aria-describedby="modelHelp">
+                    <small id="clientHelp" class="form-text text-muted"><i class="fas fa-info-circle"></i> Podaj numer
+                        zlecenia.</small>
                 </div>
                 <div class="w-100"></div>
                 <div class="form-group">
-                <label for="txtfilterdataod">Data od</label>
+                    <label for="txtfilterdataod">Data od</label>
                 </div>
                 <div class="form-group">
-                <input type="text" id='txtfilterdataod' class="form-control" aria-describedby="modelHelp">
-                    <small id="clientHelp" class="form-text text-muted"><i class="fas fa-info-circle"></i> Podaj datę początkową.</small>
+                    <input type="text" id='txtfilterdataod' class="form-control" aria-describedby="modelHelp">
+                    <small id="clientHelp" class="form-text text-muted"><i class="fas fa-info-circle"></i> Podaj datę
+                        początkową.</small>
                 </div>
                 <div class="form-group">
-                <label for="txtfilterdatado">Data do</label>
+                    <label for="txtfilterdatado">Data do</label>
                 </div>
                 <div class="form-group">
-                <input type="text" id='txtfilterdatado' class="form-control" aria-describedby="modelHelp">
-                    <small id="clientHelp" class="form-text text-muted"><i class="fas fa-info-circle"></i> Podaj datę końcową.</small>
+                    <input type="text" id='txtfilterdatado' class="form-control" aria-describedby="modelHelp">
+                    <small id="clientHelp" class="form-text text-muted"><i class="fas fa-info-circle"></i> Podaj datę
+                        końcową.</small>
                 </div>
 
                 {foreach from=$statusZgloszenie item=item key=key}
@@ -60,14 +65,15 @@
                                 it should be changed to something more readable ...
                      *}
                     {if !array_key_exists('widok_przypisane', $smarty.session.przypisanemenu) || $item.nazwa != 'Zamknięte' }
-                    <div class="form-group mt-4">
-                        <input name='txtstatus' type="checkbox" id='txtstatus{$item.rowid}'
-                               {if $item.czydefault=='1'}checked{/if} aria-describedby="txtstatus{$item.rowid}Help">
-                        <label for='txtstatus{$item.rowid}'>
-                            {$item.nazwa}
-                        </label>
-                        <small id="txtstatus{$item.rowid}Help" class="form-text text-muted"><i class="fa fa-info-circle"></i> Pokaż zlecenia {$item.nazwa|lower} </small>
-                    </div>
+                        <div class="form-group mt-4">
+                            <input name='txtstatus' type="checkbox" id='txtstatus{$item.rowid}'
+                                   {if $item.czydefault=='1'}checked{/if} aria-describedby="txtstatus{$item.rowid}Help">
+                            <label for='txtstatus{$item.rowid}'>
+                                {$item.nazwa}
+                            </label>
+                            <small id="txtstatus{$item.rowid}Help" class="form-text text-muted"><i
+                                        class="fa fa-info-circle"></i> Pokaż zlecenia {$item.nazwa|lower} </small>
+                        </div>
                     {/if}
                 {/foreach}
 
@@ -157,3 +163,4 @@
             renderTemplateWithDataAction("/notifications/addedit/todiv", data, templateId, skeletonLoader);
         }
     </script>
+
