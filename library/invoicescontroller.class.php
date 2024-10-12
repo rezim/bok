@@ -83,7 +83,15 @@ class InvoicesController extends Controller
             . '&order=issue_date'
             . $additionalFilters;
 
-        return getResultsByUrlQuery($url);
+        $invoices = getResultsByUrlQuery($url);
+
+        foreach ($invoices as &$invoice) {
+            if ($invoice['buyer_tax_no'] === '' && $invoice['buyer_name'] === 'Inna Petrianyk') {
+                $invoice['buyer_tax_no'] = '89102113580';
+            }
+        }
+
+        return $invoices;
     }
 
     function addInvoice($kind, $number, $sellDate, $issueDate, $paymentTo, $buyerName, $buyerTaxNo, $buyerEmail,
@@ -93,31 +101,64 @@ class InvoicesController extends Controller
         $ch = curl_init();
         $url = FAKTUROWNIA_ENDPOINT . '/invoices.json';
 
-        $client = $this->getClientByTaxNo($buyerTaxNo);
+        if ($this->isNIP($buyerTaxNo)) {
 
-        $data = array(
-            "api_token" => FAKTUROWNIA_APITOKEN,
-            "invoice" => array(
-                "kind" => $kind,
-                "number" => $number,
-                "sell_date" => $sellDate,
-                "issue_date" => $issueDate,
-                "payment_to" => $paymentTo,
-                "buyer_name" => $buyerName,
-                "buyer_tax_no" => $buyerTaxNo,
-                "buyer_email" => $buyerEmail,
-                "buyer_post_code" => $buyerPostCode,
-                "buyer_city" => $buyerCity,
-                "buyer_street" => $buyerStreet,
-                "recipient_id" => $recipientId,
-                "positions" => $positions,
-                "show_discount" => $showDiscount,
-                "internal_note" => $internalNote,
-                "additional_info" => $additionalInfo,
-                "additional_info_desc" => $additionalInfoDesc,
-                "client_id" => $client[0]['id']
-            )
-        );
+            $client = $this->getClientByTaxNo($buyerTaxNo);
+
+            $data = array(
+                "api_token" => FAKTUROWNIA_APITOKEN,
+                "invoice" => array(
+                    "kind" => $kind,
+                    "number" => $number,
+                    "sell_date" => $sellDate,
+                    "issue_date" => $issueDate,
+                    "payment_to" => $paymentTo,
+                    "buyer_name" => $buyerName,
+                    "buyer_tax_no" => $buyerTaxNo,
+                    "buyer_email" => $buyerEmail,
+                    "buyer_post_code" => $buyerPostCode,
+                    "buyer_city" => $buyerCity,
+                    "buyer_street" => $buyerStreet,
+                    "recipient_id" => $recipientId,
+                    "positions" => $positions,
+                    "show_discount" => $showDiscount,
+                    "internal_note" => $internalNote,
+                    "additional_info" => $additionalInfo,
+                    "additional_info_desc" => $additionalInfoDesc,
+                    "client_id" => $client[0]['id']
+                )
+            );
+        } else if ($this->isValidPesel($buyerTaxNo)) {
+            $nameParts = explode(" ", $buyerName);
+            $buyer_first_name = $nameParts[0];
+            $buyer_last_name = $nameParts[1] ?? '';
+
+            $data = array(
+                "api_token" => FAKTUROWNIA_APITOKEN,
+                "invoice" => array(
+                    "kind" => $kind,
+                    "number" => $number,
+                    "sell_date" => $sellDate,
+                    "issue_date" => $issueDate,
+                    "payment_to" => $paymentTo,
+                    "buyer_first_name" => $buyer_first_name,
+                    "buyer_last_name" => $buyer_last_name,
+                    "buyer_email" => $buyerEmail,
+                    "buyer_post_code" => $buyerPostCode,
+                    "buyer_city" => $buyerCity,
+                    "buyer_street" => $buyerStreet,
+                    "recipient_id" => $recipientId,
+                    "positions" => $positions,
+                    "show_discount" => $showDiscount,
+                    "internal_note" => $internalNote,
+                    "additional_info" => $additionalInfo,
+                    "additional_info_desc" => $additionalInfoDesc
+                )
+            );
+        } else {
+            curl_close($ch);
+            return null;
+        }
 
         $data_string = json_encode($data);
         curl_setopt($ch, CURLOPT_URL, $url);
@@ -277,6 +318,24 @@ class InvoicesController extends Controller
         }
 
         return false;
+    }
+
+    function isValidPesel($pesel) {
+
+        if (strlen($pesel) != 11 || !ctype_digit($pesel)) {
+            return false;
+        }
+
+        $weights = [1, 3, 7, 9, 1, 3, 7, 9, 1, 3];
+
+        $controlSum = 0;
+        for ($i = 0; $i < 10; $i++) {
+            $controlSum += $weights[$i] * $pesel[$i];
+        }
+
+        $controlDigit = (10 - ($controlSum % 10)) % 10;
+
+        return $controlDigit == $pesel[10];
     }
 }
 

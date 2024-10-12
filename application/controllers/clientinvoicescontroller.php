@@ -111,19 +111,26 @@ class clientinvoicesController extends InvoicesController
 
     function addnewinvoice()
     {
-        $required = ['kind', 'sell_date', 'issue_date', 'payment_to', 'buyer_name', 'buyer_tax_no',
+        $required = ['kind', 'sell_date', 'issue_date', 'payment_to',
             'buyer_email', 'buyer_post_code', 'buyer_city', 'buyer_street', 'positions',
-            'show_discount', 'internal_note', 'additional_info', 'additional_info_desc'];
+            'show_discount', 'internal_note', 'additional_info', 'additional_info_desc', 'buyer_tax_no', 'buyer_name'];
 
         if ($this->validatePostParams($required)) {
-            echo json_encode(
-                $this->addInvoice(
-                    $_POST['kind'], $_POST['number'], $_POST['sell_date'], $_POST['issue_date'], $_POST['payment_to'], $_POST['buyer_name'],
-                    $_POST['buyer_tax_no'], $_POST['buyer_email'], $_POST['buyer_post_code'], $_POST['buyer_city'], $_POST['buyer_street'],
-                    $_POST['recipient_id'], $_POST['positions'], $_POST['show_discount'], $_POST['internal_note'], $_POST['additional_info'],
-                    $_POST['additional_info_desc'])
-            );
+
+            $invoice = $this->addInvoice(
+                $_POST['kind'], $_POST['number'], $_POST['sell_date'], $_POST['issue_date'], $_POST['payment_to'], $_POST['buyer_name'],
+                $_POST['buyer_tax_no'], $_POST['buyer_email'], $_POST['buyer_post_code'], $_POST['buyer_city'], $_POST['buyer_street'],
+                $_POST['recipient_id'], $_POST['positions'], $_POST['show_discount'], $_POST['internal_note'], $_POST['additional_info'],
+                $_POST['additional_info_desc']);
+
+            if ($invoice) {
+                echo json_encode($invoice);
+            } else {
+                echo "Podany identyfikator klienta nie jest NIP-em ani PESELEM: " . $_POST['buyer_tax_no'];
+                http_response_code(400);
+            }
         }
+
     }
 
     function addinvoicepayment()
@@ -192,6 +199,7 @@ class clientinvoicesController extends InvoicesController
         }
         echo json_encode($this->resolveAllInterestNotes());
     }
+
 //    function getallinterestnotes()
 //    {
 //
@@ -443,11 +451,11 @@ class clientinvoicesController extends InvoicesController
 
         $ROW_CLASS_NAME = 'className';
 
-        $columnNames =  array_filter(array_keys($accountingSettlements[0]), fn($key) => $key !== $ROW_CLASS_NAME);
+        $columnNames = array_filter(array_keys($accountingSettlements[0]), fn($key) => $key !== $ROW_CLASS_NAME);
 
         $columnSummaries = array_map(fn($columnName) => array_sum(array_map(fn($val) => is_numeric($val) ? $val : 0, array_column($accountingSettlements, $columnName))), $columnNames);
 
-        $columnSummaries[count($columnSummaries)-2] = round( $columnSummaries[count($columnSummaries)-3] - $columnSummaries[count($columnSummaries)-4], 2);
+        $columnSummaries[count($columnSummaries) - 2] = round($columnSummaries[count($columnSummaries) - 3] - $columnSummaries[count($columnSummaries) - 4], 2);
 
         $smarty->assign('columnNames', $columnNames);
         $smarty->assign('columnSummaries', $columnSummaries);
