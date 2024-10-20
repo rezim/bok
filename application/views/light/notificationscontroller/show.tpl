@@ -94,6 +94,11 @@
         </main>
 
     </div>
+    <script>
+        function renderNotification(rowid) {
+
+        }
+    </script>
     <script type="text/javascript">
         $('#txtfilterklient').unbind("keypress");
         $('#txtfilterklient').keypress(function (event) {
@@ -141,26 +146,12 @@
         {if isset($queryString) && $queryString[0]=='addeditnoti'}
         $("#divFilterNoti").hide();
         showNewNotiAdd('{$queryString[1]}', '{$queryString[2]}', '{$queryString[3]}')
+        {elseif isset($queryString) && isset($queryString[0])}
+            onAddEditNotificationAction({$queryString[0]});
         {else}
         $("#divFilterNoti").show();
         showListOfNotifications();
         {/if}
     </script>
-
-
-    <script>
-        const dataContainerId = 'dataFilter';
-        const templateId = 'divRightCenter';
-        const skeletonLoader = 'listSkeletonLoader';
-
-        // const renderTemplate = () => renderTemplateAction("/printers/showdane/todiv", dataContainerId, templateId, skeletonLoader);
-        //
-        // $("#applyFilter").on('click', renderTemplate);
-        //
-        // renderTemplate();
-        const onAddEditAction = (rowid) => {
-            const data = {literal}{keyname: 'rowid', keyVal: {/literal}rowid{literal}}{/literal}
-            renderTemplateWithDataAction("/notifications/addedit/todiv", data, templateId, skeletonLoader);
-        }
-    </script>
+    <script type="text/javascript" src="{$smarty.const.SCIEZKA}/js/notifications.js?{$smarty.const.APPVERSION}"></script>
 

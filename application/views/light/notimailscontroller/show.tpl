@@ -1,3 +1,4 @@
+{*TO [TR] probably we can remove *}
 <fieldset class="fieldsetPowiazane">
                 <legend>
                      <img wymaganylevel='w' wymaganyzrobiony='0' src="{$smarty.const.SCIEZKA}/{$smarty.const.SMARTVERSION}/img/add.png" alt="Dodaj nowy" title="Dodaj nowy" class='imgLink' style='margin-left:10px;margin-right: 10px;' 

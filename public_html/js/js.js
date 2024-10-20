@@ -1920,8 +1920,7 @@ function showClientPayments() {
     $.ajax({
         url: sciezka + "/clientpayments/showdane/todiv",
         type: 'POST',
-        data: {
-        },
+        data: {},
         success: function (data) {
             objCenter.innerHTML = data;
             $(objCenter).animate({opacity: 1}, 1500);
@@ -2035,6 +2034,20 @@ function showListOfNotifications() {
         uprawnienia();
     });
     return false;
+}
+
+async function onAddEditNotificationAction(rowid) {
+    const dataContainerId = 'dataFilter';
+    const templateId = 'divRightCenter';
+    const skeletonLoader = 'listSkeletonLoader';
+
+    const data =
+        {
+            keyname: 'rowid', keyVal: rowid
+        }
+    await renderTemplateWithDataAction("/notifications/addedit/todiv", data, templateId, skeletonLoader);
+
+    $('.selectpicker').selectpicker();
 }
 
 function showStatistics() {
@@ -2246,7 +2259,8 @@ function openModal(src, data = {}) {
         modal.modal({keyboard: true});
     });
 }
-const copyToClipboard = function(str) {
+
+const copyToClipboard = function (str) {
     if (navigator && navigator.clipboard && navigator.clipboard.writeText)
         return navigator.clipboard.writeText(str);
     return Promise.reject('The Clipboard API is not available.');

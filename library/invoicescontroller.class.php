@@ -2,7 +2,7 @@
 
 class InvoicesController extends Controller
 {
-    use ExternalClientsTrait, PaymentsTrait, InterestNotesTrait;
+    use ExternalClientsTrait, PaymentsTrait, InterestNotesTrait, WarehouseTrait;
 
     function __construct($model, $controller, $action, $queryString)
     {

@@ -104,6 +104,28 @@ class notificationsController extends InvoicesController
                 }
             }
 
+
+            $notificationId = $_POST['keyVal'];
+
+            $documents = $this->getDocumentsByNotification((string) $notificationId);
+
+            $allWarehouses = $this->getAllWarehouses();
+            $warehouseMap = array_combine(
+                array_column($allWarehouses, 'id'),
+                array_column($allWarehouses, 'name')
+            );
+
+            $filtered = array_filter($allWarehouses, function ($element) {
+                return $element['name'] === 'FF';
+            });
+
+            $ids = array_column($filtered, 'id');
+
+            $smarty->assign('allProducts', $this->getAllProducts($ids[0]));
+            $smarty->assign('allWarehouses', $allWarehouses);
+            $smarty->assign('warehouseMap', $warehouseMap);
+            $smarty->assign('documents', $documents);
+
             parent::addedit();
 
         } else {
@@ -163,7 +185,7 @@ class notificationsController extends InvoicesController
         $wynik = parent::save();
 //TODO TR: confirm if this is working
 //        if ($wynik['rows_affected'] !== 0) {
-            $this->updateHeskNotification($wynik['keyval']);
+        $this->updateHeskNotification($wynik['keyval']);
 //        }
 
         if ((string)$this->$nameOfModel->_filedsToEdit['wykonuje']['value'] != '0' && (string)$this->$nameOfModel->_filedsToEdit['wykonuje']['value'] != '' && $czyjuzbylo == 0) {
@@ -223,19 +245,6 @@ class notificationsController extends InvoicesController
                     }
                     unset($printer);
                 }
-// TODO TR: no confirmation emails from BOK
-//                $mailing = new mailing();
-//                $mailing->sendMailPrzydzielonoZlecenie($wynik['keyval'], $dataMail[0]['mail'], nl2br($this->$nameOfModel->_filedsToEdit['tresc_wiadomosci']['value']),
-//                    $clientName . " [Ticket#{$wynik['keyval']}] " . $this->$nameOfModel->_filedsToEdit['temat']['value'],
-//                    $clientName,
-//                    $this->$nameOfModel->_filedsToEdit['email']['value'],
-//                    $this->$nameOfModel->_filedsToEdit['osobazglaszajaca']['value'],
-//                    $this->$nameOfModel->_filedsToEdit['nr_telefonu']['value'], $priority,
-//                    $modelurzadzenia, $nrseryjny, $lokalizacja, $uwagi, $przebieg, $stantonera, $adresip, $firmware, $this->$nameOfModel->_filedsToEdit['data_planowana']['value'],
-//                    $printerLogs,
-//                    $dataZalacznikiFirst
-//                );
-//                unset($mailing);
             }
 
 
@@ -268,16 +277,6 @@ class notificationsController extends InvoicesController
                 unset($printer);
 
             }
-
-// TODO TR: no confirmation emails from BOK
-//            if ($this->$nameOfModel->_filedsToEdit['email']['value'] != '') {
-//
-//
-//                $mailing = new mailing();
-//                $mailing->sendMailZarejestrowano($wynik['keyval'], $this->$nameOfModel->_filedsToEdit['email']['value'], nl2br($this->$nameOfModel->_filedsToEdit['tresc_wiadomosci']['value']),
-//                    "[Ticket#{$wynik['keyval']}] " . $this->$nameOfModel->_filedsToEdit['temat']['value']);
-//                unset($mailing);
-//            }
         }
 
         echo(json_encode($wynik));
@@ -326,7 +325,8 @@ class notificationsController extends InvoicesController
         }
     }
 
-    function updateHeskNotification($notificationRowId) {
+    function updateHeskNotification($notificationRowId)
+    {
         $notification = $this->notification->getNotificationByRowid2($notificationRowId)[0];
 
         $serial = $notification['serial'];
@@ -349,6 +349,29 @@ class notificationsController extends InvoicesController
                         osoba kotaktowa: {$device['osobakontaktowa']} <br/>";
 
             $this->notification->updateHesk($trackId, $message);
+        }
+    }
+
+
+    function addwarehousedocument()
+    {
+        $required = ['warehouse_id', 'product_id', 'quantity', 'notification_id'];
+        if ($this->validatePostParams($required)) {
+            echo json_encode($this->addEditDocument($_POST['warehouse_id'], $_POST['notification_id'], $_POST['product_id'], $_POST['quantity']));
+        }
+    }
+
+    function getproductsinwarehouse()
+    {
+        if ($_POST['warehouseid']) {
+
+            echo json_encode($this->getAllProducts($_POST['warehouseid']));
+        }
+    }
+
+    function removewarehousedocument() {
+        if ($_POST['documentId'] && $_POST['documentNumber']) {
+            echo json_encode($this->removeDocument($_POST['documentId'], $_POST['documentNumber']));
         }
     }
 

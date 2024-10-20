@@ -72,7 +72,11 @@ abstract class Smarty_Internal_CompileBase
                 }
                 // named attribute
             } else {
-                $kv = each($mixed);
+//                $kv = each($mixed);
+                $kv = null;
+                foreach ($mixed as $inner_key => $inner_value) {
+                    $kv = ['key' => $inner_key, 'value' => $inner_value];
+                }
                 // option flag?
                 if (in_array($kv['key'], $this->option_flags)) {
                     if (is_bool($kv['value'])) {

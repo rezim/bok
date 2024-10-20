@@ -37,7 +37,7 @@
         {foreach from=$dataNoti item=item key=key name=loopek}
             <tr>
                 <th>{$smarty.foreach.loopek.index+1}</th>
-                <td>{$item.rowid}</td>
+                <td><a href="/bok/notifications/show/{$item.rowid}">{$item.rowid}</a></td>
                 <td><a target="_blank" href="https://helpdesk.otus.pl/admin/admin_ticket.php?track={$item.hesk_trackid}">{$item.hesk_trackid}</a></td>
                 <td {if $item.rowid_client!=''}onClick='showNewClientAdd("{$item.rowid_client}")'{/if}>
                     {$item.nazwakrotka|escape:'htmlall'}
@@ -60,7 +60,7 @@
                             {/if}
                         </button>
                         <div class="dropdown-menu dropdown-menu-right" aria-labelledby="dropdownMenuLink">
-                            <a class="dropdown-item" href="#" onClick='onAddEditAction("{$item.rowid}")'><i class="fas fa-edit"></i> Edycja</a>
+                            <a class="dropdown-item" href="#" onClick='onAddEditNotificationAction("{$item.rowid}")'><i class="fas fa-edit"></i> Edycja</a>
                             {if $item.serial!=''}
                                 <div class="border-top my-1"></div>
                                 <a class="dropdown-item" href="#" onClick='pokazLogi("{$item.serial}")'><i class="fas fa-history"></i>&nbsp;&nbsp;Pokaż logi</a>

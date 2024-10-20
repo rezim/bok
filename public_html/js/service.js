@@ -1,13 +1,5 @@
-const callServiceAction = (serviceUrl, dataContainerId, success = successCallback, error = errorCallback) => {
-    const dataContainer = getContainerById(dataContainerId);
-
-    if (!dataContainer && dataContainerId) {
-        console.error(`Can't call service action. Form container: ${dataContainerId} NOT FOUND !!!`);
-        return;
-    }
-    const data = dataContainer ? getDataFromContainer(dataContainer) : {};
-
-    $.ajax({
+const callServiceWithDataAction = (serviceUrl, data, dataContainerId, success = successCallback, error = errorCallback) => {
+    return $.ajax({
         type: 'POST',
         url: sciezka + serviceUrl,
         async: true,
@@ -33,6 +25,18 @@ const callServiceAction = (serviceUrl, dataContainerId, success = successCallbac
             return false;
         }
     });
+}
+
+const callServiceAction = (serviceUrl, dataContainerId, success = successCallback, error = errorCallback) => {
+    const dataContainer = getContainerById(dataContainerId);
+
+    if (!dataContainer && dataContainerId) {
+        console.error(`Can't call service action. Form container: ${dataContainerId} NOT FOUND !!!`);
+        return;
+    }
+    const data = dataContainer ? getDataFromContainer(dataContainer) : {};
+
+    return callServiceWithDataAction(serviceUrl, data, dataContainerId, success, error);
 }
 const successCallback = (success, dataFormId, timeout = 3000) => {
     const defaultSuccessMessage = 'Dane zapisane poprawnie.';
@@ -97,7 +101,7 @@ const renderTemplateAction = (templateUrl, dataContainerId, templateContainerId,
     renderTemplateWithDataAction(templateUrl, data, templateContainerId, skeletonLoaderId);
 }
 
-const renderTemplateWithDataAction = (templateUrl, data, templateContainerId, skeletonLoaderId) => {
+const renderTemplateWithDataAction = async (templateUrl, data, templateContainerId, skeletonLoaderId) => {
     const templateContainer = getTemplateContainerById(templateContainerId);
 
     if (!templateContainer) {
@@ -110,7 +114,7 @@ const renderTemplateWithDataAction = (templateUrl, data, templateContainerId, sk
     $(skeletonLoaderContainer).show();
     templateContainer.innerHTML = '';
 
-    $.ajax({
+    return $.ajax({
         type: 'POST',
         url: sciezka + templateUrl,
         async: true,

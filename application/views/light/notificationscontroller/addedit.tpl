@@ -402,18 +402,6 @@
                                             {/if}
                                     {/strip}</textarea>
                                     {/if}
-                                    {*                                    {if $item.type=='consumables'}*}
-                                    {*                                        {if isset($consumablesData)}*}
-                                    {*                                            {$consumablesData|print_r}*}
-                                    {*                                        {/if}*}
-
-                                    {*                                        {if isset($item.arr)}*}
-                                    {*                                            {${$item.arr}|print_r}*}
-                                    {*                                        {/if}*}
-                                    {*                                            {foreach from=${$item.arr} item=consumable}*}
-                                    {*                                                <div>{$consumable.quantity} x {$consumable.name}</div>*}
-                                    {*                                            {/foreach}*}
-                                    {*                                    {/if}*}
                                     {if $item.type=='link' && $item.readonly=='0'}
                                         <span id='{$item.idzewnetrznespan}'
                                               style="display:none;">{if isset($dane[0][$item.baza]) && (string)$dane[0][$item.baza]!=''}{$dane[0][$item.baza]}{/if}</span>
@@ -432,14 +420,6 @@
                         {/if}
                     {/foreach}
 
-                    {*                    <tr>*}
-                    {*                        <td colspan="2">*}
-                    {*                            <div ng-controller="NotificationCtrl as ctrl" ng-cloak>*}
-                    {*                                <button ng-click="ctrl.openManageConsumablesModal('{$agreementSerial}')">MATERIALY</button>*}
-                    {*                            </div>*}
-                    {*                        </td>*}
-                    {*                    </tr>*}
-
                     </tbody>
                 </table>
 
@@ -452,12 +432,108 @@
     {else}
         <div class="container text-right" wymaganylevel='w' wymaganyzrobiony='0'>
             <a href="#" id="saveNotification" class="btn btn-outline-success active" role="button"
-               aria-pressed="true" onclick="zapiszNoti('0', '{$smarty.const.SCIEZKA}/notifications/save/notemplate');return false;"><i
+               aria-pressed="true"
+               onclick="zapiszNoti('0', '{$smarty.const.SCIEZKA}/notifications/save/notemplate');return false;"><i
                         class="fas fa-save"></i>&nbsp; Zapisz</a>
-            <a href="#" class="btn btn-outline-secondary" role="button" onclick="showListOfNotifications();return false;">Anuluj</a>
+            <a href='{$smarty.const.SCIEZKA}/notifications/show' class="btn btn-outline-secondary"
+               role="button">Anuluj</a>
         </div>
     {/if}
 
+    <hr/>
+
+    <div id="warehouseDocuments" data-form>
+
+        <div class="container">
+            <div id='actionok' class="actionok alert alert-success" role="alert">
+                <strong>Dane zapisane poprawnie</strong>
+            </div>
+            <div id='actionerror' class="actionerror alert alert-danger" role="alert">
+                <strong>Błąd zapisu danych.</strong>
+            </div>
+        </div>
+
+        Magazyn:
+        <select id="warehouse_id" data-ref
+                onchange="onChangeWarehouse(this.value)">
+            {foreach from=$allWarehouses item=warehouse key=key}
+                <option value="{$warehouse.id}" {if $warehouse.name === 'FF'}selected{/if}>{$warehouse.name}</option>
+            {/foreach}
+        </select>
+
+        Produkt:
+        <select id="product_id" data-ref
+                onchange="onSelectProduct(event)"
+                class="form-control form-control-md selectpicker"
+                data-size="10"
+                data-width="340px"
+                data-none-selected-text="Nie wybrano żadnego produktu"
+                data-none-results-text="Nie znaleziono wyników dla podanego filtra"
+                data-live-search-placeholder="Wpisz filtr aby zawęzić listę produktów"
+                data-live-search="true">
+            <option value="" selected></option>
+
+            {foreach from=$allProducts item=product key=key}
+                <option data-quantity="{$product.warehouse_quantity|number_format:0}" value="{$product.id}">{$product.name} - ({$product.warehouse_quantity|number_format:0})</option>
+            {/foreach}
+        </select>
+        Ilość: <input id="quantity" data-ref
+                     type="number" min="1" max="0"/>
+
+        <input id="notification_id" data-ref value="{$keyVal}" type="hidden">
+
+        <a id="addRW" href="#" class="btn btn-outline-success active"
+           role="button"
+           aria-pressed="true"
+           onclick="addEditWarehouseDocument({$keyVal})">
+            <i class="fas fa-save"></i>&nbsp; Dodaj Pozycję</a>
+
+        <div class="container">
+            {if empty($documents)}
+                Aktualnie nie ma żadnych dokumentów RW dla tego zlecenia.
+            {else}
+                <div class="row font-weight-bold">
+                    <div class="col-2">Magazyn</div>
+                    <div class="col-2">Numer</div>
+                    <div class="col-2">Data Ost. Zapisu</div>
+                    <div class="col-2">Ilość</div>
+                    <div class="col-2">Netto</div>
+                    <div class="col-2"></div>
+                </div>
+                {foreach from=$documents item=document key=key}
+                    <div class="row align-items-start">
+                        <div class="col">
+                            {$warehouseMap[$document.warehouse_id]}
+                        </div>
+                        <div class="col">
+                            <a target="_blank"
+                               href="https://faktury.otus.pl/warehouse_documents/{$document.id}">{$document.number}</a>
+                        </div>
+                        <div class="col">
+                            {$document.updated_at|date_format:"%Y-%m-%d %H:%M"}
+                        </div>
+                        <div class="col">
+                            {if isset($document.additional_fields.quantity)}{$document.additional_fields.quantity}{else}-{/if}
+                        </div>
+                        <div class="col">
+                            {$document.purchase_price_net}
+                        </div>
+                        <div class="col d-flex">
+{*                            <a href="#" class="btn btn-outline-danger d-inline-block" role="button"><i class="fas fa-save"></i>&nbsp; Generuj Przesyłkę</a>&nbsp;*}
+                            <a href="#"
+                               class="btn btn-outline-danger d-inline-block"
+                               role="button"
+                               aria-pressed="true" onclick="removeWarehouseDocument('{$document.id}', '{$document.number}', {$keyVal})">
+                                <i class="fas fa-times"></i>&nbsp; Usuń</a>
+                        </div>
+                    </div>
+                {/foreach}
+            {/if}
+        </div>
+        {* TODO: Przerobić mechanizm raportowania ilości wysłanych i odebranych tonerów od klienta *}
+    </div>
+
+    <hr/>
     <div id="accordion" class="mt-5 mb-3 container">
         {if isset($dane) }
             <div class="card" id="replacePrinterContainer" data-form>
@@ -470,7 +546,8 @@
                 <div class="card-header" id="headingOne">
                     <h5 class="mb-0">
                         <button class="btn collapsed" data-toggle="collapse" data-target="#collapseOne"
-                                aria-expanded="false" aria-controls="collapseOne" onclick="gotoBottom('headingOne')">
+                                aria-expanded="false" aria-controls="collapseOne"
+                                onclick="gotoBottom('headingOne')">
                             <i class="fa"
                                aria-hidden="true"></i>&nbsp;Wymiana {if $dane[0]['serial'] != $agreementSerial}Drukarki{else}Formatera{/if}
                         </button>
@@ -492,7 +569,8 @@
                                 <table class="table bok-two-column-layout">
                                     <tr>
                                         <th class='tdOpis thead-dark' scope="row"><span>C/B Koniec:</span></th>
-                                        <td class='tdWartosc'><input class="form-control" id="counterEnd" type="text"
+                                        <td class='tdWartosc'><input class="form-control" id="counterEnd"
+                                                                     type="text"
                                                                      data-ref/>
                                         </td>
                                     </tr>
@@ -555,7 +633,7 @@
                                             <a id="replacePrinter" href="#" class="btn btn-outline-success active"
                                                role="button"
                                                aria-pressed="true"
-                                            onclick="callServiceAction('/printers/replacePrinter/notemplate', 'replacePrinterContainer')">
+                                               onclick="callServiceAction('/printers/replacePrinter/notemplate', 'replacePrinterContainer')">
                                                 <i class="fas fa-save"></i>&nbsp; Zapisz</a>
                                             <a id="showPrinterService" href="#" class="btn btn-outline-warning"
                                                role="button"
@@ -572,136 +650,98 @@
                 </div>
             </div>
         {/if}
-        {if isset($keyVal) && $keyVal!=0}
-            <div class="card">
-                <div class="card-header" id="headingTwo">
-                    <h5 class="mb-0">
-                        <button class="btn collapsed" data-toggle="collapse" data-target="#collapseTwo"
-                                aria-expanded="false" aria-controls="collapseTwo">
-                            <i class="fa" aria-hidden="true"></i>&nbsp;Dodaj pliki
-                        </button>
-                    </h5>
-                </div>
-                <div id="collapseTwo" class="collapse" aria-labelledby="headingTwo" data-parent="#accordion">
-                    <div class="card-body">
-                        <div class="dropzone" id="divdropzone">
+    </div>
 
-                        </div>
-                        <script type="text/javascript">
-                            createDropZone('div#divdropzone', '{$keyVal}', 'notifications', '{$smarty.const.ADRESHTTPS}/public_html', '{$smarty.const.SCIEZKA}');
-                        </script>
-                    </div>
-                </div>
-            </div>
-        {/if}
-        <div class="card">
-            <div class="card-header" id="headingThree">
-                <h5 class="mb-0">
-                    <button class="btn collapsed" data-toggle="collapse" data-target="#collapseThree"
-                            aria-expanded="false" aria-controls="collapseThree">
-                        <i class="fa" aria-hidden="true"></i>&nbsp;Maile powiązane
-                    </button>
-                </h5>
-            </div>
-            <div id="collapseThree" class="collapse" aria-labelledby="headingThree" data-parent="#accordion">
-                <div class="card-body">
-                    <div id="divMailePowiazane">
 
-                    </div>
+    <div class="modal fade" id="selectNotificationData" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel"
+         aria-hidden="true">
+        <div class="modal-dialog modal-xl" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="exampleModalLongTitle">Wybierz opcję z listy</h5>
+                </div>
+                <div class="modal-body">
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Anuluj</button>
                 </div>
             </div>
         </div>
     </div>
-</div>
 
-<!-- Modal -->
-<div class="modal fade" id="selectNotificationData" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel"
-     aria-hidden="true">
-    <div class="modal-dialog modal-xl" role="document">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h5 class="modal-title" id="exampleModalLongTitle">Wybierz opcję z listy</h5>
-            </div>
-            <div class="modal-body">
-            </div>
-            <div class="modal-footer">
-                <button type="button" class="btn btn-secondary" data-dismiss="modal">Anuluj</button>
-            </div>
-        </div>
-    </div>
-</div>
-
-<script type="text/javascript">
-    const clientIdSelector = "#idclientspan";
-    const clientIdHolder = $(clientIdSelector);
-    if (clientIdHolder.text() !== '') {
-        showNotPaidInvoices(clientIdHolder.text(), '#invoicesContainer');
-    }
-
-    showMaile();
-
-    $("#replacementDate").focus(function () {
-        window.scrollTo(0, 0);
-    });
-
-    $("#replacementDate").datetimepicker($.datepicker.regional['pl'], {
-        dateFormat: "yy-mm-dd", changeMonth: true, timeFormat: 'HH:mm', stepMinute: 10,
-        changeYear: true
-    });
-    $("#data_planowana").datetimepicker($.datepicker.regional['pl'], {
-        dateFormat: "yy-mm-dd", changeMonth: true, timeFormat: 'HH:mm', stepMinute: 10,
-        changeYear: true
-    });
-
-    const toners = ["black", "cyan", "yellow", "magenta"].map(color => '#trtoner_' + color).join(',');
-
-    const updateTonersVisibility = () => {
-        const selectedType = $("#rowid_type").find(":selected").text();
-        if (selectedType === "Materiały eksploatacyjne" || selectedType === "Zwrot Materiałów") {
-            $(toners).show();
-        } else {
-            $(toners).hide();
+    <script type="text/javascript">
+        const clientIdSelector = "#idclientspan";
+        const clientIdHolder = $(clientIdSelector);
+        if (clientIdHolder.text() !== '') {
+            showNotPaidInvoices(clientIdHolder.text(), '#invoicesContainer');
         }
-    };
 
-    $("#rowid_type").change(updateTonersVisibility);
+        showMaile();
 
-    updateTonersVisibility();
-</script>
+        $("#replacementDate").focus(function () {
+            window.scrollTo(0, 0);
+        });
 
-<script>
+        $("#replacementDate").datetimepicker($.datepicker.regional['pl'], {
+            dateFormat: "yy-mm-dd", changeMonth: true, timeFormat: 'HH:mm', stepMinute: 10,
+            changeYear: true
+        });
+        $("#data_planowana").datetimepicker($.datepicker.regional['pl'], {
+            dateFormat: "yy-mm-dd", changeMonth: true, timeFormat: 'HH:mm', stepMinute: 10,
+            changeYear: true
+        });
 
-    // const dataContainerId = 'replacePrinterContainer';
+        const toners = ["black", "cyan", "yellow", "magenta"].map(color => '#trtoner_' + color).join(',');
 
-    // $("#saveNotification").on('click', () => {
-    //        zapiszNoti('0', '$smarty.const.SCIEZKA/notifications/save/notemplate');
-    //        return false;
-    // });
+        const updateTonersVisibility = () => {
+            const selectedType = $("#rowid_type").find(":selected").text();
+            if (selectedType === "Materiały eksploatacyjne" || selectedType === "Zwrot Materiałów") {
+                $(toners).show();
+            } else {
+                $(toners).hide();
+            }
+        };
 
-    // $("#replacePrinter").on('click', () => callServiceAction("/printers/replacePrinter/notemplate", dataContainerId));
+        $("#rowid_type").change(updateTonersVisibility);
+
+        updateTonersVisibility();
+    </script>
+
+    <script>
+
+        // const dataContainerId = 'replacePrinterContainer';
+
+        // $("#saveNotification").on('click', () => {
+        //        zapiszNoti('0', '$smarty.const.SCIEZKA/notifications/save/notemplate');
+        //        return false;
+        // });
+
+        // $("#replacePrinter").on('click', () => callServiceAction("/printers/replacePrinter/notemplate", dataContainerId));
 
 
-    // $("#showPrinterService").on('click', () => {
-    //     const dataContainer = getContainerById(dataContainerId);
-    //     const agreement = dataContainer.querySelector('#umowadane')?.value;
-    //     const rowid_agreement = dataContainer.querySelector('#rowid_agreement')?.value;
-    //
-    //     $.colorbox
-    //     ({
-    //         height: 650 + 'px',
-    //         width: 1000 + 'px',
-    //         title: "Historia serwisu drukarek dla umowy : " + agreement,
-    //         data: {
-    //             rowid_agreement: rowid_agreement
-    //         },
-    //         href: sciezka + "/printers/service/todiv",
-    //         onClosed: function () {
-    //         },
-    //         onComplete: function () {
-    //             uprawnienia();
-    //         }
-    //     });
-    // });
+        // $("#showPrinterService").on('click', () => {
+        //     const dataContainer = getContainerById(dataContainerId);
+        //     const agreement = dataContainer.querySelector('#umowadane')?.value;
+        //     const rowid_agreement = dataContainer.querySelector('#rowid_agreement')?.value;
+        //
+        //     $.colorbox
+        //     ({
+        //         height: 650 + 'px',
+        //         width: 1000 + 'px',
+        //         title: "Historia serwisu drukarek dla umowy : " + agreement,
+        //         data: {
+        //             rowid_agreement: rowid_agreement
+        //         },
+        //         href: sciezka + "/printers/service/todiv",
+        //         onClosed: function () {
+        //         },
+        //         onComplete: function () {
+        //             uprawnienia();
+        //         }
+        //     });
+        // });
 
-</script>
+        $('.selectpicker').selectpicker();
+
+    </script>
 

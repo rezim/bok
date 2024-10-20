@@ -125,24 +125,22 @@ class clientsController extends InvoicesController
             }
 
             $clientNip = $_POST['nip'] ?? null;
-            if ($isCreateClientRequest) {
-                if (empty($clientNip)) {
-                    $this->badRequest('Numer NIP klienta jest wymagany.');
-                }
-//                if (!$this->isNIP($clientNip)) {
-//                    $this->badRequest('Niepoprawny numer NIP');
-//                }
 
+            $isValidNIP = $this->isNIP($clientNip);
+            $isValidPESEL = !$isValidNIP && $this->isValidPesel($clientNip);
+
+            if (!$isValidNIP && !$isValidPESEL) {
+                $this->badRequest('Błędny identyfikator klienta. Podaj poprawny NIP lub PESEL');
+            }
+
+            // now client NIP/PESEL exists and is correct
+
+            if ($isCreateClientRequest) {
                 $client = $this->client->getClientByNip($clientNip);
                 if (!empty($client)) {
                     $clientName = $client[0]['nazwakrotka'];
-                    $this->badRequest("Klient o numerze NIP: '$clientNip' już istnieje, nazwa istnięjącego klienta: '$clientName'!");
+                    $this->badRequest("Klient o indentyfikatorze: '$clientNip' już istnieje, nazwa istnięjącego klienta: '$clientName'!");
                 }
-            } else {
-                // for edit client nip could not present in the request
-//                if (!empty($clientNip) && !$this->isNIP($clientNip)) {
-//                    $this->badRequest('Niepoprawny numer NIP');
-//                }
             }
 
             if (!$this->areClientPaymentOptionsPermitted) {
@@ -182,10 +180,11 @@ class clientsController extends InvoicesController
 
             $client = $this->client->getClientByRowid($clientRowId)[0];
 
+            // "tax_no" => $client["nip"],
+
             $createOrUpdateClientData = array(
                 "name" => $client["nazwapelna"],
                 "shortcut" => $client["nazwakrotka"],
-                "tax_no" => $client["nip"],
                 "use_mass_payment" => true,
                 "mass_payment_code" => BANK_NAME . ' ' . $client["numerrachunku"],
                 "email" => $client["mailfaktury"],
@@ -194,6 +193,11 @@ class clientsController extends InvoicesController
                 "city" => $client["miasto"],
                 "payment_to_kind" => $client["terminplatnosci"]
             );
+
+            // we don't want to update client if it is pesel
+            if ($isValidNIP) {
+                $createOrUpdateClientData["tax_no"] = $client["tax_no"];
+            }
 
             $this->createOrUpdateClientByTaxNo($createOrUpdateClientData);
 
