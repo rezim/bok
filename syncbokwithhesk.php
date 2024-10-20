@@ -4,6 +4,7 @@ include 'config/config.php';
 include 'application/utils/mailTemplates.php';
 include 'application/utils/mailing.php';
 include 'application/utils/Email_reader.php';
+include 'library/commontrait.class.php';
 include 'library/interestnotestrait.class.php';
 include 'library/paymentstrait.class.php';
 include 'library/externalclientstrait.class.php';
