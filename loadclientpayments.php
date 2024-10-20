@@ -7,6 +7,7 @@ include 'application/utils/Email_reader.php';
 include 'library/interestnotestrait.class.php';
 include 'library/paymentstrait.class.php';
 include 'library/externalclientstrait.class.php';
+include 'library/externalclientstrait.class.php';
 include 'library/controller.class.php';
 include 'library/invoicescontroller.class.php';
 include 'library/sqlquery.class.php';
