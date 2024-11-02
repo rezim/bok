@@ -86,7 +86,7 @@ class InvoicesController extends Controller
         $invoices = getResultsByUrlQuery($url);
 
         foreach ($invoices as &$invoice) {
-            if ($invoice['buyer_tax_no'] === '' && $invoice['buyer_name'] === 'Inna Petrianyk') {
+            if (($invoice['buyer_tax_no'] === '' || $invoice['buyer_tax_no'] === null) && $invoice['buyer_name'] === 'Inna Petrianyk') {
                 $invoice['buyer_tax_no'] = '89102113580';
             }
         }
