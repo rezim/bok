@@ -439,9 +439,10 @@ function zapiszKlienta(rowid) {
 
     const protectDisabledValues = true;
 
-    if (!doc.getElementById('txtNip').disabled || !protectDisabledValues) {
+	// NIP is validated on server side and has to be send
+    //if (!doc.getElementById('txtNip').disabled || !protectDisabledValues || ) {
         data['nip'] = doc.getElementById('txtNip').value.replace(/[\ \-]/gi, '');
-    }
+    //}
 
     if (!doc.getElementById('txtTerminPlatnosci').disabled || !protectDisabledValues) {
         data['terminplatnosci'] = doc.getElementById('txtTerminPlatnosci').value;

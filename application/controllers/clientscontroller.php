@@ -127,12 +127,13 @@ class clientsController extends InvoicesController
             $clientNip = $_POST['nip'] ?? null;
 
             $isValidNIP = $this->isNIP($clientNip);
+            
             $isValidPESEL = !$isValidNIP && $this->isValidPesel($clientNip);
 
+			
             if (!$isValidNIP && !$isValidPESEL) {
                 $this->badRequest('Błędny identyfikator klienta. Podaj poprawny NIP lub PESEL');
             }
-
             // now client NIP/PESEL exists and is correct
 
             if ($isCreateClientRequest) {
@@ -155,7 +156,7 @@ class clientsController extends InvoicesController
                 // if edit, also other values are not permitted
                 if ($_POST['rowid'] !== '0') {
                     if (
-                        isset($_POST['nip']) || isset($_POST['terminplatnosci']) ||
+                        isset($_POST['terminplatnosci']) ||
                         isset($_POST['bank']) || isset($_POST['numerrachunku'])
                     ) {
                         $this->forbidden('Nie masz prawa do zapisu tych wartości');
@@ -195,12 +196,10 @@ class clientsController extends InvoicesController
             );
 
             // we don't want to update client if it is pesel
-            if ($isValidNIP) {
-                $createOrUpdateClientData["tax_no"] = $client["tax_no"];
-            }
-
-            $this->createOrUpdateClientByTaxNo($createOrUpdateClientData);
-
+            if ($isValidNIP && $this->areClientPaymentOptionsPermitted) {
+                $createOrUpdateClientData["tax_no"] = $client["nip"];           
+            	$this->createOrUpdateClientByTaxNo($createOrUpdateClientData);
+			}
             echo(json_encode($saveUpdateResult));
         } else {
             $this->notImplemented('Błędne wywołanie');
