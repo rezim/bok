@@ -107,24 +107,27 @@ class notificationsController extends InvoicesController
 
             $notificationId = $_POST['keyVal'];
 
-            $documents = $this->getDocumentsByNotification((string) $notificationId);
+            if ($notificationId !== '0') {
 
-            $allWarehouses = $this->getAllWarehouses();
-            $warehouseMap = array_combine(
-                array_column($allWarehouses, 'id'),
-                array_column($allWarehouses, 'name')
-            );
+                $documents = $this->getDocumentsByNotification((string)$notificationId);
 
-            $filtered = array_filter($allWarehouses, function ($element) {
-                return $element['name'] === 'FF';
-            });
+                $allWarehouses = $this->getAllWarehouses();
+                $warehouseMap = array_combine(
+                    array_column($allWarehouses, 'id'),
+                    array_column($allWarehouses, 'name')
+                );
 
-            $ids = array_column($filtered, 'id');
+                $filtered = array_filter($allWarehouses, function ($element) {
+                    return $element['name'] === 'FF';
+                });
 
-            $smarty->assign('allProducts', $this->getAllProducts($ids[0]));
-            $smarty->assign('allWarehouses', $allWarehouses);
-            $smarty->assign('warehouseMap', $warehouseMap);
-            $smarty->assign('documents', $documents);
+                $ids = array_column($filtered, 'id');
+
+                $smarty->assign('allProducts', $this->getAllProducts($ids[0]));
+                $smarty->assign('allWarehouses', $allWarehouses);
+                $smarty->assign('warehouseMap', $warehouseMap);
+                $smarty->assign('documents', $documents);
+            }
 
             parent::addedit();
 

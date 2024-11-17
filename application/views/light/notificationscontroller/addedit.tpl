@@ -440,8 +440,8 @@
         </div>
     {/if}
 
+    {if $keyVal !== '0'}
     <hr/>
-
     <div id="warehouseDocuments" data-form>
 
         <div class="container">
@@ -532,8 +532,9 @@
         </div>
         {* TODO: Przerobić mechanizm raportowania ilości wysłanych i odebranych tonerów od klienta *}
     </div>
-
     <hr/>
+    {/if}
+
     <div id="accordion" class="mt-5 mb-3 container">
         {if isset($dane) }
             <div class="card" id="replacePrinterContainer" data-form>
