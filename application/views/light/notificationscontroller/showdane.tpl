@@ -18,6 +18,9 @@
                 drukarka
             </th>
             <th>
+                umowa
+            </th>
+            <th>
                 czas zgłoszenia
             </th>
             <th>
@@ -39,11 +42,14 @@
                 <th>{$smarty.foreach.loopek.index+1}</th>
                 <td><a href="/bok/notifications/show/{$item.rowid}">{$item.rowid}</a></td>
                 <td><a target="_blank" href="https://helpdesk.otus.pl/admin/admin_ticket.php?track={$item.hesk_trackid}">{$item.hesk_trackid}</a></td>
-                <td {if $item.rowid_client!=''}onClick='showNewClientAdd("{$item.rowid_client}")'{/if}>
+                <td {if $item.rowid_client!=''}onClick='showNewClientAdd("{$item.rowid_client}")' style="cursor: pointer"{/if}>
                     {$item.nazwakrotka|escape:'htmlall'}
                 </td>
-                <td {if $item.serial!=''}onClick='showNewPrinterAdd("{$item.serial}")'{/if}>
+                <td {if $item.serial!=''}onClick='showNewPrinterAdd("{$item.serial}")' style="cursor: pointer"{/if}>
                     {$item.serial|escape:'htmlall'}
+                </td>
+                <td {if $item.umowa_id!=''}onClick='showNewAgreementAdd("{$item.umowa_id}")' style="cursor: pointer"{/if}>
+                    {$item.umowa_nr}
                 </td>
                 <td>{$item.date_insert}</td>
                 <td>{$item.date_zakonczenia}</td>

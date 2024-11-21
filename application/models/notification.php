@@ -647,6 +647,8 @@ a.SLA-(( unix_timestamp(now())
                 a.date_zakonczenia as 'date_zakonczenia',
                 a.trackid as 'hesk_trackid',
                 c.sla as 'sla',
+                c.rowid as 'umowa_id',
+                c.nrumowy as 'umowa_nr',
                 TIMESTAMPDIFF(HOUR, a.date_insert, IFNULL(a.date_zakonczenia,now())) as `czas_trwania`
                 from
                 (notifications a left outer join clients b on a.rowid_client=b.rowid)
