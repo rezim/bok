@@ -25,6 +25,9 @@ class acl extends Model
 
         $_SESSION['appConfig'] = $appConfig;
 
+
+        $_SESSION['customMenu'] = $this->readDirectoryContents(ROOT . DS . 'application' . DS . CUSTOM_SCRIPTS_FOLDER_NAME);
+
         unset($dataUser);
         $_SESSION['login'] = 1;
     }
@@ -89,5 +92,44 @@ class acl extends Model
                 where
                 a.rowid_user={$rowidUser} and d.activity=1) as zbior";
         return $this->query($query, 'id', false);
+    }
+
+    function readDirectoryContents($baseDir, $currentPath = "")
+    {
+        $flatList = [];
+
+        if (!is_dir($baseDir)) {
+            return $flatList;
+        }
+
+        $items = scandir($baseDir);
+        $hasPhpFiles = false;
+
+        foreach ($items as $item) {
+            if ($item === '.' || $item === '..') {
+                continue;
+            }
+
+            $fullPath = $baseDir . DIRECTORY_SEPARATOR . $item;
+            $relativePath = ltrim($currentPath . '/' . $item, '/');
+
+            if (is_dir($fullPath)) {
+                $subFolderContents = $this->readDirectoryContents($fullPath, $relativePath);
+
+                if (!empty($subFolderContents)) {
+                    $flatList[] = ['name' => $item, 'type' => 'folder'];
+                    $flatList = array_merge($flatList, $subFolderContents);
+                }
+            } elseif (is_file($fullPath) && pathinfo($fullPath, PATHINFO_EXTENSION) === 'php') {
+                $flatList[] = [
+                    'name' => $relativePath,
+                    'fileName' => pathinfo($item, PATHINFO_FILENAME),
+                    'type' => 'file'
+                ];
+                $hasPhpFiles = true;
+            }
+        }
+
+        return $flatList;
     }
 }

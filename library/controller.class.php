@@ -22,6 +22,9 @@ class Controller
         $czyToDiv = 0;
         $this->notemplate = 0;
         $czytoDivFrame = 0;
+
+        $customScriptPath = null;
+
         if ($queryString != null && $queryString != '') {
             // we call it also as an external method, without smarty
             if (isset($smarty)) {
@@ -41,9 +44,13 @@ class Controller
 
         }
 
-        if ($this->notemplate == 0)
-            $this->_template = new Template($controller, $action, $czyToDiv, $czytoDivFrame);
+        if ($controller === (CUSTOM_SCRIPTS_CONTROLLER_NAME . 'Controller') && $this->_action === CUSTOM_SCRIPTS_ACTION_NAME) {
+            $customScriptPath = implode(DS, $queryString);
+        }
 
+        if ($this->notemplate == 0) {
+            $this->_template = new Template($controller, $action, $czyToDiv, $czytoDivFrame, $customScriptPath);
+        }
     }
 
     function set($name, $value)

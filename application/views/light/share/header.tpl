@@ -393,6 +393,27 @@
                     </div>
                 </li>
             {/if}
+            {if isset($smarty.session.przypisaneshares['customizedshow'])}
+                <li class="nav-item dropdown">
+                    <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button"
+                       data-toggle="dropdown"
+                       aria-haspopup="true" aria-expanded="false">
+                        <i class="fas fa-star"></i>&nbsp;BETA
+                    </a>
+                    <div class="dropdown-menu" aria-labelledby="navbarDropdown">
+                        {foreach $smarty.session.customMenu as $item}
+                            {if $item.type == 'folder'}
+                                <div class="dropdown-divider"></div>
+                                <div >&nbsp;<i class="fas fa-folder text-warning"></i> {$item.name} </div>
+                                <div class="dropdown-divider"></div>
+                            {else}
+                                <a href='{$smarty.const.SCIEZKA}/customized/show/{$item.name}' class="dropdown-item"><i
+                                            class="fas fa-file text-secondary"></i>&nbsp;{$item.fileName}</a>
+                            {/if}
+                        {/foreach}
+                    </div>
+                </li>
+            {/if}
         </ul>
         <form class="form-inline my-2 my-lg-0 d-lg-none d-xl-block">
             <input class="form-control mr-sm-2" type="search" placeholder="Search" aria-label="Search">
@@ -454,6 +475,7 @@
         $("#showConfigurationAction").on('click', () => openModal("/config/show/todiv"));
     </script>
 {/if}
+
 <div id='divContainer' class="content wide-content">
     {else}
     <div id='divContainer'>
