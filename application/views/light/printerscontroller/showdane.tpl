@@ -90,7 +90,7 @@
                                             class="fas fa-history"></i>&nbsp;&nbsp;Logi</a>
                                 <a class="dropdown-item" href="#" onClick='historiaTonerow("{$item.serial}")'>Historia
                                     Tonerów</a>
-                                <a class="dropdown-item" href="#" onClick='historiaTonerow("{$item.serial}")'>Historia
+                                <a  href='{$smarty.const.SCIEZKA}/notifications/show?filternrseryjny={$item.serial}&showall=1' class="dropdown-item">Historia
                                     Serwisu</a>
                                 <a wymaganylevel='w' wymaganyzrobiony='0' class="dropdown-item text-danger" href="#"
                                    onClick='usunDrukarke("{$item.serial}")'>

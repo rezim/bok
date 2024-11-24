@@ -35,6 +35,14 @@ class Model extends SQLQuery
         }
     }
 
+    function populateWithGet()
+    {
+        foreach ($_GET as $var => $value) {
+            $this->$var = $value;
+        }
+    }
+
+
     function populateFieldsToSave($fname, $isjonson)
     {
 

@@ -11,6 +11,10 @@ class notificationsController extends InvoicesController
         $statusZgloszenie = $this->notification->getStatus();
         $smarty->assign('statusZgloszenie', $statusZgloszenie);
 
+        if (!empty($_GET)) {
+            $smarty->assign('get_data', $_GET);
+        }
+
         unset($statusZgloszenie);
 
 
@@ -19,6 +23,7 @@ class notificationsController extends InvoicesController
     function showdane()
     {
         $this->notification->populateWithPost();
+        $this->notification->populateWithGet();
         $dataNoti = $this->notification->getData();
         global $smarty;
         $smarty->assign('dataNoti', $dataNoti);

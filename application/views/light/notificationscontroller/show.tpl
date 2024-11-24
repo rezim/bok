@@ -27,7 +27,8 @@
                     <label for="txtfilternrseryjny">Nr seryjny</label>
                 </div>
                 <div class="form-group">
-                    <input type="text" id='txtfilternrseryjny' class="form-control" aria-describedby="modelHelp">
+                    <input type="text" id='txtfilternrseryjny' class="form-control" aria-describedby="modelHelp"
+                           value="{if isset($get_data) && isset($get_data.filternrseryjny)}{$get_data.filternrseryjny}{/if}">
                     <small id="clientHelp" class="form-text text-muted"><i class="fas fa-info-circle"></i> Podaj numer
                         seryjny.</small>
                 </div>
@@ -66,7 +67,7 @@
                     {if !array_key_exists('widok_przypisane', $smarty.session.przypisanemenu) || $item.nazwa != 'Zamknięte' }
                         <div class="form-group mt-4">
                             <input name='txtstatus' type="checkbox" id='txtstatus{$item.rowid}'
-                                   {if $item.czydefault=='1'}checked{/if} aria-describedby="txtstatus{$item.rowid}Help">
+                                   {if $item.czydefault=='1' || (isset($get_data) && isset($get_data.showall))}checked{/if} aria-describedby="txtstatus{$item.rowid}Help">
                             <label for='txtstatus{$item.rowid}'>
                                 {$item.nazwa}
                             </label>

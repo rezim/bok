@@ -439,9 +439,9 @@ function zapiszKlienta(rowid) {
 
     const protectDisabledValues = true;
 
-	// NIP is validated on server side and has to be send
+    // NIP is validated on server side and has to be send
     //if (!doc.getElementById('txtNip').disabled || !protectDisabledValues || ) {
-        data['nip'] = doc.getElementById('txtNip').value.replace(/[\ \-]/gi, '');
+    data['nip'] = doc.getElementById('txtNip').value.replace(/[\ \-]/gi, '');
     //}
 
     if (!doc.getElementById('txtTerminPlatnosci').disabled || !protectDisabledValues) {
@@ -1999,32 +1999,36 @@ function showAgreements(isPopup) {
 function showListOfNotifications() {
     const objCenter = getElementById('divRightCenter');
 
+
+    const urlParams = getUrlParams();
+
     var statusy = {};
 
     $("input[type=checkbox][name='txtstatus']")  // for all checkboxes
         .each(function () {  // first pass, create name mapping
 
-            if (this.checked) {
+            if (this.checked || urlParams['showall'] === 1) {
                 statusy[$(this).attr('id')] = '1';
             }
         });
-
 
     $.ajax({
         url: sciezka + "/notifications/showdane/todiv",
         type: 'POST',
         data: {
-            filterklient: getElementById('txtfilterklient').value,
-            filternrseryjny: getElementById('txtfilternrseryjny').value,
-            filternrzlecenia: getElementById('txtfilternrzlecenia').value,
-            filterdataod: getElementById('txtfilterdataod').value,
-            filterdatado: getElementById('txtfilterdatado').value,
+            filterklient: getElementById('txtfilterklient')?.value,
+            filternrseryjny: urlParams['filternrseryjny'] ?? getElementById('txtfilternrseryjny')?.value,
+            filternrzlecenia: getElementById('txtfilternrzlecenia')?.value,
+            filterdataod: getElementById('txtfilterdataod')?.value,
+            filterdatado: getElementById('txtfilterdatado')?.value,
             filterstatusy: statusy,
         },
         success: function (data) {
             objCenter.innerHTML = '';
             objCenter.innerHTML = data;
             $(objCenter).animate({opacity: 1}, 1500);
+
+            removeUrlParams();
         },
         error: function () {
 
@@ -2290,4 +2294,14 @@ function showPrinterService() {
         }
     });
 
+}
+
+function getUrlParams() {
+    const urlParams = new URLSearchParams(window.location.search);
+    return Object.fromEntries(urlParams.entries());
+}
+
+function removeUrlParams() {
+    const urlWithoutParams = window.location.origin + window.location.pathname;
+    window.history.replaceState({}, document.title, urlWithoutParams);
 }
