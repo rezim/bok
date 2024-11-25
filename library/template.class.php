@@ -68,16 +68,19 @@ class Template
 
     function renderPhpFile($phpFilePath)
     {
-
-        register_shutdown_function(function () {
+        $scriptFinished = false;
+        register_shutdown_function(function () use (&$scriptFinished) {
             global $smarty;
-            // in case script will end with exit/die
-            $smarty->display($this->basePath . 'views' . DS . SMARTVERSION . DS . 'share' . DS . 'footer.tpl');
+            if (!$scriptFinished) {
+                // in case script will end with exit/die
+                $smarty->display($this->basePath . 'views' . DS . SMARTVERSION . DS . 'share' . DS . 'footer.tpl');
+            }
         });
 
         if (file_exists($phpFilePath)) {
             include $phpFilePath;
         }
+        $scriptFinished = true;
     }
 
 }
