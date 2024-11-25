@@ -3,6 +3,7 @@
 class Template
 {
 
+    private string $basePath = ROOT . DS . 'application' . DS;
     protected $variables = array();
     protected $_controller;
     protected $_action;
@@ -31,39 +32,49 @@ class Template
     {
         global $smarty;
 
-        $basePath = ROOT . DS . 'application' . DS;
-
         $smarty->assign('controller', $this->_controller);
         $smarty->assign('action', $this->_action);
         $smarty->assign('templates', ROOT . DS . 'application' . DS . 'templates' . DS);
 
+//        <div class="container-fluid">
+//    <main id='divRightCenter' class="col-12">
+//    </main>
+//</div>
+
         if ($this->_customScriptPath) {
-            $smarty->display($basePath . 'views' . DS . SMARTVERSION . DS . 'share' . DS . 'header.tpl');
-            $this->renderPhpFile($basePath . CUSTOM_SCRIPTS_FOLDER_NAME . DS . $this->_customScriptPath);
-            $smarty->display($basePath . 'views' . DS . SMARTVERSION . DS . 'share' . DS . 'footer.tpl');
+            $smarty->display($this->basePath . 'views' . DS . SMARTVERSION . DS . 'share' . DS . 'header.tpl');
+            $this->renderPhpFile($this->basePath . CUSTOM_SCRIPTS_FOLDER_NAME . DS . $this->_customScriptPath);
+            $smarty->display($this->basePath . 'views' . DS . SMARTVERSION . DS . 'share' . DS . 'footer.tpl');
             return;
         }
 
         if ($this->_czyToDiv != 1) {
-            $smarty->display($basePath . 'views' . DS . SMARTVERSION . DS . 'share' . DS . 'header.tpl');
+            $smarty->display($this->basePath . 'views' . DS . SMARTVERSION . DS . 'share' . DS . 'header.tpl');
         }
 
-        if (file_exists($basePath . 'views' . DS . SMARTVERSION . DS . strtolower($this->_controller) . DS . $this->_action . '.tpl')) {
-            $smarty->display($basePath . 'views' . DS . SMARTVERSION . DS . strtolower($this->_controller) . DS . $this->_action . '.tpl');
-        } else if (file_exists($basePath . 'views' . DS . SMARTVERSION . DS . 'share' . DS . $this->_action . '.tpl')) {
-            $smarty->display($basePath . 'views' . DS . SMARTVERSION . DS . 'share' . DS . $this->_action . '.tpl');
+        if (file_exists($this->basePath . 'views' . DS . SMARTVERSION . DS . strtolower($this->_controller) . DS . $this->_action . '.tpl')) {
+            $smarty->display($this->basePath . 'views' . DS . SMARTVERSION . DS . strtolower($this->_controller) . DS . $this->_action . '.tpl');
+        } else if (file_exists($this->basePath . 'views' . DS . SMARTVERSION . DS . 'share' . DS . $this->_action . '.tpl')) {
+            $smarty->display($this->basePath . 'views' . DS . SMARTVERSION . DS . 'share' . DS . $this->_action . '.tpl');
         }
 
         if ($this->_czyToDiv != 1) {
-            $smarty->display($basePath . 'views' . DS . SMARTVERSION . DS . 'share' . DS . 'footer.tpl');
+            $smarty->display($this->basePath . 'views' . DS . SMARTVERSION . DS . 'share' . DS . 'footer.tpl');
         }
 
-        $smarty->display($basePath . 'views' . DS . SMARTVERSION . DS . 'share' . DS . 'uprawnienia.tpl');
+        $smarty->display($this->basePath . 'views' . DS . SMARTVERSION . DS . 'share' . DS . 'uprawnienia.tpl');
     }
 
 
     function renderPhpFile($phpFilePath)
     {
+
+        register_shutdown_function(function () {
+            global $smarty;
+            // in case script will end with exit/die
+            $smarty->display($this->basePath . 'views' . DS . SMARTVERSION . DS . 'share' . DS . 'footer.tpl');
+        });
+
         if (file_exists($phpFilePath)) {
             include $phpFilePath;
         }
