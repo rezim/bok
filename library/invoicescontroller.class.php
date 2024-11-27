@@ -133,6 +133,8 @@ class InvoicesController extends Controller
             $buyer_first_name = $nameParts[0];
             $buyer_last_name = $nameParts[1] ?? '';
 
+            $client = $this->getClientByName($buyerName);
+
             $data = array(
                 "api_token" => FAKTUROWNIA_APITOKEN,
                 "invoice" => array(
@@ -155,6 +157,10 @@ class InvoicesController extends Controller
                     "additional_info_desc" => $additionalInfoDesc
                 )
             );
+
+            if (count($client) === 1) {
+                $data['invoice']['client_id'] = $client[0]['id'];
+            }
         } else {
             curl_close($ch);
             return null;
