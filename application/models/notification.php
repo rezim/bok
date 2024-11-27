@@ -715,7 +715,7 @@ a.SLA-(( unix_timestamp(now())
     }
 
     function getPrinterWithClientAndAgreementBySerial($serial) {
-        $query = "SELECT c.nazwakrotka, p.serial, p.model, a.nrumowy, p.ulica, p.miasto, p.kodpocztowy, p.telefon, p.mail, p.nazwa, p.osobakontaktowa
+        $query = "SELECT c.nazwakrotka, c.nip, p.serial, p.model, a.nrumowy, p.ulica, p.miasto, p.kodpocztowy, p.telefon, p.mail, p.nazwa, p.osobakontaktowa
                   FROM `printers` p INNER JOIN `agreements` a on p.serial = a.serial INNER JOIN `clients` c on a.rowidclient = c.rowid 
                   WHERE p.serial = '{$serial}' AND a.activity=1";
         return $this->query($query, null, false);

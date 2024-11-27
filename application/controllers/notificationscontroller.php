@@ -290,6 +290,32 @@ class notificationsController extends InvoicesController
         echo(json_encode($wynik));
     }
 
+
+    function getNotPaidInvoices($clientId): array
+    {
+        $notPaidInvoices = $this->getInvoicesByClientId($clientId, false);
+
+        $notPaidInvoices = array_map(function ($inv) {
+            $today = new DateTime();
+            $payment_to = new DateTime($inv['payment_to']);
+            $daysDiff = $today > $payment_to ?
+                $today->diff($payment_to)->format('%a') : 0;
+
+            return (
+            array(
+                'number' => $inv['number'],
+                'payment_to' => $inv['payment_to'],
+                'late_days' => $daysDiff)
+            );
+        }, $notPaidInvoices);
+
+        $notPaidInvoices = array_filter($notPaidInvoices, function ($inv) {
+            return $inv['late_days'] > 0;
+        });
+
+        return $notPaidInvoices;
+    }
+
     function shownotpaidinvoices()
     {
         $clientId = isset($_POST['client_id']) ? $_POST['client_id'] : null;
@@ -305,25 +331,7 @@ class notificationsController extends InvoicesController
                 if (!empty($client)) {
                     global $smarty;
 
-                    $notPaidInvoices = $this->getInvoicesByClientId($client[0]['id'], false);
-
-                    $notPaidInvoices = array_map(function ($inv) {
-                        $today = new DateTime();
-                        $payment_to = new DateTime($inv['payment_to']);
-                        $daysDiff = $today > $payment_to ?
-                            $today->diff($payment_to)->format('%a') : 0;
-
-                        return (
-                        array(
-                            'number' => $inv['number'],
-                            'payment_to' => $inv['payment_to'],
-                            'late_days' => $daysDiff)
-                        );
-                    }, $notPaidInvoices);
-
-                    $notPaidInvoices = array_filter($notPaidInvoices, function ($inv) {
-                        return $inv['late_days'] > 0;
-                    });
+                    $notPaidInvoices = $this->getNotPaidInvoices($client[0]['id']);
 
                     $smarty->assign('invoices', $notPaidInvoices);
 
@@ -344,6 +352,10 @@ class notificationsController extends InvoicesController
 
             $device = $this->notification->getPrinterWithClientAndAgreementBySerial($serial)[0];
 
+            $client = $this->getClientByTaxNo($device['nip']);
+
+            $notPaidInvoices = $this->getNotPaidInvoices($client[0]['id']);
+
             $message = "klient: {$device['nazwakrotka']} <br/>
                         serial: {$device['serial']} <br/>
                         model: {$device['model']} <br/>
@@ -354,7 +366,15 @@ class notificationsController extends InvoicesController
                         telefon: {$device['telefon']} <br/>
                         email: {$device['mail']} <br/>
                         nazwa: {$device['nazwa']} <br/>
-                        osoba kotaktowa: {$device['osobakontaktowa']} <br/>";
+                        osoba kotaktowa: {$device['osobakontaktowa']} <br/>
+                        ";
+
+            if (count($notPaidInvoices) > 0) {
+                $invoiceNumbers = array_column($notPaidInvoices, 'number');
+                $invoiceNumbersString = implode(", ", $invoiceNumbers);
+
+                $message .= "niezapłacone faktury: {$invoiceNumbersString}";
+            }
 
             $this->notification->updateHesk($trackId, $message);
         }
