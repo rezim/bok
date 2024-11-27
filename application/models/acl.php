@@ -10,8 +10,12 @@ class acl extends Model
 
     function getByRowid($rowid)
     {
-        $this->_table = 'users';
-        return $this->selectWhere(null, false, 'i', array($rowid), ' rowid=?  and activity=1', 'id,imie,nazwisko,mail,rowid');
+        $query = "select u.id, u.imie, u.nazwisko, u.mail, u.rowid, LOWER(r.nazwa) as `group`
+                from
+                users u left join users_groups ug on u.rowid=ug.rowid_user left join roles r on r.rowid=ug.rowid_group
+                where
+                u.rowid={$rowid} and u.activity=1";
+        return $this->query($query, null, false);
     }
 
     function refreshSession($rowidUser, $appConfig)
@@ -22,11 +26,14 @@ class acl extends Model
         $_SESSION['przypisaneshares'] = $this->getPrzypisaneShares($rowidUser);
         $_SESSION['user'] = $dataUser[0];
         $_SESSION['przypisanemenu'] = $this->getPrzypisaneMenu($rowidUser);
-
         $_SESSION['appConfig'] = $appConfig;
 
-
-        $_SESSION['customMenu'] = $this->readDirectoryContents(ROOT . DS . 'application' . DS . CUSTOM_SCRIPTS_FOLDER_NAME);
+        if (isset($_SESSION['przypisaneshares'][CUSTOM_SCRIPTS_CONTROLLER_NAME . CUSTOM_SCRIPTS_ACTION_NAME])) {
+            $customScriptPathBase = ROOT . DS . 'application' . DS . CUSTOM_SCRIPTS_FOLDER_NAME;
+            $_SESSION['customMenu'] = $this->readDirectoryContents($customScriptPathBase . DS . $_SESSION['user']['group']);
+        } else {
+            $_SESSION['customMenu'] = null;
+        }
 
         unset($dataUser);
         $_SESSION['login'] = 1;

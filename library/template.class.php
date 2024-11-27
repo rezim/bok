@@ -42,8 +42,10 @@ class Template
 //</div>
 
         if ($this->_customScriptPath) {
+            $customScriptPathBase = $this->basePath . CUSTOM_SCRIPTS_FOLDER_NAME . DS . $_SESSION['user']['group'];
+
             $smarty->display($this->basePath . 'views' . DS . SMARTVERSION . DS . 'share' . DS . 'header.tpl');
-            $this->renderPhpFile($this->basePath . CUSTOM_SCRIPTS_FOLDER_NAME . DS . $this->_customScriptPath);
+            $this->renderPhpFile($customScriptPathBase . DS . $this->_customScriptPath);
             $smarty->display($this->basePath . 'views' . DS . SMARTVERSION . DS . 'share' . DS . 'footer.tpl');
             return;
         }
