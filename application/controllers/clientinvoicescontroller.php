@@ -413,7 +413,8 @@ class clientinvoicesController extends InvoicesController
                 'winien' => $invoice['price_gross'],
                 'ma' => null,
                 'treść' => $invoice['number'],
-                'uwagi' => ''), $invoices);
+                'uwagi' => '',
+                'className' => 'text-danger'), $invoices);
 
         $clientId = $this->getClientIdByTaxNo($clientTaxNo);
         $payments = $this->getClientPayments($clientId, $dateFrom);
@@ -428,7 +429,7 @@ class clientinvoicesController extends InvoicesController
                 'ma' => $payment['price_gross'],
                 'treść' => $payment['content'],
                 'uwagi' => 'Nieprzeprocesowana!',
-                'className' => 'text-danger'),
+                'className' => 'text-secondary'),
             $notProcessedPayments);
 
         $payments = array_map(
@@ -437,7 +438,8 @@ class clientinvoicesController extends InvoicesController
                 'winien' => null,
                 'ma' => $payment['price'],
                 'treść' => $payment['name'],
-                'uwagi' => ''), $payments);
+                'uwagi' => '',
+                'className' => 'text-success'), $payments);
 
         $payments = array_merge($payments, $notProcessedPayments);
         $accountingSettlements = array_merge($invoices, $payments);

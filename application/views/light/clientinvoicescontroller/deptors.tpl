@@ -162,7 +162,8 @@
                                     <i class="fas fa-cog"></i>
                                 </button>
                                 <div class="dropdown-menu dropdown-menu-right" aria-labelledby="dropdownMenuLink">
-
+                                    <a href='{$smarty.const.SCIEZKA}/clientinvoices/showclient/[[clientInvoice.nip]]' class="dropdown-item pointer"><i
+                                                class="fas fa-clipboard-list"></i></i>&nbsp;rozliczenie&nbsp;winien/ma</a>
                                     <a href="#" class="dropdown-item pointer"
                                        ng-click="ctrl.showDetails(clientInvoice);"><i class="fas fa-file-invoice"></i>&nbsp;&nbsp;faktury</a>
                                     <a href="#" class="dropdown-item"

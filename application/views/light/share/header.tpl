@@ -415,10 +415,6 @@
                 </li>
             {/if}
         </ul>
-        <form class="form-inline my-2 my-lg-0 d-lg-none d-xl-block">
-            <input class="form-control mr-sm-2" type="search" placeholder="Search" aria-label="Search">
-            <button class="btn btn-outline-success my-2 my-sm-0" type="submit">Szukaj</button>
-        </form>
         <ul class="navbar-nav my-2 my-lg-0">
             <li class="nav-item dropdown">
                 <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-toggle="dropdown"

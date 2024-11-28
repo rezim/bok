@@ -11,9 +11,9 @@
         </tr>
         </thead>
         <tbody>
-        <tr class="table-dark">
+        <tr class="table-dark text-dark text-b">
             {foreach $columnSummaries as $columnSummary}
-                <th>{if $columnSummary != 0}{$columnSummary}{else}-{/if}</th>
+                <th><h5><strong>{if $columnSummary != 0}{$columnSummary}{else}-{/if}</strong></h5></th>
             {/foreach}
         </tr>
         {foreach $accountingSettlements as $rowScan}
