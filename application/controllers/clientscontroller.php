@@ -196,7 +196,7 @@ class clientsController extends InvoicesController
             );
 
             // we don't want to update client if it is pesel
-            if ($isValidNIP && $this->areClientPaymentOptionsPermitted) {
+            if ($isValidNIP) { // && $this->areClientPaymentOptionsPermitted
                 $createOrUpdateClientData["tax_no"] = $client["nip"];           
             	$this->createOrUpdateClientByTaxNo($createOrUpdateClientData);
 			}
