@@ -6,9 +6,6 @@ if ($local_conn->connect_error) {
     die("Połączenie z lokalną bazą danych nieudane: " . $local_conn->connect_error);
 }
 
-
-
-
 // Plik logu
 $log_file = '../../public_html/log/hesk-bok.log';
 
@@ -41,8 +38,6 @@ $sql = "SELECT id, u_name as name, dt, trackid, message, custom1, custom2, custo
 $result = $conn->query($sql);
 
 if ($result->num_rows > 0) {
-
-    die();
 
     $local_conn->set_charset("utf8mb4");
 
