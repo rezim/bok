@@ -6,6 +6,9 @@ if ($local_conn->connect_error) {
     die("Połączenie z lokalną bazą danych nieudane: " . $local_conn->connect_error);
 }
 
+
+
+
 // Plik logu
 $log_file = '../../public_html/log/hesk-bok.log';
 
@@ -34,10 +37,13 @@ $notificationIdsToUpdateInHESK = array();
 $conn->set_charset("utf8mb4");
 
 // Etap 1: Przetwarzanie zgłoszeń z status != 3
-$sql = "SELECT id, name, dt, trackid, message, custom1, custom2, custom3, closedat, email, subject, priority, status FROM hesk_tickets WHERE status != 3 ORDER BY id ASC";
+$sql = "SELECT id, u_name as name, dt, trackid, message, custom1, custom2, custom3, closedat, u_email as email, subject, priority, status FROM hesk_tickets WHERE status != 3 ORDER BY id ASC";
 $result = $conn->query($sql);
 
 if ($result->num_rows > 0) {
+
+    die();
+
     $local_conn->set_charset("utf8mb4");
 
     while ($row = $result->fetch_assoc()) {
