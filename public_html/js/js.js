@@ -936,14 +936,15 @@ function showDrukarkiDoKlienta(clientrowid) {
 }
 
 function setDateDefault() {
-    var date = new Date();
-    date.setDate(1, 1);
+    const now = new Date();
 
-    $('#txtdataod').val($.datepicker.formatDate('yy-mm-dd', date));
-    var data = new Date(date);
-    data.setMonth(date.getMonth() + 1, 1);
-    data.setDate(1, 1);
-    $('#txtdatado').val($.datepicker.formatDate('yy-mm-dd', data));
+    const firstDayOfPreviousMonth = new Date(now.getFullYear(), now.getMonth() - 1, 1);
+
+    const lastDayOfPreviousMonth = new Date(now.getFullYear(), now.getMonth(), 0);
+
+    $('#txtdataod').val($.datepicker.formatDate('yy-mm-dd', firstDayOfPreviousMonth));
+
+    $('#txtdatado').val($.datepicker.formatDate('yy-mm-dd', lastDayOfPreviousMonth));
 }
 
 function getStartAndEndDate(date = null) {
@@ -958,26 +959,25 @@ function getStartAndEndDate(date = null) {
 }
 
 function changeMiesiac(obj) {
-    var data = $(obj).val();
+    const date = $(obj).val();
 
-    if (data == '') {
-        var date = new Date();
-        date.setDate(1, 1);
-        $('#txtdataod').val($.datepicker.formatDate('yy-mm-dd', date));
-        var data = new Date(date);
-        data.setMonth(date.getMonth() + 1, 1);
-        data.setDate(1, 1);
-        $('#txtdatado').val($.datepicker.formatDate('yy-mm-dd', data));
-    } else {
-        var date = new Date(data);
-        date.setDate(date.getDate(), 1);
-        $('#txtdataod').val($.datepicker.formatDate('yy-mm-dd', date));
+    const now = new Date();
+    const inputDate = date === '' ? new Date() : new Date(date);
 
-        var data = new Date(date);
-        data.setMonth(date.getMonth() + 1, 1);
-        data.setDate(1, 1);
-        $('#txtdatado').val($.datepicker.formatDate('yy-mm-dd', data));
+    if (
+        inputDate.getFullYear() > now.getFullYear() ||
+        (inputDate.getFullYear() === now.getFullYear() && inputDate.getMonth() > now.getMonth())
+    ) {
+        inputDate.setFullYear(inputDate.getFullYear() - 1);
     }
+
+    const firstDay = new Date(inputDate.getFullYear(), inputDate.getMonth(), 1);
+
+    const lastDay = new Date(inputDate.getFullYear(), inputDate.getMonth() + 1, 0);
+
+
+    $('#txtdataod').val($.datepicker.formatDate('yy-mm-dd', firstDay));
+    $('#txtdatado').val($.datepicker.formatDate('yy-mm-dd', lastDay));
 }
 
 function showTonersInfo(printerserial) {
