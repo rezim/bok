@@ -940,7 +940,7 @@ function setDateDefault() {
 
     const firstDayOfPreviousMonth = new Date(now.getFullYear(), now.getMonth() - 1, 1);
 
-    const lastDayOfPreviousMonth = new Date(now.getFullYear(), now.getMonth(), 0);
+    const lastDayOfPreviousMonth = new Date(now.getFullYear(), now.getMonth(), 1);
 
     $('#txtdataod').val($.datepicker.formatDate('yy-mm-dd', firstDayOfPreviousMonth));
 
@@ -973,7 +973,7 @@ function changeMiesiac(obj) {
 
     const firstDay = new Date(inputDate.getFullYear(), inputDate.getMonth(), 1);
 
-    const lastDay = new Date(inputDate.getFullYear(), inputDate.getMonth() + 1, 0);
+    const lastDay = new Date(inputDate.getFullYear(), inputDate.getMonth() + 1, 1);
 
 
     $('#txtdataod').val($.datepicker.formatDate('yy-mm-dd', firstDay));
