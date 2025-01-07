@@ -145,7 +145,27 @@ class printer extends Model
 
     function getPrinterBySerial($serial)
     {
-        $query = "select *, (select max(ilosctotal) from scans where serial = '{$serial}') as iloscscans  from printers where serial='{$serial}'";
+        $query = "SELECT        
+                        p.*,
+                        (SELECT ilosc 
+                         FROM pages 
+                         WHERE serial = '{$serial}' 
+                           AND datawiadomosci = (SELECT MAX(datawiadomosci) FROM pages WHERE serial = '{$serial}')) AS iloscstron,
+                        (SELECT ilosckolor 
+                         FROM pages 
+                         WHERE serial = '{$serial}' 
+                           AND datawiadomosci = (SELECT MAX(datawiadomosci) FROM pages WHERE serial = '{$serial}')) AS iloscstron_kolor,
+                        (SELECT ilosctotal 
+                         FROM pages 
+                         WHERE serial = '{$serial}' 
+                           AND datawiadomosci = (SELECT MAX(datawiadomosci) FROM pages WHERE serial = '{$serial}')) AS iloscstron_total,
+                        (SELECT MAX(ilosctotal) 
+                         FROM scans 
+                         WHERE serial = '{$serial}') AS iloscscans                        
+                    FROM 
+                        printers p
+                    WHERE 
+                        p.serial = '{$serial}'";
         return $this->query($query, null, false);
     }
 
