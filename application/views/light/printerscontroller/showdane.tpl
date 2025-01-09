@@ -61,11 +61,12 @@
                     <td {if !empty($item.nazwaklient)}onClick='showNewClientAdd("{$item.rowidclient}")'{/if}>{$item.nazwaklient|escape:'htmlall'}</td>
                 {/if}
                 <td
-                        {if (!empty($item.cnt_datawiadomosci) && ($item.cnt_datawiadomosci|date_format:"%Y-%m-%d")<($smarty.now|date_format:"%Y-%m-%d"))}class="bg-danger text-light" {/if}
+                        {if (!empty($item.cnt_datawiadomosci) && strtotime($item.cnt_datawiadomosci) < strtotime("-5 days"))}class="bg-danger text-light" {/if}
                 >
                     {if (!empty($item.cnt_datawiadomosci))}
                         {assign var="dateTime" value=" "|explode:$item.cnt_datawiadomosci}
-                        {$dateTime[0]|escape:'htmlall'}<br />
+                        {$dateTime[0]|escape:'htmlall'}
+                        <br/>
                         <small>{$dateTime[1]|escape:'htmlall'}</small>
                     {/if}
                 </td>
@@ -90,7 +91,8 @@
                                             class="fas fa-history"></i>&nbsp;&nbsp;Logi</a>
                                 <a class="dropdown-item" href="#" onClick='historiaTonerow("{$item.serial}")'>Historia
                                     Tonerów</a>
-                                <a  href='{$smarty.const.SCIEZKA}/notifications/show?filternrseryjny={$item.serial}&showall=1' class="dropdown-item">Historia
+                                <a href='{$smarty.const.SCIEZKA}/notifications/show?filternrseryjny={$item.serial}&showall=1'
+                                   class="dropdown-item">Historia
                                     Serwisu</a>
                                 <a wymaganylevel='w' wymaganyzrobiony='0' class="dropdown-item text-danger" href="#"
                                    onClick='usunDrukarke("{$item.serial}")'>
