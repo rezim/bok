@@ -18,19 +18,23 @@
                 color
             </th>
             {if !$czycolorbox}
+                {if isset($smarty.session.przypisanemenu['col_agreement'])}
+                    <th>
+                        nr umowy
+                    </th>
+                {/if}
+                {if isset($smarty.session.przypisanemenu['col_client'])}
+                    <th>
+                        klient
+                    </th>
+                {/if}
                 <th>
-                    nr umowy
+                    data mail
                 </th>
-                <th>
-                    klient
-                </th>
-            {/if}
-            <th>
-                data mail
-            </th>
-            {if !$czycolorbox}
-                <th>
-                </th>
+                {if !$czycolorbox}
+                    <th>
+                    </th>
+                {/if}
             {/if}
         </tr>
         </thead>
@@ -57,8 +61,12 @@
                 <td class="text-right">
                     {if !isset($item.cnt_iloscstron_kolor) || $item.cnt_iloscstron_kolor==''}{else}{$item.cnt_iloscstron_kolor|number_format:0:",":" "|replace:',00':''|escape:'htmlall'}{/if}</td>
                 {if $czycolorbox==''}
-                    <td onClick='showNewAgreementAdd("{$item.rowidumowa}")'>{$item.nrumowy|escape:'htmlall'}</td>
-                    <td {if !empty($item.nazwaklient)}onClick='showNewClientAdd("{$item.rowidclient}")'{/if}>{$item.nazwaklient|escape:'htmlall'}</td>
+                    {if isset($smarty.session.przypisanemenu['col_agreement'])}
+                        <td onClick='showNewAgreementAdd("{$item.rowidumowa}")'>{$item.nrumowy|escape:'htmlall'}</td>
+                    {/if}
+                    {if isset($smarty.session.przypisanemenu['col_client'])}
+                        <td {if !empty($item.nazwaklient)}onClick='showNewClientAdd("{$item.rowidclient}")'{/if}>{$item.nazwaklient|escape:'htmlall'}</td>
+                    {/if}
                 {/if}
                 <td
                         {if (!empty($item.cnt_datawiadomosci) && strtotime($item.cnt_datawiadomosci) < strtotime("-5 days"))}class="bg-danger text-light" {/if}
