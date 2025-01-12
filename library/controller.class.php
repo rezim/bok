@@ -51,6 +51,74 @@ class Controller
         if ($this->notemplate == 0) {
             $this->_template = new Template($controller, $action, $czyToDiv, $czytoDivFrame, $customScriptPath);
         }
+
+        $smarty->registerPlugin('function', 'format_number_value', [$this, 'formatNumberValue']);
+        $smarty->registerPlugin('function', 'format_date_value', [$this, 'formatDateValue']);
+        $smarty->registerPlugin('function', 'show_txt_filter_option', [$this, 'showTextFilterOption']);
+        $smarty->registerPlugin('function', 'show_check_filter_option', [$this, 'showCheckboxFilterOption']);
+        $smarty->assignGlobal('OUTDATED_COUNTERS_IN_DAYS_LIMIT', OUTDATED_COUNTERS_IN_DAYS_LIMIT);
+    }
+
+
+    function formatNumberValue($params, $smarty)
+    {
+        if (!isset($params['value']) || !is_numeric($params['value'])) {
+            return '-';
+        }
+
+        $formattedValue = number_format($params['value'], 0, ",", " ");
+        $formattedValue = str_replace(',00', '', $formattedValue);
+        return htmlspecialchars($formattedValue, ENT_QUOTES, 'UTF-8');
+    }
+
+    function formatDateValue($params, $smarty)
+    {
+        if (!isset($params['value'])) {
+            return '-';
+        }
+        $formattedDate = date('Y-m-d', strtotime($params['value']));
+        $formattedTime = date('H:i:s', strtotime($params['value']));
+
+        return "$formattedDate<br><small>$formattedTime</small>";
+    }
+
+
+    function showTextFilterOption($params, $smarty)
+    {
+        if (!isset($params['label']) || !isset($params['id'])) {
+            return '<div class="text-danger">Parametry "id" i "label" są wymagane!</div>';
+        }
+
+        $help = isset($params['help']) ?
+            "<small id='{$params['id']}Help' class='form-text text-muted'><i class='fas fa-info-circle'></i> {$params['help']}</small>" : '';
+
+        return "                
+            <div class='form-group'>
+                <label for='filterserial'>{$params['label']}</label>
+            </div>
+            <div class='form-group'>
+                <input type='text' data-ref id='{$params['id']}' class='form-control'
+                       aria-describedby='{$params['id']}Help'>$help
+            </div>";
+    }
+
+    function showCheckboxFilterOption($params, $smarty)
+    {
+        if (!isset($params['label']) || !isset($params['id'])) {
+            return '<div class="text-danger">Parametry "id" i "label" są wymagane!</div>';
+        }
+
+        $help = isset($params['help']) ?
+            "<small id='{$params['id']}Help' class='form-text text-muted'><i class='fas fa-info-circle'></i> {$params['help']}</small>" : '';
+
+        $checked = isset($params['checked']) && filter_var($params['checked'], FILTER_VALIDATE_BOOLEAN) === true ? "checked" : "";
+
+        return "                
+                <div class='form-group mt-4'>
+                    <input type='checkbox' data-ref id='{$params['id']}' aria-describedby='{$params['id']}Help' $checked />
+                    <label for='{$params['id']}'>{$params['label']}</label>
+                    $help
+                </div>";
     }
 
     function set($name, $value)
@@ -105,7 +173,8 @@ class Controller
         return $this->$nameOfModel->save();
     }
 
-    function validatePostParams($postParams) {
+    function validatePostParams($postParams)
+    {
         $emptyParams = array_filter($postParams, function ($param) {
             return !isset($_POST[$param]) || (!$_POST[$param] && $_POST[$param] != 0);
         });
@@ -121,27 +190,33 @@ class Controller
         return true;
     }
 
-    function badRequest($message) {
+    function badRequest($message)
+    {
         header('X-PHP-Response-Code: 400', true, 400);
         die($message);
     }
 
-    function forbidden($message) {
+    function forbidden($message)
+    {
         header('X-PHP-Response-Code: 403', true, 403);
         die($message);
     }
 
-    function notImplemented($message) {
+    function notImplemented($message)
+    {
         header('X-PHP-Response-Code: 501', true, 501);
         die($message);
     }
 
-    function internalServerError($message) {
+    function internalServerError($message)
+    {
         header('X-PHP-Response-Code: 500', true, 500);
         die($message);
     }
 
-    public function fetchContent($filePath, $strParams, $postParams) {
+    public
+    function fetchContent($filePath, $strParams, $postParams)
+    {
         if (file_exists($filePath)) {
             $originalGet = $_GET;
 

@@ -215,16 +215,16 @@
             <td style='height:3px;min-height: 3px;' colspan=2></td>
         </tr>
 
-        <tr>
-            <td class='tdOpis'>
-                Kolorowa
-            </td>
-            <td class='tdWartosc'>
-                <input data-ref type="checkbox" id='checkKolorowa' class='checkBoxNormal'
-                       {if $dataPrinter.type_color}checked{/if}
-                />
-            </td>
-        </tr>
+{*        <tr>*}
+{*            <td class='tdOpis'>*}
+{*                Kolorowa*}
+{*            </td>*}
+{*            <td class='tdWartosc'>*}
+{*                <input data-ref type="checkbox" id='checkKolorowa' class='checkBoxNormal'*}
+{*                       {if $dataPrinter.type_color}checked{/if}*}
+{*                />*}
+{*            </td>*}
+{*        </tr>*}
         <tr>
             <td style='height:3px;min-height: 3px;' colspan=2></td>
         </tr>

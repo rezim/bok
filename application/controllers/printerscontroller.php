@@ -3,7 +3,6 @@
 class printersController extends Controller
 {
 
-
     function logi()
     {
         global $smarty;
@@ -30,17 +29,6 @@ class printersController extends Controller
         global $smarty;
         $this->printer->populateWithPost();
         $dataPrinters = $this->printer->getPrinters();
-        $dataCounters = $this->printer->getCounters();
-
-        for ($i = 0; $i < count($dataPrinters); $i++) {
-            $printer = &$dataPrinters[$i];
-            if (isset($dataCounters[$printer['serial']])) {
-                $printerCounters = $dataCounters[$printer['serial']][0];
-                $printer['cnt_iloscstron'] = $printerCounters['ilosc'];
-                $printer['cnt_iloscstron_kolor'] = $printerCounters['ilosckolor'];
-                $printer['cnt_datawiadomosci'] = $printerCounters['datawiadomosci'];
-            }
-        }
 
         $smarty->assign('dataPrinters', $dataPrinters);
         $smarty->assign('czycolorbox', isset($_POST['czycolorbox']) ? $_POST['czycolorbox'] : '');
@@ -123,6 +111,7 @@ class printersController extends Controller
     function show()
     {
         global $smarty;
+
         if (isset($_POST['czycolorbox'])) {
             $smarty->assign('clientnazwakrotka', $_POST['clientnazwakrotka']);
             $smarty->assign('czycolorbox', $_POST['czycolorbox']);

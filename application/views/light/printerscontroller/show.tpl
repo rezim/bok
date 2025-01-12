@@ -2,7 +2,7 @@
 
     <div class="row">
         <div class="otus-sidebar col-12 col-md-12 col-xl-auto">
-            <form>
+            <form id="dataFilter" data-form>
                 {if
                 !$czycolorbox &&
                 isset($smarty.session.przypisanemenu['but_addprinter']) &&
@@ -16,91 +16,44 @@
                     </div>
                     <div class="border-top mt-4 mb-2 otus-separator"></div>
                 {/if}
-                <div class="form-group">
-                    <label for="txtfilterserial">Serial</label>
-                </div>
-                <div class="form-group">
-                    <input type="text" id='txtfilterserial{$czycolorbox}' class="form-control"
-                           aria-describedby="serialHelp">
-                    <small id="emailHelp" class="form-text text-muted"><i class="fas fa-info-circle"></i> Podaj numer
-                        seryjny urządzenia.</small>
-                </div>
 
-                <div class="form-group">
-                    <label for="txtfiltermodel">Model</label>
-                </div>
-                <div class="form-group">
-                    <input type="text" id='txtfiltermodel{$czycolorbox}' class="form-control"
-                           aria-describedby="modelHelp">
-                    <small id="modelHelp" class="form-text text-muted"><i class="fas fa-info-circle"></i> Podaj model
-                        urządzenia.</small>
-                </div>
-
-                <div class="form-group">
-                    <label for="txtfilterklient">Klient</label>
-                </div>
-                <div class="form-group">
-                    <input type="text" id='txtfilterklient{$czycolorbox}' class='form-control'
-                           aria-describedby="clientHelp"
-                            {if isset($clientnazwakrotka)}
-                                value='{$clientnazwakrotka}'
-                            {/if}
-                    >
-                    <small id="clientHelp" class="form-text text-muted"><i class="fas fa-info-circle"></i> Podaj nazwę
-                        klienta.</small>
-                </div>
-
-                <div class="form-group">
-                    <label for="txtfilterlokalizacja">Lokalizacja</label>
-                </div>
-                <div class="form-group">
-                    <input type="text" id='txtfilterlokalizacja{$czycolorbox}' class='form-control'
-                           aria-describedby="lokalizacjaHelp"
-                            {if isset($miasto)}
-                                value='{$miasto}'
-                            {/if}
-                    >
-                    <small id="clientHelp" class="form-text text-muted"><i class="fas fa-info-circle"></i> Podaj lokalizację urządzenia.</small>
-                </div>
+                {show_txt_filter_option label="serial" id="filterserial" help="Podaj numer seryjny urządzenia."}
+                {show_txt_filter_option label="model" id="filtermodel" help="Podaj model urządzenia."}
+                {show_txt_filter_option label="klient" id="filterklient" help="Podaj nazwę klienta."}
+                {show_txt_filter_option label="lokalizacja" id="filterlocation" help="Podaj lokalizację urządzenia."}
+                {show_check_filter_option label="pokaż wszystkie" id="filtershowalsowithoutagreement" help="Pokaż również nie aktywne urządzenia."}
+                {show_check_filter_option checked="true" label="nie raportujące" id="showoutdatedonly" help="Pokaż tylko nie raportujące {$OUTDATED_COUNTERS_IN_DAYS_LIMIT} dni."}
 
                 <div class="border-top my-4 otus-separator"></div>
 
                 <div class="form-group">
-                    <button class="btn btn-info btn-block" type="submit"
-                            onClick="showPrinters('{$czycolorbox}');return false;">
+                    <button id="applyFilter" class="btn btn-info btn-block" type="button">
                         Filtruj
                     </button>
                 </div>
             </form>
         </div>
 
-        <main id='divRightCenter{$czycolorbox}' class="col-12 col-md-12 col-xl">
-
-        </main>
+        <main id='divRightCenter' class="col-12 col-md-12 col-xl"></main>
     </div>
 </div>
 <script type="text/javascript">
-    $('#txtfilterserial{$czycolorbox}').unbind("keypress");
-    $('#txtfilterserial{$czycolorbox}').keypress(function (event) {
-        if (event.keyCode == 13) {
-            showPrinters('{$czycolorbox}');
-            return false;
-        }
-    });
-    $('#txtfiltermodel{$czycolorbox}').unbind("keypress");
-    $('#txtfiltermodel{$czycolorbox}').keypress(function (event) {
-        if (event.keyCode == 13) {
-            showPrinters('{$czycolorbox}');
-            return false;
-        }
-    });
-    $('#txtfilterklient{$czycolorbox}').unbind("keypress");
-    $('#txtfilterklient{$czycolorbox}').keypress(function (event) {
-        if (event.keyCode == 13) {
-            showPrinters('{$czycolorbox}');
-            return false;
+    const dataContainerId = 'dataFilter';
+    const templateId = 'divRightCenter';
+    const actionButtonId = 'applyFilter';
+    const fnRenderTemplate = () => renderTemplateAction("/printers/showdane/todiv", dataContainerId, templateId);
+
+    // on enter press (any input in the form)
+    $('#' + dataContainerId + ' input').unbind("keypress").keypress((event) => {
+        if (event.keyCode === 13) {
+            event.preventDefault();
+            fnRenderTemplate();
         }
     });
 
-    showPrinters('{$czycolorbox}');
+    // on filter button click
+    $('#' + actionButtonId).on('click', fnRenderTemplate);
+
+    // first render
+    fnRenderTemplate();
 </script>

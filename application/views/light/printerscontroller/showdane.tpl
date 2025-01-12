@@ -56,10 +56,11 @@
                 <td>{$item.serial|escape:'htmlall'}</td>
                 <td>{$item.model|escape:'htmlall'} </td>
                 <td class="text-right">
-                    {if !isset($item.cnt_iloscstron) || $item.cnt_iloscstron==0}0{else}{$item.cnt_iloscstron|number_format:0:",":" "|replace:',00':''|escape:'htmlall'}{/if}
+                    {format_number_value value="{$item.max_ilosc}"}
                 </td>
                 <td class="text-right">
-                    {if !isset($item.cnt_iloscstron_kolor) || $item.cnt_iloscstron_kolor==''}{else}{$item.cnt_iloscstron_kolor|number_format:0:",":" "|replace:',00':''|escape:'htmlall'}{/if}</td>
+                    {format_number_value value="{$item.max_kolor}"}
+                </td>
                 {if $czycolorbox==''}
                     {if isset($smarty.session.przypisanemenu['col_agreement'])}
                         <td onClick='showNewAgreementAdd("{$item.rowidumowa}")'>{$item.nrumowy|escape:'htmlall'}</td>
@@ -68,15 +69,8 @@
                         <td {if !empty($item.nazwaklient)}onClick='showNewClientAdd("{$item.rowidclient}")'{/if}>{$item.nazwaklient|escape:'htmlall'}</td>
                     {/if}
                 {/if}
-                <td
-                        {if (!empty($item.cnt_datawiadomosci) && strtotime($item.cnt_datawiadomosci) < strtotime("-5 days"))}class="bg-danger text-light" {/if}
-                >
-                    {if (!empty($item.cnt_datawiadomosci))}
-                        {assign var="dateTime" value=" "|explode:$item.cnt_datawiadomosci}
-                        {$dateTime[0]|escape:'htmlall'}
-                        <br/>
-                        <small>{$dateTime[1]|escape:'htmlall'}</small>
-                    {/if}
+                <td {if ($item.outdated_datawiadomosci)}class="bg-danger text-light" {/if}>
+                    {format_date_value value="{$item.max_datawiadomosci}"}
                 </td>
                 {if $czycolorbox==''}
                     <td>

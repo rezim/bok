@@ -112,7 +112,12 @@ const renderTemplateWithDataAction = async (templateUrl, data, templateContainer
     const skeletonLoaderContainer = getTemplateContainerById(skeletonLoaderId);
 
     $(skeletonLoaderContainer).show();
-    templateContainer.innerHTML = '';
+    templateContainer.innerHTML = "    " +
+        "   <div class=\"d-flex justify-content-center align-items-center\" style=\"height: 100%;\">\n" +
+        "        <div class=\"spinner-border text-primary\" role=\"status\">\n" +
+        "            <span class=\"sr-only\">Loading...</span>\n" +
+        "        </div>\n" +
+        "    </div>";
 
     return $.ajax({
         type: 'POST',

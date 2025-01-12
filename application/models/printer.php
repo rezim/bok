@@ -2,7 +2,14 @@
 
 class printer extends Model
 {
-    protected $filterserial = '', $filtermodel = '', $filternumber = '', $filternip = '', $filterlokalizacja, $clientrowid, $filterklient = '';
+    // available form filters
+    protected $filterserial = '',
+        $filtermodel = '',
+        $filternumber = '',
+        $filternip = '',
+        $filterlocation, $clientrowid, $filterklient = '',
+        $filtershowalsowithoutagreement = false,
+        $showoutdatedonly = false;
     protected $serial = '', $model = '', $product_number = '', $nr_firmware = '', $date_firmware = '', $ip = '', $stan_fuser = '', $stan_adf = '',
         $black_toner = '', $date_insert = '', $cyan_toner = '', $magenta_toner = '', $yellow_toner = '', $blackdrum_toner = '', $cyandrum_toner = '',
         $magentadrum_toner = '', $yellowdrum_toner = '', $dateupdate = '', $iloscstron = '', $iloscscans = '', $opis = '', $lokalizacja = '', $iloscstron_kolor = '', $iloscstron_total = '', $stanna = '',
@@ -37,6 +44,7 @@ class printer extends Model
 
     function getPrinters()
     {
+        $dni_limit = OUTDATED_COUNTERS_IN_DAYS_LIMIT;
 
         $where = " where p.serial!='' and p.deleted=0";
 
@@ -52,17 +60,41 @@ class printer extends Model
         if ($this->filterklient != '') {
             $where .= " and ( c.nazwakrotka like '%{$this->filterklient}%' or  c.nazwapelna like '%{$this->filterklient}%')";
         }
-        if ($this->filterlokalizacja != '') {
-            $where .= " and ( p.miasto like '%{$this->filterlokalizacja}%')";
+        if ($this->filterlocation != '') {
+            $where .= " and ( p.miasto like '%{$this->filterlocation}%')";
+        }
+
+        if (filter_var($this->filtershowalsowithoutagreement, FILTER_VALIDATE_BOOLEAN) === false) {
+            $where .= " and a.nrumowy IS NOT NULL";
         }
 
 
-        $query = "
-            select p.*,a.nrumowy,a.sla,a.rowid as 'rowidumowa',c.rowid as 'rowidclient',c.nazwakrotka as 'nazwaklient',
-            (select d.rowid from logs d where d.serial=p.serial and d.przeczytany=0 limit 1) as `blad`
+        if (filter_var($this->showoutdatedonly, FILTER_VALIDATE_BOOLEAN) === true) {
+            $where .= " and pgg.max_datawiadomosci < NOW() - INTERVAL $dni_limit DAY";
+        }
+        $query = "                        
+            select pgg.max_datawiadomosci as max_datawiadomosci, pgg.max_ilosc, pgg.max_kolor, p.*,a.nrumowy,a.sla,a.rowid as 'rowidumowa',c.rowid as 'rowidclient',c.nazwakrotka as 'nazwaklient',
+            (select d.rowid from logs d where d.serial=p.serial and d.przeczytany=0 limit 1) as `blad`,
+                CASE WHEN pgg.max_datawiadomosci < NOW() - INTERVAL $dni_limit DAY 
+                THEN 1 ELSE 0 END AS outdated_datawiadomosci
             from 
             (printers p left outer join agreements a on p.serial=a.serial and a.activity=1)
                 left outer join clients c on a.rowidclient=c.rowid and c.activity=1
+                left outer join (
+                        SELECT 
+                            pg.serial,  
+                            pg.max_datawiadomosci, 
+                            p2.ilosc as max_ilosc, 
+                            p2.ilosckolor as max_kolor
+                        FROM 
+                            printers p
+                        LEFT JOIN (
+                            SELECT serial, MAX(datawiadomosci) AS max_datawiadomosci
+                            FROM pages
+                            GROUP BY serial
+                        ) pg ON p.serial = pg.serial
+                        LEFT JOIN pages p2 ON p2.serial = pg.serial AND p2.datawiadomosci = pg.max_datawiadomosci
+                ) pgg on p.serial = pgg.serial                                            
             {$where} order by p.date_insert desc
             ";
         return $this->query($query, null, false);
