@@ -56,12 +56,12 @@
                 <td>{$item.serial|escape:'htmlall'}</td>
                 <td>{$item.model|escape:'htmlall'} </td>
                 <td class="text-right">
-                    {format_number_value value="{$item.max_ilosc}"}
+{*                    {format_number_value value="{$item.max_ilosc}"}*}
                 </td>
                 <td class="text-right">
-                    {format_number_value value="{$item.max_kolor}"}
+{*                    {format_number_value value="{$item.max_kolor}"}*}
                 </td>
-                {if $czycolorbox==''}
+                {if $czycolorbox=='' and false}
                     {if isset($smarty.session.przypisanemenu['col_agreement'])}
                         <td onClick='showNewAgreementAdd("{$item.rowidumowa}")'>{$item.nrumowy|escape:'htmlall'}</td>
                     {/if}
@@ -70,7 +70,7 @@
                     {/if}
                 {/if}
                 <td {if ($item.outdated_datawiadomosci)}class="bg-danger text-light" {/if}>
-                    {format_date_value value="{$item.max_datawiadomosci}"}
+{*                    {format_date_value value="{$item.max_datawiadomosci}"}*}
                 </td>
                 {if $czycolorbox==''}
                     <td>

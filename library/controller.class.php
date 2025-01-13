@@ -52,11 +52,11 @@ class Controller
             $this->_template = new Template($controller, $action, $czyToDiv, $czytoDivFrame, $customScriptPath);
         }
 
-        $smarty->registerPlugin('function', 'format_number_value', [$this, 'formatNumberValue']);
-        $smarty->registerPlugin('function', 'format_date_value', [$this, 'formatDateValue']);
-        $smarty->registerPlugin('function', 'show_txt_filter_option', [$this, 'showTextFilterOption']);
-        $smarty->registerPlugin('function', 'show_check_filter_option', [$this, 'showCheckboxFilterOption']);
-        $smarty->assignGlobal('OUTDATED_COUNTERS_IN_DAYS_LIMIT', OUTDATED_COUNTERS_IN_DAYS_LIMIT);
+//        $smarty->registerPlugin('function', 'format_number_value', [$this, 'formatNumberValue']);
+//        $smarty->registerPlugin('function', 'format_date_value', [$this, 'formatDateValue']);
+//        $smarty->registerPlugin('function', 'show_txt_filter_option', [$this, 'showTextFilterOption']);
+//        $smarty->registerPlugin('function', 'show_check_filter_option', [$this, 'showCheckboxFilterOption']);
+//        $smarty->assignGlobal('OUTDATED_COUNTERS_IN_DAYS_LIMIT', OUTDATED_COUNTERS_IN_DAYS_LIMIT);
     }
 
 
