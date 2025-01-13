@@ -13,7 +13,7 @@ function formatNumberValue($params, $smarty)
 
 function formatDateValue($params, $smarty)
 {
-    if (!isset($params['value'])) {
+    if (!isset($params['value']) || $params['value'] === '') {
         return '-';
     }
     $formattedDate = date('Y-m-d', strtotime($params['value']));
