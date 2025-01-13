@@ -61,7 +61,7 @@
                 <td class="text-right">
                     {format_number_value value="{$item.max_kolor}"}
                 </td>
-                {if $czycolorbox=='' and false}
+                {if $czycolorbox==''}
                     {if isset($smarty.session.przypisanemenu['col_agreement'])}
                         <td onClick='showNewAgreementAdd("{$item.rowidumowa}")'>{$item.nrumowy|escape:'htmlall'}</td>
                     {/if}
