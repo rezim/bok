@@ -21,8 +21,10 @@
                 {show_txt_filter_option label="model" id="filtermodel" help="Podaj model urządzenia."}
                 {show_txt_filter_option label="klient" id="filterklient" help="Podaj nazwę klienta."}
                 {show_txt_filter_option label="lokalizacja" id="filterlocation" help="Podaj lokalizację urządzenia."}
+                {if $czycolorbox == ''}
                 {show_check_filter_option label="pokaż wszystkie" id="filtershowalsowithoutagreement" help="Pokaż również nie aktywne urządzenia."}
                 {show_check_filter_option checked="true" label="nie raportujące" id="showoutdatedonly" help="Pokaż tylko nie raportujące {$OUTDATED_COUNTERS_IN_DAYS_LIMIT} dni."}
+                {/if}
 
                 <div class="border-top my-4 otus-separator"></div>
 
@@ -31,15 +33,16 @@
                         Filtruj
                     </button>
                 </div>
+                <input type="hidden" id="czycolorbox" data-ref value="{$czycolorbox}">
             </form>
         </div>
 
-        <main id='divRightCenter' class="col-12 col-md-12 col-xl"></main>
+        <main id='printersData' class="col-12 col-md-12 col-xl"></main>
     </div>
 </div>
 <script type="text/javascript">
     const dataContainerId = 'dataFilter';
-    const templateId = 'divRightCenter';
+    const templateId = 'printersData';
     const actionButtonId = 'applyFilter';
     const fnRenderTemplate = () => renderTemplateAction("/printers/showdane/todiv", dataContainerId, templateId);
 

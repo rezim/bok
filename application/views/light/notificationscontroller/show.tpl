@@ -9,7 +9,7 @@
                 $smarty.session.przypisanemenu['but_addcase']['permission'] === 'rw'
                 }
                     <div class="form-group otus-addnew otus-section">
-                        <a href="/bok/notifications/show/0" class="btn btn-block btn-outline-warning otus-action-btn" onclick="onAddEditAction('0'); return false;">
+                        <a href="#" class="btn btn-block btn-outline-warning otus-action-btn" onclick="editNotification('0'); return false;">
                             <i class="fas fa-plus"></i>&nbsp;Nowe Zgłoszenie
                         </a>
                     </div>
