@@ -609,7 +609,6 @@ function zapiszDrukarke(serial) {
                 iloscstron: doc.getElementById('txtiloscstron').value,
                 iloscstron_kolor: doc.getElementById('txtiloscstronkolor').value,
                 iloscstron_total: doc.getElementById('txtiloscstrontotal').value,
-                type_color: doc.getElementById('checkKolorowa').checked ? 1 : 0,
                 opis: doc.getElementById('txtopis').value,
                 lokalizacja: doc.getElementById('txtlokalizacja').value,
                 ulica: doc.getElementById('txtulica').value,
