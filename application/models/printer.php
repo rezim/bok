@@ -91,6 +91,7 @@ class printer extends Model
                         LEFT JOIN (
                             SELECT serial, MAX(datawiadomosci) AS max_datawiadomosci
                             FROM pages
+                            WHERE datawiadomosci > '2024-06-01'
                             GROUP BY serial
                         ) pg ON p.serial = pg.serial
                         LEFT JOIN pages p2 ON p2.serial = pg.serial AND p2.datawiadomosci = pg.max_datawiadomosci
