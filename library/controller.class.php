@@ -114,11 +114,13 @@ class Controller
             $this->_template = new Template($controller, $action, $czyToDiv, $czytoDivFrame, $customScriptPath);
         }
 
-        $smarty->registerPlugin('function', 'format_number_value', 'formatNumberValue');
-        $smarty->registerPlugin('function', 'format_date_value', 'formatDateValue');
-        $smarty->registerPlugin('function', 'show_txt_filter_option', 'showTextFilterOption');
-        $smarty->registerPlugin('function', 'show_check_filter_option', 'showCheckboxFilterOption');
-        $smarty->assignGlobal('OUTDATED_COUNTERS_IN_DAYS_LIMIT', OUTDATED_COUNTERS_IN_DAYS_LIMIT);
+        if (isset($smarty)) {
+            $smarty->registerPlugin('function', 'format_number_value', 'formatNumberValue');
+            $smarty->registerPlugin('function', 'format_date_value', 'formatDateValue');
+            $smarty->registerPlugin('function', 'show_txt_filter_option', 'showTextFilterOption');
+            $smarty->registerPlugin('function', 'show_check_filter_option', 'showCheckboxFilterOption');
+            $smarty->assignGlobal('OUTDATED_COUNTERS_IN_DAYS_LIMIT', OUTDATED_COUNTERS_IN_DAYS_LIMIT);
+        }
     }
 
     function set($name, $value)

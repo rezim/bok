@@ -1720,31 +1720,36 @@ function removeMessage(rowid, type, foreignkey, containerId) {
 }
 
 function showPrinters(isPopup) {
-    const objCenter = getElementById('divRightCenter', isPopup);
+    const dataContainerId = 'dataFilter';
+    const templateId = 'printersData';
 
-    $.ajax({
-        url: sciezka + "/printers/showdane/todiv",
-        type: 'POST',
-        data: {
-            filterserial: getElementById('txtfilterserial', isPopup).value,
-            filtermodel: getElementById('txtfiltermodel', isPopup).value,
-            filterklient: getElementById('txtfilterklient', isPopup).value,
-            filterlokalizacja: getElementById('txtfilterlokalizacja', isPopup).value,
-            czycolorbox: isPopup
-        },
-        success: function (data) {
-            objCenter.innerHTML = '';
-            objCenter.innerHTML = data;
-            $(objCenter).animate({opacity: 1}, 1500);
-        },
-        error: function () {
-            objCenter.innerHTML = 'Problem z pobraniem drukarek';
-        }
-    }).done(function () {
-        $("#tablePrinter").tablesorter();
-        uprawnienia();
-    });
-    return false;
+    renderTemplateAction("/printers/showdane/todiv", dataContainerId, templateId);
+
+    // const objCenter = getElementById('divRightCenter', isPopup);
+    //
+    // $.ajax({
+    //     url: sciezka + "/printers/showdane/todiv",
+    //     type: 'POST',
+    //     data: {
+    //         filterserial: getElementById('txtfilterserial', isPopup).value,
+    //         filtermodel: getElementById('txtfiltermodel', isPopup).value,
+    //         filterklient: getElementById('txtfilterklient', isPopup).value,
+    //         filterlokalizacja: getElementById('txtfilterlokalizacja', isPopup).value,
+    //         czycolorbox: isPopup
+    //     },
+    //     success: function (data) {
+    //         objCenter.innerHTML = '';
+    //         objCenter.innerHTML = data;
+    //         $(objCenter).animate({opacity: 1}, 1500);
+    //     },
+    //     error: function () {
+    //         objCenter.innerHTML = 'Problem z pobraniem drukarek';
+    //     }
+    // }).done(function () {
+    //     $("#tablePrinter").tablesorter();
+    //     uprawnienia();
+    // });
+    // return false;
 }
 
 function showPrintersCounters(successCallback, errorCallback) {
