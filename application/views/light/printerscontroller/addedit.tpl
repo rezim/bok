@@ -150,7 +150,7 @@
                        style='width:70px;min-width:70px;text-align: right;padding-right: 10px;'
                        {if $serial!=''}value="{$dataPrinter.iloscstron|number_format:0:",":" "|replace:',00':''|escape:'htmlall'}"{/if}>
                 <span style='font-size: 12px;color:black'>Stan na</span>
-                <input data-ref type="text" id='txtstanna' class='textBoxForm' maxlength="10"
+                <input data-ref type="text" id='stanna' class='textBoxForm' maxlength="10"
                        style='width:100px;min-width:100px;'>
                 <button class="btn btn-info" type="button"
                       onClick="zapiszStanNa('{$serial}');">zapisz</button>
@@ -164,7 +164,7 @@
                 Ilość stron kolor
             </td>
             <td class='tdWartosc'>
-                <input data-ref type="text" id='txtiloscstronkolor'
+                <input data-ref type="text" id='iloscstronkolor'
                        class='textBoxForm' maxlength="100"
                        style='width:70px;min-width:70px;text-align: right;padding-right: 10px;'
                        {if $serial!=''}value="{$dataPrinter.iloscstron_kolor|number_format:0:",":" "|replace:',00':''|escape:'htmlall'}"{/if}>
@@ -178,7 +178,7 @@
                 Ilość stron total
             </td>
             <td class='tdWartosc'>
-                <input data-ref type="text" id='txtiloscstrontotal'
+                <input data-ref type="text" id='iloscstrontotal'
                        class='textBoxForm' maxlength="100"
                        style='width:70px;min-width:70px;text-align: right;padding-right: 10px;'
                        {if $serial!=''}value="{$dataPrinter.iloscstron_total|number_format:0:",":" "|replace:',00':''|escape:'htmlall'}"{/if}>
@@ -192,7 +192,7 @@
                 Ilość skanów
             </td>
             <td class='tdWartosc'>
-                <input data-ref type="text" id='txtiloscscans'
+                <input data-ref type="text" id='iloscscans'
                        class='textBoxForm' maxlength="100"
                        style='width:70px;min-width:70px;text-align: right;padding-right: 10px;'
                        {if $serial!=''}value="{$dataPrinter.iloscscans|number_format:0:",":" "|replace:',00':''|escape:'htmlall'}"{/if}>
@@ -389,7 +389,7 @@
 </table>
 <script type="text/javascript">
 
-    $("#txtstanna").datepicker($.datepicker.regional['pl'], {
+    $("#stanna").datepicker($.datepicker.regional['pl'], {
         dateFormat: "yy-mm-dd", changeMonth: true,
         changeYear: true,
     });

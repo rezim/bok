@@ -606,9 +606,9 @@ function zapiszDrukarke(serial) {
                 stan_fuser: doc.getElementById('txtstan_fuser').value,
                 stan_adf: doc.getElementById('txtstan_adf').value,
                 black_toner: doc.getElementById('txtblack_toner').value,
-                iloscstron: doc.getElementById('txtiloscstron').value,
-                iloscstron_kolor: doc.getElementById('txtiloscstronkolor').value,
-                iloscstron_total: doc.getElementById('txtiloscstrontotal').value,
+                iloscstron: doc.getElementById('iloscstron').value,
+                iloscstron_kolor: doc.getElementById('iloscstronkolor').value,
+                iloscstron_total: doc.getElementById('iloscstrontotal').value,
                 opis: doc.getElementById('txtopis').value,
                 lokalizacja: doc.getElementById('txtlokalizacja').value,
                 ulica: doc.getElementById('txtulica').value,
@@ -650,10 +650,10 @@ function zapiszStanNa(serial) {
         data:
             {
                 serial: doc.getElementById('txtserial').value,
-                iloscstron: doc.getElementById('txtiloscstron').value,
-                iloscstron_kolor: doc.getElementById('txtiloscstronkolor').value,
-                iloscscans: doc.getElementById('txtiloscscans').value,
-                stanna: doc.getElementById('txtstanna').value,
+                iloscstron: doc.getElementById('iloscstron').value,
+                iloscstron_kolor: doc.getElementById('iloscstronkolor').value,
+                iloscscans: doc.getElementById('iloscscans').value,
+                stanna: doc.getElementById('stanna').value,
             },
         success: function (dane) {
             checkReplay(objError, objLoad, null, objClick, dane, objOk, 0, 3000, null);
