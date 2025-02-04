@@ -447,7 +447,7 @@ class printer extends Model
             'serial' => $serial,
             'dateinsert' => $dateinsert,
             'datawiadomosci' => $datawiadomosci,
-            'ilosctotal' => $ilosctotal
+            'ilosctotal' => $this->toNumber($ilosctotal)
         );
         $scansWihTypes = array(
             'serial' => 'string',
@@ -463,5 +463,10 @@ class printer extends Model
         $this->update("DELETE FROM `scans` WHERE datawiadomosci = ? AND serial = ? ", 'ss', array($datawiadomosci, $serial));
 
         return $this->insertIntoTable('scans', $scansWihTypes, $scans);
+    }
+
+    function toNumber($value): int {
+        $normalized = str_replace(' ', '', $value);
+        return (int)$normalized;
     }
 }
