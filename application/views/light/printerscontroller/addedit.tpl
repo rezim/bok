@@ -145,7 +145,7 @@
                 Ilość stron black
             </td>
             <td class='tdWartosc' colspan="3">
-                <input data-ref type="text" id='txtiloscstron'
+                <input data-ref type="text" id='iloscstron'
                        class='textBoxForm' maxlength="100"
                        style='width:70px;min-width:70px;text-align: right;padding-right: 10px;'
                        {if $serial!=''}value="{$dataPrinter.iloscstron|number_format:0:",":" "|replace:',00':''|escape:'htmlall'}"{/if}>
