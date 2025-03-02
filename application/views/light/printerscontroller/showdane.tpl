@@ -22,6 +22,10 @@
                     <th>
                         nr umowy
                     </th>
+                {else}
+                    <th>
+                        umowa
+                    </th>
                 {/if}
                 {if isset($smarty.session.przypisanemenu['col_client'])}
                     <th>
@@ -64,6 +68,14 @@
                 {if $czycolorbox==''}
                     {if isset($smarty.session.przypisanemenu['col_agreement'])}
                         <td onClick='showNewAgreementAdd("{$item.rowidumowa}")'>{$item.nrumowy|escape:'htmlall'}</td>
+                    {else}
+                        <td>
+                            {if empty($item.nrumowy)}
+                                -
+                            {else}
+                                TAK
+                            {/if}
+                        </td>
                     {/if}
                     {if isset($smarty.session.przypisanemenu['col_client'])}
                         <td {if !empty($item.nazwaklient)}onClick='showNewClientAdd("{$item.rowidclient}")'{/if}>{$item.nazwaklient|escape:'htmlall'}</td>
