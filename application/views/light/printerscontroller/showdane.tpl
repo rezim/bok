@@ -71,7 +71,7 @@
                     {else}
                         <td>
                             {if empty($item.nrumowy)}
-                                -
+                                NIE
                             {else}
                                 TAK
                             {/if}

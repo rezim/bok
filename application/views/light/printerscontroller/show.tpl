@@ -22,8 +22,8 @@
                 {show_txt_filter_option label="klient" id="filterklient" help="Podaj nazwę klienta."}
                 {show_txt_filter_option label="lokalizacja" id="filterlocation" help="Podaj lokalizację urządzenia."}
                 {if $czycolorbox == ''}
-                {show_check_filter_option checked="true" label="pokaż wszystkie" id="filtershowalsowithoutagreement" help="Pokaż również nie aktywne urządzenia."}
-                {show_check_filter_option label="nie raportujące" id="showoutdatedonly" help="Pokaż tylko nie raportujące {$OUTDATED_COUNTERS_IN_DAYS_LIMIT} dni."}
+                    {show_check_filter_option checked="true" label="pokaż wszystkie" id="filtershowalsowithoutagreement" help="Pokaż również nie aktywne urządzenia."}
+                    {show_check_filter_option label="nie raportujące" id="showoutdatedonly" help="Pokaż tylko nie raportujące {$OUTDATED_COUNTERS_IN_DAYS_LIMIT} dni."}
                 {/if}
 
                 <div class="border-top my-4 otus-separator"></div>
@@ -44,7 +44,12 @@
     const dataContainerId = 'dataFilter';
     const templateId = 'printersData';
     const actionButtonId = 'applyFilter';
-    const fnRenderTemplate = () => renderTemplateAction("/printers/showdane/todiv", dataContainerId, templateId);
+    const fnRenderTemplate = async () => {
+        const doneCallback = function () {
+            $("#tablePrinter").tablesorter()
+        };
+        renderTemplateAction("/printers/showdane/todiv", dataContainerId, templateId, null, doneCallback);
+    }
 
     // on enter press (any input in the form)
     $('#' + dataContainerId + ' input').unbind("keypress").keypress((event) => {
@@ -55,7 +60,7 @@
     });
 
     // on filter button click
-    $('#' + actionButtonId).on('click', fnRenderTemplate);
+    $('#' + actionButtonId).on('click', () => fnRenderTemplate);
 
     // first render
     fnRenderTemplate();

@@ -88,7 +88,7 @@ const clearDataFromContainer = (containerId) => {
     const selectedData = Array.from(container.querySelectorAll('[data-clear-ref]'));
     selectedData.forEach(d => d.value = '');
 }
-const renderTemplateAction = (templateUrl, dataContainerId, templateContainerId, skeletonLoaderId) => {
+const renderTemplateAction = (templateUrl, dataContainerId, templateContainerId, skeletonLoaderId, doneCallback) => {
     const dataContainer = getContainerById(dataContainerId);
 
     if (!dataContainer && dataContainerId) {
@@ -98,10 +98,10 @@ const renderTemplateAction = (templateUrl, dataContainerId, templateContainerId,
 
     const data = dataContainer ? getDataFromContainer(dataContainer) : {};
 
-    renderTemplateWithDataAction(templateUrl, data, templateContainerId, skeletonLoaderId);
+    renderTemplateWithDataAction(templateUrl, data, templateContainerId, skeletonLoaderId, doneCallback);
 }
 
-const renderTemplateWithDataAction = async (templateUrl, data, templateContainerId, skeletonLoaderId) => {
+const renderTemplateWithDataAction = async (templateUrl, data, templateContainerId, skeletonLoaderId, doneCallback) => {
     const templateContainer = getTemplateContainerById(templateContainerId);
 
     if (!templateContainer) {
@@ -133,6 +133,10 @@ const renderTemplateWithDataAction = async (templateUrl, data, templateContainer
         error: function (dane) {
             templateContainer.innerHTML = "Nie można pobrać templatu.";
             return false;
+        }
+    }).done(function () {
+        if (doneCallback) {
+            doneCallback();
         }
     });
 }
