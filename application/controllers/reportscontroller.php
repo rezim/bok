@@ -569,293 +569,293 @@ class reportsController extends InvoicesController
 
 // TODO [TR]: remove unused code in case of positive verification
 
-//        foreach ($dataReportsMiesieczne as $key => $item) {
-//
-//            $dayOfDateRange = 0;
-//            $setupFee = 0;
-//            $daysAmount = date("t", strtotime($item['dataod']));
-//
-//            $clientId = $item['rowidclient'];
-//
-//            if (
-//                date("m", strtotime($item['dataod'])) == date("m", strtotime($item['dacik'])) &&
-//                date("Y", strtotime($item['dataod'])) == date("Y", strtotime($item['dacik']))) {
-//                $dayOfDateRange = date("j", strtotime($item['dataod'])) - 1;
-//                $setupFee = $item['cenainstalacji'];
-//            }
-//
-//            if (!isset($dataReports[$clientId])) {
-//                $dataReports[$clientId] = array();
-//            }
-//
-//            $client = &$dataReports[$clientId];
-//
-//            $agreement = &$client['umowy'][$item['rowidumowa']];
-//
-//            if (!isset($client['drukumowy'])) {
-//                $client['drukumowy'] = 1;
-//            } else {
-//                $client['drukumowy'] += 1;
-//            }
-//
-//            copyArrays($client, $item, $this->CLIENT_FIELD_NAMES);
-//
-//            // add collective agreements
-//            if (isset($item['lista_umow'])) {
-//                $client['umowy'][$item['rowidumowa']]['lista_umow'] = $item['lista_umow'];
-//            }
-//
-//            // only for printers check for errors
-//            if ($item['typ_umowy'] === 'wynajem drukarki' || $item['typ_umowy'] === 'wynajem skanera') {
-//
-//                $hasError = $this->hasError($item);
-//
-//                if ($hasError > 0) {
-//                    $client['blad'] = 1;
-//                    $agreement['blad'] = 1;
-//                }
-//                if ($hasError === 2) {
-//                    if (
-//                        (   // black
-//                            $item['strony_black_koniec'][0] >= $item['strony_black_start'][0] ||
-//                            // color
-//                            $item['strony_kolor_koniec'][0] >= $item['strony_kolor_start'][0] ||
-//                            // scans
-//                            $item[SCAN_END][0] >= $item[SCAN_START][0]) &&
-//                        (   // black
-//                            $item['data_wiadomosci_black_koniec'][0] !== $item['data_wiadomosci_black_start'][0] ||
-//                            $item['next_month_datawiadomosci'] !== "0000-00-00")) {
-//
-//                        $blackEnd = $item['strony_black_koniec'][0];
-//                        $colorEnd = $item['strony_kolor_koniec'][0];
-//                        // scans
-//                        $scanEnd = $item[SCAN_END][0];
-//                        $fixedDate = $item['data_wiadomosci_black_koniec'][0];
-//
-//                        if ($item['next_month_datawiadomosci'] !== "0000-00-00") {
-//                            if ($item['next_month_black'] >= $blackEnd && $item['next_month_kolor'] >= $colorEnd) {
-//                                $blackEnd = $item['next_month_black'];
-//                                $colorEnd = $item['next_month_kolor'];
-//                                $fixedDate = $item['next_month_datawiadomosci'];
-//                            }
-//
-//                            if ($item[SCANS_NEXT_MONTH] >= $scanEnd) {
-//                                $scanEnd = $item[SCANS_NEXT_MONTH];
-//                            }
-//                        }
-//
-//                        $agreement['fix'] = array(
-//                            "dateTo" => $this->report->getDateTo(),
-//                            "fixedDateTo" => $fixedDate,
-//                            "black" => $blackEnd,
-//                            "color" => $colorEnd,
-//                            "scans" => $scanEnd,
-//                            "serial" => $item['currentserial']);
-//                    }
-//                }
-//            }
-//
-//            // check for error for collective agreements
-//            if ($item['typ_umowy'] === 'umowa zbiorcza' && isset($item['lista_umow'])) {
-//                foreach ($item['lista_umow'] as $agrKey => &$agr) {
-//                    $hasError = $this->hasError($agr);
-//                    if ($hasError > 0) {
-//                        $client['blad'] = 1;
-//                        $agreement['blad'] = 1;
-//                        $agreement['lista_umow'][$agrKey]['blad'] = 1;
-//                    }
-//                    if ($hasError === 2) {
-//                        if (
-//                            (   // black
-//                                $agr['strony_black_koniec'][0] >= $agr['strony_black_start'][0] ||
-//                                // color
-//                                $agr['strony_kolor_koniec'][0] >= $agr['strony_kolor_start'][0] ||
-//                                // scans
-//                                $agr[SCAN_END][0] >= $agr[SCAN_START][0]) &&
-//                            (   // black
-//                                $agr['data_wiadomosci_black_koniec'][0] !== $agr['data_wiadomosci_black_start'][0] ||
-//                                $agr['next_month_datawiadomosci'] !== "0000-00-00")) {
-//
-//
-//                            $blackEnd = $agr['strony_black_koniec'][0];
-//                            $colorEnd = $agr['strony_kolor_koniec'][0];
-//                            // scans
-//                            $scanEnd = $agr[SCAN_END][0];
-//                            $fixedDate = $agr['data_wiadomosci_black_koniec'][0];
-//
-//                            if ($agr['next_month_datawiadomosci'] !== "0000-00-00") {
-//                                if ($agr['next_month_black'] >= $blackEnd && $agr['next_month_kolor'] >= $colorEnd) {
-//                                    $blackEnd = $agr['next_month_black'];
-//                                    $colorEnd = $agr['next_month_kolor'];
-//                                    $fixedDate = $agr['next_month_datawiadomosci'];
-//                                }
-//
-//                                if ($agr[SCANS_NEXT_MONTH] >= $scanEnd) {
-//                                    $scanEnd = $agr[SCANS_NEXT_MONTH];
-//                                }
-//                            }
-//
-//                            $agr['fix'] = array(
-//                                "dateTo" => $this->report->getDateTo(),
-//                                "fixedDateTo" => $fixedDate,
-//                                "black" => $blackEnd,
-//                                "color" => $colorEnd,
-//                                "scans" => $scanEnd,
-//                                "serial" => $agr['currentserial']);
-//                        }
-//                    }
-//                }
-//                // do not override by mistake
-//                unset($agr);
-//            }
-//
-//            $dataReports['suma'] = isset($dataReports['suma']) ? $dataReports['suma'] : 0;
-//            $client['wartosc'] = isset($client['wartosc']) ? $client['wartosc'] : 0;
-//            $client['wartoscblack'] = isset($client['wartoscblack']) ? $client['wartoscblack'] : 0;
-//            $client['wartosckolor'] = isset($client['wartosckolor']) ? $client['wartosckolor'] : 0;
-//            $client[SCANS_VALUE] = $client[SCANS_VALUE] ?? 0;
-//            $client['wartoscabonament'] = isset($client['wartoscabonament']) ? $client['wartoscabonament'] : 0;
-//            $client['kwotadowykorzystania'] = isset($client['kwotadowykorzystania']) ? $client['kwotadowykorzystania'] : 0;
-//
-//            $item['rabatdoabonamentu'] = (empty($item['rabatdoabonamentu']) || $item['rabatdoabonamentu'] == '') ? 0 : $item['rabatdoabonamentu'];
-//            $item['rabatdowydrukow'] = (empty($item['rabatdowydrukow']) || $item['rabatdowydrukow'] == '') ? 0 : $item['rabatdowydrukow'];
-//
-//            $subscription = (float)$item['abonament'];
-//            $amountInSubscription = (float)$item['kwotawabonamencie'];
-//            $hasAmountInSubscription = $amountInSubscription > 0;
-//            if ($dayOfDateRange != 0) {
-//                $subscription = $subscription - ($dayOfDateRange * ($subscription / $daysAmount));
-//            }
-//            $subscription = $subscription - ($subscription * ($item['rabatdoabonamentu'] / 100));
-//
-//            $client['wartoscabonament'] += $subscription;
-//
-//            if ($dayOfDateRange != 0) {
-//                $item['stronwabonamencie'] = $item['stronwabonamencie'] - ($dayOfDateRange * ($item['stronwabonamencie'] / $daysAmount));
-//                $item['iloscstron_kolor'] = $item['iloscstron_kolor'] - ($dayOfDateRange * ($item['iloscstron_kolor'] / $daysAmount));
-//                $item[SCAN_AMOUNT_FOR_FREE] = $item[SCAN_AMOUNT_FOR_FREE] - ($dayOfDateRange * ($item[SCAN_AMOUNT_FOR_FREE] / $daysAmount));
-//            }
-//
-//            $blackPagesNb = (int)$item['strony_black_sum'];
-//            $colorPagesNb = (int)$item['strony_kolor_sum'];
-//            $scansNb = (int)$item[SCAN_SUM];
-//            $allPagesNb = $blackPagesNb + $colorPagesNb;
-//
-//            $blackPrice = (float)$item['cenazastrone'];
-//            $colorPrice = (float)$item['cenazastrone_kolor'];
-//            $scanPrice = (float)$item[SCAN_PRICE];
-//
-//            // TODO: discount is no longer used
-//            $discount = $item['rabatdowydrukow'] / 100;
-//
-//            $allPagesValue = ($blackPagesNb * $blackPrice + $colorPagesNb * $colorPrice);
-//
-//            $client['kwotadowykorzystania'] += $hasAmountInSubscription ? max($allPagesValue - $amountInSubscription, 0) : 0;
-//
-//            $contract = array(
-//                "black" => !$hasAmountInSubscription ? $item['stronwabonamencie'] : 0,
-//                "color" => !$hasAmountInSubscription ? $item['iloscstron_kolor'] : 0,
-//                SCAN_AMOUNT_FOR_FREE => $item[SCAN_AMOUNT_FOR_FREE]
-//            );
-//
-//            // TODO: it seems we no longer use `jakczarne`, probably we can remove
-//            if (isset($item['jakczarne']) && !empty($item['jakczarne']) && $item['jakczarne'] == 1) {
-//                // black
-//                $blackExceeded = round(max($allPagesNb - $contract["black"], 0));
-//                $blackValue = $blackExceeded * $blackPrice;
-//                $blackValue = $blackValue - ($blackValue * $discount);
-//                $client['wartoscblack'] += !$hasAmountInSubscription ? $blackValue : 0;
-//                // color
-//                $colorValue = 0;
-//                $colorExceeded = 0;
-//                $client['wartosckolor'] = !$hasAmountInSubscription ? $colorValue : 0;
-//                // scans
-//                $scansValue = 0;
-//                $scansExceeded = 0;
-//            } else {
-//                // black
-//                $blackExceeded = round(max($blackPagesNb - $contract["black"], 0));
-//                $blackValue = $blackExceeded * $blackPrice;
-//                $blackValue = ($blackValue - ($blackValue * $discount));
-//                $client['wartoscblack'] += !$hasAmountInSubscription ? $blackValue : 0;
-//                // color
-//                $colorExceeded = round(max($colorPagesNb - $contract["color"], 0));
-//                $colorValue = $colorExceeded * $colorPrice;
-//                $colorValue = $colorValue - ($colorValue * $discount);
-//                $client['wartosckolor'] += !$hasAmountInSubscription ? $colorValue : 0;
-//                // scans
-//                $scansExceeded = round(max($scansNb - $contract[SCAN_AMOUNT_FOR_FREE], 0));
-//                $scansValue = $scansExceeded * $scanPrice;
-//                $client[SCANS_VALUE] += $scansValue;
-//            }
-//
-//            $totalValue = $hasAmountInSubscription ?
-//                $subscription + max(($allPagesValue + $scansValue) - $amountInSubscription, 0) :
-//                $subscription + $blackValue + $colorValue + $scansValue + $setupFee;
-//            $client['wartosc'] += $totalValue;
-//
-//            $dataReports['suma'] += $totalValue;
-//
-//            $agreement['stronwabonamencie'] = $contract["black"];
-//            $agreement['stronwabonamencie_kolor'] = $contract["color"];
-//            $agreement[SCAN_AMOUNT_FOR_FREE] = $contract[SCAN_AMOUNT_FOR_FREE];
-//
-//            $agreement['wartoscblack'] = $blackValue;
-//            $agreement['wartosckolor'] = $colorValue;
-//            $agreement[SCANS_VALUE] = $scansValue;
-//
-//            $agreement['stronblackpowyzej'] = $blackExceeded;
-//            $agreement['stronkolorpowyzej'] = $colorExceeded;
-//            $agreement[SCANS_AMOUNT_PAID] = $scansExceeded;
-//
-//            $agreement['cenazastrone'] = $blackPrice;
-//            $agreement['cenazastrone_kolor'] = $colorPrice;
-//            $agreement[SCAN_PRICE] = $scanPrice;
-//            $agreement['wartoscabonament'] = $subscription;
-//            $agreement['kwotadowykorzystania'] = $amountInSubscription;
-//
-//            $agreement['oplatainstalacyjna'] = $setupFee;
-//
-//
-//            $agreement['wartosc'] = $totalValue;
-//
-//            copyArrays($agreement, $item, $this->AGREEMENT_FIELDS);
-//        }
-
         foreach ($dataReportsMiesieczne as $key => $item) {
+
             $dayOfDateRange = 0;
             $setupFee = 0;
             $daysAmount = date("t", strtotime($item['dataod']));
+
             $clientId = $item['rowidclient'];
 
-            if (date("m-Y", strtotime($item['dataod'])) == date("m-Y", strtotime($item['dacik']))) {
+            if (
+                date("m", strtotime($item['dataod'])) == date("m", strtotime($item['dacik'])) &&
+                date("Y", strtotime($item['dataod'])) == date("Y", strtotime($item['dacik']))) {
                 $dayOfDateRange = date("j", strtotime($item['dataod'])) - 1;
                 $setupFee = $item['cenainstalacji'];
             }
 
             if (!isset($dataReports[$clientId])) {
-                $dataReports[$clientId] = [];
+                $dataReports[$clientId] = array();
             }
 
             $client = &$dataReports[$clientId];
+
             $agreement = &$client['umowy'][$item['rowidumowa']];
 
-            $client['drukumowy'] = ($client['drukumowy'] ?? 0) + 1;
-            copyArrays($client, $item, $this->CLIENT_FIELD_NAMES);
-
-            if (isset($item['lista_umow'])) {
-                $agreement['lista_umow'] = $item['lista_umow'];
+            if (!isset($client['drukumowy'])) {
+                $client['drukumowy'] = 1;
+            } else {
+                $client['drukumowy'] += 1;
             }
 
-            $this->processPrinterErrors($client, $agreement, $item);
-            $this->processCollectiveAgreements($client, $agreement, $item);
+            copyArrays($client, $item, $this->CLIENT_FIELD_NAMES);
 
-            $this->initializeClientValues($client);
-            $this->calculateSubscription($client, $item, $dayOfDateRange, $daysAmount);
-            $this->calculatePageValues($client, $agreement, $item, $dayOfDateRange, $daysAmount, $setupFee);
+            // add collective agreements
+            if (isset($item['lista_umow'])) {
+                $client['umowy'][$item['rowidumowa']]['lista_umow'] = $item['lista_umow'];
+            }
+
+            // only for printers check for errors
+            if ($item['typ_umowy'] === 'wynajem drukarki' || $item['typ_umowy'] === 'wynajem skanera') {
+
+                $hasError = $this->hasError($item);
+
+                if ($hasError > 0) {
+                    $client['blad'] = 1;
+                    $agreement['blad'] = 1;
+                }
+                if ($hasError === 2) {
+                    if (
+                        (   // black
+                            $item['strony_black_koniec'][0] >= $item['strony_black_start'][0] ||
+                            // color
+                            $item['strony_kolor_koniec'][0] >= $item['strony_kolor_start'][0] ||
+                            // scans
+                            $item[SCAN_END][0] >= $item[SCAN_START][0]) &&
+                        (   // black
+                            $item['data_wiadomosci_black_koniec'][0] !== $item['data_wiadomosci_black_start'][0] ||
+                            $item['next_month_datawiadomosci'] !== "0000-00-00")) {
+
+                        $blackEnd = $item['strony_black_koniec'][0];
+                        $colorEnd = $item['strony_kolor_koniec'][0];
+                        // scans
+                        $scanEnd = $item[SCAN_END][0];
+                        $fixedDate = $item['data_wiadomosci_black_koniec'][0];
+
+                        if ($item['next_month_datawiadomosci'] !== "0000-00-00") {
+                            if ($item['next_month_black'] >= $blackEnd && $item['next_month_kolor'] >= $colorEnd) {
+                                $blackEnd = $item['next_month_black'];
+                                $colorEnd = $item['next_month_kolor'];
+                                $fixedDate = $item['next_month_datawiadomosci'];
+                            }
+
+                            if ($item[SCANS_NEXT_MONTH] >= $scanEnd) {
+                                $scanEnd = $item[SCANS_NEXT_MONTH];
+                            }
+                        }
+
+                        $agreement['fix'] = array(
+                            "dateTo" => $this->report->getDateTo(),
+                            "fixedDateTo" => $fixedDate,
+                            "black" => $blackEnd,
+                            "color" => $colorEnd,
+                            "scans" => $scanEnd,
+                            "serial" => $item['currentserial']);
+                    }
+                }
+            }
+
+            // check for error for collective agreements
+            if ($item['typ_umowy'] === 'umowa zbiorcza' && isset($item['lista_umow'])) {
+                foreach ($item['lista_umow'] as $agrKey => &$agr) {
+                    $hasError = $this->hasError($agr);
+                    if ($hasError > 0) {
+                        $client['blad'] = 1;
+                        $agreement['blad'] = 1;
+                        $agreement['lista_umow'][$agrKey]['blad'] = 1;
+                    }
+                    if ($hasError === 2) {
+                        if (
+                            (   // black
+                                $agr['strony_black_koniec'][0] >= $agr['strony_black_start'][0] ||
+                                // color
+                                $agr['strony_kolor_koniec'][0] >= $agr['strony_kolor_start'][0] ||
+                                // scans
+                                $agr[SCAN_END][0] >= $agr[SCAN_START][0]) &&
+                            (   // black
+                                $agr['data_wiadomosci_black_koniec'][0] !== $agr['data_wiadomosci_black_start'][0] ||
+                                $agr['next_month_datawiadomosci'] !== "0000-00-00")) {
+
+
+                            $blackEnd = $agr['strony_black_koniec'][0];
+                            $colorEnd = $agr['strony_kolor_koniec'][0];
+                            // scans
+                            $scanEnd = $agr[SCAN_END][0];
+                            $fixedDate = $agr['data_wiadomosci_black_koniec'][0];
+
+                            if ($agr['next_month_datawiadomosci'] !== "0000-00-00") {
+                                if ($agr['next_month_black'] >= $blackEnd && $agr['next_month_kolor'] >= $colorEnd) {
+                                    $blackEnd = $agr['next_month_black'];
+                                    $colorEnd = $agr['next_month_kolor'];
+                                    $fixedDate = $agr['next_month_datawiadomosci'];
+                                }
+
+                                if ($agr[SCANS_NEXT_MONTH] >= $scanEnd) {
+                                    $scanEnd = $agr[SCANS_NEXT_MONTH];
+                                }
+                            }
+
+                            $agr['fix'] = array(
+                                "dateTo" => $this->report->getDateTo(),
+                                "fixedDateTo" => $fixedDate,
+                                "black" => $blackEnd,
+                                "color" => $colorEnd,
+                                "scans" => $scanEnd,
+                                "serial" => $agr['currentserial']);
+                        }
+                    }
+                }
+                // do not override by mistake
+                unset($agr);
+            }
+
+            $dataReports['suma'] = isset($dataReports['suma']) ? $dataReports['suma'] : 0;
+            $client['wartosc'] = isset($client['wartosc']) ? $client['wartosc'] : 0;
+            $client['wartoscblack'] = isset($client['wartoscblack']) ? $client['wartoscblack'] : 0;
+            $client['wartosckolor'] = isset($client['wartosckolor']) ? $client['wartosckolor'] : 0;
+            $client[SCANS_VALUE] = $client[SCANS_VALUE] ?? 0;
+            $client['wartoscabonament'] = isset($client['wartoscabonament']) ? $client['wartoscabonament'] : 0;
+            $client['kwotadowykorzystania'] = isset($client['kwotadowykorzystania']) ? $client['kwotadowykorzystania'] : 0;
+
+            $item['rabatdoabonamentu'] = (empty($item['rabatdoabonamentu']) || $item['rabatdoabonamentu'] == '') ? 0 : $item['rabatdoabonamentu'];
+            $item['rabatdowydrukow'] = (empty($item['rabatdowydrukow']) || $item['rabatdowydrukow'] == '') ? 0 : $item['rabatdowydrukow'];
+
+            $subscription = (float)$item['abonament'];
+            $amountInSubscription = (float)$item['kwotawabonamencie'];
+            $hasAmountInSubscription = $amountInSubscription > 0;
+            if ($dayOfDateRange != 0) {
+                $subscription = $subscription - ($dayOfDateRange * ($subscription / $daysAmount));
+            }
+            $subscription = $subscription - ($subscription * ($item['rabatdoabonamentu'] / 100));
+
+            $client['wartoscabonament'] += $subscription;
+
+            if ($dayOfDateRange != 0) {
+                $item['stronwabonamencie'] = $item['stronwabonamencie'] - ($dayOfDateRange * ($item['stronwabonamencie'] / $daysAmount));
+                $item['iloscstron_kolor'] = $item['iloscstron_kolor'] - ($dayOfDateRange * ($item['iloscstron_kolor'] / $daysAmount));
+                $item[SCAN_AMOUNT_FOR_FREE] = $item[SCAN_AMOUNT_FOR_FREE] - ($dayOfDateRange * ($item[SCAN_AMOUNT_FOR_FREE] / $daysAmount));
+            }
+
+            $blackPagesNb = (int)$item['strony_black_sum'];
+            $colorPagesNb = (int)$item['strony_kolor_sum'];
+            $scansNb = (int)$item[SCAN_SUM];
+            $allPagesNb = $blackPagesNb + $colorPagesNb;
+
+            $blackPrice = (float)$item['cenazastrone'];
+            $colorPrice = (float)$item['cenazastrone_kolor'];
+            $scanPrice = (float)$item[SCAN_PRICE];
+
+            // TODO: discount is no longer used
+            $discount = $item['rabatdowydrukow'] / 100;
+
+            $allPagesValue = ($blackPagesNb * $blackPrice + $colorPagesNb * $colorPrice);
+
+            $client['kwotadowykorzystania'] += $hasAmountInSubscription ? max($allPagesValue - $amountInSubscription, 0) : 0;
+
+            $contract = array(
+                "black" => !$hasAmountInSubscription ? $item['stronwabonamencie'] : 0,
+                "color" => !$hasAmountInSubscription ? $item['iloscstron_kolor'] : 0,
+                SCAN_AMOUNT_FOR_FREE => $item[SCAN_AMOUNT_FOR_FREE]
+            );
+
+            // TODO: it seems we no longer use `jakczarne`, probably we can remove
+            if (isset($item['jakczarne']) && !empty($item['jakczarne']) && $item['jakczarne'] == 1) {
+                // black
+                $blackExceeded = round(max($allPagesNb - $contract["black"], 0));
+                $blackValue = $blackExceeded * $blackPrice;
+                $blackValue = $blackValue - ($blackValue * $discount);
+                $client['wartoscblack'] += !$hasAmountInSubscription ? $blackValue : 0;
+                // color
+                $colorValue = 0;
+                $colorExceeded = 0;
+                $client['wartosckolor'] = !$hasAmountInSubscription ? $colorValue : 0;
+                // scans
+                $scansValue = 0;
+                $scansExceeded = 0;
+            } else {
+                // black
+                $blackExceeded = round(max($blackPagesNb - $contract["black"], 0));
+                $blackValue = $blackExceeded * $blackPrice;
+                $blackValue = ($blackValue - ($blackValue * $discount));
+                $client['wartoscblack'] += !$hasAmountInSubscription ? $blackValue : 0;
+                // color
+                $colorExceeded = round(max($colorPagesNb - $contract["color"], 0));
+                $colorValue = $colorExceeded * $colorPrice;
+                $colorValue = $colorValue - ($colorValue * $discount);
+                $client['wartosckolor'] += !$hasAmountInSubscription ? $colorValue : 0;
+                // scans
+                $scansExceeded = round(max($scansNb - $contract[SCAN_AMOUNT_FOR_FREE], 0));
+                $scansValue = $scansExceeded * $scanPrice;
+                $client[SCANS_VALUE] += $scansValue;
+            }
+
+            $totalValue = $hasAmountInSubscription ?
+                $subscription + max(($allPagesValue + $scansValue) - $amountInSubscription, 0) :
+                $subscription + $blackValue + $colorValue + $scansValue + $setupFee;
+            $client['wartosc'] += $totalValue;
+
+            $dataReports['suma'] += $totalValue;
+
+            $agreement['stronwabonamencie'] = $contract["black"];
+            $agreement['stronwabonamencie_kolor'] = $contract["color"];
+            $agreement[SCAN_AMOUNT_FOR_FREE] = $contract[SCAN_AMOUNT_FOR_FREE];
+
+            $agreement['wartoscblack'] = $blackValue;
+            $agreement['wartosckolor'] = $colorValue;
+            $agreement[SCANS_VALUE] = $scansValue;
+
+            $agreement['stronblackpowyzej'] = $blackExceeded;
+            $agreement['stronkolorpowyzej'] = $colorExceeded;
+            $agreement[SCANS_AMOUNT_PAID] = $scansExceeded;
+
+            $agreement['cenazastrone'] = $blackPrice;
+            $agreement['cenazastrone_kolor'] = $colorPrice;
+            $agreement[SCAN_PRICE] = $scanPrice;
+            $agreement['wartoscabonament'] = $subscription;
+            $agreement['kwotadowykorzystania'] = $amountInSubscription;
+
+            $agreement['oplatainstalacyjna'] = $setupFee;
+
+
+            $agreement['wartosc'] = $totalValue;
 
             copyArrays($agreement, $item, $this->AGREEMENT_FIELDS);
         }
+
+//        foreach ($dataReportsMiesieczne as $key => $item) {
+//            $dayOfDateRange = 0;
+//            $setupFee = 0;
+//            $daysAmount = date("t", strtotime($item['dataod']));
+//            $clientId = $item['rowidclient'];
+//
+//            if (date("m-Y", strtotime($item['dataod'])) == date("m-Y", strtotime($item['dacik']))) {
+//                $dayOfDateRange = date("j", strtotime($item['dataod'])) - 1;
+//                $setupFee = $item['cenainstalacji'];
+//            }
+//
+//            if (!isset($dataReports[$clientId])) {
+//                $dataReports[$clientId] = [];
+//            }
+//
+//            $client = &$dataReports[$clientId];
+//            $agreement = &$client['umowy'][$item['rowidumowa']];
+//
+//            $client['drukumowy'] = ($client['drukumowy'] ?? 0) + 1;
+//            copyArrays($client, $item, $this->CLIENT_FIELD_NAMES);
+//
+//            if (isset($item['lista_umow'])) {
+//                $agreement['lista_umow'] = $item['lista_umow'];
+//            }
+//
+//            $this->processPrinterErrors($client, $agreement, $item);
+//            $this->processCollectiveAgreements($client, $agreement, $item);
+//
+//            $this->initializeClientValues($client);
+//            $this->calculateSubscription($client, $item, $dayOfDateRange, $daysAmount);
+//            $this->calculatePageValues($client, $agreement, $item, $dayOfDateRange, $daysAmount, $setupFee);
+//
+//            copyArrays($agreement, $item, $this->AGREEMENT_FIELDS);
+//        }
 
         foreach ($dataReportsRoczne as $key => $item) {
 
