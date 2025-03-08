@@ -356,22 +356,22 @@ class report extends Model
 
     function getCountersReport($days, $serial): array
     {
-        $query = "SELECT c.serial, cl.nazwakrotka as 'client', c.datawiadomosci, c.ilosc as 'black', c.ilosckolor as 'color', c.ilosctotal as 'total', p.mail as 'e-mail'
-                    FROM counters c
-                    JOIN printers p ON c.serial = p.serial
-                    JOIN agreements a ON c.serial = a.serial
-                    JOIN clients cl ON cl.rowid = a.rowidclient
-                    WHERE c.datawiadomosci = (
+        $query = "SELECT p.serial, c.nazwakrotka as 'client', p.datawiadomosci, p.ilosc as 'black', p.ilosckolor as 'color', p.ilosctotal as 'total', pp.mail as 'e-mail'
+                    FROM pages p
+                    JOIN printers pp ON pp.serial = p.serial
+                    JOIN agreements a ON p.serial = a.serial
+                    JOIN clients c ON c.rowid = a.rowidclient
+                    WHERE p.datawiadomosci = (
                         SELECT MAX(sub.datawiadomosci)
-                        FROM counters sub
-                        WHERE sub.serial = c.serial
+                        FROM pages sub
+                        WHERE sub.serial = p.serial
                     ) 
-                    AND c.datawiadomosci < NOW() - INTERVAL $days DAY
-                    AND p.deleted = 0
+                    AND p.datawiadomosci < NOW() - INTERVAL $days DAY
+                    AND pp.deleted = 0
                     AND a.activity = 1";
 
         if ($serial !== '') {
-            $query .= " AND c.serial = '{$serial}'";
+            $query .= " AND p.serial = '{$serial}'";
         }
 
         return $this->query($query, null, null);
