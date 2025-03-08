@@ -67,6 +67,37 @@ class reportsController extends InvoicesController
         }
     }
 
+    function countersreport()
+    {
+        global $smarty;
+
+        $smarty->assign('days', 3);
+    }
+
+    function countersreportdata()
+    {
+        global $smarty;
+
+        $days = isset($_POST['days']) ? (int)$_POST['days'] : 3;
+        $serial = $_POST['serial'] ?? '';
+        $counters = $this->report->getCountersReport($days, $serial);
+
+        if (count($counters) === 0) {
+            $smarty->assign('isEmptyMessage', 'Dla podanych filtrów nie ma żadnych liczników do wyświetlenia.');
+        } else {
+            $columnNames = array_keys($counters[0]);
+
+            $columnSummaries = array_map(fn($columnName) => array_sum(array_map(fn($val) => is_numeric($val) ? $val : 0, array_column($counters, $columnName))), $columnNames);
+
+            $smarty->assign('columnNames', $columnNames);
+            $smarty->assign('columnSummaries', $columnSummaries);
+            $smarty->assign('counters', $counters);
+            $smarty->assign('showFooter', false);
+        }
+    }
+
+
+
     function paymentsimportsreport()
     {
         global $smarty;

@@ -354,6 +354,30 @@ class report extends Model
         return $this->query($query, null, null);
     }
 
+    function getCountersReport($days, $serial): array
+    {
+        $query = "SELECT c.serial, cl.nazwakrotka as 'client', c.datawiadomosci, c.ilosc as 'black', c.ilosckolor as 'color', c.ilosctotal as 'total', p.mail as 'e-mail'
+                    FROM counters c
+                    JOIN printers p ON c.serial = p.serial
+                    JOIN agreements a ON c.serial = a.serial
+                    JOIN clients cl ON cl.rowid = a.rowidclient
+                    WHERE c.datawiadomosci = (
+                        SELECT MAX(sub.datawiadomosci)
+                        FROM counters sub
+                        WHERE sub.serial = c.serial
+                    ) 
+                    AND c.datawiadomosci < NOW() - INTERVAL $days DAY
+                    AND p.deleted = 0
+                    AND a.activity = 1";
+
+        if ($serial !== '') {
+            $query .= " AND c.serial = '{$serial}'";
+        }
+
+        return $this->query($query, null, null);
+    }
+
+
     function getPaymentsImportsReportByDate($orderBy = 'created', $desc = true): array {
         $where = "WHERE created >= '{$this->startDate}' and created <= '{$this->endDate}'";
 

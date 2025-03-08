@@ -363,6 +363,13 @@
                             <a href='{$smarty.const.SCIEZKA}/reports/paymentsreport' class="dropdown-item">Raport
                                 Płatności</a>
                         {/if}
+                        {if
+                        isset($smarty.session.przypisanemenu['li_countersreport']) &&
+                        $smarty.session.przypisanemenu['li_countersreport']['permission'] === 'rw'
+                        }
+                            <a href='{$smarty.const.SCIEZKA}/reports/countersreport' class="dropdown-item">Raport
+                                Liczników</a>
+                        {/if}
                     </div>
                 </li>
             {/if}
