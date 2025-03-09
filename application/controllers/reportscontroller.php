@@ -113,7 +113,7 @@ class reportsController extends InvoicesController
         }
         $mailTo = $_POST['email'];
         $serial = $_POST['serial'];
-        $topic = "Prośba o wykonanie wydruku licznika<br/><br/>";
+        $topic = "Prośba o wykonanie wydruku licznika";
         $message =  "UWAGA: Poniższy tekst zostanie wysłany na adres: $mailTo.<br/><br/>"
                     . "Szanowni Państwo,<br/><br/>"
                     . "Zwracam się z uprzejmą prośbą o wykonanie wydruku licznika drukarki o numerze seryjnym: $serial.<br/><br/>"
@@ -123,7 +123,7 @@ class reportsController extends InvoicesController
                     . "+48 71 321 19 06";
         $mailing = new mailing();
         // TODO TR: we do not want to send it to client yet
-        $mailTo = 'tregimowicz@gmail.com';
+        $mailTo = 'm.stanko@otus.com.pl';
 
         $mailing->sendNewMail($mailTo, $message, $topic, null, $mailFrom = null, $mailFromName = null);
         unset($mailing);
