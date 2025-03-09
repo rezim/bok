@@ -69,18 +69,29 @@ class reportsController extends InvoicesController
 
     function countersreport()
     {
-        global $smarty;
-
-        $smarty->assign('days', 3);
+        // nop
     }
 
     function countersreportdata()
     {
         global $smarty;
 
-        $days = isset($_POST['days']) ? (int)$_POST['days'] : 3;
+        if (!isset($_POST['upperDateLimit'])) {
+            echo "błędne parametry wejściowe";
+        }
+
+        $targetDate = new DateTime($_POST['upperDateLimit']);
+        $today = new DateTime();
+
+        $diff = $today->diff($targetDate);
+        $daysDifference = $diff->days+1; // plus 1, because we want to exclude exact match dates
+
+        if ($targetDate > $today) {
+            $daysDifference *= -1; // if date is from future change sign
+        }
+
         $serial = $_POST['serial'] ?? '';
-        $counters = $this->report->getCountersReport($days, $serial);
+        $counters = $this->report->getCountersReport($daysDifference, $serial);
 
         if (count($counters) === 0) {
             $smarty->assign('isEmptyMessage', 'Dla podanych filtrów nie ma żadnych liczników do wyświetlenia.');
@@ -96,6 +107,29 @@ class reportsController extends InvoicesController
         }
     }
 
+    function sendmail() {
+        if (!isset($_POST['email']) || !isset($_POST['serial'])) {
+            echo "błędne parametry wejściowe";
+        }
+        $mailTo = $_POST['email'];
+        $serial = $_POST['serial'];
+        $topic = "Prośba o wykonanie wydruku licznika<br/><br/>";
+        $message =  "UWAGA: Poniższy tekst zostanie wysłany na adres: $mailTo.<br/><br/>"
+                    . "Szanowni Państwo,<br/><br/>"
+                    . "Zwracam się z uprzejmą prośbą o wykonanie wydruku licznika drukarki o numerze seryjnym: $serial.<br/><br/>"
+                    . "Proszę o przesłanie skanu lub zdjęcia na adres liczniki@otus.pl.<br/><br/>"
+                    . "Dziękujemy za pomoc i pozostajemy do dyspozycji w razie pytań.<br/><br/>"
+                    . "Zespół Otus<br/>"
+                    . "+48 71 321 19 06";
+        $mailing = new mailing();
+        // TODO TR: we do not want to send it to client yet
+        $mailTo = 'tregimowicz@gmail.com';
+
+        $mailing->sendNewMail($mailTo, $message, $topic, null, $mailFrom = null, $mailFromName = null);
+        unset($mailing);
+
+        echo json_encode("Mail do $mailTo został wysłany");
+    }
 
     function paymentsimportsreport()
     {

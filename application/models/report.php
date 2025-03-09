@@ -356,23 +356,27 @@ class report extends Model
 
     function getCountersReport($days, $serial): array
     {
-        $query = "SELECT p.serial, c.nazwakrotka as 'client', p.datawiadomosci, p.ilosc as 'black', p.ilosckolor as 'color', p.ilosctotal as 'total', pp.mail as 'e-mail'
-                    FROM pages p
+        $query = "WITH latest_pages AS (
+                    SELECT serial, MAX(datawiadomosci) AS max_datawiadomosci
+                    FROM pages
+                    WHERE datawiadomosci >= LAST_DAY(NOW() - INTERVAL 2 MONTH) + INTERVAL 1 DAY
+                    GROUP BY serial
+                )
+                SELECT p.serial, c.nazwakrotka AS 'client', pp.model, p.datawiadomosci, pp.mail AS 'e-mail'
+                FROM latest_pages lp
+                    JOIN pages p ON p.serial = lp.serial AND p.datawiadomosci = lp.max_datawiadomosci
                     JOIN printers pp ON pp.serial = p.serial
                     JOIN agreements a ON p.serial = a.serial
                     JOIN clients c ON c.rowid = a.rowidclient
-                    WHERE p.datawiadomosci = (
-                        SELECT MAX(sub.datawiadomosci)
-                        FROM pages sub
-                        WHERE sub.serial = p.serial
-                    ) 
-                    AND p.datawiadomosci < NOW() - INTERVAL $days DAY
-                    AND pp.deleted = 0
-                    AND a.activity = 1";
+                WHERE pp.deleted = 0
+                    AND a.activity = 1
+                    AND lp.max_datawiadomosci < NOW() - INTERVAL $days DAY";
+
 
         if ($serial !== '') {
             $query .= " AND p.serial = '{$serial}'";
         }
+        $query .= " ORDER BY p.datawiadomosci DESC;";
 
         return $this->query($query, null, null);
     }
