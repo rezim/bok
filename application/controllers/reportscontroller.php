@@ -128,6 +128,8 @@ class reportsController extends InvoicesController
         $mailing->sendNewMail($mailTo, $message, $topic, null, $mailFrom = null, $mailFromName = null);
         unset($mailing);
 
+        $this->report->updatePrinterWithLastEmailDate($serial);
+
         echo json_encode("Mail do $mailTo został wysłany");
     }
 

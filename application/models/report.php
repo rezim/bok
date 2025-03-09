@@ -362,7 +362,7 @@ class report extends Model
                     WHERE datawiadomosci >= LAST_DAY(NOW() - INTERVAL 2 MONTH) + INTERVAL 1 DAY
                     GROUP BY serial
                 )
-                SELECT p.serial, c.nazwakrotka AS 'client', pp.model, p.datawiadomosci, pp.mail AS 'e-mail'
+                SELECT p.serial, c.nazwakrotka AS 'client', pp.model, p.datawiadomosci, pp.mail AS 'e-mail', pp.last_notify_date as 'data maila'
                 FROM latest_pages lp
                     JOIN pages p ON p.serial = lp.serial AND p.datawiadomosci = lp.max_datawiadomosci
                     JOIN printers pp ON pp.serial = p.serial
@@ -414,6 +414,16 @@ class report extends Model
                   ORDER BY {$orderBy}";
 
         return $this->query($query, null, null);
+    }
+
+    function updatePrinterWithLastEmailDate($serial) {
+        $updateQuery = "UPDATE `printers`
+                SET last_notify_date = CURDATE()
+                WHERE serial = ?";
+
+        $this->update($updateQuery, 's', array($serial));
+
+//        $this->query($updateQuery);
     }
 }
 // SELECT c.nip, p.* FROM `payments` p inner join clients c on substring(p.recipient_acount, -10) = c.nip WHERE p.date >= '2023-10-01' and p.date <= '2023-11-30';
