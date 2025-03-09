@@ -175,6 +175,13 @@
                         {if isset($smarty.session.przypisanemenu['li_countersshow'])}
                             <a href='{$smarty.const.SCIEZKA}/custom/show' class="dropdown-item">Liczniki urządzeń</a>
                         {/if}
+                        {if
+                        isset($smarty.session.przypisanemenu['li_countersreport']) &&
+                        $smarty.session.przypisanemenu['li_countersreport']['permission'] === 'rw'
+                        }
+                            <a href='{$smarty.const.SCIEZKA}/reports/countersreport' class="dropdown-item">Raport
+                                Liczników</a>
+                        {/if}
                     </div>
                 </li>
             {/if}
