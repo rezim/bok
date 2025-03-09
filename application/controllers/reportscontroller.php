@@ -28,7 +28,7 @@ class reportsController extends InvoicesController
         SCAN_START, SCAN_END, SCAN_DATE_START, SCAN_DATE_END, SCAN_SUM,
         'strony_black_sum',
         'strony_kolor_sum', 'serials', 'nazwakrotka', 'lokalizacja_ulica', 'lokalizacja_miasto', 'lokalizacja_kodpocztowy', 'lokalizacja_telefon', 'lokalizacja_mail', 'lokalizacja_nazwa',
-        'typ_umowy', 'odbiorca_id', 'next_month_black', 'next_month_kolor', 'next_month_datawiadomosci');
+        'typ_umowy', 'odbiorca_id', 'next_month_black', 'next_month_kolor', 'next_month_datawiadomosci', 'lista_umow');
 
     function show()
     {
@@ -95,7 +95,6 @@ class reportsController extends InvoicesController
             $smarty->assign('showFooter', false);
         }
     }
-
 
 
     function paymentsimportsreport()
@@ -567,8 +566,6 @@ class reportsController extends InvoicesController
 
         $dataReportsMiesieczne = $this->groupByCollectiveAgreements($dataReportsMiesieczne);
 
-// TODO [TR]: remove unused code in case of positive verification
-
         foreach ($dataReportsMiesieczne as $key => $item) {
 
             $dayOfDateRange = 0;
@@ -822,41 +819,6 @@ class reportsController extends InvoicesController
             copyArrays($agreement, $item, $this->AGREEMENT_FIELDS);
         }
 
-//        foreach ($dataReportsMiesieczne as $key => $item) {
-//            $dayOfDateRange = 0;
-//            $setupFee = 0;
-//            $daysAmount = date("t", strtotime($item['dataod']));
-//            $clientId = $item['rowidclient'];
-//
-//            if (date("m-Y", strtotime($item['dataod'])) == date("m-Y", strtotime($item['dacik']))) {
-//                $dayOfDateRange = date("j", strtotime($item['dataod'])) - 1;
-//                $setupFee = $item['cenainstalacji'];
-//            }
-//
-//            if (!isset($dataReports[$clientId])) {
-//                $dataReports[$clientId] = [];
-//            }
-//
-//            $client = &$dataReports[$clientId];
-//            $agreement = &$client['umowy'][$item['rowidumowa']];
-//
-//            $client['drukumowy'] = ($client['drukumowy'] ?? 0) + 1;
-//            copyArrays($client, $item, $this->CLIENT_FIELD_NAMES);
-//
-//            if (isset($item['lista_umow'])) {
-//                $agreement['lista_umow'] = $item['lista_umow'];
-//            }
-//
-//            $this->processPrinterErrors($client, $agreement, $item);
-//            $this->processCollectiveAgreements($client, $agreement, $item);
-//
-//            $this->initializeClientValues($client);
-//            $this->calculateSubscription($client, $item, $dayOfDateRange, $daysAmount);
-//            $this->calculatePageValues($client, $agreement, $item, $dayOfDateRange, $daysAmount, $setupFee);
-//
-//            copyArrays($agreement, $item, $this->AGREEMENT_FIELDS);
-//        }
-
         foreach ($dataReportsRoczne as $key => $item) {
 
             $clientId = $item['rowidclient'];
@@ -986,7 +948,49 @@ class reportsController extends InvoicesController
         }
     }
 
-    private function processPrinterErrors(&$client, &$agreement, $item) {
+    // TODO TR: this is optimized whay of processing reports, although not working yet (results are different than expected)
+    private function forEachMonthlyReport($dataReportsMiesieczne)
+    {
+        foreach ($dataReportsMiesieczne as $key => $item) {
+            $dayOfDateRange = 0;
+            $setupFee = 0;
+            $daysAmount = date("t", strtotime($item['dataod']));
+            $clientId = $item['rowidclient'];
+
+            if (date("m-Y", strtotime($item['dataod'])) == date("m-Y", strtotime($item['dacik']))) {
+                $dayOfDateRange = date("j", strtotime($item['dataod'])) - 1;
+                $setupFee = $item['cenainstalacji'];
+            }
+
+            if (!isset($dataReports[$clientId])) {
+                $dataReports[$clientId] = [];
+            }
+
+            $client = &$dataReports[$clientId];
+            $agreement = &$client['umowy'][$item['rowidumowa']];
+
+            $client['drukumowy'] = ($client['drukumowy'] ?? 0) + 1;
+            copyArrays($client, $item, $this->CLIENT_FIELD_NAMES);
+
+            if (isset($item['lista_umow'])) {
+                $agreement['lista_umow'] = $item['lista_umow'];
+            }
+
+            $this->processPrinterErrors($client, $agreement, $item);
+            $this->processCollectiveAgreements($client, $agreement, $item);
+
+            $this->initializeClientValues($client);
+            $this->calculateSubscription($client, $item, $dayOfDateRange, $daysAmount);
+            $this->calculatePageValues($client, $agreement, $item, $dayOfDateRange, $daysAmount, $setupFee);
+
+            copyArrays($agreement, $item, $this->AGREEMENT_FIELDS);
+
+        }
+    }
+
+    private
+    function processPrinterErrors(&$client, &$agreement, $item)
+    {
         if (!in_array($item['typ_umowy'], ['wynajem drukarki', 'wynajem skanera'])) return;
         $hasError = $this->hasError($item);
         if ($hasError > 0) {
@@ -997,7 +1001,9 @@ class reportsController extends InvoicesController
         }
     }
 
-    private function processCollectiveAgreements(&$client, &$agreement, $item) {
+    private
+    function processCollectiveAgreements(&$client, &$agreement, $item)
+    {
         if ($item['typ_umowy'] !== 'umowa zbiorcza' || !isset($item['lista_umow'])) return;
 
         foreach ($item['lista_umow'] as $agrKey => &$agr) {
@@ -1012,7 +1018,9 @@ class reportsController extends InvoicesController
         unset($agr);
     }
 
-    private function initializeClientValues(&$client) {
+    private
+    function initializeClientValues(&$client)
+    {
         $client['wartosc'] = $client['wartosc'] ?? 0;
         $client['wartoscblack'] = $client['wartoscblack'] ?? 0;
         $client['wartosckolor'] = $client['wartosckolor'] ?? 0;
@@ -1021,7 +1029,9 @@ class reportsController extends InvoicesController
         $client['kwotadowykorzystania'] = $client['kwotadowykorzystania'] ?? 0;
     }
 
-    private function calculateSubscription(&$client, $item, $dayOfDateRange, $daysAmount) {
+    private
+    function calculateSubscription(&$client, $item, $dayOfDateRange, $daysAmount)
+    {
         $item['rabatdoabonamentu'] = empty($item['rabatdoabonamentu']) ? 0 : $item['rabatdoabonamentu'];
         $subscription = (float)$item['abonament'];
         if ($dayOfDateRange != 0) {
@@ -1031,7 +1041,9 @@ class reportsController extends InvoicesController
         $client['wartoscabonament'] += $subscription;
     }
 
-    private function calculatePageValues(&$client, &$agreement, $item, $dayOfDateRange, $daysAmount, $setupFee) {
+    private
+    function calculatePageValues(&$client, &$agreement, $item, $dayOfDateRange, $daysAmount, $setupFee)
+    {
         $blackPagesNb = (int)$item['strony_black_sum'];
         $colorPagesNb = (int)$item['strony_kolor_sum'];
         $scansNb = (int)$item[SCAN_SUM];
@@ -1058,7 +1070,9 @@ class reportsController extends InvoicesController
         $agreement['wartosc'] = $totalValue;
     }
 
-    private function validateFixConditions($item) {
+    private
+    function validateFixConditions($item)
+    {
         return (
             ($item['strony_black_koniec'][0] >= $item['strony_black_start'][0] ||
                 $item['strony_kolor_koniec'][0] >= $item['strony_kolor_start'][0] ||
@@ -1068,7 +1082,9 @@ class reportsController extends InvoicesController
         );
     }
 
-    private function generateFixData($item) {
+    private
+    function generateFixData($item)
+    {
         $blackEnd = $item['strony_black_koniec'][0];
         $colorEnd = $item['strony_kolor_koniec'][0];
         $scanEnd = $item[SCAN_END][0];
