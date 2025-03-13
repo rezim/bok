@@ -246,7 +246,7 @@ class mailing
         }
     }
 
-    function sendNewMail($mailto, $tresc, $temat, $zalaczniki = null, $mailFrom = null, $mailFromName = null)
+    function sendNewMail($mailto, $tresc, $temat, $zalaczniki = null, $mailFrom = null, $mailFromName = null, $replayTo = null, $replayToName = null)
     {
 
 
@@ -270,7 +270,7 @@ class mailing
         $mailek->FromName = $mailFromName ? $mailFromName : NAME_CASE;
         $mailek->CharSet = 'UTF-8';
         $mailek->WordWrap = 50;                                 // Set word wrap to 50 characters
-        $mailek->addReplyTo(FROM_CASE, NAME_CASE);
+        $mailek->addReplyTo($replayTo ? $replayTo : FROM_CASE, $replayToName ? $replayToName : NAME_CASE);
         $mailek->isHTML(true);
         $mailek->addAddress($mailto);     // Add a recipient
 
