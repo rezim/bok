@@ -31,7 +31,7 @@
                                     {if isset($row['e-mail']) && $row['e-mail'] neq ''}
                                         <div class="border-top my-1"></div>
                                         <a href="javascript:void(0)" class="dropdown-item"
-                                           onClick="sendEmail('{$row['e-mail']}', '{$row['serial']}')"><i
+                                           onClick="sendEmail('{$row['e-mail']}', '{$row['serial']}', '{$row['model']}')"><i
                                                     class="fa fa-envelope"></i>
                                             &nbsp;&nbsp;Wyślij E-maila</a>
                                     {/if}
