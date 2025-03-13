@@ -54,7 +54,7 @@
     const dataContainerId = 'dataFilter';
     const templateId = 'divRightCenter';
     const applyFilters = () => renderTemplateAction("/reports/countersreportdata/todiv", dataContainerId, templateId);
-    const sendEmail = (email, serial) => {
+    const sendEmail = (email, serial, model) => {
         callServiceWithDataAction("/reports/sendmail/notemplate", { email, serial, model }, null, applyFilters, (err) => alert(err) );
     }
 
