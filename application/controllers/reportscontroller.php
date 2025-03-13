@@ -125,7 +125,7 @@ class reportsController extends InvoicesController
         // TODO TR: we do not want to send it to client yet
         $mailTo = 'm.stanko@otus.com.pl';
 
-        $mailing->sendNewMail($mailTo, $message, $topic, null, $mailFrom = null, $mailFromName = null);
+        $mailing->sendNewMail($mailTo, $message, $topic, null, 'liczniki@otus.pl', 'Otus Liczniki');
         unset($mailing);
 
         $this->report->updatePrinterWithLastEmailDate($serial);
