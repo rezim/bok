@@ -2,7 +2,7 @@
 if (file_exists("c:/work/bok/library/phpmailer/PHPMailerAutoload.php")) {
     require_once "c:/work/bok/library/phpmailer/PHPMailerAutoload.php";
 } else {
-    require_once "/volume1/web/bok/library/phpmailer/PHPMailerAutoload.php";
+    require_once "/otusbok.otus.pl/bok/library/phpmailer/PHPMailerAutoload.php";
 }
 
 require_once "mailTemplates.php";
