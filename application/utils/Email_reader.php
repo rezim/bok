@@ -288,7 +288,7 @@ function insertIntoPaymentsQuery($content)
                        recipient_acount, sender_name, recipient_name, intermediate_branch_number, final_branch_number,
                         details, additional_notes)
                       values({$message_type}, '{$date}', $amount, '{$senderBranchNumber}', '{$recipientBranchNumber}', 
-                              {$senderAccount}, {$recipientAccount}, '{$senderName}', '{$recipientName}', {$intermediateBranchNumber},
+                              '{$senderAccount}', '{$recipientAccount}', '{$senderName}', '{$recipientName}', {$intermediateBranchNumber},
                                '{$finalBranchNumber}', '{$details}', '{$additionalNotes}')";
 }
 

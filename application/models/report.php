@@ -396,7 +396,7 @@ class report extends Model
     }
 
     function getPaymentsReport($orderBy = 'p.date DESC, c.nazwakrotka ASC'): array {
-        $where = "WHERE p.date >= '{$this->startDate}' and p.date <= '{$this->endDate}'";
+        $where = "WHERE p.date >= '{$this->startDate}' and p.date <= '{$this->endDate}' and c.rowid = (SELECT MIN(rowid) FROM clients c2 WHERE c2.nip = c.nip) ";
 
         if ($this->clientName != '') {
             $where .= " and (c.nazwakrotka like '%{$this->clientName}%' or c.nazwapelna like '%$this->clientName%')";

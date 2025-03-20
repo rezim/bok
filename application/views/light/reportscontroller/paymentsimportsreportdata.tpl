@@ -9,8 +9,9 @@
         </tr>
         </thead>
         <tbody>
-        {foreach $data as $rowData}
+        {foreach $data as $row_index => $rowData}
             <tr>
+                <td><b>{$row_index+1}</b></td>
                 {foreach $rowData as $colData}
                     <td>{$colData}</td>
                 {/foreach}
