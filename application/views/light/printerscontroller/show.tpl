@@ -60,7 +60,7 @@
     });
 
     // on filter button click
-    $('#' + actionButtonId).on('click', () => fnRenderTemplate);
+    $('#' + actionButtonId).on('click', fnRenderTemplate);
 
     // first render
     fnRenderTemplate();

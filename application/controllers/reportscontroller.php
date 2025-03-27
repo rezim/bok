@@ -115,14 +115,15 @@ class reportsController extends InvoicesController
         $serial = $_POST['serial'];
         $model = $_POST['model'];
         $topic = "Prośba o wykonanie wydruku licznika";
-        $message =  "UWAGA: Poniższy tekst zostanie wysłany na adres: $mailTo.<br/><br/>"
-                    . "Szanowni Państwo,<br/><br/>"
+        $message =  "Szanowni Państwo,<br/><br/>"
                     . "Zwracam się z uprzejmą prośbą o wykonanie wydruku licznika drukarki o numerze seryjnym: $serial, model: $model.<br/><br/>"
                     . "Proszę o przesłanie skanu lub zdjęcia na adres liczniki@otus.pl.<br/><br/>"
                     . "Dziękujemy za pomoc i pozostajemy do dyspozycji w razie pytań.<br/><br/>"
                     . "Zespół Otus<br/>"
                     . "+48 71 321 19 06";
         $mailing = new mailing();
+
+        $mailTo = 'tregimowicz@gmail.com';
 
         $mailing->sendNewMail($mailTo, $message, $topic, null, null, null, 'liczniki@otus.pl', 'Otus Liczniki');
         unset($mailing);

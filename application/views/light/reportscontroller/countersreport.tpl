@@ -26,7 +26,12 @@
 
                 <div class="form-group">
                     <button id="applyFilter" class="btn btn-info btn-block" type="button">
-                    Filtruj
+                        Filtruj
+                    </button>
+                </div>
+                <div class="form-group">
+                    <button id="sendAllEmails" class="btn btn-danger btn-block" type="button">
+                        Wyślij do wszystkich
                     </button>
                 </div>
             </form>
@@ -55,11 +60,38 @@
     const templateId = 'divRightCenter';
     const applyFilters = () => renderTemplateAction("/reports/countersreportdata/todiv", dataContainerId, templateId);
     const sendEmail = (email, serial, model) => {
-        callServiceWithDataAction("/reports/sendmail/notemplate", { email, serial, model }, null, applyFilters, (err) => alert(err) );
+        callServiceWithDataAction("/reports/sendmail/notemplate", {
+            email,
+            serial,
+            model
+        }, null, applyFilters, (err) => alert(err));
+    }
+    const sendEmailWithoutReloading = (email, serial, model) => {
+        callServiceWithDataAction("/reports/sendmail/notemplate", {
+            email,
+            serial,
+            model
+        }, null, null, null);
     }
 
 
+    const sendAllEmails = () => {
+        if (confirm('Czy na pewno chcesz wysłać do wszystkich klientów ?')) {
+            const sendAllEmailsData = $('[data-ref][data]')
+                .map((_, row) => {
+                    const [email, serial, model] = row.getAttribute('data').split(',');
+                    return { email, serial, model };
+                }).get();
+
+            sendAllEmailsData.forEach(
+                ({ email, serial, model }) => sendEmailWithoutReloading(email, serial, model)
+            );
+            applyFilters();
+        }
+    }
+
     $("#applyFilter").on('click', applyFilters);
+    $("#sendAllEmails").on('click', sendAllEmails);
 
     applyFilters();
 </script>

