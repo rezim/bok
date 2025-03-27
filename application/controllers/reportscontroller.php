@@ -123,8 +123,6 @@ class reportsController extends InvoicesController
                     . "+48 71 321 19 06";
         $mailing = new mailing();
 
-        $mailTo = 'tregimowicz@gmail.com';
-
         $mailing->sendNewMail($mailTo, $message, $topic, null, null, null, 'liczniki@otus.pl', 'Otus Liczniki');
         unset($mailing);
 
