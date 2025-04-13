@@ -34,7 +34,7 @@ $notificationIdsToUpdateInHESK = array();
 $conn->set_charset("utf8mb4");
 
 // Etap 1: Przetwarzanie zgłoszeń z status != 3
-$sql = "SELECT id, u_name as name, dt, trackid, message, custom1, custom2, custom3, closedat, u_email as email, subject, priority, status FROM hesk_tickets WHERE status != 3 ORDER BY id ASC";
+$sql = "SELECT id, u_name as name, dt, trackid, message, custom1, custom2, custom3, closedat, u_email as email, subject, priority, status FROM hesk_tickets WHERE status != 3 and category not in (14,15,16,17) ORDER BY id ASC";
 $result = $conn->query($sql);
 
 if ($result->num_rows > 0) {

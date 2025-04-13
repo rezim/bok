@@ -1,64 +1,62 @@
 <?php
-class agreement extends Model 
+
+class agreement extends Model
 {
-     protected $rowid=0,$nrumowy='',$dataod='',$datado='',$stronwabonamencie='',$cenazastrone='',$serial='',
-             $rowidclient='',$opis='',$rozliczenie='',$abonament='',$kwotawabonamencie='',$odbiorca_id,
-            $iloscstron_kolor='',
-            $cenazastrone_kolor='',
-            $iloscskanow='',
-            $cenazaskan='',
-            $cenainstalacji='',
-            $rabatdoabonamentu='',
-            $rabatdowydrukow='',
-            $prowizjapartnerska='',
-            $sla='',
-            $wartoscurzadzenia='',$jakczarne='',$rowid_type;
-     protected $filternrumowy='',$filterserial='',$filternazwaklienta='',$clientrowid='',$pokazzakonczone=0;
+    protected $rowid = 0, $nrumowy = '', $dataod = '', $datado = '', $stronwabonamencie = '', $cenazastrone = '', $serial = '',
+        $rowidclient = '', $opis = '', $rozliczenie = '', $abonament = '', $kwotawabonamencie = '', $odbiorca_id,
+        $iloscstron_kolor = '',
+        $cenazastrone_kolor = '',
+        $iloscskanow = '',
+        $cenazaskan = '',
+        $cenainstalacji = '',
+        $rabatdoabonamentu = '',
+        $rabatdowydrukow = '',
+        $prowizjapartnerska = '',
+        $sla = '',
+        $wartoscurzadzenia = '', $jakczarne = '', $rowid_type;
+    protected $filternrumowy = '', $filterserial = '', $filternazwaklienta = '', $clientrowid = '', $pokazzakonczone = 0;
 
-     protected $prtcntrowid=0,
-         $counterstart, $countercolorstart, $counterscansstart, $datacounterstart,
-         $counterend, $countercolorend, $counterscansend, $datacounterend;
+    protected $prtcntrowid = 0,
+        $counterstart, $countercolorstart, $counterscansstart, $datacounterstart,
+        $counterend, $countercolorend, $counterscansend, $datacounterend;
 
-      function delete()
+    function delete()
     {
-          $result = $this->update
-                             (
-                                 "update agreements set activity=0
+        $result = $this->update
+        (
+            "update agreements set activity=0
                                      where `rowid`=?"
-                                ,'i', 
-                                 array
-                                 (
-                                     $this->rowid
-                                 )
-                             );
+            , 'i',
+            array
+            (
+                $this->rowid
+            )
+        );
         $this->updateAgreementPrinters();
         return $result;
     }
-     function getAgreements()
-     {
-        
-         if($this->pokazzakonczone==0)
+
+    function getAgreements()
+    {
+
+        if ($this->pokazzakonczone == 0)
             $where = " where a.activity=1";
-         else
+        else
             $where = " where (a.activity=0)";
-        
-        if($this->filternrumowy!='')
-        {
-            $where.=" and ( a.nrumowy like '%{$this->filternrumowy}%')   ";
+
+        if ($this->filternrumowy != '') {
+            $where .= " and ( a.nrumowy like '%{$this->filternrumowy}%')   ";
         }
-        if($this->filterserial!='')
-        {
-            $where.=" and ( a.serial like '%{$this->filterserial}%' or b.model like '%{$this->filterserial}%')";
+        if ($this->filterserial != '') {
+            $where .= " and ( a.serial like '%{$this->filterserial}%' or b.model like '%{$this->filterserial}%')";
         }
-        if($this->filternazwaklienta!='')
-        {
-            $where.=" and ( c.nazwakrotka like '%{$this->filternazwaklienta}%' || c.nazwapelna like '%{$this->filternazwaklienta}%')";
+        if ($this->filternazwaklienta != '') {
+            $where .= " and ( c.nazwakrotka like '%{$this->filternazwaklienta}%' || c.nazwapelna like '%{$this->filternazwaklienta}%')";
         }
-        if($this->clientrowid!='')
-        {
-            $where.=" and ( a.rowidclient = {$this->clientrowid})   ";
+        if ($this->clientrowid != '') {
+            $where .= " and ( a.rowidclient = {$this->clientrowid})   ";
         }
-       
+
         $query = "  
                 select 
                 a.nrumowy as 'nrumowy',
@@ -87,15 +85,16 @@ class agreement extends Model
                 {$where}
                 order by c.nazwakrotka asc
         ";
-        return $this->query($query,null,false); 
-     }   
-     function saveupdate()
+        return $this->query($query, null, false);
+    }
+
+    function saveupdate()
     {
 
-            if ($this->rowid != 0) {
-                $result = $this->update
-                (
-                    "update agreements
+        if ($this->rowid != 0) {
+            $result = $this->update
+            (
+                "update agreements
                                      set 
                                     `nrumowy`=?,
                                     `dataod`=?,
@@ -123,41 +122,41 @@ class agreement extends Model
                                     `jakczarne`=?,
                                     `rowid_type`=?
                                      where `rowid`=?"
-                    , 'sssidddssisssidddddddidiii',
-                    array
-                    (
-                        $this->nrumowy == '' ? "NULL" : $this->nrumowy,
-                        ($this->dataod == '' || $this->dataod == '0000-00-00') ? "NULL" : $this->dataod,
-                        ($this->datado == '' || $this->datado == '0000-00-00') ? "NULL" : $this->datado,
-                        $this->stronwabonamencie == '' ? "NULL" : str_replace(' ', '', str_replace(',', '.', $this->stronwabonamencie)),
-                        $this->cenazastrone == '' ? "NULL" : str_replace(' ', '', str_replace(',', '.', $this->cenazastrone)),
-                        $this->abonament == '' ? "NULL" : str_replace(' ', '', str_replace(',', '.', $this->abonament)),
-                        $this->kwotawabonamencie == '' ? "NULL" : str_replace(' ', '', str_replace(',', '.', $this->kwotawabonamencie)),
-                        date('Y-m-d H:i:s'),
-                        $this->serial == '' ? "NULL" : $this->serial,
-                        $this->rowidclient == '' ? "NULL" : $this->rowidclient,
-                        $this->odbiorca_id == '' ? "NULL" : $this->odbiorca_id,
-                        $this->opis == '' ? "NULL" : $this->opis,
-                        $this->rozliczenie == '' ? "NULL" : $this->rozliczenie,
-                        $this->iloscstron_kolor == '' ? "NULL" : str_replace(' ', '', str_replace(',', '.', $this->iloscstron_kolor)),
-                        $this->cenazastrone_kolor == '' ? "NULL" : str_replace(' ', '', str_replace(',', '.', $this->cenazastrone_kolor)),
-                        $this->iloscskanow == '' ? "NULL" : str_replace(' ', '', str_replace(',', '.', $this->iloscskanow)),
-                        $this->cenazaskan == '' ? "NULL" : str_replace(' ', '', str_replace(',', '.', $this->cenazaskan)),
-                        $this->cenainstalacji == '' ? "NULL" : str_replace(' ', '', str_replace(',', '.', $this->cenainstalacji)),
-                        $this->rabatdoabonamentu == '' ? "NULL" : str_replace(' ', '', str_replace(',', '.', $this->rabatdoabonamentu)),
-                        $this->rabatdowydrukow == '' ? "NULL" : str_replace(' ', '', str_replace(',', '.', $this->rabatdowydrukow)),
-                        $this->prowizjapartnerska == '' ? "NULL" : str_replace(' ', '', str_replace(',', '.', $this->prowizjapartnerska)),
-                        $this->sla == '' ? "NULL" : str_replace(' ', '', str_replace(',', '.', $this->sla)),
-                        $this->wartoscurzadzenia == '' ? "NULL" : str_replace(' ', '', str_replace(',', '.', $this->wartoscurzadzenia)),
-                        $this->jakczarne == '' ? "NULL" : $this->jakczarne,
-                        $this->rowid_type == '' ? "1" : $this->rowid_type,
-                        $this->rowid
-                    )
-                );
+                , 'sssidddssisssidddddddidiii',
+                array
+                (
+                    $this->nrumowy == '' ? "NULL" : $this->nrumowy,
+                    ($this->dataod == '' || $this->dataod == '0000-00-00') ? "NULL" : $this->dataod,
+                    ($this->datado == '' || $this->datado == '0000-00-00') ? "NULL" : $this->datado,
+                    $this->stronwabonamencie == '' ? "NULL" : str_replace(' ', '', str_replace(',', '.', $this->stronwabonamencie)),
+                    $this->cenazastrone == '' ? "NULL" : str_replace(' ', '', str_replace(',', '.', $this->cenazastrone)),
+                    $this->abonament == '' ? "NULL" : str_replace(' ', '', str_replace(',', '.', $this->abonament)),
+                    $this->kwotawabonamencie == '' ? "NULL" : str_replace(' ', '', str_replace(',', '.', $this->kwotawabonamencie)),
+                    date('Y-m-d H:i:s'),
+                    $this->serial == '' ? "NULL" : $this->serial,
+                    $this->rowidclient == '' ? "NULL" : $this->rowidclient,
+                    $this->odbiorca_id == '' ? "NULL" : $this->odbiorca_id,
+                    $this->opis == '' ? "NULL" : $this->opis,
+                    $this->rozliczenie == '' ? "NULL" : $this->rozliczenie,
+                    $this->iloscstron_kolor == '' ? "NULL" : str_replace(' ', '', str_replace(',', '.', $this->iloscstron_kolor)),
+                    $this->cenazastrone_kolor == '' ? "NULL" : str_replace(' ', '', str_replace(',', '.', $this->cenazastrone_kolor)),
+                    $this->iloscskanow == '' ? "NULL" : str_replace(' ', '', str_replace(',', '.', $this->iloscskanow)),
+                    $this->cenazaskan == '' ? "NULL" : str_replace(' ', '', str_replace(',', '.', $this->cenazaskan)),
+                    $this->cenainstalacji == '' ? "NULL" : str_replace(' ', '', str_replace(',', '.', $this->cenainstalacji)),
+                    $this->rabatdoabonamentu == '' ? "NULL" : str_replace(' ', '', str_replace(',', '.', $this->rabatdoabonamentu)),
+                    $this->rabatdowydrukow == '' ? "NULL" : str_replace(' ', '', str_replace(',', '.', $this->rabatdowydrukow)),
+                    $this->prowizjapartnerska == '' ? "NULL" : str_replace(' ', '', str_replace(',', '.', $this->prowizjapartnerska)),
+                    $this->sla == '' ? "NULL" : str_replace(' ', '', str_replace(',', '.', $this->sla)),
+                    $this->wartoscurzadzenia == '' ? "NULL" : str_replace(' ', '', str_replace(',', '.', $this->wartoscurzadzenia)),
+                    $this->jakczarne == '' ? "NULL" : $this->jakczarne,
+                    $this->rowid_type == '' ? "1" : $this->rowid_type,
+                    $this->rowid
+                )
+            );
 
-            } else {
+        } else {
 
-                $columnList = "`nrumowy`,
+            $columnList = "`nrumowy`,
                             `dataod`,
                             `datado`,
                             `stronwabonamencie`,
@@ -179,36 +178,36 @@ class agreement extends Model
                                     `jakczarne`,
                                     `rowid_type`
                             ";
-                $this->_table = 'agreements';
-                $result = $this->insert($columnList, 'sssidddsissssidddddddidii',
-                    array(
-                        $this->nrumowy == '' ? "NULL" : $this->nrumowy,
-                        ($this->dataod == '' || $this->dataod == '0000-00-00') ? "NULL" : $this->dataod,
-                        ($this->datado == '' || $this->datado == '0000-00-00') ? "NULL" : $this->datado,
-                        $this->stronwabonamencie == '' ? "NULL" : str_replace(' ', '', str_replace(',', '.', $this->stronwabonamencie)),
-                        $this->cenazastrone == '' ? "NULL" : str_replace(' ', '', str_replace(',', '.', $this->cenazastrone)),
-                        $this->abonament == '' ? "NULL" : str_replace(' ', '', str_replace(',', '.', $this->abonament)),
-                        $this->kwotawabonamencie == '' ? "NULL" : str_replace(' ', '', str_replace(',', '.', $this->kwotawabonamencie)),
-                        $this->serial == '' ? "NULL" : $this->serial,
-                        $this->rowidclient == '' ? "NULL" : $this->rowidclient,
-                        $this->odbiorca_id == '' ? "NULL" : $this->odbiorca_id,
-                        date('Y-m-d H:i:s'), $this->opis == '' ? "NULL" : $this->opis, $this->rozliczenie == '' ? "NULL" : $this->rozliczenie,
-                        $this->iloscstron_kolor == '' ? "NULL" : str_replace(' ', '', str_replace(',', '.', $this->iloscstron_kolor)),
-                        $this->cenazastrone_kolor == '' ? "NULL" : str_replace(' ', '', str_replace(',', '.', $this->cenazastrone_kolor)),
-                        $this->iloscskanow == '' ? "NULL" : str_replace(' ', '', str_replace(',', '.', $this->iloscskanow)),
-                        $this->cenazaskan == '' ? "NULL" : str_replace(' ', '', str_replace(',', '.', $this->cenazaskan)),
-                        $this->cenainstalacji == '' ? "NULL" : str_replace(' ', '', str_replace(',', '.', $this->cenainstalacji)),
-                        $this->rabatdoabonamentu == '' ? "NULL" : str_replace(' ', '', str_replace(',', '.', $this->rabatdoabonamentu)),
-                        $this->rabatdowydrukow == '' ? "NULL" : str_replace(' ', '', str_replace(',', '.', $this->rabatdowydrukow)),
-                        $this->prowizjapartnerska == '' ? "NULL" : str_replace(' ', '', str_replace(',', '.', $this->prowizjapartnerska)),
-                        $this->sla == '' ? "NULL" : str_replace(' ', '', str_replace(',', '.', $this->sla)),
-                        $this->wartoscurzadzenia == '' ? "NULL" : str_replace(' ', '', str_replace(',', '.', $this->wartoscurzadzenia)),
-                        $this->jakczarne == '' ? "NULL" : $this->jakczarne,
-                        $this->rowid_type == '' ? "1" : $this->rowid_type,
-                    ));
+            $this->_table = 'agreements';
+            $result = $this->insert($columnList, 'sssidddsissssidddddddidii',
+                array(
+                    $this->nrumowy == '' ? "NULL" : $this->nrumowy,
+                    ($this->dataod == '' || $this->dataod == '0000-00-00') ? "NULL" : $this->dataod,
+                    ($this->datado == '' || $this->datado == '0000-00-00') ? "NULL" : $this->datado,
+                    $this->stronwabonamencie == '' ? "NULL" : str_replace(' ', '', str_replace(',', '.', $this->stronwabonamencie)),
+                    $this->cenazastrone == '' ? "NULL" : str_replace(' ', '', str_replace(',', '.', $this->cenazastrone)),
+                    $this->abonament == '' ? "NULL" : str_replace(' ', '', str_replace(',', '.', $this->abonament)),
+                    $this->kwotawabonamencie == '' ? "NULL" : str_replace(' ', '', str_replace(',', '.', $this->kwotawabonamencie)),
+                    $this->serial == '' ? "NULL" : $this->serial,
+                    $this->rowidclient == '' ? "NULL" : $this->rowidclient,
+                    $this->odbiorca_id == '' ? "NULL" : $this->odbiorca_id,
+                    date('Y-m-d H:i:s'), $this->opis == '' ? "NULL" : $this->opis, $this->rozliczenie == '' ? "NULL" : $this->rozliczenie,
+                    $this->iloscstron_kolor == '' ? "NULL" : str_replace(' ', '', str_replace(',', '.', $this->iloscstron_kolor)),
+                    $this->cenazastrone_kolor == '' ? "NULL" : str_replace(' ', '', str_replace(',', '.', $this->cenazastrone_kolor)),
+                    $this->iloscskanow == '' ? "NULL" : str_replace(' ', '', str_replace(',', '.', $this->iloscskanow)),
+                    $this->cenazaskan == '' ? "NULL" : str_replace(' ', '', str_replace(',', '.', $this->cenazaskan)),
+                    $this->cenainstalacji == '' ? "NULL" : str_replace(' ', '', str_replace(',', '.', $this->cenainstalacji)),
+                    $this->rabatdoabonamentu == '' ? "NULL" : str_replace(' ', '', str_replace(',', '.', $this->rabatdoabonamentu)),
+                    $this->rabatdowydrukow == '' ? "NULL" : str_replace(' ', '', str_replace(',', '.', $this->rabatdowydrukow)),
+                    $this->prowizjapartnerska == '' ? "NULL" : str_replace(' ', '', str_replace(',', '.', $this->prowizjapartnerska)),
+                    $this->sla == '' ? "NULL" : str_replace(' ', '', str_replace(',', '.', $this->sla)),
+                    $this->wartoscurzadzenia == '' ? "NULL" : str_replace(' ', '', str_replace(',', '.', $this->wartoscurzadzenia)),
+                    $this->jakczarne == '' ? "NULL" : $this->jakczarne,
+                    $this->rowid_type == '' ? "1" : $this->rowid_type,
+                ));
 
-                 $this->rowid = isset($result) ? $result['rowid'] : 0;
-            }
+            $this->rowid = isset($result) ? $result['rowid'] : 0;
+        }
 
 
         $this->updateAgreementPrinters();
@@ -217,7 +216,8 @@ class agreement extends Model
     }
 
 
-    function updateAgreementPrinters() {
+    function updateAgreementPrinters()
+    {
         if ($this->rowid && $this->serial) {
             if (!$this->prtcntrowid) {
                 $columnList = "
@@ -244,6 +244,13 @@ class agreement extends Model
                     str_replace(' ', '', $this->counterscansstart),
                     str_replace(' ', '', $this->counterscansend),
                 ));
+
+
+                // update agreement in pages (counters table) to reflect agreement start date
+                if (!($this->datacounterstart == '' || $this->datacounterstart == '0000-00-00')) {
+                    $this->update("update pages set `rowid_agreement`=? where `serial`=? and `datawiadomosci` >=?", 'iss', array($this->rowid, $this->serial, $this->datacounterstart));
+                }
+
             } else {
                 $this->update("update agreement_printers 
                                          set `date_start`=?,
@@ -272,29 +279,33 @@ class agreement extends Model
         }
     }
 
-    function getAgreementPrinterCounters($rowid, $serial) {
-      $query = "select * from agreement_printers where rowid_agreement={$rowid} and serial='{$serial}'";
-      return $this->query($query, null, false);
+    function getAgreementPrinterCounters($rowid, $serial)
+    {
+        $query = "select * from agreement_printers where rowid_agreement={$rowid} and serial='{$serial}'";
+        return $this->query($query, null, false);
     }
 
-    function getAgreementTypes() {
+    function getAgreementTypes()
+    {
         $query = "select * from agreement_type";
         return $this->query($query, null, false);
     }
 
-     function getUmowaByRowid($rowid)
+    function getUmowaByRowid($rowid)
     {
         $query = "select * from agreements where rowid={$rowid}";
-        return $this->query($query,null,false); 
+        return $this->query($query, null, false);
     }
-     function getUmowaByClient($rowidClient)
+
+    function getUmowaByClient($rowidClient)
     {
         $query = "select rowid from agreements where rowidclient={$rowidClient} and activity=1";
-        return $this->query($query,null,false); 
+        return $this->query($query, null, false);
     }
-     function getUmowaByPrinter($serial)
+
+    function getUmowaByPrinter($serial)
     {
         $query = "select rowid from agreements where serial='{$serial}' and activity=1";
-        return $this->query($query,null,false); 
+        return $this->query($query, null, false);
     }
 }
