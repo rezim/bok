@@ -746,9 +746,8 @@ function usunUmowe(rowid) {
                 }
                 return false;
             },
-            error: function () {
-
-                alert('Problem z usunięciem tej umowy');
+            error: function (e) {
+                alert(`Nie można zamknąć umowy, komunikat błędu: "${e.responseText}"`);
                 return false;
             }
         });

@@ -4,6 +4,12 @@ class agreementsController extends Controller
 {
     function delete()
     {
+        if ($_POST['datacounterend'] = '') {
+            header($_SERVER['SERVER_PROTOCOL'] . ' 500 Internal Server Error', true, 500);
+            echo "podaj dane końcowe liczników";
+            return;
+        }
+
         $this->agreement->populateWithPost();
         echo(json_encode($this->agreement->delete()));
     }

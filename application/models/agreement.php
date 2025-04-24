@@ -245,12 +245,11 @@ class agreement extends Model
                     str_replace(' ', '', $this->counterscansend),
                 ));
 
-
                 // update agreement in pages (counters table) to reflect agreement start date
                 if (!($this->datacounterstart == '' || $this->datacounterstart == '0000-00-00')) {
                     $this->update("update pages set `rowid_agreement`=? where `serial`=? and `datawiadomosci` >=?", 'iss', array($this->rowid, $this->serial, $this->datacounterstart));
+                    $this->update("update scans set `rowid_agreement`=? where `serial`=? and `datawiadomosci` >=?", 'iss', array($this->rowid, $this->serial, $this->datacounterstart));
                 }
-
             } else {
                 $this->update("update agreement_printers 
                                          set `date_start`=?,
