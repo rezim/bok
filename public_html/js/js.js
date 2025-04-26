@@ -1495,7 +1495,7 @@ function uprawnienia() {
     }
 }
 
-function savePrinterCounters(previousBlack, previousColor, serial) {
+function savePrinterCounters(previousBlack, previousColor, previousScans, serial) {
     var
         doc = document,
         objLoad = doc.getElementById('actionloader'),
@@ -1511,19 +1511,25 @@ function savePrinterCounters(previousBlack, previousColor, serial) {
 
 
     // check if value is not smaller then the original one
-    var blackCount = doc.getElementById('blackCount_' + serial) ? parseInt(doc.getElementById('blackCount_' + serial).value.replace(/\s+/g, '')) : 0;
-    var colorCount = doc.getElementById('colorCount_' + serial) ? parseInt(doc.getElementById('colorCount_' + serial).value.replace(/\s+/g, '')) : 0;
+    const blackCount = doc.getElementById('blackCount_' + serial) ? parseInt(doc.getElementById('blackCount_' + serial).value.replace(/\s+/g, '')) : 0;
+    const colorCount = doc.getElementById('colorCount_' + serial) ? parseInt(doc.getElementById('colorCount_' + serial).value.replace(/\s+/g, '')) : 0;
+    const scansCount = doc.getElementById('scansCount_' + serial) ? parseInt(doc.getElementById('scansCount_' + serial).value.replace(/\s+/g, '')) : 0;
+
     previousBlack = parseInt(previousBlack.replace(/\s+/g, ''));
     previousColor = parseInt(previousColor.replace(/\s+/g, ''));
+    previousScans = parseInt(previousScans.replace(/\s+/g, ''));
 
-    if (blackCount < previousBlack || colorCount < previousColor) {
+    if (blackCount < previousBlack || colorCount < previousColor || scansCount < previousScans) {
         $(objErrorWrongValue).show();
         $(objLoad).hide();
     } else {
 
         var message = 'Czarne: ' + blackCount;
         if (doc.getElementById('colorCount_' + serial)) {
-            message += ', Kolor: ' + colorCount + '.';
+            message += ', Kolor: ' + colorCount;
+        }
+        if (scansCount > previousScans) {
+            message += `, Skany: ${scansCount}`;
         }
         message += '. Potwierdzasz ?';
 
@@ -1536,6 +1542,9 @@ function savePrinterCounters(previousBlack, previousColor, serial) {
             };
             if (doc.getElementById('colorCount_' + serial)) {
                 d['iloscstron_kolor'] = doc.getElementById('colorCount_' + serial).value;
+            }
+            if (scansCount > previousScans) {
+                d['iloscscans'] = scansCount;
             }
 
             $.ajax({

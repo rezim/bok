@@ -49,6 +49,9 @@
                 Kolor-koniec
             </th>
             <th>
+                Skany-koniec
+            </th>
+            <th>
 
             </th>
         </tr>
@@ -90,6 +93,14 @@
                             {/if}
                         </td>
                         <td>
+                            <input id="scansCount_{$item2.serial}"
+                                   type="text"
+                                   class="textBoxForm"
+                                   maxlength="100"
+                                   style="width:55px;min-width:55px;text-align: right;padding-right: 5px;"
+                                   value="{$item2.skany_koniec|number_format:0:",":" "|escape:'htmlall'}">
+                        </td>
+                        <td>
                             <div class="dropdown show">
                                 <button class="btn border border-secondary dropdown-toggle" type="button"
                                         id="dropdownMenuButton" data-toggle="dropdown" aria-haspopup="true"
@@ -99,6 +110,7 @@
                                 <div class="dropdown-menu dropdown-menu-right" aria-labelledby="dropdownMenuLink">
                                     <a class="dropdown-item" href="#" onClick="savePrinterCounters('{$item2.strony_black_koniec|number_format:0:",":" "|escape:'htmlall'}',
                                                     {if $item2.type_color}'{$item2.strony_kolor_koniec|number_format:0:",":" "|escape:'htmlall'}'{else}'0'{/if},
+                                                    '{$item2.skany_koniec|number_format:0:",":" "|escape:'htmlall'}',
                                                     '{$item2.serial}')"><i class="fas fa-save"></i>&nbsp;&nbsp;Zapisz</a>
                                 </div>
                             </div>

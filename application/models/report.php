@@ -9,6 +9,14 @@ class report extends Model
 
     protected ?string $startDate = null, $endDate = null, $month = null, $clientName = null, $clientNip = null, $serial = null, $notProcessed = null;
 
+    function getDataOd() {
+        return $this->dataod;
+    }
+
+    function getDataDo() {
+        return $this->datado;
+    }
+
     function getPrinterService()
     {
         // TODO: update scans column names
@@ -97,6 +105,7 @@ class report extends Model
                 a.nrumowy as 'nrumowy', 
                 a.dataod as 'dataod', 
                 a.datado as 'datado', 
+                b.type_color as 'type_color',
                 IFNULL(b.ulica, bb.ulica) as 'lokalizacja_ulica',
                 IFNULL(b.miasto, bb.miasto) as 'lokalizacja_miasto',
                 IFNULL(b.kodpocztowy, bb.kodpocztowy) as 'lokalizacja_kodpocztowy',

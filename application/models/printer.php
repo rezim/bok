@@ -12,7 +12,8 @@ class printer extends Model
         $showoutdatedonly = false;
     protected $serial = '', $model = '', $product_number = '', $nr_firmware = '', $date_firmware = '', $ip = '', $stan_fuser = '', $stan_adf = '',
         $black_toner = '', $date_insert = '', $cyan_toner = '', $magenta_toner = '', $yellow_toner = '', $blackdrum_toner = '', $cyandrum_toner = '',
-        $magentadrum_toner = '', $yellowdrum_toner = '', $dateupdate = '', $iloscstron = '', $iloscscans = '', $opis = '', $lokalizacja = '', $iloscstron_kolor = '', $iloscstron_total = '', $stanna = '',
+        $magentadrum_toner = '', $yellowdrum_toner = '', $dateupdate = '', $iloscstron = '', $iloscscans = '', $opis = '', $lokalizacja = '',
+        $iloscstron_kolor = '', $iloscstron_total = '', $stanna = '',
         // device localization
         $ulica = '', $miasto = '', $kodpocztowy = '', $telefon = '', $mail = '', $nazwa = '', $osobakontaktowa = '', $type_color;
 
