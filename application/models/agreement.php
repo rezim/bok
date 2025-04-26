@@ -24,8 +24,19 @@ class agreement extends Model
     {
         $result = $this->update
         (
-            "update agreements set activity=0
-                                     where `rowid`=?"
+            "UPDATE agreements AS a
+                   JOIN printers AS p ON a.serial = p.serial
+                   SET a.activity = 0,
+                        p.lokalizacja = NULL,
+                        p.ulica = NULL,
+                        p.miasto = NULL,
+                        p.kodpocztowy = NULL,
+                        p.telefon = NULL,
+                        p.mail = NULL,
+                        p.nazwa = NULL,
+                        p.osobakontaktowa = NULL,
+                        p.address_ip = NULL
+                   WHERE a.rowid = ?;"
             , 'i',
             array
             (
