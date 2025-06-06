@@ -11,6 +11,9 @@
             <th>
                 model
             </th>
+            <th>
+                kolorowa
+            </th>
             <th class="text-right">
                 black
             </th>
@@ -59,6 +62,7 @@
                 <th scope="row">{$smarty.foreach.loopek.index+1}</th>
                 <td>{$item.serial|escape:'htmlall'}</td>
                 <td>{$item.model|escape:'htmlall'} </td>
+                <td>{if $item.type_color}TAK{else} {if $item.max_kolor > 0}<span class="text-danger">POPRAW</span>{else}-{/if}  {/if}</td>
                 <td class="text-right">
                     {format_number_value value="{$item.max_ilosc}"}
                 </td>

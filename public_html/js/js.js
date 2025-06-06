@@ -617,7 +617,8 @@ function zapiszDrukarke(serial) {
                 telefon: doc.getElementById('txttelefon').value,
                 mail: doc.getElementById('txtmail').value,
                 nazwa: doc.getElementById('txtnazwa').value,
-                osobakontaktowa: doc.getElementById('txtosobakontaktowa').value
+                osobakontaktowa: doc.getElementById('txtosobakontaktowa').value,
+                type_color: doc.getElementById('checkKolorowa').checked ? 1 : 0,
             },
         success: function (dane) {
             checkReplay(objError, objLoad, null, objClick, dane, objOk, 1, 3000, null);
