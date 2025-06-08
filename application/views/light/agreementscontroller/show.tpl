@@ -42,12 +42,6 @@
                     <small id="clientHelp" class="form-text text-muted"><i class="fas fa-info-circle"></i> Podaj nazwę klienta.</small>
                 </div>
 
-                <div class="form-group mt-4">
-                    <input type="checkbox" id='checkPokazZakonczone{$czycolorbox}' aria-describedby="closedAgreements" />
-                    <label for="checkPokazZakonczone{$czycolorbox}">Zakończone</label>
-                    <small id="closedAgreementsHelp" class="form-text text-muted"><i class="fas fa-info-circle"></i> Pokaż zakończone umowy.</small>
-                </div>
-
                 <div class="border-top my-4 otus-separator"></div>
 
                 {assign var="defaultStatus" value=""}
