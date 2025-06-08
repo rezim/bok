@@ -626,3 +626,26 @@ input[type="checkbox"] {
     vertical-align: middle;
     border-width: 1px;
 }
+
+.badge-status {
+    cursor: pointer;
+    user-select: none;
+    background-color: #e0e0e0;
+    color: #333;
+    padding: 0.5em 1em;
+    margin-right: 5px;
+    border-radius: 1em;
+}
+
+.badge-status.selected.badge-aktywna {
+    background-color: #28a745;
+    color: #fff;
+}
+.badge-status.selected.badge-robocza {
+    background-color: #ffc107;
+    color: #212529;
+}
+.badge-status.selected.badge-zamknieta {
+    background-color: #6c757d;
+    color: #fff;
+}

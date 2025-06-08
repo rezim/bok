@@ -565,7 +565,8 @@ function zapiszUmowe(rowid) {
                 counterscansend: doc.getElementById("counterscansend").value,
                 datacounterend: doc.getElementById("datacounterend").value,
                 prtcntrowid: doc.getElementById("prtcntrowid").value,
-                rowid_type: doc.getElementById("txttypumowy").value
+                rowid_type: doc.getElementById("txttypumowy").value,
+                activity: document.getElementById('txtstatusumowy').value
             },
         success: function (dane) {
             checkReplay(objError, objLoad, null, objClick, dane, objOk, 1, 3000, null);
@@ -1992,6 +1993,7 @@ function showAgreements(isPopup) {
             filterserial: getElementById('txtfilterserial', isPopup).value,
             filternazwaklienta: getElementById('txtfilternazwaklienta', isPopup).value,
             pokazzakonczone: getElementById('checkPokazZakonczone', isPopup).checked ? 1 : 0,
+            selectedStatuses: document.getElementById('selectedStatuses').value,
             czycolorbox: isPopup
         },
         success: function (data) {

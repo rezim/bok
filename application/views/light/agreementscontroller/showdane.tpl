@@ -43,8 +43,8 @@
                     abon.
                 </th>
             {/if}
-            <th>
-                aktywna
+            <th class="text-center">
+                status
             </th>
             {if !$czycolorbox}
                 <th>
@@ -93,7 +93,19 @@
                         wymaganyzrobiony='0' class="text-right pr-3">{if !empty($item.abonament)}{$item.abonament|number_format:2:",":" "|escape:'htmlall'}{/if}
                     </td>
                 {/if}
-                <td class="text-center">{if $item.activity === 1}tak{else}nie{/if}</td>
+                <td class="text-center">
+                    {assign var="statusLabel" value=$activityStatuses[$item.activity]|default:'nieznany'}
+
+                    {if $item.activity == 1}
+                        <span class="badge badge-success">{$statusLabel}</span>
+                    {elseif $item.activity == 0}
+                        <span class="badge badge-secondary">{$statusLabel}</span>
+                    {elseif $item.activity == -1}
+                        <span class="badge badge-warning text-dark">{$statusLabel}</span>
+                    {else}
+                        <span class="badge badge-light">{$statusLabel}</span>
+                    {/if}
+                </td>
                 {if $czycolorbox==''}
                     <td>
                         <div class="dropdown show">

@@ -216,6 +216,33 @@ class Controller
         die($message);
     }
 
+    protected function getControllerName(): string {
+        return get_called_class();
+    }
+
+    function hasAccessToAction(string $action): bool
+    {
+        if (!isset($_SESSION['przypisaneshares'])) {
+            return false;
+        }
+
+        $controller = $this->getControllerName();
+        $normalizedController = preg_replace('/Controller$/', '', $controller);
+
+        foreach ($_SESSION['przypisaneshares'] as $item) {
+            if (
+                isset($item['controller'], $item['action'], $item['permission']) &&
+                $item['controller'] === $normalizedController &&
+                $item['action'] === $action &&
+                $item['permission'] === 'rw'
+            ) {
+                return true;
+            }
+        }
+
+        return false;
+    }
+
     public
     function fetchContent($filePath, $strParams, $postParams)
     {
@@ -230,12 +257,10 @@ class Controller
                 $_POST = array_merge($_POST, $postParams);
             }
 
-            // Buforowanie wyjścia
             ob_start();
             include $filePath;
             $content = ob_get_clean();
 
-            // Przywrócenie oryginalnych wartości $_GET
             $_GET = $originalGet;
 
             return $content;

@@ -13,8 +13,8 @@ class agreement extends Model
         $rabatdowydrukow = '',
         $prowizjapartnerska = '',
         $sla = '',
-        $wartoscurzadzenia = '', $jakczarne = '', $rowid_type;
-    protected $filternrumowy = '', $filterserial = '', $filternazwaklienta = '', $clientrowid = '', $pokazzakonczone = 0;
+        $wartoscurzadzenia = '', $jakczarne = '', $rowid_type, $activity, $selectedStatuses;
+    protected $filternrumowy = '', $filterserial = '', $filternazwaklienta = '', $clientrowid = '';
 
     protected $prtcntrowid = 0,
         $counterstart, $countercolorstart, $counterscansstart, $datacounterstart,
@@ -47,13 +47,46 @@ class agreement extends Model
         return $result;
     }
 
-    function getAgreements()
+    function getAgreements($canListActive, $canListDraft, $canListClosed)
     {
 
-        if ($this->pokazzakonczone == 0)
-            $where = " where a.activity=1";
-        else
-            $where = " where (a.activity=0)";
+        $availableStatuses = [];
+
+        if ($canListActive) {
+            $availableStatuses[] = 1;
+        }
+        if ($canListDraft) {
+            $availableStatuses[] = -1;
+        }
+        if ($canListClosed) {
+            $availableStatuses[] = 0;
+        }
+
+        $where = '';
+
+        if ($this->selectedStatuses !== '') {
+            $selectedStatuses = array_filter(
+                array_map('intval', explode(',', $this->selectedStatuses)),
+                fn($s) => in_array($s, [-1, 0, 1], true)
+            );
+
+            $statuses = array_values(array_intersect($availableStatuses, $selectedStatuses));
+
+            if (!empty($statuses)) {
+                $in = implode(', ', $statuses);
+                $where = "WHERE a.activity IN ($in)";
+            } else {
+                // Nie ma wspólnych statusów między UI a dostępem
+                $where = "WHERE a.activity NOT IN (-1, 0, 1)";
+            }
+        } else {
+            if (!empty($availableStatuses)) {
+                $in = implode(', ', $availableStatuses);
+                $where = "WHERE a.activity IN ($in)";
+            } else {
+                $where = "WHERE a.activity NOT IN (-1, 0, 1)";
+            }
+        }
 
         if ($this->filternrumowy != '') {
             $where .= " and ( a.nrumowy like '%{$this->filternrumowy}%')   ";
@@ -101,7 +134,6 @@ class agreement extends Model
 
     function saveupdate()
     {
-
         if ($this->rowid != 0) {
             $result = $this->update
             (
@@ -131,9 +163,10 @@ class agreement extends Model
                                     `sla`=?,
                                     `wartoscurzadzenia`=?,
                                     `jakczarne`=?,
-                                    `rowid_type`=?
+                                    `rowid_type`=?,
+                                    `activity`= ?
                                      where `rowid`=?"
-                , 'sssidddssisssidddddddidiii',
+                , 'sssidddssisssidddddddidiiii',
                 array
                 (
                     $this->nrumowy == '' ? "NULL" : $this->nrumowy,
@@ -161,6 +194,7 @@ class agreement extends Model
                     $this->wartoscurzadzenia == '' ? "NULL" : str_replace(' ', '', str_replace(',', '.', $this->wartoscurzadzenia)),
                     $this->jakczarne == '' ? "NULL" : $this->jakczarne,
                     $this->rowid_type == '' ? "1" : $this->rowid_type,
+                    $this->activity,
                     $this->rowid
                 )
             );
@@ -187,10 +221,11 @@ class agreement extends Model
                                     `sla`,
                                     `wartoscurzadzenia`,
                                     `jakczarne`,
-                                    `rowid_type`
+                                    `rowid_type`,
+                                    `activity`
                             ";
             $this->_table = 'agreements';
-            $result = $this->insert($columnList, 'sssidddsissssidddddddidii',
+            $result = $this->insert($columnList, 'sssidddsissssidddddddidiii',
                 array(
                     $this->nrumowy == '' ? "NULL" : $this->nrumowy,
                     ($this->dataod == '' || $this->dataod == '0000-00-00') ? "NULL" : $this->dataod,
@@ -215,6 +250,7 @@ class agreement extends Model
                     $this->wartoscurzadzenia == '' ? "NULL" : str_replace(' ', '', str_replace(',', '.', $this->wartoscurzadzenia)),
                     $this->jakczarne == '' ? "NULL" : $this->jakczarne,
                     $this->rowid_type == '' ? "1" : $this->rowid_type,
+                    $this->activity
                 ));
 
             $this->rowid = isset($result) ? $result['rowid'] : 0;

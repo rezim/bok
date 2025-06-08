@@ -278,10 +278,40 @@
                                              maxlength="500">{if $rowid!=0}{$dataUmowa[0].opis|escape:'htmlall'}{/if}</textarea>
                     </td>
                 </tr>
+                <tr id="trtxtstatusumowy">
+                    <th class='tdOpis'>
+                        Status umowy
+                    </th>
+                    <td class='tdWartosc' colspan="3">
+                        <select id='txtstatusumowy' class="form-control form-control-md">
+                            {if $editMode}
+                                {if $canEditActive}
+                                    <option value="1" {if $dataUmowa[0].activity == 1}selected{/if}>aktywna</option>
+                                {/if}
+                                {if $canEditClosed}
+                                    <option value="0" {if $dataUmowa[0].activity == 0}selected{/if}>zamknięta</option>
+                                {/if}
+                                {if $canEditDraft}
+                                    <option value="-1" {if $dataUmowa[0].activity == -1}selected{/if}>wersja robocza</option>
+                                {/if}
+                            {else}
+                                {if $canAddActive}
+                                    <option value="1">aktywna</option>
+                                {/if}
+                                {if $canAddClosed}
+                                    <option value="0">zamknięta</option>
+                                {/if}
+                                {if $canAddDraft}
+                                    <option value="-1" selected>wersja robocza</option>
+                                {/if}
+                            {/if}
+                        </select>
+                    </td>
+                </tr>
             </table>
         </div>
     </div>
-
+{*    canSaveAgreementAsFinal*}
     <div class="row container">
         <div class="col">
             <table class='table table-sm bok-two-column-layout'>
@@ -311,7 +341,6 @@
                                {if $prtcntrowid!=0}value="{$dataCounters[0].date_start|escape:'htmlall'}"{/if}>
                     </td>
                 </tr>
-
             </table>
         </div>
         <div class="col">
@@ -362,12 +391,26 @@
 </div>
 
 <div class="container text-right mt-4 mb-2" wymaganylevel='r' wymaganyzrobiony='1'>
-    <a href="#" class="btn btn-danger mr-5" role="button" onclick='usunUmowe("{$rowid}");return false;'><i
-                class="fas fa-trash"></i>&nbsp;&nbsp;Zamknij Umowę</a>
+    {if $editMode && $canSaveClosed}
+        <a href="#" class="btn btn-danger mr-5" role="button" onclick='usunUmowe("{$rowid}");return false;'>
+            <i class="fas fa-trash"></i>&nbsp;&nbsp;Zamknij Umowę
+        </a>
+    {/if}
+
     <a href="#" class="btn btn-outline-secondary" role="button" onclick="$.colorbox.close();">Anuluj</a>
-    <a href="#" class="btn btn-outline-success active" role="button" aria-pressed="true"
-       onmousedown='zapiszUmowe("{$rowid}");return false;'><i class="fas fa-save"></i>&nbsp; Zapisz</a>
+
+    <a href="#" id="saveAgreementBtn"
+       class="btn btn-outline-success active"
+       role="button"
+       aria-pressed="true"
+       data-can-save-active="{$canSaveActive|default:false}"
+       data-can-save-draft="{$canSaveDraft|default:false}"
+       data-can-save-closed="{$canSaveClosed|default:false}"
+       onmousedown='zapiszUmowe("{$rowid}");return false;'>
+        <i class="fas fa-save"></i>&nbsp;Zapisz
+    </a>
 </div>
+
 
 <script type="text/javascript">
     $("#txtdataod").datepicker($.datepicker.regional['pl'], {
@@ -392,6 +435,31 @@
 
     $('.selectpicker').selectpicker();
 
+
+</script>
+
+<script>
+
+        const statusSelect = document.getElementById('txtstatusumowy');
+        const saveButton = document.getElementById('saveAgreementBtn');
+
+        function updateSaveButtonVisibility() {
+            const selectedValue = parseInt(statusSelect.value);
+            const canSaveActive = saveButton.dataset.canSaveActive === "1" || saveButton.dataset.canSaveActive === "true";
+            const canSaveDraft = saveButton.dataset.canSaveDraft === "1" || saveButton.dataset.canSaveDraft === "true";
+            const canSaveClosed = saveButton.dataset.canSaveClosed === "1" || saveButton.dataset.canSaveClosed === "true";
+
+            let show = false;
+            if (selectedValue === 1 && canSaveActive) show = true;
+            if (selectedValue === 0 && canSaveClosed) show = true;
+            if (selectedValue === -1 && canSaveDraft) show = true;
+
+            saveButton.style.display = show ? 'inline-block' : 'none';
+        }
+
+        updateSaveButtonVisibility();
+
+        statusSelect.addEventListener('change', updateSaveButtonVisibility);
 
 </script>
 
