@@ -80,12 +80,13 @@ class agreement extends Model
                 $where = "WHERE a.activity NOT IN (-1, 0, 1)";
             }
         } else {
-            if (!empty($availableStatuses)) {
-                $in = implode(', ', $availableStatuses);
-                $where = "WHERE a.activity IN ($in)";
-            } else {
+            // [TODO TR]: not sure if this is needed
+//            if (!empty($availableStatuses)) {
+//                $in = implode(', ', $availableStatuses);
+//                $where = "WHERE a.activity IN ($in)";
+//            } else {
                 $where = "WHERE a.activity NOT IN (-1, 0, 1)";
-            }
+//            }
         }
 
         if ($this->filternrumowy != '') {
