@@ -1992,7 +1992,6 @@ function showAgreements(isPopup) {
             filternrumowy: getElementById('txtfilternrumowy', isPopup).value,
             filterserial: getElementById('txtfilterserial', isPopup).value,
             filternazwaklienta: getElementById('txtfilternazwaklienta', isPopup).value,
-            pokazzakonczone: getElementById('checkPokazZakonczone', isPopup).checked ? 1 : 0,
             selectedStatuses: document.getElementById('selectedStatuses').value,
             czycolorbox: isPopup
         },
