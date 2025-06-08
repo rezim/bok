@@ -42,8 +42,6 @@
                     <small id="clientHelp" class="form-text text-muted"><i class="fas fa-info-circle"></i> Podaj nazwę klienta.</small>
                 </div>
 
-                <div class="border-top my-4 otus-separator"></div>
-
                 {assign var="defaultStatus" value=""}
                 {if $canListActive}
                     {assign var="defaultStatus" value=1}
@@ -73,6 +71,8 @@
                     </small>
                     <input type="hidden" name="statusy" id="selectedStatuses" value="{$defaultStatus}">
                 </div>
+
+                <div class="border-top my-4 otus-separator"></div>
 
                 <div class="form-group">
                     <button class="btn btn-info btn-block" type="submit"
