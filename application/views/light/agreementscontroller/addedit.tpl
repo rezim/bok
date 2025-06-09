@@ -283,18 +283,26 @@
                         Status umowy
                     </th>
                     <td class='tdWartosc' colspan="3">
-                        <select id='txtstatusumowy' class="form-control form-control-md">
-                            {if $editMode}
-                                {if $canEditActive}
-                                    <option value="1" {if $dataUmowa[0].activity == 1}selected{/if}>aktywna</option>
-                                {/if}
-                                {if $canEditClosed}
-                                    <option value="0" {if $dataUmowa[0].activity == 0}selected{/if}>zamknięta</option>
-                                {/if}
-                                {if $canEditDraft}
-                                    <option value="-1" {if $dataUmowa[0].activity == -1}selected{/if}>wersja robocza</option>
-                                {/if}
+                        {if $editMode}
+                            {if $dataUmowa[0].activity == 1 && !$canEditActive}
+                                <select id='txtstatusumowy' class="form-control form-control-md" disabled>
+                                    <option value="1" selected>aktywna</option>
+                                </select>
                             {else}
+                                <select id='txtstatusumowy' class="form-control form-control-md">
+                                    {if $canEditActive}
+                                        <option value="1" {if $dataUmowa[0].activity == 1}selected{/if}>aktywna</option>
+                                    {/if}
+                                    {if $canEditClosed}
+                                        <option value="0" {if $dataUmowa[0].activity == 0}selected{/if}>zamknięta</option>
+                                    {/if}
+                                    {if $canEditDraft}
+                                        <option value="-1" {if $dataUmowa[0].activity == -1}selected{/if}>wersja robocza</option>
+                                    {/if}
+                                </select>
+                            {/if}
+                        {else}
+                            <select id='txtstatusumowy' class="form-control form-control-md">
                                 {if $canAddActive}
                                     <option value="1">aktywna</option>
                                 {/if}
@@ -304,8 +312,8 @@
                                 {if $canAddDraft}
                                     <option value="-1" selected>wersja robocza</option>
                                 {/if}
-                            {/if}
-                        </select>
+                            </select>
+                        {/if}
                     </td>
                 </tr>
             </table>
@@ -391,7 +399,7 @@
 </div>
 
 <div class="container text-right mt-4 mb-2" wymaganylevel='r' wymaganyzrobiony='1'>
-    {if $editMode && $canSaveClosed}
+    {if $editMode && $canSaveClosed && !($dataUmowa[0].activity == 1 && !$canEditActive)}
         <a href="#" class="btn btn-danger mr-5" role="button" onclick='usunUmowe("{$rowid}");return false;'>
             <i class="fas fa-trash"></i>&nbsp;&nbsp;Zamknij Umowę
         </a>
