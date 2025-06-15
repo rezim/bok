@@ -220,6 +220,16 @@ class Controller
         return get_called_class();
     }
 
+    function logInfo($operationType, $actionType, $message): void {
+        $this->{$this->_model}->logInfo($operationType, $actionType, $message);
+    }
+    function logWarning($operationType, $actionType, $message): void {
+        $this->{$this->_model}->logWarning($operationType, $actionType, $message);
+    }
+    function logError($operationType, $actionType, $message): void {
+        $this->{$this->_model}->logError($operationType, $actionType, $message);
+    }
+
     function hasAccessToAction(string $action): bool
     {
         if (!isset($_SESSION['przypisaneshares'])) {

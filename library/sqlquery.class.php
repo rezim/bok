@@ -4,6 +4,7 @@ class SQLQuery
 {
     protected $_dbHandle;
     protected $_result;
+    protected $pdo;
 
     /** C onnects to database **/
 
@@ -15,6 +16,14 @@ class SQLQuery
         } else {
             $this->_dbHandle->query("SET NAMES 'utf8'");
         }
+    }
+
+    protected function connectPDO($host, $user, $pass, $dbname)
+    {
+        $dsn = "mysql:host={$host};dbname={$dbname};charset=utf8mb4";
+        $this->pdo = new PDO($dsn, $user, $pass, [
+            PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION
+        ]);
     }
 
     function getLastId()

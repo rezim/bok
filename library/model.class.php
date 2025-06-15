@@ -7,13 +7,34 @@ class Model extends SQLQuery
     protected $keyVal;
     protected $czydelete = 0;
     protected $czyupdate = 1;
+    protected $logger;
     public $_filedsToEdit = array();
 
     function __construct()
     {
         $this->connect(DB_HOST, DB_USER, DB_PASSWORD, DB_NAME);
+        $this->connectPDO(DB_HOST, DB_USER, DB_PASSWORD, DB_NAME);
         $this->_model = get_class($this);
         $this->_table = strtolower($this->_model) . "s";
+        if (isset($_SESSION['user']['rowid'])) {
+            $this->logger = new DbLogger($this->pdo, $_SESSION['user']['rowid']);
+        }
+    }
+
+    function logInfo($operationType, $actionType, $message): void {
+        if ($this->logger) {
+            $this->logger->info($operationType, $actionType, $message);
+        }
+    }
+    function logWarning($operationType, $actionType, $message): void {
+        if ($this->logger) {
+            $this->logger->warning($operationType, $actionType, $message);
+        }
+    }
+    function logError($operationType, $actionType, $message): void {
+        if ($this->logger) {
+            $this->logger->error($operationType, $actionType, $message);
+        }
     }
 
     function set($name, $value)

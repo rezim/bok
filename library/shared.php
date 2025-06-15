@@ -101,6 +101,8 @@ function callHook()
     $dispatch = new $controller($model, $controller, $action, $queryString);
 
     if ((int)method_exists($controller, $action)) {
+        $params = [$controller, $action, json_encode($_POST)];
+        call_user_func_array(array($dispatch, 'logInfo'), $params);
         call_user_func_array(array($dispatch, $action), $queryString);
     } else {
 
