@@ -83,7 +83,7 @@ class aclsController extends Controller
 
     function brakuprawnien()
     {
-        debug_print_backtrace();
+        $this->logInfo('acsl', 'brakuprawnien', json_encode(debug_backtrace()));
     }
 }
 
