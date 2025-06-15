@@ -83,7 +83,7 @@ class aclsController extends Controller
 
     function brakuprawnien()
     {
-
+        debug_print_backtrace();
     }
 }
 
