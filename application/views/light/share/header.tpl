@@ -96,8 +96,8 @@
 <script type="text/javascript" src="{$smarty.const.SCIEZKA}/js/dropzone.js"></script>
 <script type="text/javascript" src="{$smarty.const.SCIEZKA}/js/invoices.js?{$smarty.const.APPVERSION}"></script>
 <!-- angular libs -->
-<script type="text/javascript" src="{$smarty.const.SCIEZKA}/js/lib/angular.min.js"></script>
-<script type="text/javascript" src="{$smarty.const.SCIEZKA}/js/lib/angular-locale_pl.min.js"></script>
+<script type="text/javascript" src="{$smarty.const.SCIEZKA}/js/lib/angular.min.js?{$smarty.const.APPVERSION}"></script>
+<script type="text/javascript" src="{$smarty.const.SCIEZKA}/js/lib/angular-locale_pl.min.js?{$smarty.const.APPVERSION}"></script>
 
 <script type="text/javascript" src="{$smarty.const.SCIEZKA}/js/angular/app.js"></script>
 <script type="text/javascript" src="{$smarty.const.SCIEZKA}/js/angular/app.config.js"></script>
