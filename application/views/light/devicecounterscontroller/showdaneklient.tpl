@@ -99,7 +99,11 @@
                         <td>{$item2.lokalizacja_miasto}</td>
 
                         <td>
-                            {$item2.data_wiadomosci_black_koniec}
+                            {if $item2.isPrinter}
+                                {$item2.data_wiadomosci_black_koniec}
+                            {else}
+                                {$item2.data_wiadomosci_scans_koniec}
+                            {/if}
                         </td>
 
                         <td>
