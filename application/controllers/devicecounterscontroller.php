@@ -1,6 +1,6 @@
 <?php
 
-class customController extends Controller
+class devicecountersController extends Controller
 {
     function show()
     {

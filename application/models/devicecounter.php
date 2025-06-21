@@ -1,5 +1,5 @@
 <?php
-class custom extends Model
+class devicecounter extends Model
 {
     protected $dataod='',$datado='',$filterklient='',$filterdrukarka='',$nazwakrotka='';
     

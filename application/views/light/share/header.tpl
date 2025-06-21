@@ -173,7 +173,7 @@
                             <a href='{$smarty.const.SCIEZKA}/printers/show' class="dropdown-item">Lista urządzeń</a>
                         {/if}
                         {if isset($smarty.session.przypisanemenu['li_countersshow'])}
-                            <a href='{$smarty.const.SCIEZKA}/custom/show' class="dropdown-item">Liczniki urządzeń</a>
+                            <a href='{$smarty.const.SCIEZKA}/devicecounters/show' class="dropdown-item">Liczniki urządzeń</a>
                         {/if}
                         {if
                         isset($smarty.session.przypisanemenu['li_countersreport']) &&

@@ -1779,7 +1779,7 @@ function showPrintersCounters(successCallback, errorCallback) {
         dateTo: $.datepicker.formatDate('yy-mm-dd', dateTo)
     };
     $.ajax({
-        url: sciezka + "/custom/showdaneklient/todiv",
+        url: sciezka + "/devicecounters/showdaneklient/todiv",
         type: 'POST',
         data: {
             dataod: params.dateFrom,
