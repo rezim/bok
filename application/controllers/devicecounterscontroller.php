@@ -43,7 +43,8 @@ class devicecountersController extends Controller
                 $blackEndDate === '0000-00-00' ||
                 ($blackDate !== $dataDo) ||
                 ($item['type_color'] == 1 && $colorEndDate !== '0000-00-00' && $colorDate !== $dataDo) ||
-                ($scansEndDate !== '0000-00-00' && ($scansDate !== $dataDo))
+                ($scansEndDate !== '0000-00-00' && ($scansDate !== $dataDo)) ||
+                (!$isPrinter && $isScanner && $scansEndDate === '0000-00-00')
             ) {
 
                 $dzien = 0;
@@ -74,6 +75,9 @@ class devicecountersController extends Controller
                 $dataReports[$item['rowidclient']]['pokaznumerseryjny'] = $item['pokaznumerseryjny'];
                 $dataReports[$item['rowidclient']]['pokazstanlicznika'] = $item['pokazstanlicznika'];
                 $dataReports[$item['rowidclient']]['fakturadlakazdejumowy'] = $item['fakturadlakazdejumowy'];
+
+                $dataReports[$item['rowidclient']]['isPrinter'] = $isPrinter;
+                $dataReports[$item['rowidclient']]['isScanner'] = $isScanner;
 
                 if (($item['strony_black_koniec'] - $item['strony_black_start']) < 0) {
                     $dataReports[$item['rowidclient']]['blad'] = 1;
@@ -218,6 +222,10 @@ class devicecountersController extends Controller
                 $dataReports[$item['rowidclient']]['umowy'][$item['rowidumowa']]['lokalizacja_telefon'] = $item['lokalizacja_telefon'];
                 $dataReports[$item['rowidclient']]['umowy'][$item['rowidumowa']]['lokalizacja_mail'] = $item['lokalizacja_mail'];
                 $dataReports[$item['rowidclient']]['umowy'][$item['rowidumowa']]['lokalizacja_nazwa'] = $item['lokalizacja_nazwa'];
+
+
+                $dataReports[$item['rowidclient']]['umowy'][$item['rowidumowa']]['isPrinter'] = $isPrinter;
+                $dataReports[$item['rowidclient']]['umowy'][$item['rowidumowa']]['isScanner'] = $isScanner;
             }
         }
 

@@ -812,7 +812,7 @@ function generujRaport(successCallback, errorCallback) {
             dataod: params.dateFrom,
             datado: params.dateTo,
             filterklient: doc.getElementById('txtklient')?.value,
-            filterdrukarka: doc.getElementById('txtdrukarka')?.value
+            filterserial: doc.getElementById('txtserial')?.value
         },
         success: function (data) {
             objCenter.innerHTML = '';
@@ -1497,7 +1497,7 @@ function uprawnienia() {
     }
 }
 
-function savePrinterCounters(previousBlack, previousColor, previousScans, serial) {
+function savePrinterCounters(previousBlack, previousColor, previousScans, serial, isScanner) {
     var
         doc = document,
         objLoad = doc.getElementById('actionloader'),
@@ -1521,17 +1521,20 @@ function savePrinterCounters(previousBlack, previousColor, previousScans, serial
     previousColor = parseInt(previousColor.replace(/\s+/g, ''));
     previousScans = parseInt(previousScans.replace(/\s+/g, ''));
 
-    if (blackCount < previousBlack || colorCount < previousColor || scansCount < previousScans) {
+    if (!!isScanner && scansCount < previousScans) {
+        $(objErrorWrongValue).show();
+        $(objLoad).hide();
+    } else if  (blackCount < previousBlack || colorCount < previousColor || scansCount < previousScans) {
         $(objErrorWrongValue).show();
         $(objLoad).hide();
     } else {
 
-        var message = 'Czarne: ' + blackCount;
+        let message = !!isScanner ? '' : 'Czarne: ' + blackCount;
         if (doc.getElementById('colorCount_' + serial)) {
             message += ', Kolor: ' + colorCount;
         }
         if (scansCount > previousScans) {
-            message += `, Skany: ${scansCount}`;
+            message += !!isScanner ? `Skany: ${scansCount}` : `, Skany: ${scansCount}`;
         }
         message += '. Potwierdzasz ?';
 
@@ -1763,6 +1766,15 @@ function showPrinters(isPopup) {
 }
 
 function showPrintersCounters(successCallback, errorCallback) {
+    const dataContainerId = 'dataFilter';
+    const templateId = 'deviceCountersData';
+
+    const doneCallback = function () {
+        $("#tablePrinter").tablesorter()
+    };
+    renderTemplateAction("/devicecounters/showdaneklient/todiv", dataContainerId, templateId, null, doneCallback);
+
+    return;
 
     var doc = document, objCenter = doc.getElementById('divRightCenter');
 

@@ -649,3 +649,21 @@ input[type="checkbox"] {
     background-color: #6c757d;
     color: #fff;
 }
+
+.printer-cell {
+    padding: 6px 4px;
+    vertical-align: middle;
+}
+.printer-type-icon {
+    font-size: 1.5em;
+    margin-bottom: 4px;
+    display: inline-block;
+}
+.printer-serial {
+    font-weight: bold;
+    margin-bottom: 2px;
+}
+.printer-model {
+    color: #2062b8;
+    font-size: 0.93em;
+}

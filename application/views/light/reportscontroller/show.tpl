@@ -52,10 +52,10 @@
                 </div>
 
                 <div class="form-group">
-                    <label for="txtdrukarka">drukarka</label>
+                    <label for="txtserial">drukarka</label>
                 </div>
                 <div class="form-group">
-                    <input type="text" id='txtdrukarka' class="form-control"
+                    <input type="text" id='txtserial' class="form-control"
                            aria-describedby="deviceHelp">
                     <small id="deviceHelp" class="form-text text-muted"><i class="fas fa-info-circle"></i> Podaj serial
                         urządzenia</small>
@@ -142,8 +142,8 @@
             return false;
         }
     });
-    $('#txtdrukarka').unbind("keypress");
-    $('#txtdrukarka').keypress(function (event) {
+    $('#txtserial').unbind("keypress");
+    $('#txtserial').keypress(function (event) {
         if (event.keyCode == 13) {
             startReportGeneration();
             return false;

@@ -37,6 +37,9 @@
                 Drukarka
             </th>
             <th>
+                Typ urządzenia
+            </th>
+            <th>
                 Miasto
             </th>
             <th>
@@ -63,9 +66,35 @@
                     <tr>
                         <th scope="row">{$turns}</th>
                         <td>{$item.nazwakrotka|escape:'htmlall'}</td>
-                        <td onClick='showNewPrinterAdd("{$item2.serial}")'>
-                            {$item2.serial|escape:'htmlall'}<br/>
-                            <font style='color:blue'>{$item2.model|escape:'htmlall'}</font>
+                        <td class="printer-cell" onClick='showNewPrinterAdd("{$item2.serial}")' style="cursor:pointer;">
+                            <div style="display:flex; align-items:center;">
+                                <span class="printer-type-icon" style="font-size:1.5em; margin-right:8px;">
+                                    {if $item2.isPrinter && $item2.isScanner}
+                                        <span title="Urządzenie wielofunkcyjne">🖨️📠</span>
+                                    {elseif $item2.isPrinter}
+                                        <span title="Drukarka">🖨️</span>
+                                    {elseif $item2.isScanner}
+                                        <span title="Skaner">📠</span>
+                                    {else}
+                                        <span title="Inny typ">❓</span>
+                                    {/if}
+                                </span>
+                                <div style="display:flex; flex-direction:column;">
+                                    <span class="printer-serial" style="font-weight:bold;">{$item2.serial|escape:'htmlall'}</span>
+                                    <span class="printer-model" style="color:#2062b8; font-size:0.92em;">{$item2.model|escape:'htmlall'}</span>
+                                </div>
+                            </div>
+                        </td>
+                        <td>
+                            {if $item2.isPrinter && $item2.isScanner}
+                                Urządzenie wielofunkcyjne
+                            {elseif $item2.isPrinter}
+                                Drukarka
+                            {elseif $item2.isScanner}
+                                Skaner
+                            {else}
+                                Inny typ
+                            {/if}
                         </td>
                         <td>{$item2.lokalizacja_miasto}</td>
 
@@ -74,16 +103,18 @@
                         </td>
 
                         <td>
+                            {if $item2.isPrinter}
                             <input id="blackCount_{$item2.serial}"
                                    type="text"
                                    class="textBoxForm"
                                    maxlength="100"
                                    style="width:55px;min-width:55px;text-align: right;padding-right: 5px;"
                                    value="{$item2.strony_black_koniec|number_format:0:",":" "|escape:'htmlall'}">
+                            {/if}
                         </td>
 
                         <td>
-                            {if $item2.type_color}
+                            {if $item2.type_color && $item2.isPrinter}
                                 <input id="colorCount_{$item2.serial}"
                                        type="text"
                                        class="textBoxForm"
@@ -111,11 +142,12 @@
                                     <a class="dropdown-item" href="#" onClick="savePrinterCounters('{$item2.strony_black_koniec|number_format:0:",":" "|escape:'htmlall'}',
                                                     {if $item2.type_color}'{$item2.strony_kolor_koniec|number_format:0:",":" "|escape:'htmlall'}'{else}'0'{/if},
                                                     '{$item2.skany_koniec|number_format:0:",":" "|escape:'htmlall'}',
-                                                    '{$item2.serial}')"><i class="fas fa-save"></i>&nbsp;&nbsp;Zapisz</a>
+                                                    '{$item2.serial}', '{$item2.isScanner}')"><i class="fas fa-save"></i>&nbsp;&nbsp;Zapisz</a>
                                 </div>
                             </div>
+                            {assign var="dateTo" value="first day of this month"|strtotime|date_format:"%Y-%m-%d"}
                             <input type="hidden" id='dateToSave_{$item2.serial}'
-                                   class='textBoxNormal printerCounterDateTo' style='width:80px;min-width: 80px;'>
+                                   class='textBoxNormal printerCounterDateTo' style='width:80px;min-width: 80px;' value="{$dateTo}">
                         </td>
                     </tr>
                     {$turns = $turns+1}
@@ -125,7 +157,7 @@
 
         {if $turns == 1}
             <tr>
-                <td colspan="8">Aktualnie wszystkie liczniki drukarek są poprawne.</td>
+                <td colspan="8">Dla podanych filtrów wszystkie liczniki urządzeń są poprawne.</td>
             </tr>
         {/if}
         </tbody>

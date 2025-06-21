@@ -5,7 +5,8 @@ const EMPTY_SCANS_ENTRY = array("next_month_skany" => 0, "next_month_data_wiadom
 
 class report extends Model
 {
-    protected $dataod = '', $datado = '', $filterklient = '', $filterdrukarka = '', $nazwakrotka = '';
+    protected $dataod = '', $datado = '', $filterklient = '', $filterdrukarka = '', $filterserial = '',
+        $nazwakrotka = '', $filtermodel = '', $filtershowprinters = true, $filtershowscanners = true;
 
     protected ?string $startDate = null, $endDate = null, $month = null, $clientName = null, $clientNip = null, $serial = null, $notProcessed = null;
 
@@ -77,10 +78,18 @@ class report extends Model
         if ($this->nazwakrotka != '') {
             $where .= " and (c.nazwakrotka ='{$this->nazwakrotka}')";
         }
-        if ($this->filterdrukarka != '') {
-            $where .= " and (a.serial ='{$this->filterdrukarka}')";
+        if ($this->filterserial != '') {
+            $where .= " and (a.serial like '%{$this->filterserial}%')";
         }
-
+        if ($this->filtermodel != '') {
+            $where .= " and (bb.model like '%{$this->filtermodel}%')";
+        }
+        if (!filter_var($this->filtershowprinters, FILTER_VALIDATE_BOOLEAN)) {
+            $where .= " and (a_t.description <> 'wynajem drukarki')";
+        }
+        if (!filter_var($this->filtershowscanners, FILTER_VALIDATE_BOOLEAN)) {
+            $where .= " and (a_t.description <> 'wynajem skanera')";
+        }
 
         $dateFrom = $this->dataod;
         // this is because we do not want to use DATE function in mysql, adding one day allow us to simple
@@ -262,6 +271,10 @@ class report extends Model
         }
         if ($this->filterdrukarka != '') {
             $where .= " and (a.serial ='{$this->filterdrukarka}')";
+        }
+
+        if ($this->filterserial != '') {
+            $where .= " and (a.serial like '%{$this->filterserial}%')";
         }
 
         $query = "
