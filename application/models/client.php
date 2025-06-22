@@ -254,4 +254,14 @@ class client extends Model
         return implode(' ', array($controlNb, implode(' ', $arrAccountNb)));
     }
 
+    function updateExternalClientId($extClientId, $clientRowId) {
+        $this->updateWithPDO("Update clients SET client_id = ? WHERE rowid = ?", [$extClientId, $clientRowId]);
+    }
+
+    function getAllClients() {
+        $results = $this->selectWithPDO("select * from clients");
+
+        return $results !== false ? $results : [];
+    }
+
 }

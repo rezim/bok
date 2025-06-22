@@ -172,16 +172,16 @@ class clientsController extends InvoicesController
                 $this->internalServerError($saveUpdateResult['info']);
             }
 
-            if ($saveUpdateResult['rows_affected'] === 0) {
-                echo(json_encode($saveUpdateResult));
-                return;
-            }
-
             $clientRowId = $isCreateClientRequest ? $saveUpdateResult['rowid'] : $clientRowId;
 
             $client = $this->client->getClientByRowid($clientRowId)[0];
 
-            // "tax_no" => $client["nip"],
+            $this->updateExternalClientIdIfNeeded($client);
+
+            if ($saveUpdateResult['rows_affected'] === 0) {
+                echo(json_encode($saveUpdateResult));
+                return;
+            }
 
             $createOrUpdateClientData = array(
                 "name" => $client["nazwapelna"],
@@ -203,6 +203,13 @@ class clientsController extends InvoicesController
             echo(json_encode($saveUpdateResult));
         } else {
             $this->notImplemented('Błędne wywołanie');
+        }
+    }
+
+    function updateexternalclientids() {
+       $allClients = $this->client->getAllClients();
+        foreach ($allClients as $client) {
+            $this->updateExternalClientIdIfNeeded($client);
         }
     }
 
@@ -236,5 +243,23 @@ class clientsController extends InvoicesController
         unset($dataClient);
     }
 
+
+    protected function updateExternalClientIdIfNeeded($client)
+    {
+        $externalClientId = $client['client_id'];
+        $clientRowId = $client['rowid'];
+
+        if (!$externalClientId) {
+            $externalClientArr = $client["nip"] !== null
+                ? $this->getClientByTaxNo($client["nip"])
+                : $this->getClientByName($client["nazwapelna"]);
+
+            $externalClient = $externalClientArr[0] ?? null;
+
+            if (!empty($externalClient) && !empty($externalClient['id'])) {
+                $this->client->updateExternalClientId($externalClient['id'], $clientRowId);
+            }
+        }
+    }
 
 }

@@ -211,6 +211,48 @@ class Model extends SQLQuery
         return $wynik;
     }
 
+    function updateWithPDO($query, $params = []) {
+
+        try {
+            $success = $this->executeUpdateDbWithPDO($query, $params);
+
+            if ($success) {
+                return true;
+            } else {
+                $this->logger->error('DB', 'UPDATE', "Query failed to execute: $query", $userId ?? null);
+            }
+        } catch (Exception $e) {
+            $this->logger->error(
+                'DB',
+                'UPDATE',
+                $e->getMessage(),
+                $userId ?? null
+            );
+        }
+        return false;
+    }
+
+    function selectWithPDO($query, $params = [], $userId = null)
+    {
+        try {
+            $result = $this->executeSelectDbWithPDO($query, $params);
+
+            if ($result !== false) {
+                return $result;
+            } else {
+                $this->logger->error('DB', 'SELECT', "Query failed to execute: $query", $userId);
+            }
+        } catch (Exception $e) {
+            $this->logger->error(
+                'DB',
+                'SELECT',
+                $e->getMessage(),
+                $userId
+            );
+        }
+        return false;
+    }
+
     function getEditDane()
     {
 

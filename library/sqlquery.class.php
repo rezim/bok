@@ -37,7 +37,7 @@ class SQLQuery
         $arrValues = array();
         $keyColValue = null;
         $arrTypes = array();
-        forEach ($postParams as $key => $value) {
+        foreach ($postParams as $key => $value) {
             if ($key != $keyColName) {
                 $arrKeyWithType = explode(":", $key, 2);
 
@@ -70,6 +70,33 @@ class SQLQuery
         $queryUpdate = "update " . $tableName . " set " . $querySet . " where " . $queryWhere;
 
         return $this->update($queryUpdate, $strTypes, $arrValues);
+    }
+
+    /**
+     * @throws Exception
+     */
+    protected function executeUpdateDbWithPDO($query, $params = [])
+    {
+        try {
+            $stmt = $this->pdo->prepare($query);
+            return $stmt->execute($params);
+        } catch (PDOException $e) {
+            throw new Exception("Database update failed: " . $e->getMessage());
+        }
+    }
+
+    /**
+     * @throws Exception
+     */
+    protected function executeSelectDbWithPDO($query, $params = [])
+    {
+        try {
+            $stmt = $this->pdo->prepare($query);
+            $stmt->execute($params);
+            return $stmt->fetchAll(PDO::FETCH_ASSOC); // zwraca tablicę rekordów
+        } catch (PDOException $e) {
+            throw new Exception("Database select failed: " . $e->getMessage());
+        }
     }
 
     function update($query, $types, $params = array())
@@ -115,7 +142,7 @@ class SQLQuery
         $arrFields = array();
         $arrValues = array();
         $arrTypes = array();
-        forEach ($postParams as $key => $value) {
+        foreach ($postParams as $key => $value) {
 
             $arrKeyWithType = explode(":", $key, 2);
 
