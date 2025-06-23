@@ -34,7 +34,7 @@ $notificationIdsToUpdateInHESK = array();
 $conn->set_charset("utf8mb4");
 
 // Etap 1: Przetwarzanie zgłoszeń z status != 3
-$sql = "SELECT id, u_name as name, dt, trackid, message, custom1, custom2, custom3, closedat, u_email as email, subject, priority, status FROM hesk_tickets WHERE status != 3 and category not in (14,15,16,17) ORDER BY id ASC";
+$sql = "SELECT id, u_name as name, dt, trackid, message, custom1, custom2, custom3, closedat, u_email as email, subject, priority, status FROM hesk_tickets WHERE status != 3 and category in (1,2,3,4,5) ORDER BY id ASC";
 $result = $conn->query($sql);
 
 if ($result->num_rows > 0) {
@@ -148,7 +148,7 @@ if ($result->num_rows > 0) {
 }
 
 // Etap 2: Przetwarzanie zamkniętych zgłoszeń, które mogą wymagać aktualizacji
-$sql_closed = "SELECT trackid, closedat FROM hesk_tickets WHERE status = 3 AND closedat > NOW() - INTERVAL 30 DAY ORDER BY id ASC";
+$sql_closed = "SELECT trackid, closedat FROM hesk_tickets WHERE status = 3 AND category in (1,2,3,4,5) AND closedat > NOW() - INTERVAL 30 DAY ORDER BY id ASC";
 $result_closed = $conn->query($sql_closed);
 
 if ($result_closed->num_rows > 0) {
