@@ -696,7 +696,7 @@ input[type="checkbox"] {
 }
 
 /*
- Otus sidebar
+ Otus sidebar, allow to close and expand on demand
 */
 /* left sliding filters panel */
 .otus-filters-panel {
@@ -715,7 +715,6 @@ input[type="checkbox"] {
     display: flex;
     flex-direction: column;
 }
-
 
 .otus-filters-panel .close-btn {
     position: absolute;
