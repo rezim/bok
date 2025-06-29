@@ -698,39 +698,67 @@ input[type="checkbox"] {
 /*
  Otus sidebar
 */
-/*.otus-sidebar {*/
-/*    transition: margin-left 0.3s, width 0.3s;*/
-/*    min-width: 220px;*/
-/*}*/
+/* left sliding filters panel */
+.otus-filters-panel {
+    position: fixed;
+    top: 70px; /* align to header height */
+    left: 0;
+    width: 340px;
+    max-width: 90vw;
+    height: 100vh;
+    background: #fff;
+    box-shadow: 4px 0 16px rgba(0,0,0,0.08);
+    z-index: 900;
+    transform: translateX(-110%);
+    transition: transform 0.3s;
+    overflow-y: auto;
+    display: flex;
+    flex-direction: column;
+}
 
-/*.otus-sidebar.collapsed {*/
-/*    margin-left: -222px; !* szerokość sidebaru *!*/
-/*    width: 0;*/
-/*    min-width: 0;*/
-/*    overflow: hidden;*/
-/*    padding: 0;*/
-/*    border: none;*/
-/*}*/
 
-/*!* Rozszerzenie mainContent na całość *!*/
-/*.main-expanded {*/
-/*    flex: 1 1 100%;*/
-/*    max-width: 100% !important;*/
-/*}*/
+.otus-filters-panel .close-btn {
+    position: absolute;
+    top: 0;
+    right: 0;
+    color: black;
+    font-size: 20px;
+}
 
-/*@media (max-width: 767.98px) {*/
-/*    .otus-sidebar {*/
-/*        position: fixed;*/
-/*        z-index: 999;*/
-/*        left: 0;*/
-/*        top: 0;*/
-/*        height: 100vh;*/
-/*        background: #d8f2cd;*/
-/*        width: 220px;*/
-/*        margin-left: -220px;*/
-/*        transition: margin-left 0.3s;*/
-/*    }*/
-/*    .otus-sidebar.open {*/
-/*        margin-left: 0;*/
-/*    }*/
-/*}*/
+body.otus-filters-open .otus-filters-panel {
+    transform: translateX(0);
+}
+
+/* filters icon */
+.otus-filter-iconbar {
+    position: fixed;
+    top: 70px;
+    left: 0;
+    z-index: 800;
+    width: 42px;
+    height: 52px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: #fff;
+    border-radius: 0 12px 12px 0;
+    box-shadow: 2px 2px 8px rgba(0,0,0,0.04);
+}
+
+/* table wrapper, default is all page width */
+.otus-table-wrapper {
+    transition: margin-left 0.3s;
+    margin-left: 30px;
+}
+
+/* when filter panel is open, table is sliding left */
+body.otus-filters-open .otus-table-wrapper {
+    margin-left: 340px; /* exactly same as filter panel width */
+}
+
+@media (max-width: 1200px) {
+    /* on mobile do not move table, only overlay panel */
+    body.otus-filters-open .otus-table-wrapper {
+        margin-left: 0;
+    }
+}

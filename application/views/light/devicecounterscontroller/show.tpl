@@ -1,33 +1,40 @@
-<div class="container-fluid">
+<div class="container-fluid position-relative">
 
-    <div class="row">
-        <div class="otus-sidebar col-12 col-md-12 col-xl-auto">
-            <form id="dataFilter" data-form>
+    <div class="otus-filter-iconbar">
+        <button class="btn btn-light" id="showFilterPanel" type="button" title="Pokaż filtry" onclick="document.body.classList.add('otus-filters-open')">
+            <i class="fa fa-filter"></i>
+        </button>
+    </div>
 
-                {show_txt_filter_option label="serial" id="filterserial" help="Podaj numer seryjny urządzenia."}
-                {show_txt_filter_option label="model" id="filtermodel" help="Podaj model urządzenia."}
-                {show_txt_filter_option label="klient" id="filterklient" help="Podaj nazwę klienta."}
-                {show_check_filter_option checked="true" label="drukarki" id="filtershowprinters" help="pokaż urządzenie typu drukarki."}
-                {show_check_filter_option checked="true" label="skanery" id="filtershowscanners" help="pokaż urządzenia typu skanery."}
+    <div class="otus-filters-panel p-4">
+        <button class="close-btn btn btn-link"
+                aria-label="Zamknij"
+                onclick="document.body.classList.remove('otus-filters-open')">
+            <i class="fa fa-window-close"></i>
+        </button>
+        <form id="dataFilter" data-form>
+            {show_txt_filter_option label="serial" id="filterserial" help="Podaj numer seryjny urządzenia."}
+            {show_txt_filter_option label="model" id="filtermodel" help="Podaj model urządzenia."}
+            {show_txt_filter_option label="klient" id="filterklient" help="Podaj nazwę klienta."}
+            {show_check_filter_option checked="true" label="drukarki" id="filtershowprinters" help="pokaż urządzenie typu drukarki."}
+            {show_check_filter_option checked="true" label="skanery" id="filtershowscanners" help="pokaż urządzenia typu skanery."}
 
-                <div class="border-top my-4 otus-separator"></div>
+            <input data-ref type="hidden" id="dataod" name="dateFrom" value="{$dateFrom}">
+            <input data-ref type="hidden" id="datado" name="dateTo" value="{$dateTo}">
 
-                <input data-ref type="hidden" id="dataod" name="dateFrom" value="{$dateFrom}">
-                <input data-ref type="hidden" id="datado" name="dateTo" value="{$dateTo}">
+            <button id="applyFilter" class="btn btn-info mt-3" type="button">
+                Filtruj
+            </button>
+        </form>
+    </div>
 
-                <div class="form-group">
-                    <button id="applyFilter" class="btn btn-info btn-block" type="button">
-                        Filtruj
-                    </button>
-                </div>
-            </form>
-        </div>
-        <main id='deviceCountersData' class="col-12 col-md-12 col-xl">
+    <div class="otus-table-wrapper">
+        <main id='deviceCountersData' class="col-12">
 
         </main>
     </div>
-
 </div>
+
 <script type="text/javascript">
     const dataContainerId = 'dataFilter';
     const templateId = 'deviceCountersData';
