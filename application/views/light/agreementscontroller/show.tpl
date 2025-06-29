@@ -1,5 +1,5 @@
 <div class="container-fluid agreements">
-    {include file="$templates/partials/filters/agreemnts.tpl"}
+    {include file="$templates/partials/filters/agreements.tpl"}
     {include file="$templates/partials/main.tpl" mainId="divRightCenter{$czycolorbox}"}
 </div>
 <script type="text/javascript">
