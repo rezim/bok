@@ -760,7 +760,7 @@ body.otus-filters-open .otus-table-wrapper {
 }
 
 @media (max-width: 1200px) {
-    /* on mobile do not move table, only overlay panel */
+    /* on mobile do not move table, only overlay panel, */
     body.otus-filters-open .otus-table-wrapper {
         margin-left: 0;
     }
