@@ -10,11 +10,8 @@
                 {show_check_filter_option checked="true" label="drukarki" id="filtershowprinters" help="pokaż urządzenie typu drukarki."}
                 {show_check_filter_option checked="true" label="skanery" id="filtershowscanners" help="pokaż urządzenia typu skanery."}
 
-
                 <div class="border-top my-4 otus-separator"></div>
 
-                {assign var="dateFrom" value="first day of last month"|strtotime|date_format:"%Y-%m-%d"}
-                {assign var="dateTo" value="first day of this month"|strtotime|date_format:"%Y-%m-%d"}
                 <input data-ref type="hidden" id="dataod" name="dateFrom" value="{$dateFrom}">
                 <input data-ref type="hidden" id="datado" name="dateTo" value="{$dateTo}">
 
@@ -32,23 +29,6 @@
 
 </div>
 <script type="text/javascript">
-    // $(function() {
-    //  showPrintersCounters();
-    // });
-
-    var dateFrom = new Date();
-    dateFrom.setDate(1);
-    dateFrom.setMonth(dateFrom.getMonth() - 1);
-
-    var dateTo = new Date(dateFrom);
-    dateTo.setMonth(dateFrom.getMonth() + 1, 1);
-    dateTo.setDate(1, 1);
-
-    var params = {
-        dateFrom: $.datepicker.formatDate('yy-mm-dd', dateFrom),
-        dateTo: $.datepicker.formatDate('yy-mm-dd', dateTo)
-    };
-
     const dataContainerId = 'dataFilter';
     const templateId = 'deviceCountersData';
     const actionButtonId = 'applyFilter';

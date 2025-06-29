@@ -976,7 +976,26 @@ class reportsController extends InvoicesController
     function getinvoices()
     {
         if ($_POST['period'] && $_POST['date_from'] && $_POST['date_to']) {
-            echo json_encode($this->getInvoicesByDateRange($_POST['period'], $_POST['date_from'], $_POST['date_to']));
+            $this->report->populateWithPost();
+
+            $externalClientIds = $this->report->getExternalClientIds();
+            $allInvoices = [];
+
+            if (empty($externalClientIds) || count($externalClientIds) > 5) {
+                $allInvoices = $this->getInvoicesByDateRange($_POST['period'], $_POST['date_from'], $_POST['date_to']);
+            } else {
+                foreach ($externalClientIds as $clientObj) {
+                    $filters = "&client_id={$clientObj['client_id']}";
+                    $invoices = $this->getInvoicesByDateRange($_POST['period'], $_POST['date_from'], $_POST['date_to'], $filters);
+                    $allInvoices = array_merge($allInvoices, $invoices);
+                }
+            }
+            // [TODO TR]: temporary fix to reproduce reported issue
+//            $allInvoices = array_filter($allInvoices, function($invoice) {
+//                return $invoice['number'] !== '0265/04/2025';
+//            });
+
+            echo json_encode($allInvoices);
         } else {
             echo "błędne parametry wejściowe";
         }

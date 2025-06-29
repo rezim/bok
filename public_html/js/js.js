@@ -811,8 +811,8 @@ function generujRaport(successCallback, errorCallback) {
         data: {
             dataod: params.dateFrom,
             datado: params.dateTo,
-            filterklient: doc.getElementById('txtklient')?.value,
-            filterserial: doc.getElementById('txtserial')?.value
+            filterklient: doc.getElementById('filterklient')?.value,
+            filterserial: doc.getElementById('filterserial')?.value
         },
         success: function (data) {
             objCenter.innerHTML = '';
@@ -1185,8 +1185,8 @@ function showSzczegolyRaport(nazwakrotka) {
             {
                 dataod: doc.getElementById('txtdataod').value,
                 datado: doc.getElementById('txtdatado').value,
-                filterklient: doc.getElementById('txtklient').value,
-                filterdrukarka: doc.getElementById('txtdrukarka').value,
+                filterklient: doc.getElementById('filterklient').value,
+                filterdrukarka: doc.getElementById('filterserial').value,
                 nazwakrotka: nazwakrotka
             },
 

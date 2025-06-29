@@ -5,9 +5,8 @@ class devicecountersController extends Controller
     function show()
     {
         global $smarty;
-        global $months;
-        $smarty->assign('months', $months);
-        $smarty->assign('rok', date("Y"));
+
+        $this->assignDateFromAndTo();
 
         $smarty->assign('fakturownia_conf_file_path', ROOT . DS . 'config' . DS . 'fakturownia.conf');
     }
@@ -38,15 +37,21 @@ class devicecountersController extends Controller
             $scansEndDate = $item['data_wiadomosci_scans_koniec'];
 
             $dataDo = $this->report->getDataDo();
+            $dataOd = $this->report->getDataOd();
 
-            if (
-                $blackEndDate === '0000-00-00' ||
-                ($blackDate !== $dataDo) ||
-                ($item['type_color'] == 1 && $colorEndDate !== '0000-00-00' && $colorDate !== $dataDo) ||
-                ($scansEndDate !== '0000-00-00' && ($scansDate !== $dataDo)) ||
-                (!$isPrinter && $isScanner && $scansEndDate === '0000-00-00')
-            ) {
+            $noCounters = false;
 
+            $noBlackCounters = $isPrinter && ($blackDate !== $dataDo || $blackEndDate === '0000-00-00');
+            $noColorCounters = $isPrinter && $item['type_color'] == 1 && ($colorDate !== $dataDo || $colorEndDate === '0000-00-00');
+            $noScanCounters = !$isPrinter && $isScanner && $scansDate !== $dataDo && $scansEndDate === '0000-00-00';
+
+//            $blackEndDate === '0000-00-00' ||
+//            ($blackDate !== $dataDo) ||
+//            ($item['type_color'] == 1 && $colorEndDate !== '0000-00-00' && $colorDate !== $dataDo) ||
+//            ($scansEndDate !== '0000-00-00' && ($scansDate !== $dataDo)) ||
+//            (!$isPrinter && $isScanner && $scansEndDate === '0000-00-00')
+
+            if ($noBlackCounters || $noColorCounters || $noScanCounters) {
                 $dzien = 0;
                 $oplatainstalacyjna = 0;
                 $iloscDni = date("t", strtotime($item['dataod']));
@@ -231,8 +236,20 @@ class devicecountersController extends Controller
 
         global $smarty;
         $smarty->assign('dataReports', $dataReports);
+        $this->assignDateFromAndTo();
         unset($dataReports);
 
 
+    }
+
+    function assignDateFromAndTo()
+    {
+        global $smarty;
+
+        $dateFrom = (new DateTime('first day of last month'))->format('Y-m-d');
+        $dateTo = (new DateTime('first day of this month'))->format('Y-m-d');
+
+        $smarty->assign('dateFrom', $dateFrom);
+        $smarty->assign('dateTo', $dateTo);
     }
 }

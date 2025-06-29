@@ -667,3 +667,70 @@ input[type="checkbox"] {
     color: #2062b8;
     font-size: 0.93em;
 }
+/*
+ Device Counters css
+*/
+.info-period {
+    background: #f5f5f5;
+    padding: 12px 20px;
+    margin-bottom: 18px;
+    border-radius: 8px;
+    border: 1px solid #e0e0e0;
+    font-size: 1.1em;
+    color: #222;
+}
+
+.info-period strong {
+    font-weight: bold;
+}
+
+.info-period .period-range {
+    color: #3b5998;
+    font-weight: 500;
+}
+
+.mail-label {
+    color: #888;
+    font-size: 0.95em;
+    font-weight: 500;
+}
+
+/*
+ Otus sidebar
+*/
+/*.otus-sidebar {*/
+/*    transition: margin-left 0.3s, width 0.3s;*/
+/*    min-width: 220px;*/
+/*}*/
+
+/*.otus-sidebar.collapsed {*/
+/*    margin-left: -222px; !* szerokość sidebaru *!*/
+/*    width: 0;*/
+/*    min-width: 0;*/
+/*    overflow: hidden;*/
+/*    padding: 0;*/
+/*    border: none;*/
+/*}*/
+
+/*!* Rozszerzenie mainContent na całość *!*/
+/*.main-expanded {*/
+/*    flex: 1 1 100%;*/
+/*    max-width: 100% !important;*/
+/*}*/
+
+/*@media (max-width: 767.98px) {*/
+/*    .otus-sidebar {*/
+/*        position: fixed;*/
+/*        z-index: 999;*/
+/*        left: 0;*/
+/*        top: 0;*/
+/*        height: 100vh;*/
+/*        background: #d8f2cd;*/
+/*        width: 220px;*/
+/*        margin-left: -220px;*/
+/*        transition: margin-left 0.3s;*/
+/*    }*/
+/*    .otus-sidebar.open {*/
+/*        margin-left: 0;*/
+/*    }*/
+/*}*/

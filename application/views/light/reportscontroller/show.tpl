@@ -1,7 +1,7 @@
 <div class="container-fluid reports">
     <div class="row">
         <div class="otus-sidebar col-12 col-md-12 col-xl-auto">
-            <form>
+            <form id="dataFilter" data-form>
                 <div class="form-group">
                     <label for="txtdataod">data od</label>
                 </div>
@@ -45,7 +45,7 @@
                     <label for="txtklient">klient</label>
                 </div>
                 <div class="form-group">
-                    <input type="text" id='txtklient' class="form-control"
+                    <input data-ref type="text" id='filterklient' class="form-control"
                            aria-describedby="clientHelp">
                     <small id="clientHelp" class="form-text text-muted"><i class="fas fa-info-circle"></i> Podaj nazwę
                         klienta</small>
@@ -55,7 +55,7 @@
                     <label for="txtserial">drukarka</label>
                 </div>
                 <div class="form-group">
-                    <input type="text" id='txtserial' class="form-control"
+                    <input data-ref type="text" id='filterserial' class="form-control"
                            aria-describedby="deviceHelp">
                     <small id="deviceHelp" class="form-text text-muted"><i class="fas fa-info-circle"></i> Podaj serial
                         urządzenia</small>

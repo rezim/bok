@@ -302,10 +302,20 @@ InvoiceManager = function (invoice_number_length) {
             $('.invoice-count').hide();
             $('.invoice-loading').show();
 
+            // [TODO TR]: use methods from service instead
+            const containerId = 'dataFilter';
+            const containerSelector = `#${containerId}[data-form]`;
+            const container = document.querySelector(containerSelector);
+            const filterRefs = Array.from(container.querySelectorAll('[data-ref]'));
+            const filterData = Object.fromEntries(filterRefs.map(d => [d.id, d.type === 'checkbox' ? d.checked : d.value]));
+            const anyFilterSet = Object.values(filterData).some(v => !!v);
+
+
             let loadedInvoices = await loadAsyncData('/reports/getinvoices/notemplate', {
                 period: 'more',
                 date_from: currentPeriodInvoices.period.dateFrom,
-                date_to: yesterday(currentPeriodInvoices.period.dateTo)
+                date_to: yesterday(currentPeriodInvoices.period.dateTo),
+                ...filterData
             });
 
             loadedInvoices = JSON.parse(loadedInvoices);
@@ -356,17 +366,19 @@ InvoiceManager = function (invoice_number_length) {
 
             var missingInvoices = [];
 
-            $.each(orderedInvoices, function (index, invoiceCount) {
-                // invoice contains
-                if (invoiceCount != 1) {
+            if (!anyFilterSet) {
+                $.each(orderedInvoices, function (index, invoiceCount) {
+                    // invoice contains
+                    if (invoiceCount != 1) {
 
-                    if (invoiceCount !== 0) {
-                        missingInvoices.push([[(index + 1), '/', invNbPattern].join(''), invoiceCount].join('-'));
-                    } else {
-                        missingInvoices.push([(index + 1), '/', invNbPattern].join(''));
+                        if (invoiceCount !== 0) {
+                            missingInvoices.push([[(index + 1), '/', invNbPattern].join(''), invoiceCount].join('-'));
+                        } else {
+                            missingInvoices.push([(index + 1), '/', invNbPattern].join(''));
+                        }
                     }
-                }
-            });
+                });
+            }
 
             currentPeriodInvoices.missingInvoices = missingInvoices;
 

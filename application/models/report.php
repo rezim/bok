@@ -84,11 +84,13 @@ class report extends Model
         if ($this->filtermodel != '') {
             $where .= " and (bb.model like '%{$this->filtermodel}%')";
         }
-        if (!filter_var($this->filtershowprinters, FILTER_VALIDATE_BOOLEAN)) {
-            $where .= " and (a_t.description <> 'wynajem drukarki')";
-        }
-        if (!filter_var($this->filtershowscanners, FILTER_VALIDATE_BOOLEAN)) {
-            $where .= " and (a_t.description <> 'wynajem skanera')";
+        $showPrinters = filter_var($this->filtershowprinters, FILTER_VALIDATE_BOOLEAN);
+        $showScanners = filter_var($this->filtershowscanners, FILTER_VALIDATE_BOOLEAN);
+
+        if ($showPrinters && !$showScanners) {
+            $where .= " and (a_t.description = 'wynajem drukarki')";
+        } elseif (!$showPrinters && $showScanners) {
+            $where .= " and (a_t.description = 'wynajem skanera')";
         }
 
         $dateFrom = $this->dataod;
@@ -447,5 +449,34 @@ class report extends Model
 
 //        $this->query($updateQuery);
     }
+
+    function getExternalClientIds() {
+        if ($this->filterklient === '' && $this->filterserial === '')  {
+            return [];
+        }
+        $whereClauses = [];
+        $params = [];
+
+        if ($this->filterklient != '') {
+            $whereClauses[] = "(nazwakrotka LIKE ? OR nazwapelna LIKE ?)";
+            $params[] = "%{$this->filterklient}%";
+            $params[] = "%{$this->filterklient}%";
+        }
+
+        if ($this->filterserial != '') {
+            $whereClauses[] = "(serial LIKE ?)";
+            $params[] = "%{$this->filterserial}%";
+        }
+
+        $where = '';
+        if (!empty($whereClauses)) {
+            $where = 'WHERE ' . implode(' AND ', $whereClauses);
+        }
+
+        $query = "SELECT client_id FROM clients $where";
+
+        return $this->selectWithPDO($query, $params);
+    }
+
 }
 // SELECT c.nip, p.* FROM `payments` p inner join clients c on substring(p.recipient_acount, -10) = c.nip WHERE p.date >= '2023-10-01' and p.date <= '2023-11-30';

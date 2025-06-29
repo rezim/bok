@@ -22,6 +22,11 @@
     <div style='clear:both'></div>
 </div>
 
+<div class="info-period">
+    <strong>Liczniki urządzeń wyświetlane są za okres:</strong>
+    <span class="period-range">od {$dateFrom} do {$dateTo}</span>
+</div>
+
 {$turns = 1}
 <div class="table-responsive-sm">
     <table class='table table-hover table-sm' id="tableCounters">
@@ -100,9 +105,11 @@
 
                         <td>
                             {if $item2.isPrinter}
-                                {$item2.data_wiadomosci_black_koniec}
+                                <span class="mail-label">Start:</span> {$item2.data_wiadomosci_black_start}<br />
+                                <span class="mail-label">Koniec:</span> {$item2.data_wiadomosci_black_koniec}
                             {else}
-                                {$item2.data_wiadomosci_scans_koniec}
+                                <span class="mail-label">Start:</span> {$item2.data_wiadomosci_scans_start}<br />
+                                <span class="mail-label">Koniec:</span> {$item2.data_wiadomosci_scans_koniec}
                             {/if}
                         </td>
 
