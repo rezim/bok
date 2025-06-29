@@ -2,7 +2,6 @@
     {include file="$templates/partials/filters/device-counters.tpl"}
     {include file="$templates/partials/main.tpl" mainId="deviceCountersData"}
 </div>
-
 <script type="text/javascript">
     const dataContainerId = 'dataFilter';
     const templateId = 'deviceCountersData';

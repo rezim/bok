@@ -1,4 +1,5 @@
 {include file="../filters-button.tpl"}
+
 <div class="otus-filters-panel p-4">
     {include file="../close-button.tpl"}
     <form>

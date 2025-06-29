@@ -2,7 +2,6 @@
     {include file="$templates/partials/filters/clients.tpl"}
     {include file="$templates/partials/main.tpl" mainId="divRightCenter{$czycolorbox}"}
 </div>
-
 <script type="text/javascript">
                        $('#txtfilternazwa').unbind("keypress");
                        $('#txtfilternazwa').keypress(function(event) {

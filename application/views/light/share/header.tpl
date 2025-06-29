@@ -55,7 +55,6 @@
 <!-- modules -->
 <link rel="stylesheet" type="text/css" href="{$smarty.const.SCIEZKA}/css/service.css?{$smarty.const.APPVERSION}"/>
 
-
 <!-- Latest compiled and minified CSS -->
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-select@1.13.18/dist/css/bootstrap-select.min.css">
 

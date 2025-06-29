@@ -2,7 +2,6 @@
     {include file="$templates/partials/filters/reports.tpl"}
     {include file="$templates/partials/main.tpl" mainId="divRightCenter"}
 </div>
-
 <!-- Confirm Issue All Invoices Modal -->
 <div class="modal fade" id="exampleModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel"
      aria-hidden="true">

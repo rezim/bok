@@ -3,7 +3,6 @@
 const
 SCAN_START = 'skany_start',
 SCAN_END = 'skany_koniec',
-SCAN_SERIAL = 'skany_serial',
 SCAN_DATE_START = 'data_wiadomosci_scans_start',
 SCAN_DATE_END = 'data_wiadomosci_scans_koniec',
 SCAN_PRICE = 'cenazascan',
