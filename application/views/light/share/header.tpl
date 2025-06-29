@@ -126,7 +126,7 @@
 
 </head>
 <?php flush(); ?>
-<body>
+<body{if isset($isFiltersOpen) && $isFiltersOpen} class="otus-filters-open"{/if}>
 
 {if isset($smarty.session.login) && $smarty.session.login==1}
 

@@ -724,6 +724,10 @@ input[type="checkbox"] {
     font-size: 20px;
 }
 
+.otus-filters-panel form {
+    margin-top: 20px; /* to not overlap with close button*/
+}
+
 body.otus-filters-open .otus-filters-panel {
     transform: translateX(0);
 }

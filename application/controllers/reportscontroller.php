@@ -36,6 +36,7 @@ class reportsController extends InvoicesController
         global $months;
         $smarty->assign('months', $months);
         $smarty->assign('rok', date("Y"));
+        $smarty->assign('isFiltersOpen', true);
 
         $smarty->assign('fakturownia_conf_file_path', ROOT . DS . 'config' . DS . 'fakturownia.conf');
     }
@@ -991,9 +992,9 @@ class reportsController extends InvoicesController
                 }
             }
             // [TODO TR]: temporary fix to reproduce reported issue
-//            $allInvoices = array_filter($allInvoices, function($invoice) {
-//                return $invoice['number'] !== '0265/04/2025';
-//            });
+            $allInvoices = array_filter($allInvoices, function($invoice) {
+                return $invoice['number'] !== '0265/04/2025';
+            });
 
             echo json_encode($allInvoices);
         } else {
