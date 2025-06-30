@@ -6,104 +6,9 @@
 </script>
 <div class="container-fluid" ng-app="app" ng-controller="ProfitabilityCtrl as ctrl" ng-cloak>
 
-    <div class="row">
-        <div class="otus-sidebar col-12 col-md-12 col-xl-auto">
-            <form>
-                <div class="form-group">
-                    <label for="txtfilterserial">okres (od roku)</label>
-                </div>
-                <div class="form-group">
-                    <div class="btn-toolbar" role="toolbar" aria-label="Toolbar with button groups">
-                        <div class="btn-group mr-2" role="group" aria-label="First group" aria-describedby="dateRangeHelp">
-                            <button type="button" class="btn btn-outline-secondary form-control"
-                                    ng-click="date_from='2013-08-01'; date_to=ctrl.getToday(); ctrl.loadData(date_from, date_to)">2013</button>
-                            <button type="button" class="btn btn-outline-secondary form-control"
-                                    ng-click="date_from='2015-05-01'; date_to=ctrl.getToday(); ctrl.loadData(date_from, date_to)">2015</button>
-                            <button type="button" class="btn btn-outline-secondary form-control"
-                                    ng-click="date_from='2016-06-01'; date_to=ctrl.getToday(); ctrl.loadData(date_from, date_to)">2016</button>
-                        </div>
-                    </div>
-                    <small id="dateRangeHelp" class="form-text text-muted"><i class="fas fa-info-circle"></i> Podaj od którego roku.</small>
-                </div>
+    {include file="$templates/partials/filters/profitability.tpl"}
 
-                <div class="form-group">
-                    <label for="txtdataod">data od</label>
-                </div>
-                <div class="form-group">
-                    <input type="text" id='txtdataod' class="form-control"
-                           aria-describedby="dateFromHelp" ng-model="date_from" datepicker required>
-                    <small id="dateFromHelp" class="form-text text-muted"><i class="fas fa-info-circle"></i> Podaj datę
-                        początkową.</small>
-                </div>
-
-                <div class="form-group">
-                    <label for="txtdatado">data do</label>
-                </div>
-                <div class="form-group">
-                    <input type="text" id='txtdatado' class="form-control"
-                           aria-describedby="dateToHelp" ng-model="date_to" datepicker required>
-                    <small id="dateToHelp" class="form-text text-muted"><i class="fas fa-info-circle"></i> Podaj datę
-                        końcową.</small>
-                </div>
-
-                <div class="border-top my-4 otus-separator"></div>
-
-                <div class="w-100"></div>
-
-                <div class="form-group mt-4">
-                    <input type="checkbox" aria-describedby="paidHelp" ng-model="ctrl.show_devices_view">
-                    <label for='paidHelp'>
-                        widok urządzeń
-                    </label>
-                    <small id="paidHelp" class="form-text text-muted"><i class="fa fa-info-circle"></i> pokaż widok urządzeń</small>
-                </div>
-
-                <div class="form-group mt-4">
-                    <input type="checkbox" aria-describedby="paidHelp" ng-model="show_inactive" ng-change="ctrl.showInactive(show_inactive)">
-                    <label for='paidHelp'>
-                        umowy nieaktywne
-                    </label>
-                    <small id="paidHelp" class="form-text text-muted"><i class="fa fa-info-circle"></i> pokaż umowy nieaktywne</small>
-                </div>
-
-                <div class="form-group mt-4">
-                    <input type="checkbox" aria-describedby="paidHelp" ng-model="ctrl.showLossOnly">
-                    <label for='paidHelp'>
-                        tylko strata
-                    </label>
-                    <small id="paidHelp" class="form-text text-muted"><i class="fa fa-info-circle"></i> pokaż tylko strate</small>
-                </div>
-
-                <div class="form-group mt-4">
-                    <input type="checkbox" aria-describedby="paidHelp" ng-model="ctrl.showWithCost">
-                    <label for='paidHelp'>
-                        tylko z kosztami
-                    </label>
-                    <small id="paidHelp" class="form-text text-muted"><i class="fa fa-info-circle"></i> pokaż tylko z kosztami</small>
-                </div>
-
-                <div class="form-group" ng-if="!ctrl.show_devices_view">
-                    <label for="txtklient">klient</label>
-                </div>
-                <div class="form-group" ng-if="!ctrl.show_devices_view">
-                    <input type="text" id="txtklient" class="form-control"
-                           aria-describedby="clientHelp" ng-model="search.name">
-                    <small id="clientHelp" class="form-text text-muted"><i class="fas fa-info-circle"></i> Podaj nazwę
-                        klienta</small>
-                </div>
-
-                <div class="border-top my-4 otus-separator"></div>
-
-                <div class="form-group">
-                    <button class="btn btn-info btn-block" type="submit"
-                            ng-click='ctrl.loadData(date_from, date_to, show_inactive)'>
-                        Pokaż
-                    </button>
-                </div>
-
-            </form>
-        </div>
-
+    <div class="otus-table-wrapper">
         <main id='divRightCenter' class="col-12 col-md-12 col-xl">
             <div class="table-responsive-sm">
                 <table class='table table-hover table-sm tablesorter displaytable' id='tableReport'>
@@ -128,27 +33,41 @@
                     <tr ng-if="profits.length && !isPending && !ctrl.show_devices_view">
                         <td align="right"><b>suma:</b></td>
                         <td align="right"><b>[[(profits | sumOfValue:'sum':'wartoscUrzadzen') | currency: '']]</b></td>
-                        <td align="right" class="profit"><b>[[(profits | sumOfValue:'invoice':'sum') | currency: '']]</b></td>
-                        <td align="right" class="cost"><b>[[(profits | sumOfValue:'sum':'total') | currency: '']]</b></td>
-                        <td align="right" ng-class="((profits | sumOfDifferences:'invoice':'sum':'sum':'total') >=0) ? 'profit' : 'cost'"><b>[[(profits | sumOfDifferences:'invoice':'sum':'sum':'total') | currency: '']]</b></td>
+                        <td align="right" class="profit">
+                            <b>[[(profits | sumOfValue:'invoice':'sum') | currency: '']]</b></td>
+                        <td align="right" class="cost"><b>[[(profits | sumOfValue:'sum':'total') | currency: '']]</b>
+                        </td>
+                        <td align="right"
+                            ng-class="((profits | sumOfDifferences:'invoice':'sum':'sum':'total') >=0) ? 'profit' : 'cost'">
+                            <b>[[(profits | sumOfDifferences:'invoice':'sum':'sum':'total') | currency: '']]</b></td>
                     </tr>
                     <tr ng-if="ctrl.show_devices_view">
                         {*<td colspan="5">[[ctrl.getAgreements(ctrl.device)]]</td>*}
                         <td align="right"><b>suma:</b></td>
-                        <td align="right"><b>[[(ctrl.getAgreements(ctrl.device) | sumOfValue:'agreementValueUnit') | currency: '']]</b></td>
-                        <td align="right" class="profit"><b>[[(ctrl.getAgreements(ctrl.device) | sumOfValue:'netPrice') | currency: '']]</b></td>
-                        <td align="right" class="cost"><b>[[(ctrl.getAgreements(ctrl.device) | sumOfValue:'sum':'total') | currency: '']]</b></td>
-                        <td align="right" ng-class="((ctrl.getAgreements(ctrl.device) | sumOfDifferences:'netPrice':'':'sum':'total') >=0) ? 'profit' : 'cost'"><b>[[(ctrl.getAgreements(ctrl.device) | sumOfDifferences:'netPrice':'':'sum':'total') | currency: '']]</b></td>
+                        <td align="right">
+                            <b>[[(ctrl.getAgreements(ctrl.device) | sumOfValue:'agreementValueUnit') | currency: '']]</b>
+                        </td>
+                        <td align="right" class="profit">
+                            <b>[[(ctrl.getAgreements(ctrl.device) | sumOfValue:'netPrice') | currency: '']]</b></td>
+                        <td align="right" class="cost">
+                            <b>[[(ctrl.getAgreements(ctrl.device) | sumOfValue:'sum':'total') | currency: '']]</b></td>
+                        <td align="right"
+                            ng-class="((ctrl.getAgreements(ctrl.device) | sumOfDifferences:'netPrice':'':'sum':'total') >=0) ? 'profit' : 'cost'">
+                            <b>[[(ctrl.getAgreements(ctrl.device) | sumOfDifferences:'netPrice':'':'sum':'total') | currency: '']]</b>
+                        </td>
                     </tr>
                     </thead>
                     <tbody ng-repeat="profit in profits = (ctrl.getProfits() | filter:search | showProfits: ctrl.showLossOnly | showWithCosts: ctrl.showWithCost | orderBy: 'name')">
 
-                    <tr ng-if="!ctrl.show_devices_view" ng-click="ctrl.show_details[profit.nip]= !ctrl.show_details[profit.nip]">
+                    <tr ng-if="!ctrl.show_devices_view"
+                        ng-click="ctrl.show_details[profit.nip]= !ctrl.show_details[profit.nip]">
                         <td class='tdLink'>[[profit.name]]</td>
                         <td align="right">[[profit.sum.wartoscUrzadzen | currency: '']]</td>
                         <td align="right" class="profit">[[profit.invoice.sum | currency: '']]</td>
                         <td align="right" class="cost">[[profit.sum.total | currency: '']]</td>
-                        <td align="right" ng-class="((profit.invoice.sum - profit.sum.total) >= 0) ? 'profit' : 'cost'">[[(profit.invoice.sum - profit.sum.total) | currency: '']]</td>
+                        <td align="right" ng-class="((profit.invoice.sum - profit.sum.total) >= 0) ? 'profit' : 'cost'">
+                            [[(profit.invoice.sum - profit.sum.total) | currency: '']]
+                        </td>
                     </tr>
 
                     <tr ng-if="(ctrl.show_details[profit.nip] || ctrl.show_devices_view) && (profit.agreements | filter: ctrl.device).length">
@@ -180,19 +99,27 @@
                                     </th>
                                 </tr>
                                 </thead>
-                                <tbody ng-repeat="agreement in profit.agreements | filter: ctrl.device" ng-class="(agreement.agreementIsActive) ? '' : 'inactive-agreement'">
-                                <tr ng-if="$index == 0 && ctrl.show_devices_view"><td colspan="7">[[profit.name]]</td></tr>
+                                <tbody ng-repeat="agreement in profit.agreements | filter: ctrl.device"
+                                       ng-class="(agreement.agreementIsActive) ? '' : 'inactive-agreement'">
+                                <tr ng-if="$index == 0 && ctrl.show_devices_view">
+                                    <td colspan="7">[[profit.name]]</td>
+                                </tr>
                                 <tr ng-click="show_notifications=!show_notifications">
                                     <td width="200px" align="left">[[agreement.agreementRowId]]</td>
-                                    <td width="200px" align="left">[[(agreement.agreementIsActive) ? 'tak' : 'nie']]</td>
+                                    <td width="200px" align="left">[[(agreement.agreementIsActive) ? 'tak' : 'nie']]
+                                    </td>
                                     <td width="200px" align="left">[[agreement.agreementPrinterModel]]</td>
                                     <td width="200px" align="right">[[agreement.agreementValueUnit | currency: '']]</td>
                                     <td width="200px" align="right" class="profit">
-                                        <i ng-if="ctrl.getInvoiceDetails(profit.invoice.list, profit.nip).isPending" class="fa fa-spinner fa-spin" aria-hidden="true"></i>
+                                        <i ng-if="ctrl.getInvoiceDetails(profit.invoice.list, profit.nip).isPending"
+                                           class="fa fa-spinner fa-spin" aria-hidden="true"></i>
                                         [[(ctrl.getInvoiceDetails(profit.invoice.list, profit.nip)[agreement.agreementRowId].netPrice) | currency: '']]
                                     </td>
-                                    <td width="200px" align="right" class="cost">[[agreement.sum.total | currency: '']]</td>
-                                    <td width="200px" align="right" ng-class="((ctrl.getInvoiceDetails(profit.invoice.list, profit.nip)[agreement.agreementRowId].netPrice) - agreement.sum.total) >= 0 ? 'profit' : 'cost' ">
+                                    <td width="200px" align="right" class="cost">
+                                        [[agreement.sum.total | currency: '']]
+                                    </td>
+                                    <td width="200px" align="right"
+                                        ng-class="((ctrl.getInvoiceDetails(profit.invoice.list, profit.nip)[agreement.agreementRowId].netPrice) - agreement.sum.total) >= 0 ? 'profit' : 'cost' ">
                                         [[((ctrl.getInvoiceDetails(profit.invoice.list, profit.nip)[agreement.agreementRowId].netPrice) - agreement.sum.total) | currency: '']]
                                     </td>
                                 </tr>
@@ -239,7 +166,8 @@
                                                     [[notification.koszt_wartosc_materialow | currency: '']]
                                                 </td>
                                                 <td align="center" style="color: darkgray; cursor: pointer;">
-                                                    <i colorbox html="[[ctrl.getNotificationTemplate(notification)]]" class="fa fa-envelope" aria-hidden="true"></i>
+                                                    <i colorbox html="[[ctrl.getNotificationTemplate(notification)]]"
+                                                       class="fa fa-envelope" aria-hidden="true"></i>
                                                 </td>
                                             </tr>
                                             </tbody>
@@ -248,27 +176,32 @@
                                 </tr>
                                 </tbody>
                             </table>
-                        </>
+                        </
+                        >
                     </tr>
                     </tbody>
                 </table>
                 <div ng-if="isPending" class="loading">Loading&#8230;</div>
             </div>
         </main>
-    </div>
 
-    <!-- this should be replaced by angular based solution -->
+    </div>
+</div>
+<!-- this should be replaced by angular based solution -->
 <script type="text/javascript">
-                    $( "#txtdataod" ).datepicker
-                    ($.datepicker.regional['pl'],{ dateFormat: "yy-mm-dd",
-                        changeMonth: true,
-                        changeYear: true,
-                        showOtherMonths: true,
-                        selectOtherMonths: true
-                    });
-                    $( "#txtdatado" ).datepicker($.datepicker.regional['pl'],{ dateFormat: "yy-mm-dd",
-                        changeMonth: true,
-                        changeYear: true,
-                        showOtherMonths: true,
-                        selectOtherMonths: true });
+    $("#txtdataod").datepicker
+    ($.datepicker.regional['pl'], {
+        dateFormat: "yy-mm-dd",
+        changeMonth: true,
+        changeYear: true,
+        showOtherMonths: true,
+        selectOtherMonths: true
+    });
+    $("#txtdatado").datepicker($.datepicker.regional['pl'], {
+        dateFormat: "yy-mm-dd",
+        changeMonth: true,
+        changeYear: true,
+        showOtherMonths: true,
+        selectOtherMonths: true
+    });
 </script>

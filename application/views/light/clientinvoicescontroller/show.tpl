@@ -1,126 +1,12 @@
-<div class="container-fluid" ng-app="app" ng-controller="PaymentsCtrl as ctrl" ng-cloak
+<div class="container-fluid agreements" ng-app="app" ng-controller="PaymentsCtrl as ctrl" ng-cloak
      ng-init="ctrl.loadData(date_from, date_to, false)">
+    {include file="$templates/partials/filters/client-invoices.tpl"}
 
-    <div class="row">
-        <div class="otus-sidebar col-12 col-xl-auto">
-            <form>
-                <div class="form-group">
-                    <label for="txtfilterserial">okres (miesięcy)</label>
-                </div>
-
-                <div class="form-group">
-                    <label for="txtdataod">data od</label>
-                </div>
-                <div class="form-group">
-                    <input type="text" id='txtdataod' class="form-control"
-                           aria-describedby="dateFromHelp" ng-model="date_from" datepicker required>
-                    <small id="dateFromHelp" class="form-text text-muted"><i class="fas fa-info-circle"></i> Podaj datę
-                        początkową.</small>
-                </div>
-
-                <div class="form-group">
-                    <label for="txtdatado">data do</label>
-                </div>
-                <div class="form-group">
-                    <input type="text" id='txtdatado' class="form-control"
-                           aria-describedby="dateToHelp" ng-model="date_to" datepicker required>
-                    <small id="dateToHelp" class="form-text text-muted"><i class="fas fa-info-circle"></i> Podaj datę
-                        końcową.</small>
-                </div>
-
-
-                <div class="form-group">
-                    <label for="txtDaysLate">Ilość dni spóźnienia</label>
-                </div>
-                <div class="form-group">
-                    <input type="text" id="txtDaysLate" class="form-control"
-                           aria-describedby="txtDaysLateHelp" ng-model="ctrl.filters.days_late">
-                    <small id="txtDaysLateHelp" class="form-text text-muted"><i class="fas fa-info-circle"></i> Podaj
-                        ilość dni opóźnienia w płatności</small>
-                </div>
-
-                <div class="border-top my-4 otus-separator"></div>
-
-                <div class="w-100"></div>
-
-                <div class="form-group">
-                    <label for="txtklient">klient</label>
-                </div>
-
-                <div class="form-group">
-                    <input type="text" id="txtklient" class="form-control"
-                           aria-describedby="clientHelp" ng-model="search.name">
-                    <small id="clientHelp" class="form-text text-muted"><i class="fas fa-info-circle"></i> Podaj nazwę
-                        klienta</small>
-                </div>
-
-                <div class="form-group">
-                    <label for="txtclientnip">nip</label>
-                </div>
-                <div class="form-group">
-                    <input type="text" id="txtclientnip" class="form-control"
-                           aria-describedby="clienNiptHelp" ng-model="search.nip">
-                    <small id="clienNiptHelp" class="form-text text-muted"><i class="fas fa-info-circle"></i> Podaj NIP
-                        klienta</small>
-                </div>
-
-                <div class="form-group">
-                    <label for="txtInvoiceNb">numer FV</label>
-                </div>
-                <div class="form-group">
-                    <input type="text" id="txtInvoiceNb" class="form-control"
-                           aria-describedby="txtInvoiceNbHelp" ng-model="ctrl.filters.invoiceNb">
-                    <small id="txtInvoiceNbHelp" class="form-text text-muted"><i class="fas fa-info-circle"></i> Podaj
-                        numer Faktury VAT</small>
-                </div>
-
-                <div class="w-100"></div>
-
-                <div class="form-group mt-4">
-                    <input type="checkbox" aria-describedby="paidHelp" ng-model="ctrl.filters.show_paid_invoices">
-                    <label for='paidHelp'>
-                        opłacone
-                    </label>
-                    <small id="paidHelp" class="form-text text-muted"><i class="fa fa-info-circle"></i> pokaż faktury
-                        opłacone</small>
-                </div>
-
-                <div class="form-group mt-4">
-                    <input type="checkbox" aria-describedby="paidHelp" ng-model="ctrl.filters.show_overpaid_invoices">
-                    <label for='paidHelp'>
-                        z nadpłatą
-                    </label>
-                    <small id="paidHelp" class="form-text text-muted"><i class="fa fa-info-circle"></i> pokaż klientów z
-                        nadpłatą</small>
-                </div>
-
-                <div class="form-group mt-4">
-                    <input type="checkbox" aria-describedby="paidHelp" ng-model="ctrl.filters.show_non_deptors">
-                    <label for='paidHelp'>
-                        bez zadłużenia
-                    </label>
-                    <small id="paidHelp" class="form-text text-muted"><i class="fa fa-info-circle"></i> pokaż klientów
-                        bez zadłużenia</small>
-                </div>
-
-                <div class="border-top my-4 otus-separator"></div>
-
-                <div class="form-group">
-                    <button class="btn btn-info btn-block" type="submit"
-                            ng-click='ctrl.loadData(date_from, date_to, !ctrl.filters.show_paid_invoices)'>
-                        Pokaż
-                    </button>
-                </div>
-
-            </form>
-        </div>
-
-
-        {include file="$templates/invoice/addPayment.tpl"}
-        {include file="$templates/invoice/paymentList.tpl"}
-        {include file="$templates/invoice/interestNoteList.tpl"}
-        {include file="$templates/invoice/paymentsClientMessages.tpl"}
-
+    {include file="$templates/invoice/addPayment.tpl"}
+    {include file="$templates/invoice/paymentList.tpl"}
+    {include file="$templates/invoice/interestNoteList.tpl"}
+    {include file="$templates/invoice/paymentsClientMessages.tpl"}
+    <div class="otus-table-wrapper">
         <main id='divRightCenter' class="col-12 col-xl">
             <div class="table-responsive-sm">
                 <table class='table table-hover table-sm tablesorter payments' id='tablePayments'>
@@ -158,7 +44,7 @@
                         <td class="text-right"
                             ng-class="(ctrl.getTotal(search, ctrl.filters.show_paid_invoices, ctrl.filters.show_non_deptors) < 0) ? 'underpaid' : (clientInvoice.balance > 0) ? 'overpaid' : 'paid'">
                             [[ctrl.getTotal(search, ctrl.filters.show_paid_invoices, ctrl.filters.show_non_deptors) |
-                            currency : '']]
+                            currency: '']]
                         </td>
                         <td colspan="2"></td>
                     </tr>
@@ -166,9 +52,11 @@
                     <tbody ng-repeat="clientInvoice in ctrl.getClientInvoices() | filter:search | filter: ctrl.clientInvoicesFilter() | orderBy:orderBy.propertyName:orderBy.reverse">
                     <tr ng-dblclick="ctrl.showDetails(clientInvoice);">
                         <td>
-                            <span class='actionLink' ng-click="ctrl.showClientCard(clientInvoice.agreementClientId)">[[clientInvoice.name]]</span>
+                        <span class='actionLink'
+                              ng-click="ctrl.showClientCard(clientInvoice.agreementClientId)">[[clientInvoice.name]]</span>
                         </td>
-                        <td><span class='actionLink' ng-click="ctrl.showClientCard(clientInvoice.agreementClientId)">[[clientInvoice.phone]]</span>
+                        <td><span class='actionLink'
+                                  ng-click="ctrl.showClientCard(clientInvoice.agreementClientId)">[[clientInvoice.phone]]</span>
                         </td>
                         <td align="center" ng-click="ctrl.sortBy('clientInvoice.invoices.count.notPaid')" class="profit"
                             ng-class="(clientInvoice.balance < 0) ? 'underpaid' : (clientInvoice.balance > 0) ? 'overpaid' : 'paid'">
@@ -200,7 +88,8 @@
                                                 class="fas fa-balance-scale"></i></span>
                                 </button>
                                 <div class="dropdown-menu dropdown-menu-right" aria-labelledby="dropdownMenuLink">
-                                    <a href='{$smarty.const.SCIEZKA}/clientinvoices/showclient/[[clientInvoice.nip]]' class="dropdown-item pointer"><i
+                                    <a href='{$smarty.const.SCIEZKA}/clientinvoices/showclient/[[clientInvoice.nip]]'
+                                       class="dropdown-item pointer"><i
                                                 class="fas fa-clipboard-list"></i></i>&nbsp;rozliczenie&nbsp;winien/ma</a>
                                     <a href="javascript:void(0)" class="dropdown-item pointer"
                                        ng-click="ctrl.showDetails(clientInvoice);"><i
@@ -300,6 +189,4 @@
             </div>
         </main>
     </div>
-
-
 </div>

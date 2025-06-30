@@ -46,6 +46,7 @@ class reportsController extends InvoicesController
         global $months;
         $smarty->assign('months', $months);
         $smarty->assign('rok', date("Y"));
+        $smarty->assign('isFiltersOpen', true);
     }
 
     function scansreportdata()

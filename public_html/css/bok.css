@@ -407,7 +407,6 @@ TODO move loading indicator to separate file
 
 main {
     padding-top: 2rem;
-    border-left: solid 1px  #dae3e9;
     border-bottom: solid 1px  #dae3e9;
 }
 
