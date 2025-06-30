@@ -1,5 +1,5 @@
 <div class="container-fluid agreements">
-    {include file="$templates/partials/filters/counter-reports.tpl"}
+    {include file="$templates/partials/filters/counter-report.tpl"}
     {include file="$templates/partials/main.tpl" mainId="divRightCenter"}
 </div>
 
