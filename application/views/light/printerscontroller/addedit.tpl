@@ -149,11 +149,13 @@
                        class='textBoxForm' maxlength="100"
                        style='width:70px;min-width:70px;text-align: right;padding-right: 10px;'
                        {if $serial!=''}value="{$dataPrinter.iloscstron|number_format:0:",":" "|replace:',00':''|escape:'htmlall'}"{/if}>
+                {if isset($canSaveUpdate) && $canSaveUpdate == true}
                 <span style='font-size: 12px;color:black'>Stan na</span>
                 <input data-ref type="text" id='stanna' class='textBoxForm' maxlength="10"
                        style='width:100px;min-width:100px;'>
                 <button class="btn btn-info" type="button"
                       onClick="zapiszStanNa('{$serial}');">zapisz</button>
+                {/if}
             </td>
         </tr>
         <tr>
@@ -364,6 +366,7 @@
         </td>
     </tr>
 
+    {if isset($canSaveUpdate) && $canSaveUpdate == true}
     <tr>
         <td style='text-align: right;' colspan="2">
 
@@ -382,6 +385,7 @@
             </div>
         </td>
     </tr>
+    {/if}
     {*    placeholder , TODO: introduce bootstrap *}
     <tr>
         <td>&nbsp;</td>

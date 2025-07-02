@@ -32,6 +32,10 @@ class printersController extends Controller
 
         $smarty->assign('dataPrinters', $dataPrinters);
         $smarty->assign('czycolorbox', isset($_POST['czycolorbox']) ? $_POST['czycolorbox'] : '');
+
+        $canSaveUpdate = $this->hasAccessToAction('saveupdate');
+        $smarty->assign('canSaveUpdate', $canSaveUpdate);
+
         unset($dataPrinters);
     }
 
@@ -56,6 +60,9 @@ class printersController extends Controller
             unset($dataPrinter);
         }
         $smarty->assign('serial', $_POST['serial']);
+
+        $canSaveUpdate = $this->hasAccessToAction('saveupdate');
+        $smarty->assign('canSaveUpdate', $canSaveUpdate);
     }
 
     function saveupdate()
@@ -81,15 +88,10 @@ class printersController extends Controller
 
         if (isset($_SERVER['HTTP_X_REQUESTED_WITH']) && ($_SERVER['HTTP_X_REQUESTED_WITH'] == 'XMLHttpRequest')) {
 
-            if ($_POST['serial'] == '')
+            if (!isset($_POST['serial']) || $_POST['serial'] == '')
                 die('Uzupełnij serial');
-            if ($_POST['stanna'] == '')
+            if (!isset($_POST['stanna']) || $_POST['stanna'] == '')
                 die('Wybierz datę na którą ma być wpisane');
-            if ($_POST['iloscstron'] != '' && !validatesAsInt(str_replace(' ', '', $_POST['iloscstron'])))
-                die('Wpisz poprawną ilość toner czarny');
-            if (array_key_exists('iloscstron_kolor', $_POST) && $_POST['iloscstron_kolor'] != '' && !validatesAsInt(str_replace(' ', '', $_POST['iloscstron_kolor'])))
-                die('Wpisz poprawną ilość toner kolorowy');
-
 
             $this->printer->populateWithPost();
             echo(json_encode($this->printer->savestanna()));

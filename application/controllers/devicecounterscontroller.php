@@ -43,7 +43,7 @@ class devicecountersController extends Controller
 
             $noBlackCounters = $isPrinter && ($blackDate !== $dataDo || $blackEndDate === '0000-00-00');
             $noColorCounters = $isPrinter && $item['type_color'] == 1 && ($colorDate !== $dataDo || $colorEndDate === '0000-00-00');
-            $noScanCounters = !$isPrinter && $isScanner && $scansDate !== $dataDo && $scansEndDate === '0000-00-00';
+            $noScanCounters = !$isPrinter && $isScanner && ($scansDate !== $dataDo || $scansEndDate === '0000-00-00');
 
 //            $blackEndDate === '0000-00-00' ||
 //            ($blackDate !== $dataDo) ||

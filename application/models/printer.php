@@ -413,28 +413,32 @@ class printer extends Model
             }
         }
 
-        $this->update("DELETE FROM `pages` WHERE datawiadomosci = ? AND serial = ? ", 'ss', array($this->stanna . ' 12:00', $this->serial));
+        $datawiadomosci = $this->stanna . ' 12:00';
+        $dateinsert = date('Y-m-d H:i:s');
 
-        $this->iloscstron_total = (int)($this->iloscstron == '' ? "NULL" : str_replace(' ', '', str_replace(',', '.', $this->iloscstron))) + (int)($this->iloscstron_kolor == '' ? "NULL" : str_replace(' ', '', str_replace(',', '.', $this->iloscstron_kolor)));
+        // check if we save printer counters
+        if ($this->iloscstron != '' && $this->iloscstron > 0) {
 
-        $this->_table = 'pages';
+            $this->update("DELETE FROM `pages` WHERE datawiadomosci = ? AND serial = ? ", 'ss', array($this->stanna . ' 12:00', $this->serial));
 
-        $columnList = "`serial`,
+            $this->iloscstron_total = (int)($this->iloscstron == '' ? "NULL" : str_replace(' ', '', str_replace(',', '.', $this->iloscstron))) + (int)($this->iloscstron_kolor == '' ? "NULL" : str_replace(' ', '', str_replace(',', '.', $this->iloscstron_kolor)));
+
+            $this->_table = 'pages';
+
+            $columnList = "`serial`,
                 `ilosc`,`ilosckolor`,`ilosctotal`,
                 `dateinsert`,
                 `datawiadomosci`, `rowid_agreement`, `product_version`";
 
-        $datawiadomosci = $this->stanna . ' 12:00';
-        $dateinsert = date('Y-m-d H:i:s');
-
-        $insert[] = $this->insert($columnList, 'sdddssii',
-            array(
-                $this->serial,
-                $this->iloscstron == '' ? "NULL" : str_replace(' ', '', str_replace(',', '.', $this->iloscstron)),
-                $this->iloscstron_kolor == '' ? "NULL" : str_replace(' ', '', str_replace(',', '.', $this->iloscstron_kolor)),
-                $this->iloscstron_total == '' ? "NULL" : str_replace(' ', '', str_replace(',', '.', $this->iloscstron_total)),
-                $dateinsert, $datawiadomosci, $agreement_rowid, $product_version
-            ));
+            $insert[] = $this->insert($columnList, 'sdddssii',
+                array(
+                    $this->serial,
+                    $this->iloscstron == '' ? "NULL" : str_replace(' ', '', str_replace(',', '.', $this->iloscstron)),
+                    $this->iloscstron_kolor == '' ? "NULL" : str_replace(' ', '', str_replace(',', '.', $this->iloscstron_kolor)),
+                    $this->iloscstron_total == '' ? "NULL" : str_replace(' ', '', str_replace(',', '.', $this->iloscstron_total)),
+                    $dateinsert, $datawiadomosci, $agreement_rowid, $product_version
+                ));
+        }
 
         if ($this->iloscscans != '' && $this->iloscscans > 0) {
             $insert[] = $this->saveScans($this->serial, $dateinsert, $datawiadomosci, $this->iloscscans, $agreement_rowid);

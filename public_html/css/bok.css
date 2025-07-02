@@ -694,6 +694,10 @@ input[type="checkbox"] {
     font-weight: 500;
 }
 
+.longTextInput {
+    font-size: 12px;
+}
+
 /*
  Otus sidebar, allow to close and expand on demand
 */
@@ -764,3 +768,4 @@ body.otus-filters-open .otus-table-wrapper {
         margin-left: 0;
     }
 }
+

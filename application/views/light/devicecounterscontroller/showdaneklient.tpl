@@ -117,7 +117,7 @@
                             {if $item2.isPrinter}
                             <input id="blackCount_{$item2.serial}"
                                    type="text"
-                                   class="textBoxForm"
+                                   class="textBoxForm longTextInput"
                                    maxlength="100"
                                    style="width:55px;min-width:55px;text-align: right;padding-right: 5px;"
                                    value="{$item2.strony_black_koniec|number_format:0:",":" "|escape:'htmlall'}">
@@ -128,7 +128,7 @@
                             {if $item2.type_color && $item2.isPrinter}
                                 <input id="colorCount_{$item2.serial}"
                                        type="text"
-                                       class="textBoxForm"
+                                       class="textBoxForm longTextInput"
                                        maxlength="100"
                                        style="width:55px;min-width:55px;text-align: right;padding-right: 5px;"
                                        value="{$item2.strony_kolor_koniec|number_format:0:",":" "|escape:'htmlall'}">
@@ -137,7 +137,7 @@
                         <td>
                             <input id="scansCount_{$item2.serial}"
                                    type="text"
-                                   class="textBoxForm"
+                                   class="textBoxForm longTextInput"
                                    maxlength="100"
                                    style="width:55px;min-width:55px;text-align: right;padding-right: 5px;"
                                    value="{$item2.skany_koniec|number_format:0:",":" "|escape:'htmlall'}">
@@ -150,10 +150,19 @@
                                     <i class="fas fa-cog"></i>
                                 </button>
                                 <div class="dropdown-menu dropdown-menu-right" aria-labelledby="dropdownMenuLink">
-                                    <a class="dropdown-item" href="#" onClick="savePrinterCounters('{$item2.strony_black_koniec|number_format:0:",":" "|escape:'htmlall'}',
-                                                    {if $item2.type_color}'{$item2.strony_kolor_koniec|number_format:0:",":" "|escape:'htmlall'}'{else}'0'{/if},
-                                                    '{$item2.skany_koniec|number_format:0:",":" "|escape:'htmlall'}',
-                                                    '{$item2.serial}', '{$item2.isScanner}')"><i class="fas fa-save"></i>&nbsp;&nbsp;Zapisz</a>
+                                    {assign var="black" value=$item2.strony_black_koniec|number_format:0:",":" "|escape:'htmlall'}
+                                    {if $item2.type_color}
+                                        {assign var="color" value=$item2.strony_kolor_koniec|number_format:0:",":" "|escape:'htmlall'}
+                                    {else}
+                                        {assign var="color" value='0'}
+                                    {/if}
+                                    {assign var="scan" value=$item2.skany_koniec|number_format:0:",":" "|escape:'htmlall'}
+                                    {assign var="serial" value=$item2.serial}
+                                    {assign var="isScanner" value=$item2.isScanner}
+                                    <a class="dropdown-item" href="#"
+                                       onClick="savePrinterCounters('{$black}', '{$color}', '{$scan}', '{$serial}', '{$isScanner}')">
+                                        <i class="fas fa-save"></i>&nbsp;&nbsp;Zapisz
+                                    </a>
                                 </div>
                             </div>
                             {assign var="dateTo" value="first day of this month"|strtotime|date_format:"%Y-%m-%d"}

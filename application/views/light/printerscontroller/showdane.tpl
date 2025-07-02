@@ -97,8 +97,9 @@
                                 <i class="fas fa-cog"></i>
                             </button>
                             <div class="dropdown-menu dropdown-menu-right" aria-labelledby="dropdownMenuLink">
-                                <a class="dropdown-item" href="#" onClick='showNewPrinterAdd("{$item.serial}")'><i
-                                            class="fas fa-edit"></i>&nbsp;&nbsp;Edycja</a>
+                                <a class="dropdown-item" href="#"
+                                   onClick='{if isset($canSaveUpdate) && $canSaveUpdate == true}showNewPrinterAdd{else}showPrinterView{/if}("{$item.serial}")'><i
+                                            class="fas fa-edit"></i>&nbsp;&nbsp;{if isset($canSaveUpdate) && $canSaveUpdate == true}Edycja{else}Karta Urządzenia{/if}</a>
                                 <div class="border-top my-1"></div>
 
                                 <a href="javascript:void(0)" class="dropdown-item"

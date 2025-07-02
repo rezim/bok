@@ -266,6 +266,30 @@ function showNewPrinterAdd(serial) {
     });
 }
 
+function showPrinterView(serial) {
+
+    $.colorbox
+    ({
+        height: 850 + 'px',
+        width: 600 + 'px',
+        title: "Karta drukarki",
+        data:
+            {
+                serial: serial
+            },
+
+        href: sciezka + "/printers/addedit/todiv",
+        onClosed: function () {
+
+        },
+        onComplete: function () {
+
+            $("#txtserial").focus();
+            uprawnienia();
+        }
+    });
+}
+
 function checkReplay(objError, objLoad, info, objClick, dane, objOk, czyreload, showtime, adtrestoredirect) {
 
     try {
@@ -1521,53 +1545,64 @@ function savePrinterCounters(previousBlack, previousColor, previousScans, serial
     previousColor = parseInt(previousColor.replace(/\s+/g, ''));
     previousScans = parseInt(previousScans.replace(/\s+/g, ''));
 
-    if (!!isScanner && scansCount < previousScans) {
-        $(objErrorWrongValue).show();
-        $(objLoad).hide();
-    } else if  (blackCount < previousBlack || colorCount < previousColor || scansCount < previousScans) {
-        $(objErrorWrongValue).show();
-        $(objLoad).hide();
+    if (!isScanner) {
+        if (blackCount < previousBlack || colorCount < previousColor || scansCount < previousScans) {
+            $(objErrorWrongValue).show();
+            $(objLoad).hide();
+
+            return;
+        }
     } else {
+        if (scansCount < previousScans) {
+            $(objErrorWrongValue).show();
+            $(objLoad).hide();
 
-        let message = !!isScanner ? '' : 'Czarne: ' + blackCount;
-        if (doc.getElementById('colorCount_' + serial)) {
-            message += ', Kolor: ' + colorCount;
+            return;
         }
-        if (scansCount > previousScans) {
-            message += !!isScanner ? `Skany: ${scansCount}` : `, Skany: ${scansCount}`;
-        }
-        message += '. Potwierdzasz ?';
+    }
 
-        if (confirm(message)) {
+    let message = !!isScanner ? '' : 'Czarne: ' + blackCount;
+    if (doc.getElementById('colorCount_' + serial)) {
+        message += ', Kolor: ' + colorCount;
+    }
+    if (scansCount >= previousScans) {
+        message += !!isScanner ? `Skany: ${scansCount}` : `, Skany: ${scansCount}`;
+    }
+    message += '. Potwierdzasz ?';
 
-            var d = {
-                serial: serial,
-                iloscstron: doc.getElementById('blackCount_' + serial).value,
-                stanna: doc.getElementById('dateToSave_' + serial).value
-            };
+    if (confirm(message)) {
+
+        var d = {
+            serial: serial,
+            stanna: doc.getElementById('dateToSave_' + serial).value
+        };
+        if (!isScanner) {
+            if (doc.getElementById('blackCount_' + serial)) {
+                d['iloscstron'] = blackCount;
+            }
             if (doc.getElementById('colorCount_' + serial)) {
-                d['iloscstron_kolor'] = doc.getElementById('colorCount_' + serial).value;
+                d['iloscstron_kolor'] = colorCount;
             }
-            if (scansCount > previousScans) {
-                d['iloscscans'] = scansCount;
-            }
-
-            $.ajax({
-                type: 'POST',
-                url: sciezka + "/printers/savestanna/notemplate",
-                async: true,
-                data: d,
-                success: function (dane) {
-                    checkReplay(objError, objLoad, null, objClick, dane, objOk, 1, 3000, null);
-                    return false;
-                },
-                error: function () {
-
-                    showError(objError, objLoad, null, objClick, 3000);
-                    return false;
-                }
-            });
         }
+        if (scansCount >= previousScans) {
+            d['iloscscans'] = scansCount;
+        }
+
+        $.ajax({
+            type: 'POST',
+            url: sciezka + "/printers/savestanna/notemplate",
+            async: true,
+            data: d,
+            success: function (dane) {
+                checkReplay(objError, objLoad, null, objClick, dane, objOk, 1, 3000, null);
+                return false;
+            },
+            error: function () {
+
+                showError(objError, objLoad, null, objClick, 3000);
+                return false;
+            }
+        });
     }
 }
 
