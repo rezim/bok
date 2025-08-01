@@ -42,6 +42,8 @@ function getLexmarkPrinterCounters(): array
     curl_close($ch);
 
     $response = json_decode($responseRaw, true);
+
+
     if (!isset($response['access_token'])) {
         return [
             "error" => "Token error",
@@ -116,9 +118,9 @@ function getLexmarkPrinterCountersSummary(): array
 
         $summary[] = [
             'serialNumber' => $serial,
-            'monoPrintSideCount' => $counters['monoPrintSideCount'] ?? null,
-            'colorPrintSideCount' => $counters['colorPrintSideCount'] ?? null,
-            'totalPrintCount' => $counters['printSideCount'] ?? null,
+            'monoPrintSideCount' => $counters['monoSideCount'] ?? null,
+            'colorPrintSideCount' => $counters['colorSideCount'] ?? null,
+            'totalPrintCount' => $counters['totalSideCount'] ?? null,
             'totalScanCount' => $counters['totalScanCount'] ?? null,
             'counterReadDate' => $counterReadDate,
         ];
@@ -126,72 +128,76 @@ function getLexmarkPrinterCountersSummary(): array
 
     return $summary;
 }
-$host=DB_HOST;
-$dbname=DB_NAME;
-$dsn = "mysql:host={$host};dbname={$dbname};charset=utf8mb4";
 
-try {
-    $pdo = new PDO($dsn, DB_USER, DB_PASSWORD, [
-        PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION
-    ]);
-} catch (PDOException $e) {
-    die("❌ Błąd połączenia z bazą: " . $e->getMessage());
-}
+function insertLexmarkCounters(): void
+{
+    $host = DB_HOST;
+    $dbname = DB_NAME;
+    $dsn = "mysql:host={$host};dbname={$dbname};charset=utf8mb4";
 
-$result = getLexmarkPrinterCountersSummary();
+    try {
+        $pdo = new PDO($dsn, DB_USER, DB_PASSWORD, [
+            PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION
+        ]);
+    } catch (PDOException $e) {
+        die("❌ Błąd połączenia z bazą: " . $e->getMessage());
+    }
+
+    $result = getLexmarkPrinterCountersSummary();
 
 if (isset($result['error'])) {
     die("❌ Błąd danych: " . $result['message']);
 }
 
-foreach ($result as $device) {
-    $serial = $device['serialNumber'];
-    $ilosc = $device['monoPrintSideCount'] ?? 0;
-    $ilosckolor = $device['colorPrintSideCount'] ?? 0;
-    $ilosctotal = $device['totalPrintCount'] ?? 0;
-    $totalScanCount = $device['totalScanCount'] ?? 0;
-    $datawiadomosci = $device['counterReadDate'] ?? null;
-    $dateinsert = date('Y-m-d H:i:s');
+    foreach ($result as $device) {
+        $serial = $device['serialNumber'];
+        $ilosc = $device['monoPrintSideCount'] ?? 0;
+        $ilosckolor = $device['colorPrintSideCount'] ?? 0;
+        $ilosctotal = $device['totalPrintCount'] ?? 0;
+        $totalScanCount = $device['totalScanCount'] ?? 0;
+        $datawiadomosci = $device['counterReadDate'] ?? null;
+        $dateinsert = date('Y-m-d H:i:s');
 
-    // get rowid from agreements
-    $stmt = $pdo->prepare("SELECT rowid FROM agreements WHERE serial = ?");
-    $stmt->execute([$serial]);
-    $row = $stmt->fetch();
+        // get rowid from agreements
+        $stmt = $pdo->prepare("SELECT rowid FROM agreements WHERE serial = ?");
+        $stmt->execute([$serial]);
+        $row = $stmt->fetch();
 
-    if (!$row) {
-        echo "⚠️ Pominięto SN: $serial – brak wpisu w agreements.\n";
-        continue;
-    }
+//        if (!$row) {
+//            echo "⚠️ Pominięto SN: $serial – brak wpisu w agreements.\n";
+//            continue;
+//        }
 
-    $rowid_agreement = $row['rowid'];
+        $rowid_agreement = $row ? $row['rowid'] : null;
 
-    // INSERT to pages
-    $insertPages = $pdo->prepare("
+        // INSERT to pages
+        $insertPages = $pdo->prepare("
         INSERT INTO pages (serial, ilosc, ilosckolor, ilosctotal, rowid_agreement, dateinsert, datawiadomosci)
         VALUES (?, ?, ?, ?, ?, ?, ?)
     ");
-    $insertPages->execute([
-        $serial,
-        $ilosc,
-        $ilosckolor,
-        $ilosctotal,
-        $rowid_agreement,
-        $dateinsert,
-        $datawiadomosci
-    ]);
+        $insertPages->execute([
+            $serial,
+            $ilosc,
+            $ilosckolor,
+            $ilosctotal,
+            $rowid_agreement,
+            $dateinsert,
+            $datawiadomosci
+        ]);
 
-    // INSERT to scans
-    $insertScans = $pdo->prepare("
+        // INSERT to scans
+        $insertScans = $pdo->prepare("
         INSERT INTO scans (serial, ilosctotal, datawiadomosci, rowid_agreement, dateinsert)
         VALUES (?, ?, ?, ?, ?)
     ");
-    $insertScans->execute([
-        $serial,
-        $totalScanCount,
-        $datawiadomosci,
-        $rowid_agreement,
-        $dateinsert
-    ]);
+        $insertScans->execute([
+            $serial,
+            $totalScanCount,
+            $datawiadomosci,
+            $rowid_agreement,
+            $dateinsert
+        ]);
 
-    echo "✅ SN: $serial – dodano do pages i scans.\n";
+        echo "✅ SN: $serial – dodano do pages i scans.\n";
+    }
 }
