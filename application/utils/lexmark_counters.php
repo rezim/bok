@@ -159,7 +159,7 @@ if (isset($result['error'])) {
         $dateinsert = date('Y-m-d H:i:s');
 
         // get rowid from agreements
-        $stmt = $pdo->prepare("SELECT rowid FROM agreements WHERE serial = ?");
+        $stmt = $pdo->prepare("SELECT rowid FROM agreements WHERE serial = ? AND activity=1");
         $stmt->execute([$serial]);
         $row = $stmt->fetch();
 
@@ -174,7 +174,13 @@ if (isset($result['error'])) {
         $insertPages = $pdo->prepare("
         INSERT INTO pages (serial, ilosc, ilosckolor, ilosctotal, rowid_agreement, dateinsert, datawiadomosci)
         VALUES (?, ?, ?, ?, ?, ?, ?)
-    ");
+        ON DUPLICATE KEY UPDATE
+            ilosc = VALUES(ilosc),
+            ilosckolor = VALUES(ilosckolor),
+            ilosctotal = VALUES(ilosctotal),
+            rowid_agreement = VALUES(rowid_agreement),
+            dateinsert = VALUES(dateinsert);
+        ");
         $insertPages->execute([
             $serial,
             $ilosc,
@@ -189,7 +195,11 @@ if (isset($result['error'])) {
         $insertScans = $pdo->prepare("
         INSERT INTO scans (serial, ilosctotal, datawiadomosci, rowid_agreement, dateinsert)
         VALUES (?, ?, ?, ?, ?)
-    ");
+        ON DUPLICATE KEY UPDATE
+            ilosctotal = VALUES(ilosctotal),
+            rowid_agreement = VALUES(rowid_agreement),
+            dateinsert = VALUES(dateinsert);        
+        ");
         $insertScans->execute([
             $serial,
             $totalScanCount,
