@@ -32,13 +32,17 @@ function showTextFilterOption($params, $smarty)
     $help = isset($params['help']) ?
         "<small id='{$params['id']}Help' class='form-text text-muted'><i class='fas fa-info-circle'></i> {$params['help']}</small>" : '';
 
+    $value = isset($params['value']) ?
+        "value='{$params['value']}'" : '';
+
+
     return "                
             <div class='form-group'>
                 <label for='filterserial'>{$params['label']}</label>
             </div>
             <div class='form-group'>
                 <input type='text' data-ref id='{$params['id']}' class='form-control'
-                       aria-describedby='{$params['id']}Help'>$help
+                       aria-describedby='{$params['id']}Help' {$value}>$help
             </div>";
 }
 

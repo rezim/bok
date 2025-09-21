@@ -19,7 +19,7 @@
 
         {show_txt_filter_option label="serial" id="filterserial" help="Podaj numer seryjny urządzenia."}
         {show_txt_filter_option label="model" id="filtermodel" help="Podaj model urządzenia."}
-        {show_txt_filter_option label="klient" id="filterklient" help="Podaj nazwę klienta."}
+        {show_txt_filter_option label="klient" id="filterklient" help="Podaj nazwę klienta." value=$clientnazwakrotka|default:''}
         {show_txt_filter_option label="lokalizacja" id="filterlocation" help="Podaj lokalizację urządzenia."}
         {if $czycolorbox == ''}
             {show_check_filter_option checked="true" label="pokaż wszystkie" id="filtershowalsowithoutagreement" help="Pokaż również nie aktywne urządzenia."}
