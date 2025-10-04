@@ -96,15 +96,26 @@ trait PaymentsTrait
 
         return $result;
     }
-    function getClientPayments($clientId, $dateFrom, int $perPage = 100)
+    function getClientPayments($clientId, $dateFrom, $dateTo = null, int $perPage = 100)
     {
         $payments = array();
+
+        $tz = new DateTimeZone('Europe/Warsaw');
+        $to = $dateTo
+            ? new DateTimeImmutable($dateTo, $tz)
+            : new DateTimeImmutable('today', $tz);
+        $apiDateTo = $to->modify('-1 day')->format('Y-m-d');
+
+        if (empty($dateTo)) {
+            $dateTo = date('Y-m-d');
+        }
 
         $ch = curl_init();
         $pageNb = 1;
         $url = FAKTUROWNIA_ENDPOINT . '/banking/payments.json?'
             . 'client_id=' . $clientId
             . '&date_from=' . $dateFrom
+            . '&date_to=' . $apiDateTo
             . '&api_token=' . FAKTUROWNIA_APITOKEN;
         do {
             curl_setopt($ch, CURLOPT_URL, $url . '&page=' . $pageNb . '&per_page=' . $perPage);

@@ -417,7 +417,7 @@ class clientinvoicesController extends InvoicesController
                 'className' => 'text-danger'), $invoices);
 
         $clientId = $this->getClientIdByTaxNo($clientTaxNo);
-        $payments = $this->getClientPayments($clientId, $dateFrom);
+        $payments = $this->getClientPayments($clientId, $dateFrom, $dateTo);
 
         $notProcessedPayments = $this->clientinvoice->getNotProcessedPaymentsByClientTaxNo($clientTaxNo, $dateFrom, $dateTo);
 

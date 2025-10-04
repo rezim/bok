@@ -80,7 +80,7 @@ PaymentsCtrl = function ($scope, rest, $q, $filter, $uibModal, $interpolate, app
 
     date_to.setFullYear(date_to.getFullYear() - 1);
 
-    $scope.date_from = $filter('date')(date_to, 'yyyy-MM-01');
+    $scope.date_from = $filter('date')(new Date('2019-12-31'), 'yyyy-MM-dd');
 
     const self = this;
 
