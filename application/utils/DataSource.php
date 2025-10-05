@@ -5,7 +5,7 @@ class DataSource
     const MAIL     = 'mail';
     const PRINCITY = 'princity';
     const LEXMARK  = 'lexmark';
-    const CSV      = 'csv';
+    const CSV      = 'csv'; // zmien na CANON
     const UNKNOWN  = null;
 
     const ALL = [

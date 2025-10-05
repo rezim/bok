@@ -439,7 +439,7 @@ function insertIntoPages($serial, $blackCount, $date, $colorCount, $totalCount, 
     }
     $dataSourceSql = $dataSource === null ? "NULL" : "'" . $mysqli->real_escape_string($dataSource) . "'";
 
-    $query = "insert into pages(serial,ilosc,dateinsert,datawiadomosci,ilosckolor,ilosctotal,rowid_agreement,product_version) values 
+    $query = "insert into pages(serial,ilosc,dateinsert,datawiadomosci,ilosckolor,ilosctotal,rowid_agreement,product_version,data_source) values 
                             (
                                 '{$serial}',{$blackCount},'" . date('Y-m-d H:i:s') . "','{$date}'
                                 ," . ($colorCount == '' ? 'null' : $colorCount) . "
