@@ -145,9 +145,9 @@ function insertLexmarkCounters(): void
 
     $result = getLexmarkPrinterCountersSummary();
 
-if (isset($result['error'])) {
-    die("❌ Błąd danych: " . $result['message']);
-}
+    if (isset($result['error'])) {
+        die("❌ Błąd danych: " . $result['message']);
+    }
 
     foreach ($result as $device) {
         $serial = $device['serialNumber'];
@@ -172,15 +172,25 @@ if (isset($result['error'])) {
 
         // INSERT to pages
         $insertPages = $pdo->prepare("
-        INSERT INTO pages (serial, ilosc, ilosckolor, ilosctotal, rowid_agreement, dateinsert, datawiadomosci)
-        VALUES (?, ?, ?, ?, ?, ?, ?)
-        ON DUPLICATE KEY UPDATE
-            ilosc = VALUES(ilosc),
-            ilosckolor = VALUES(ilosckolor),
-            ilosctotal = VALUES(ilosctotal),
-            rowid_agreement = VALUES(rowid_agreement),
-            dateinsert = VALUES(dateinsert);
+            INSERT INTO pages (
+                serial,
+                ilosc,
+                ilosckolor,
+                ilosctotal,
+                rowid_agreement,
+                dateinsert,
+                datawiadomosci,
+                data_source
+            ) VALUES (?, ?, ?, ?, ?, ?, ?, ?)
+            ON DUPLICATE KEY UPDATE
+                ilosc = VALUES(ilosc),
+                ilosckolor = VALUES(ilosckolor),
+                ilosctotal = VALUES(ilosctotal),
+                rowid_agreement = VALUES(rowid_agreement),
+                dateinsert = VALUES(dateinsert),
+                data_source = VALUES(data_source)
         ");
+
         $insertPages->execute([
             $serial,
             $ilosc,
@@ -188,7 +198,8 @@ if (isset($result['error'])) {
             $ilosctotal,
             $rowid_agreement,
             $dateinsert,
-            $datawiadomosci
+            $datawiadomosci,
+            DataSource::LEXMARK
         ]);
 
         // INSERT to scans

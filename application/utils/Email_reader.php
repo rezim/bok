@@ -333,7 +333,7 @@ function processPrintCity($filename, $attachment) {
                     $date = (date_create_from_format("Y-m-d", $date))->format("Y-m-d H:i:s");
 
                     deleteFromPages($serial, $date);
-                    insertIntoPages($serial, $blackCount, $date, $colorCount, $totalCount);
+                    insertIntoPages($serial, $blackCount, $date, $colorCount, $totalCount, DataSource::PRINCITY);
                     insertScanCounter($serial, $scanCount, $date);
                 }
             }
@@ -407,7 +407,7 @@ function processCsv($filename, $attachment)
                     $date = (date_create_from_format("d/m/Y H:i", $date))->format("Y-m-d H:i:s");
 
                     deleteFromPages($serial, $date);
-                    insertIntoPages($serial, $blackCount, $date, $colorCount, $totalCount);
+                    insertIntoPages($serial, $blackCount, $date, $colorCount, $totalCount, DataSource::CSV);
                     insertScanCounter($serial, $scanCount, $date);
                 }
             }
@@ -429,9 +429,15 @@ function deleteFromPages($serial, $date)
     return $result;
 }
 
-function insertIntoPages($serial, $blackCount, $date, $colorCount, $totalCount)
+function insertIntoPages($serial, $blackCount, $date, $colorCount, $totalCount, $dataSource = DataSource::UNKNOWN)
 {
     $mysqli = getMySqlConn();
+
+    // validate source (only if not null)
+    if ($dataSource !== null && !in_array($dataSource, DataSource::ALL, true)) {
+        throw new InvalidArgumentException("Invalid data source: {$dataSource}");
+    }
+    $dataSourceSql = $dataSource === null ? "NULL" : "'" . $mysqli->real_escape_string($dataSource) . "'";
 
     $query = "insert into pages(serial,ilosc,dateinsert,datawiadomosci,ilosckolor,ilosctotal,rowid_agreement,product_version) values 
                             (
@@ -439,7 +445,8 @@ function insertIntoPages($serial, $blackCount, $date, $colorCount, $totalCount)
                                 ," . ($colorCount == '' ? 'null' : $colorCount) . "
                                 ," . ($totalCount == '' ? 'null' : $totalCount) . ",
                                 (select rowid from agreements where serial='" . $serial . "' and activity=1),
-                                (select product_version FROM printers where serial = '" . $serial . "')
+                                (select product_version FROM printers where serial = '" . $serial . "'),
+                                {$dataSourceSql}
                                 )";
     $result = mysqli_query($mysqli, $query);
     if (!$result) {
@@ -1681,15 +1688,14 @@ function saveDataDevice($dataDevice, $dataWiadomosci, $ip)
 
     mysqli_query($mysqli, $query);
 
-    $query = "insert into pages(serial,ilosc,dateinsert,datawiadomosci,ilosckolor,ilosctotal,rowid_agreement,product_version) values 
-                            (
-                                '{$dataDevice['system']['dd:SerialNumber']}',{$dataDevice['system']['wydruk']},'" . date('Y-m-d H:i:s') . "','{$dataWiadomosci}'
-                                ," . ($dataDevice['system']['wydrukkolor'] == '' ? 'null' : $dataDevice['system']['wydrukkolor']) . "
-                                ," . ($dataDevice['system']['wydruktotal'] == '' ? 'null' : $dataDevice['system']['wydruktotal']) . ",
-                                (select rowid from agreements where serial='" . $dataDevice['system']['dd:SerialNumber'] . "' and activity=1),
-                                (select product_version FROM printers where serial = '" . $dataDevice['system']['dd:SerialNumber'] . "')
-                                )";
-
+    insertIntoPages(
+        $dataDevice['system']['dd:SerialNumber'],   // serial
+        $dataDevice['system']['wydruk'],            // blackCount
+        $dataWiadomosci,                            // date (datawiadomosci)
+        $dataDevice['system']['wydrukkolor'],       // colorCount
+        $dataDevice['system']['wydruktotal'],       // totalCount
+        DataSource::MAIL                  // data_source (ENUM)
+    );
 
     if ($result2 = mysqli_query($mysqli, $query)) {
 
