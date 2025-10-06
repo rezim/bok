@@ -2366,3 +2366,11 @@ function removeUrlParams() {
     const urlWithoutParams = window.location.origin + window.location.pathname;
     window.history.replaceState({}, document.title, urlWithoutParams);
 }
+
+function onInvoicesImported(response) {
+    if (response) {
+        alert(response);
+    } else {
+        alert("Brak odpowiedzi z serwera.");
+    }
+}

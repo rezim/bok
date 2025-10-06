@@ -465,4 +465,10 @@ class clientinvoicesController extends InvoicesController
         $smarty->assign('rowClassName', $ROW_CLASS_NAME);
     }
 
+    function importinvoices() {
+        if( isset( $_SERVER['HTTP_X_REQUESTED_WITH'] ) && ( $_SERVER['HTTP_X_REQUESTED_WITH'] == 'XMLHttpRequest' ) )
+        {
+            echo json_encode($this->clientinvoice->pullAllInvoices());
+        }
+    }
 }

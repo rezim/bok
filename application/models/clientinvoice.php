@@ -1,4 +1,7 @@
 <?php
+
+require_once (ROOT . DS . 'application' . DS . 'utils' . DS . 'import_invoices.php');
+
 class clientinvoice extends Model
 {
     protected $dataod='',$datado='',$filterklient='',$filterdrukarka='',$nazwakrotka='';
@@ -152,5 +155,24 @@ class clientinvoice extends Model
                   ORDER BY {$orderBy}";
 
         return $this->query($query, null, null);
+    }
+
+    function pullAllInvoices() {
+        $db = [
+            'host'    => DB_HOST,
+            'name'    => DB_NAME,
+            'user'    => DB_USER,
+            'pass'    => DB_PASSWORD,
+            'charset' => 'utf8mb4',
+        ];
+
+        $api = [
+            'endpoint' => FAKTUROWNIA_ENDPOINT,
+            'api_token' => FAKTUROWNIA_APITOKEN,
+            'per_page'  => 100,
+            'timeout'   => 25,
+        ];
+
+        return importInvoices($db, $api);
     }
 }

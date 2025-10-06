@@ -473,6 +473,10 @@
                                onclick="callServiceAction('/emails/readdevicecounters/notemplate', null, null, null)"
                                class="dropdown-item">Liczniki urządzeń</a>
                         {/if}
+                        {if isset($smarty.session.przypisanemenu['li_importinvoices'])}
+                            <div class="dropdown-divider"></div>
+                            <a href="javascript:void(0)" onclick="callServiceAction('/clientinvoices/importinvoices/notemplate', null, onInvoicesImported, null)" class="dropdown-item">Aktualizuj Faktury</a>
+                        {/if}
                     </div>
                 </li>
             {/if}
