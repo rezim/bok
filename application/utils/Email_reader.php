@@ -407,7 +407,7 @@ function processCsv($filename, $attachment)
                     $date = (date_create_from_format("d/m/Y H:i", $date))->format("Y-m-d H:i:s");
 
                     deleteFromPages($serial, $date);
-                    insertIntoPages($serial, $blackCount, $date, $colorCount, $totalCount, DataSource::CSV);
+                    insertIntoPages($serial, $blackCount, $date, $colorCount, $totalCount, DataSource::CANON);
                     insertScanCounter($serial, $scanCount, $date);
                 }
             }
@@ -641,10 +641,10 @@ function readDeviceCounters($notificationEmail = null)
                             ('{$addr}','{$subject}','{$datawiadomosc}','{$size}','" . date('Y-m-d H:i:s') . "', $ip)";
 
         if ($result = mysqli_query($mysqli, $query)) {
-            if ($typ == 1)
+            if ($result == 1)
                 echo("Zapisano readtime : " . $query . "<br/>");
         } else {
-            if ($typ == 0)
+            if ($result == 0)
                 file_put_contents(LOGFILE, 'Błąd zapisu odczytu maila:' . mysqli_error($mysqli) . date("Y-m-d H:i:s") . "\n\n", FILE_APPEND | LOCK_EX);
             else
                 echo $mysqli->error;
@@ -1565,8 +1565,10 @@ function saveCanonData($canonData)
     $statement = $mysqli->prepare("INSERT INTO logs (sequencenumber, eventcode, description,timestamp,valuefloat,revision,dateinsert,serial)
                                     VALUES (?,?,?,?,?,?,?,?)");
 
+    $dateinsert = date('Y-m-d H:i:s');
+
     $statement->bind_param("isssdsss", $canonData['sequencenumber'], $canonData['eventcode'], $canonData['description'],
-        $canonData['timestamp'], $canonData['valuefloat'], $canonData['revision'], date('Y-m-d H:i:s'), $canonData['serial']);
+        $canonData['timestamp'], $canonData['valuefloat'], $canonData['revision'], $dateinsert, $canonData['serial']);
 
     return $statement->execute();
 }
@@ -1584,8 +1586,11 @@ function saveMinoltaDataDevice($minoltaMessage)
         return false;
     }
 
+    $timestamp = $d->format('Y-m-d H:i:s');
+    $dateinsert = date('Y-m-d H:i:s');
+
     $statement->bind_param("isssdsss", $minoltaMessage['sequencenumber'], $minoltaMessage['eventcode'], $minoltaMessage['description'],
-        $d->format('Y-m-d H:i:s'), $minoltaMessage['valuefloat'], $minoltaMessage['revision'], date('Y-m-d H:i:s'), $minoltaMessage['serial']);
+        $timestamp, $minoltaMessage['valuefloat'], $minoltaMessage['revision'], $dateinsert, $minoltaMessage['serial']);
 
     return $statement->execute();
 }
@@ -1684,10 +1689,7 @@ function saveDataDevice($dataDevice, $dataWiadomosci, $ip)
         $result->close();
     }
 
-    $query = "DELETE FROM `pages` WHERE datawiadomosci = '{$dataWiadomosci}' AND serial = '{$dataDevice['system']['dd:SerialNumber']}'";
-
-    mysqli_query($mysqli, $query);
-
+    deleteFromPages($dataDevice['system']['dd:SerialNumber'], $dataWiadomosci);
     insertIntoPages(
         $dataDevice['system']['dd:SerialNumber'],   // serial
         $dataDevice['system']['wydruk'],            // blackCount
@@ -2095,9 +2097,10 @@ function saveDataDevice($dataDevice, $dataWiadomosci, $ip)
                                     VALUES (?,?,?,?,?,?,?,?)");
             foreach ($dataDevice['logs'] as $key => $item) {
                 // 2018-01-01T12:00:01.123+01:00 => 2018-01-01 12:00:01
+                $dateinsert = date('Y-m-d H:i:s');
                 $timestamp = str_replace('T', ' ', explode('.', $item['timestamp'])[0]);
                 $statement->bind_param("isssdsss", $item['sequencenumber'], $item['eventcode'], $item['description'],
-                    $timestamp, $item['valuefloat'], $item['revision'], date('Y-m-d H:i:s'), $dataDevice['system']['dd:SerialNumber']);
+                    $timestamp, $item['valuefloat'], $item['revision'], $dateinsert, $dataDevice['system']['dd:SerialNumber']);
                 $statement->execute();
             }
         } else // porównujemy dane updateu
@@ -2111,13 +2114,14 @@ function saveDataDevice($dataDevice, $dataWiadomosci, $ip)
                 $query = "select rowid  from logs where serial='{$dataDevice['system']['dd:SerialNumber']}' and 
                                               timestamp = '" . $timestamp . "'";
 
+                $dateinsert = date('Y-m-d H:i:s');
 
                 if ($result = mysqli_query($mysqli, $query)) {
 
                     if ($result->num_rows === 0) //if($readtime==null || $readtime<$item->get_date("Y-m-d H:i:s"))
                     {
                         $statement->bind_param("isssdsss", $item['sequencenumber'], $item['eventcode'], $item['description'],
-                            $timestamp, $item['valuefloat'], $item['revision'], date('Y-m-d H:i:s'), $dataDevice['system']['dd:SerialNumber']);
+                            $timestamp, $item['valuefloat'], $item['revision'], $dateinsert, $dataDevice['system']['dd:SerialNumber']);
                         $statement->execute();
                     }
                 }

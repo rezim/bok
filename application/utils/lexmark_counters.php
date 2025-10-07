@@ -1,4 +1,5 @@
 <?php
+
 function getLexmarkPrinterCounters(): array
 {
     $oauthUrl = LEXMARK_OAUTH_URL;
