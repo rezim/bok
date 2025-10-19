@@ -51,9 +51,12 @@ class clientinvoicesController extends InvoicesController
             if (isset($_POST['filters'])) {
                 $filters = $_POST['filters'];
             }
-            echo json_encode(
-                $this->getInvoicesByDateRange($_POST['period'], $_POST['date_from'], $_POST['date_to'], $filters)
-            );
+//            echo json_encode(
+//                $this->getInvoicesByDateRange($_POST['period'], $_POST['date_from'], $_POST['date_to'], $filters)
+//            );
+
+            echo json_encode($this->clientinvoice->getInvoicesByDateRangeFromDb($_POST['period'], $_POST['date_from'], $_POST['date_to'], $filters = ''));
+
         } else {
             echo "błędne parametry wejściowe";
         }

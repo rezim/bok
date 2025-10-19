@@ -175,4 +175,43 @@ class clientinvoice extends Model
 
         return importInvoices($db, $api);
     }
+
+
+    function getInvoicesByDateRangeFromDb(string $period, string $dateFrom, string $dateTo, string $additionalFilters = ''): array
+    {
+        $sql = "
+        SELECT invoice_json 
+        FROM invoices
+        WHERE issue_date BETWEEN :date_from AND :date_to
+    ";
+
+        if (!empty($additionalFilters)) {
+            $sql .= " " . $additionalFilters;
+        }
+
+        $sql .= " ORDER BY issue_date";
+
+        $stmt = $this->pdo->prepare($sql);
+        $stmt->execute([
+            ':date_from' => $dateFrom,
+            ':date_to' => $dateTo,
+        ]);
+
+        $invoices = [];
+        while ($row = $stmt->fetch(PDO::FETCH_ASSOC)) {
+            $invoice = json_decode($row['invoice_json'], true);
+
+            if (!is_array($invoice)) {
+                continue; // pomiń uszkodzone JSON-y
+            }
+
+            if (($invoice['buyer_tax_no'] === '' || $invoice['buyer_tax_no'] === null) && $invoice['buyer_name'] === 'Inna Petrianyk') {
+                $invoice['buyer_tax_no'] = '89102113580';
+            }
+
+            $invoices[] = $invoice;
+        }
+
+        return $invoices;
+    }
 }
