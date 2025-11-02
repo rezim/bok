@@ -85,7 +85,7 @@ class reportsController extends InvoicesController
         $today = new DateTime();
 
         $diff = $today->diff($targetDate);
-        $daysDifference = $diff->days+1; // plus 1, because we want to exclude exact match dates
+        $daysDifference = $diff->days + 1; // plus 1, because we want to exclude exact match dates
 
         if ($targetDate > $today) {
             $daysDifference *= -1; // if date is from future change sign
@@ -108,7 +108,8 @@ class reportsController extends InvoicesController
         }
     }
 
-    function sendmail() {
+    function sendmail()
+    {
         if (!isset($_POST['email']) || !isset($_POST['serial'])) {
             echo "błędne parametry wejściowe";
         }
@@ -116,12 +117,12 @@ class reportsController extends InvoicesController
         $serial = $_POST['serial'];
         $model = $_POST['model'];
         $topic = "Prośba o wykonanie wydruku licznika";
-        $message =  "Szanowni Państwo,<br/><br/>"
-                    . "Zwracam się z uprzejmą prośbą o wykonanie wydruku licznika drukarki o numerze seryjnym: $serial, model: $model.<br/><br/>"
-                    . "Proszę o przesłanie skanu lub zdjęcia na adres liczniki@otus.pl.<br/><br/>"
-                    . "Dziękujemy za pomoc i pozostajemy do dyspozycji w razie pytań.<br/><br/>"
-                    . "Zespół Otus<br/>"
-                    . "+48 71 321 19 06";
+        $message = "Szanowni Państwo,<br/><br/>"
+            . "Zwracam się z uprzejmą prośbą o wykonanie wydruku licznika drukarki o numerze seryjnym: $serial, model: $model.<br/><br/>"
+            . "Proszę o przesłanie skanu lub zdjęcia na adres liczniki@otus.pl.<br/><br/>"
+            . "Dziękujemy za pomoc i pozostajemy do dyspozycji w razie pytań.<br/><br/>"
+            . "Zespół Otus<br/>"
+            . "+48 71 321 19 06";
         $mailing = new mailing();
 
         $mailing->sendNewMail($mailTo, $message, $topic, null, null, null, 'liczniki@otus.pl', 'Otus Liczniki');
@@ -580,26 +581,22 @@ class reportsController extends InvoicesController
         return 0;
     }
 
-    function showdaneklient()
-    {
 
+    private function buildDataReports(): array
+    {
         $this->report->populateWithPost();
         $dataReportsMiesieczne = $this->report->getReportsMiesieczne();
         $dataReportsRoczne = $this->report->getReportsRoczne();
 
         $dataReportsMiesieczne = $this->applyAgreementPrinters($dataReportsMiesieczne);
-
         $dataPrinterService = $this->getPrinterServiceMap($this->report->getPrinterService());
-
         $dataPrinterReplacement = $this->getPrinterReplacements($this->report->getPrinterService());
-
         $dataReportsMiesieczne = $this->applyService($dataReportsMiesieczne, $dataPrinterService);
-
         $dataReportsMiesieczne = $this->groupByAgreement($dataReportsMiesieczne);
-
         $dataReportsMiesieczne = $this->applyReplacement($dataReportsMiesieczne, $dataPrinterReplacement);
-
         $dataReportsMiesieczne = $this->groupByCollectiveAgreements($dataReportsMiesieczne);
+
+        $dataReports = [];
 
         foreach ($dataReportsMiesieczne as $key => $item) {
 
@@ -611,35 +608,30 @@ class reportsController extends InvoicesController
 
             if (
                 date("m", strtotime($item['dataod'])) == date("m", strtotime($item['dacik'])) &&
-                date("Y", strtotime($item['dataod'])) == date("Y", strtotime($item['dacik']))) {
+                date("Y", strtotime($item['dataod'])) == date("Y", strtotime($item['dacik']))
+            ) {
                 $dayOfDateRange = date("j", strtotime($item['dataod'])) - 1;
                 $setupFee = $item['cenainstalacji'];
             }
 
             if (!isset($dataReports[$clientId])) {
-                $dataReports[$clientId] = array();
+                $dataReports[$clientId] = [];
             }
 
             $client = &$dataReports[$clientId];
-
             $agreement = &$client['umowy'][$item['rowidumowa']];
 
-            if (!isset($client['drukumowy'])) {
-                $client['drukumowy'] = 1;
-            } else {
-                $client['drukumowy'] += 1;
-            }
+            $client['drukumowy'] = isset($client['drukumowy']) ? $client['drukumowy'] + 1 : 1;
 
             copyArrays($client, $item, $this->CLIENT_FIELD_NAMES);
 
-            // add collective agreements
+            // collective agreements
             if (isset($item['lista_umow'])) {
                 $client['umowy'][$item['rowidumowa']]['lista_umow'] = $item['lista_umow'];
             }
 
             // only for printers check for errors
             if ($item['typ_umowy'] === 'wynajem drukarki' || $item['typ_umowy'] === 'wynajem skanera') {
-
                 $hasError = $this->hasError($item);
 
                 if ($hasError > 0) {
@@ -656,11 +648,12 @@ class reportsController extends InvoicesController
                             $item[SCAN_END][0] >= $item[SCAN_START][0]) &&
                         (   // black
                             $item['data_wiadomosci_black_koniec'][0] !== $item['data_wiadomosci_black_start'][0] ||
-                            $item['next_month_datawiadomosci'] !== "0000-00-00")) {
+                            $item['next_month_datawiadomosci'] !== "0000-00-00"
+                        )
+                    ) {
 
                         $blackEnd = $item['strony_black_koniec'][0];
                         $colorEnd = $item['strony_kolor_koniec'][0];
-                        // scans
                         $scanEnd = $item[SCAN_END][0];
                         $fixedDate = $item['data_wiadomosci_black_koniec'][0];
 
@@ -670,19 +663,19 @@ class reportsController extends InvoicesController
                                 $colorEnd = $item['next_month_kolor'];
                                 $fixedDate = $item['next_month_datawiadomosci'];
                             }
-
                             if ($item[SCANS_NEXT_MONTH] >= $scanEnd) {
                                 $scanEnd = $item[SCANS_NEXT_MONTH];
                             }
                         }
 
-                        $agreement['fix'] = array(
+                        $agreement['fix'] = [
                             "dateTo" => $this->report->getDateTo(),
                             "fixedDateTo" => $fixedDate,
                             "black" => $blackEnd,
                             "color" => $colorEnd,
                             "scans" => $scanEnd,
-                            "serial" => $item['currentserial']);
+                            "serial" => $item['currentserial']
+                        ];
                     }
                 }
             }
@@ -706,12 +699,12 @@ class reportsController extends InvoicesController
                                 $agr[SCAN_END][0] >= $agr[SCAN_START][0]) &&
                             (   // black
                                 $agr['data_wiadomosci_black_koniec'][0] !== $agr['data_wiadomosci_black_start'][0] ||
-                                $agr['next_month_datawiadomosci'] !== "0000-00-00")) {
-
+                                $agr['next_month_datawiadomosci'] !== "0000-00-00"
+                            )
+                        ) {
 
                             $blackEnd = $agr['strony_black_koniec'][0];
                             $colorEnd = $agr['strony_kolor_koniec'][0];
-                            // scans
                             $scanEnd = $agr[SCAN_END][0];
                             $fixedDate = $agr['data_wiadomosci_black_koniec'][0];
 
@@ -721,51 +714,50 @@ class reportsController extends InvoicesController
                                     $colorEnd = $agr['next_month_kolor'];
                                     $fixedDate = $agr['next_month_datawiadomosci'];
                                 }
-
                                 if ($agr[SCANS_NEXT_MONTH] >= $scanEnd) {
                                     $scanEnd = $agr[SCANS_NEXT_MONTH];
                                 }
                             }
 
-                            $agr['fix'] = array(
+                            $agr['fix'] = [
                                 "dateTo" => $this->report->getDateTo(),
                                 "fixedDateTo" => $fixedDate,
                                 "black" => $blackEnd,
                                 "color" => $colorEnd,
                                 "scans" => $scanEnd,
-                                "serial" => $agr['currentserial']);
+                                "serial" => $agr['currentserial']
+                            ];
                         }
                     }
                 }
-                // do not override by mistake
                 unset($agr);
             }
 
-            $dataReports['suma'] = isset($dataReports['suma']) ? $dataReports['suma'] : 0;
-            $client['wartosc'] = isset($client['wartosc']) ? $client['wartosc'] : 0;
-            $client['wartoscblack'] = isset($client['wartoscblack']) ? $client['wartoscblack'] : 0;
-            $client['wartosckolor'] = isset($client['wartosckolor']) ? $client['wartosckolor'] : 0;
+            $dataReports['suma'] = $dataReports['suma'] ?? 0;
+            $client['wartosc'] = $client['wartosc'] ?? 0;
+            $client['wartoscblack'] = $client['wartoscblack'] ?? 0;
+            $client['wartosckolor'] = $client['wartosckolor'] ?? 0;
             $client[SCANS_VALUE] = $client[SCANS_VALUE] ?? 0;
-            $client['wartoscabonament'] = isset($client['wartoscabonament']) ? $client['wartoscabonament'] : 0;
-            $client['kwotadowykorzystania'] = isset($client['kwotadowykorzystania']) ? $client['kwotadowykorzystania'] : 0;
+            $client['wartoscabonament'] = $client['wartoscabonament'] ?? 0;
+            $client['kwotadowykorzystania'] = $client['kwotadowykorzystania'] ?? 0;
 
-            $item['rabatdoabonamentu'] = (empty($item['rabatdoabonamentu']) || $item['rabatdoabonamentu'] == '') ? 0 : $item['rabatdoabonamentu'];
-            $item['rabatdowydrukow'] = (empty($item['rabatdowydrukow']) || $item['rabatdowydrukow'] == '') ? 0 : $item['rabatdowydrukow'];
+            $item['rabatdoabonamentu'] = (empty($item['rabatdoabonamentu']) ? 0 : $item['rabatdoabonamentu']);
+            $item['rabatdowydrukow'] = (empty($item['rabatdowydrukow']) ? 0 : $item['rabatdowydrukow']);
 
             $subscription = (float)$item['abonament'];
             $amountInSubscription = (float)$item['kwotawabonamencie'];
             $hasAmountInSubscription = $amountInSubscription > 0;
-            if ($dayOfDateRange != 0) {
-                $subscription = $subscription - ($dayOfDateRange * ($subscription / $daysAmount));
-            }
-            $subscription = $subscription - ($subscription * ($item['rabatdoabonamentu'] / 100));
 
+            if ($dayOfDateRange != 0) {
+                $subscription -= $dayOfDateRange * ($subscription / $daysAmount);
+            }
+            $subscription -= $subscription * ($item['rabatdoabonamentu'] / 100);
             $client['wartoscabonament'] += $subscription;
 
             if ($dayOfDateRange != 0) {
-                $item['stronwabonamencie'] = $item['stronwabonamencie'] - ($dayOfDateRange * ($item['stronwabonamencie'] / $daysAmount));
-                $item['iloscstron_kolor'] = $item['iloscstron_kolor'] - ($dayOfDateRange * ($item['iloscstron_kolor'] / $daysAmount));
-                $item[SCAN_AMOUNT_FOR_FREE] = $item[SCAN_AMOUNT_FOR_FREE] - ($dayOfDateRange * ($item[SCAN_AMOUNT_FOR_FREE] / $daysAmount));
+                $item['stronwabonamencie'] -= $dayOfDateRange * ($item['stronwabonamencie'] / $daysAmount);
+                $item['iloscstron_kolor'] -= $dayOfDateRange * ($item['iloscstron_kolor'] / $daysAmount);
+                $item[SCAN_AMOUNT_FOR_FREE] -= $dayOfDateRange * ($item[SCAN_AMOUNT_FOR_FREE] / $daysAmount);
             }
 
             $blackPagesNb = (int)$item['strony_black_sum'];
@@ -776,56 +768,48 @@ class reportsController extends InvoicesController
             $blackPrice = (float)$item['cenazastrone'];
             $colorPrice = (float)$item['cenazastrone_kolor'];
             $scanPrice = (float)$item[SCAN_PRICE];
-
-            // TODO: discount is no longer used
             $discount = $item['rabatdowydrukow'] / 100;
 
             $allPagesValue = ($blackPagesNb * $blackPrice + $colorPagesNb * $colorPrice);
-
             $client['kwotadowykorzystania'] += $hasAmountInSubscription ? max($allPagesValue - $amountInSubscription, 0) : 0;
 
-            $contract = array(
+            $contract = [
                 "black" => !$hasAmountInSubscription ? $item['stronwabonamencie'] : 0,
                 "color" => !$hasAmountInSubscription ? $item['iloscstron_kolor'] : 0,
                 SCAN_AMOUNT_FOR_FREE => $item[SCAN_AMOUNT_FOR_FREE]
-            );
+            ];
 
-            // TODO: it seems we no longer use `jakczarne`, probably we can remove
-            if (isset($item['jakczarne']) && !empty($item['jakczarne']) && $item['jakczarne'] == 1) {
+            if (isset($item['jakczarne']) && (int)$item['jakczarne'] === 1) {
                 // black
                 $blackExceeded = round(max($allPagesNb - $contract["black"], 0));
-                $blackValue = $blackExceeded * $blackPrice;
-                $blackValue = $blackValue - ($blackValue * $discount);
+                $blackValue = ($blackExceeded * $blackPrice) * (1 - $discount);
                 $client['wartoscblack'] += !$hasAmountInSubscription ? $blackValue : 0;
-                // color
-                $colorValue = 0;
+
                 $colorExceeded = 0;
-                $client['wartosckolor'] = !$hasAmountInSubscription ? $colorValue : 0;
-                // scans
-                $scansValue = 0;
+                $colorValue = 0;
+
                 $scansExceeded = 0;
+                $scansValue = 0;
             } else {
-                // black
+                // black/color
                 $blackExceeded = round(max($blackPagesNb - $contract["black"], 0));
-                $blackValue = $blackExceeded * $blackPrice;
-                $blackValue = ($blackValue - ($blackValue * $discount));
+                $blackValue = ($blackExceeded * $blackPrice) * (1 - $discount);
                 $client['wartoscblack'] += !$hasAmountInSubscription ? $blackValue : 0;
-                // color
+
                 $colorExceeded = round(max($colorPagesNb - $contract["color"], 0));
-                $colorValue = $colorExceeded * $colorPrice;
-                $colorValue = $colorValue - ($colorValue * $discount);
+                $colorValue = ($colorExceeded * $colorPrice) * (1 - $discount);
                 $client['wartosckolor'] += !$hasAmountInSubscription ? $colorValue : 0;
-                // scans
+
                 $scansExceeded = round(max($scansNb - $contract[SCAN_AMOUNT_FOR_FREE], 0));
                 $scansValue = $scansExceeded * $scanPrice;
                 $client[SCANS_VALUE] += $scansValue;
             }
 
-            $totalValue = $hasAmountInSubscription ?
-                $subscription + max(($allPagesValue + $scansValue) - $amountInSubscription, 0) :
-                $subscription + $blackValue + $colorValue + $scansValue + $setupFee;
-            $client['wartosc'] += $totalValue;
+            $totalValue = $hasAmountInSubscription
+                ? $subscription + max(($allPagesValue + $scansValue) - $amountInSubscription, 0)
+                : $subscription + $blackValue + $colorValue + $scansValue + $setupFee;
 
+            $client['wartosc'] += $totalValue;
             $dataReports['suma'] += $totalValue;
 
             $agreement['stronwabonamencie'] = $contract["black"];
@@ -845,94 +829,63 @@ class reportsController extends InvoicesController
             $agreement[SCAN_PRICE] = $scanPrice;
             $agreement['wartoscabonament'] = $subscription;
             $agreement['kwotadowykorzystania'] = $amountInSubscription;
-
             $agreement['oplatainstalacyjna'] = $setupFee;
-
-
             $agreement['wartosc'] = $totalValue;
 
             copyArrays($agreement, $item, $this->AGREEMENT_FIELDS);
         }
 
         foreach ($dataReportsRoczne as $key => $item) {
-
             $clientId = $item['rowidclient'];
 
             if (!isset($dataReports[$clientId])) {
-                $dataReports[$clientId] = array();
+                $dataReports[$clientId] = [];
             }
 
             $client = &$dataReports[$clientId];
-
             $agreement = &$client['umowy'][$item['rowidumowa']];
 
-            if (!isset($client['drukumowy']))
-                $client['drukumowy'] = 1;
-            else
-                $client['drukumowy'] += 1;
+            $client['drukumowy'] = isset($client['drukumowy']) ? $client['drukumowy'] + 1 : 1;
 
             copyArrays($client, $item, $this->CLIENT_FIELD_NAMES);
 
             $setupFee = 0;
-
-
-            if (
-                (date("Y", strtotime($item['dataod']))) == date("Y", strtotime($item['dacik']))) {
-
+            if ((date("Y", strtotime($item['dataod']))) == date("Y", strtotime($item['dacik']))) {
                 $setupFee = $item['cenainstalacji'];
             }
 
+            $dataReports['suma'] = $dataReports['suma'] ?? 0;
+            $client['wartosc'] = $client['wartosc'] ?? 0;
+            $client['wartoscblack'] = $client['wartoscblack'] ?? 0;
+            $client['wartosckolor'] = $client['wartosckolor'] ?? 0;
+            $client['wartoscabonament'] = $client['wartoscabonament'] ?? 0;
 
-            if (!isset($dataReports['suma'])) {
-                $dataReports['suma'] = 0;
-            }
+            $item['rabatdoabonamentu'] = (empty($item['rabatdoabonamentu']) ? 0 : $item['rabatdoabonamentu']);
+            $item['rabatdowydrukow'] = (empty($item['rabatdowydrukow']) ? 0 : $item['rabatdowydrukow']);
 
-            if (!isset($client['wartosc'])) {
-                $client['wartosc'] = 0;
-            }
-            if (!isset($client['wartoscblack'])) {
-                $client['wartoscblack'] = 0;
-            }
-            if (!isset($client['wartosckolor'])) {
-                $client['wartosckolor'] = 0;
-            }
-            if (!isset($client['wartoscabonament'])) {
-                $client['wartoscabonament'] = 0;
-            }
-
-            if (empty($item['rabatdoabonamentu']) || $item['rabatdoabonamentu'] == '') {
-                $item['rabatdoabonamentu'] = 0;
-            }
-            if (empty($item['rabatdowydrukow']) || $item['rabatdowydrukow'] == '') {
-                $item['rabatdowydrukow'] = 0;
-            }
             $subscription = (float)$item['abonament'];
-
-            $client['wartoscabonament'] = $client['wartoscabonament'] + $subscription;
-
+            $client['wartoscabonament'] += $subscription;
 
             $blackPrice = (float)$item['cenazastrone'];
             $colorPrice = (float)$item['cenazastrone_kolor'];
-            $contract = array("black" => $item['stronwabonamencie'], "color" => $item['iloscstron_kolor']);
+            $contract = [
+                "black" => $item['stronwabonamencie'],
+                "color" => $item['iloscstron_kolor'],
+            ];
 
             $blackExceeded = 0;
-            $wartoscblacktemp = 0;
             $wartoscblack = 0;
-            $client['wartoscblack'] = $client['wartoscblack'] + $wartoscblack;
+            $client['wartoscblack'] += $wartoscblack;
 
             $colorExceeded = 0;
-            $colorValue = 0;
             $wartosckolor = 0;
             $client['wartosckolor'] = 0;
 
             $totalValue = $wartoscblack + $wartosckolor + $setupFee;
-
             $client['wartosc'] += $totalValue;
-
             $dataReports['suma'] += $totalValue;
 
             $agreement['oplatainstalacyjna'] = $setupFee;
-
             $agreement['wartoscabonament'] = $subscription;
             $agreement['kwotawabonamencie'] = (float)$item['kwotawabonamencie'];
             $agreement['wartoscblack'] = $wartoscblack;
@@ -941,28 +894,67 @@ class reportsController extends InvoicesController
             $agreement['stronkolorpowyzej'] = $colorExceeded;
             $agreement['wartosc'] = $totalValue;
 
-
             $agreement['stronwabonamencie'] = $contract["black"];
             $agreement['cenazastrone'] = $blackPrice;
             $agreement['stronwabonamencie_kolor'] = $contract["color"];
             $agreement['cenazastrone_kolor'] = $colorPrice;
 
-
             copyArrays($agreement, $item, $this->AGREEMENT_FIELDS);
 
-            // TODO: overriding some fields, to check if it is really needed
-            // TODO: this is temporary solution, this should be also updated with the same code as for month agreements
+
             $agreement['strony_black_sum'] = $item['strony_black_koniec'] - $item['strony_black_start'];
             $agreement['strony_kolor_sum'] = $item['strony_kolor_koniec'] - $item['strony_kolor_start'];
-            // TODO: this probably wont work
-            $agreement['serials'] = array($item['serial']);
-
+            $agreement['serials'] = [$item['serial']];
         }
+
+        return $dataReports;
+    }
+
+
+    function generatemonthlyreports()
+    {
+
+        if (!$this->report->clearAgreementsSummary()) {
+            echo "Błąd przy usuwaniu danych z tabeli agreements_summary, działanie skryptu zostało przerwane";
+        }
+
+        @set_time_limit(0);
+        date_default_timezone_set('Europe/Warsaw');
+
+        $from = new DateTime('2015-01-01'); // inclusive
+        $to = new DateTime('2025-10-01'); // exclusive
+
+        for ($cursor = clone $from; $cursor < $to; $cursor->modify('first day of next month')) {
+            $dataod = $cursor->format('Y-m-d');
+            $datadoObj = (clone $cursor)->modify('first day of next month');
+            if ($datadoObj > $to) {
+                $datadoObj = clone $to;
+            }
+            $datado = $datadoObj->format('Y-m-d');
+
+            $_POST = [
+                'dataod' => $dataod,
+                'datado' => $datado,
+                'filterklient' => '',
+                'filterserial' => '',
+            ];
+
+            echo "Przetwarzam okres: {$dataod} → {$datado}\n";
+
+            $dataReports = $this->buildDataReports();
+
+            $this->report->importAgreementsForPeriod($dataReports);
+        }
+    }
+
+    function showdaneklient()
+    {
+        $dataReports = $this->buildDataReports();
 
         global $smarty;
         $smarty->assign('dataReports', $dataReports);
-        unset($dataReports);
     }
+
 
     function isDateIncorrect($strDateToCheck, $strDateTo)
     {
@@ -983,16 +975,17 @@ class reportsController extends InvoicesController
             $allInvoices = [];
 
             if (empty($externalClientIds) || count($externalClientIds) > 5) {
-                $allInvoices = $this->getInvoicesByDateRange($_POST['period'], $_POST['date_from'], $_POST['date_to']);
+                $filters = "&search_date_type=transaction_date";
+                $allInvoices = $this->getInvoicesByDateRange($_POST['period'], $_POST['date_from'], $_POST['date_to'], $filters);
             } else {
                 foreach ($externalClientIds as $clientObj) {
-                    $filters = "&client_id={$clientObj['client_id']}";
+                    $filters = "&search_date_type=transaction_date&client_id={$clientObj['client_id']}";
                     $invoices = $this->getInvoicesByDateRange($_POST['period'], $_POST['date_from'], $_POST['date_to'], $filters);
                     $allInvoices = array_merge($allInvoices, $invoices);
                 }
             }
             // [TODO TR]: temporary fix to reproduce reported issue
-            $allInvoices = array_filter($allInvoices, function($invoice) {
+            $allInvoices = array_filter($allInvoices, function ($invoice) {
                 return $invoice['number'] !== '0265/04/2025';
             });
 

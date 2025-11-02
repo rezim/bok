@@ -478,5 +478,160 @@ class report extends Model
         return $this->selectWithPDO($query, $params);
     }
 
+    public function clearAgreementsSummary(): bool
+    {
+        try {
+            $this->pdo->exec("SET FOREIGN_KEY_CHECKS = 0");
+            $this->pdo->exec("TRUNCATE TABLE `agreements_summary`");
+            $this->pdo->exec("SET FOREIGN_KEY_CHECKS = 1");
+            return true;
+        } catch (Throwable $e) {
+            try { $this->pdo->exec("SET FOREIGN_KEY_CHECKS = 1"); } catch (\Throwable $ignored) {}
+            error_log('clearAgreementsSummary() error: ' . $e->getMessage());
+            return false;
+        }
+    }
+
+    public function importAgreementsForPeriod(array $clients): array
+    {
+        foreach (['dataod' => $this->dataod, 'datado' => $this->datado] as $label => $d) {
+            $dt = DateTime::createFromFormat('Y-m-d', $d);
+            if (!$dt || $dt->format('Y-m-d') !== $d) {
+                throw new InvalidArgumentException("Nieprawidłowy format {$label}: {$d} (oczekiwano YYYY-MM-DD)");
+            }
+        }
+
+        $periodMonth = date('Y-m', strtotime($this->dataod));
+
+        $sql = "
+        INSERT INTO agreements_summary (
+            rowid_client, rowid_agreement,
+            period_start, period_end, period_month,
+            nrumowy, serial, rozliczenie,
+            abonament, kwota_w_abon,
+            czarne_szt_abon, czarne_sztuk, czarne_cena, czarne_wartosc,
+            kolor_szt_abon,  kolor_sztuk,  kolor_cena,  kolor_wartosc,
+            skany_szt_abon,  skany_sztuk,  skany_cena,  skany_wartosc,
+            instalacja, kwota
+        ) VALUES (
+            :rowid_client, :rowid_agreement,
+            :period_start, :period_end, :period_month,
+            :nrumowy, :serial, :rozliczenie,
+            :abonament, :kwota_w_abon,
+            :czarne_szt_abon, :czarne_sztuk, :czarne_cena, :czarne_wartosc,
+            :kolor_szt_abon,  :kolor_sztuk,  :kolor_cena,  :kolor_wartosc,
+            :skany_szt_abon,  :skany_sztuk,  :skany_cena,  :skany_wartosc,
+            :instalacja, :kwota
+        )
+        ON DUPLICATE KEY UPDATE
+          nrumowy=VALUES(nrumowy),
+          serial=VALUES(serial),
+          rozliczenie=VALUES(rozliczenie),
+          abonament=VALUES(abonament),
+          kwota_w_abon=VALUES(kwota_w_abon),
+          czarne_szt_abon=VALUES(czarne_szt_abon),
+          czarne_sztuk=VALUES(czarne_sztuk),
+          czarne_cena=VALUES(czarne_cena),
+          czarne_wartosc=VALUES(czarne_wartosc),
+          kolor_szt_abon=VALUES(kolor_szt_abon),
+          kolor_sztuk=VALUES(kolor_sztuk),
+          kolor_cena=VALUES(kolor_cena),
+          kolor_wartosc=VALUES(kolor_wartosc),
+          skany_szt_abon=VALUES(skany_szt_abon),
+          skany_sztuk=VALUES(skany_sztuk),
+          skany_cena=VALUES(skany_cena),
+          skany_wartosc=VALUES(skany_wartosc),
+          instalacja=VALUES(instalacja),
+          kwota=VALUES(kwota)
+        ";
+
+        $stats = ['processed' => 0, 'ok' => 0, 'errors' => []];
+
+        $this->pdo->beginTransaction();
+        try {
+            $stmt = $this->pdo->prepare($sql);
+
+            foreach ($clients as $clientId => $client) {
+                if (empty($client['umowy']) || !is_array($client['umowy'])) {
+                    continue;
+                }
+
+                $rowid_client = isset($client['rowidclient'])
+                    ? (int)$client['rowidclient']
+                    : (int)$clientId;
+
+                foreach ($client['umowy'] as $agreementId => $u) {
+                    $stats['processed']++;
+
+                    $params = [
+                        ':rowid_client'    => $rowid_client,
+                        ':rowid_agreement' => isset($u['rowidumowa']) ? (int)$u['rowidumowa'] : (int)$agreementId,
+
+                        ':period_start'    => $this->dataod,
+                        ':period_end'      => $this->datado,
+                        ':period_month'    => $periodMonth,
+
+                        ':nrumowy'         => $u['nrumowy']        ?? null,
+                        ':serial'          => $u['serial']         ?? null,
+                        ':rozliczenie' => (
+                        isset($u['rozliczenie']) && $u['rozliczenie'] === 'roczne'
+                            ? 'roczne'
+                            : 'miesieczne'
+                        ),
+
+                        ':abonament'       => $this->num($u['wartoscabonament'] ?? 0, 2),
+                        ':kwota_w_abon'    => $this->num($u['kwotadowykorzystania'] ?? 0, 2),
+
+                        ':czarne_szt_abon' => $this->intv($u['stronwabonamencie'] ?? 0),
+                        ':czarne_sztuk'    => $this->intv($u['stronblackpowyzej'] ?? 0),
+                        ':czarne_cena'     => $this->num($u['cenazastrone'] ?? 0, 3),
+                        ':czarne_wartosc'  => $this->num($u['wartoscblack'] ?? 0, 2),
+
+                        ':kolor_szt_abon'  => $this->intv($u['stronwabonamencie_kolor'] ?? 0),
+                        ':kolor_sztuk'     => $this->intv($u['stronkolorpowyzej'] ?? 0),
+                        ':kolor_cena'      => $this->num($u['cenazastrone_kolor'] ?? 0, 3),
+                        ':kolor_wartosc'   => $this->num($u['wartosckolor'] ?? 0, 2),
+
+                        ':skany_szt_abon'  => $this->intv($u['iloscskans'] ?? 0),
+                        ':skany_sztuk'     => $this->intv($u['scanspowyzej'] ?? 0),
+                        ':skany_cena'      => $this->num($u['cenazascan'] ?? 0, 3),
+                        ':skany_wartosc'   => $this->num($u['wartoscscans'] ?? 0, 2),
+
+                        ':instalacja'      => $this->num($u['oplatainstalacyjna'] ?? 0, 2),
+                        ':kwota'           => $this->num($u['wartosc'] ?? 0, 2),
+                    ];
+
+                    try {
+                        $stmt->execute($params);
+                        $stats['ok']++;
+                    } catch (Throwable $e) {
+                        $stats['errors'][] = [
+                            'rowid_client'    => $rowid_client,
+                            'rowid_agreement' => $params[':rowid_agreement'],
+                            'message'         => $e->getMessage()
+                        ];
+                    }
+                }
+            }
+
+            $this->pdo->commit();
+        } catch (Throwable $e) {
+            $this->pdo->rollBack();
+            throw $e;
+        }
+
+        return $stats;
+    }
+
+    private function num($v, int $scale = 3)
+    {
+        if ($v === null || $v === '') return 0;
+        $v = str_replace([' ', ','], ['', '.'], (string)$v);
+        return is_numeric($v) ? 0 + $v : 0;
+    }
+
+    private function intv($v): int
+    {
+        return (int)$this->num($v, 0);
+    }
 }
-// SELECT c.nip, p.* FROM `payments` p inner join clients c on substring(p.recipient_acount, -10) = c.nip WHERE p.date >= '2023-10-01' and p.date <= '2023-11-30';
