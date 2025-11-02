@@ -111,8 +111,9 @@ class InvoicesController extends Controller
                     "kind" => $kind,
                     "number" => $number,
                     "sell_date" => $sellDate,
-                    "issue_date" => $issueDate,
-                    "payment_to" => $paymentTo,
+                    // let fakturownia generate it, then issue_date=today (or even now)
+                    // "issue_date" => $issueDate,
+                    "payment_to" => adjustPaymentDate($issueDate, $paymentTo),
                     "buyer_name" => $buyerName,
                     "buyer_tax_no" => $buyerTaxNo,
                     "buyer_email" => $buyerEmail,
@@ -448,4 +449,39 @@ function getResultsByUrlQuery(string $url, int $pageNb = 1, int $perPage = 100):
     curl_close($ch);
 
     return $results;
+}
+
+function adjustPaymentDate(string $issueDate, string $paymentTo): string
+{
+    $tz = new DateTimeZone('Europe/Warsaw');
+
+    $today     = new DateTime('today', $tz);
+    $issue     = DateTime::createFromFormat('Y-m-d', $issueDate, $tz);
+    $payment   = DateTime::createFromFormat('Y-m-d', $paymentTo, $tz);
+
+    // Validate input dates — if invalid, return original payment date
+    if (!$issue || !$payment) {
+        return $paymentTo;
+    }
+
+    // If issue_date is in the future, do not shift the payment date
+    if ($issue > $today) {
+        $daysDiff = 0;
+    } else {
+        // Calculate the number of days between issue_date and today
+        $diff = $issue->diff($today);
+        $daysDiff = (int) $diff->days;
+    }
+
+    // If daysDiff is greater than 0, subtract 1
+    // (to avoid adding an extra day when issue_date is one day before today)
+    if ($daysDiff > 0) {
+        $daysDiff -= 1;
+    }
+
+    // Add the calculated number of days to the payment date
+    $payment->modify("+{$daysDiff} days");
+
+    // Return formatted date YYYY-MM-DD
+    return $payment->format('Y-m-d');
 }
