@@ -15,7 +15,7 @@
         <tbody>
         {foreach $clients as $c}
             {* ROW: client summary *}
-            <tr class="js-acc-header align-middle" data-client-id="{$c.client_id|escape}">
+            <tr class="js-acc-header align-middle" data-client-id="{$c.client_id|escape}" data-client-nip="{$c.client_nip|escape}">
                 <td>
                     <div class="font-weight-bold">
                         {$c.client_name|escape}
@@ -63,6 +63,7 @@
                 <td class="text-right">
                     <a href="#" class="js-acc-toggle text-decoration-none"
                        data-client-id="{$c.client_id|escape}"
+                       data-client-nip="{$c.client_nip|escape}"
                        title="Pokaż faktury">
                         <i class="fas fa-chevron-down"></i>
                     </a>

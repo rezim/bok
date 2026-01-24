@@ -1,59 +1,7 @@
-<div class="container-fluid reports">
-    <div class="row">
-        <div class="otus-sidebar col-12 col-md-12 col-xl-auto">
-            <form id="dataFilter" data-form>
-                <div class="form-group">
-                    <label for="startDate">data od</label>
-                </div>
-                <div class="form-group">
-                    <input data-ref type="text" id='startDate' class="form-control"
-                           aria-describedby="dateFromHelp">
-                    <small id="dateFromHelp" class="form-text text-muted"><i class="fas fa-info-circle"></i> Podaj datę
-                        początkową.</small>
-                </div>
-
-                <div class="form-group">
-                    <label for="endDate">data do</label>
-                </div>
-                <div class="form-group">
-                    <input data-ref type="text" id='endDate' class="form-control"
-                           aria-describedby="dateToHelp">
-                    <small id="dateToHelp" class="form-text text-muted"><i class="fas fa-info-circle"></i> Podaj datę
-                        końcową.</small>
-                </div>
-
-                <div class="form-group">
-                    <label for="endDate">miesiąc</label>
-                </div>
-                <div class="form-group">
-                    <select data-ref id='month' class="form-control" aria-describedby="monthHelp">
-                        <option value="" selected></option>
-                        {foreach from=$months item=item key=key}
-                            <option value="{$rok}-{$key}-01">{$item}</option>
-                        {/foreach}
-                    </select>
-                    <small id="monthHelp" class="form-text text-muted"><i class="fas fa-info-circle"></i> Wybierz
-                        miesiąc.</small>
-                </div>
-
-                <div class="border-top my-4 otus-separator"></div>
-
-                <div class="form-group">
-                    <button id="applyFilter" class="btn btn-info btn-block" type="button">
-                        Filtruj
-                    </button>
-                </div>
-                <input data-ref type="hidden" id="clientNIP" value="{$clientNIP}" />
-            </form>
-        </div>
-
-        <main id='divRightCenter' class="col-12 col-md-12 col-xl">
-
-        </main>
-    </div>
+<div class="container-fluid position-relative">
+    {include file="$templates/partials/filters/debit-credit.tpl"}
+    {include file="$templates/partials/main.tpl" mainId="divRightCenter"}
 </div>
-
-
 <script>
     const startAndEndDate = {
         startDate: new Date('2019-12-31'),
@@ -94,4 +42,29 @@
 
     $("#applyFilter").on('click', renderTemplate);
     renderTemplate();
+</script>
+
+<script>
+    const clientChannel = new BroadcastChannel("client-channel");
+
+    clientChannel.onmessage = function (event) {
+
+        if (!event || !event.data) return;
+
+        const type = event.data.type;
+        const nip = event.data.nip;
+
+        if (type !== "CLIENT_INVOICES_OPENED" || !nip) return;
+
+        const url = new URL(window.location.href);
+        const pathParts = url.pathname.split("/").filter(Boolean);
+
+        const basePath = "/bok/clientinvoices/showclient";
+
+        const currentNip = pathParts[pathParts.length - 1];
+        if (currentNip === nip) return;
+
+        url.pathname = basePath + "/" + encodeURIComponent(nip);
+        window.location.href = url.toString();
+    };
 </script>
