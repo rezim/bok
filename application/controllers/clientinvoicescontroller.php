@@ -12,6 +12,23 @@ class clientinvoicesController extends InvoicesController
         $smarty->assign('fakturownia_conf_file_path', ROOT . DS . 'config' . DS . 'fakturownia.conf');
     }
 
+
+    function deptors() {
+
+    }
+
+    function deptorsdata() {
+        global $smarty;
+        $invoices = $this->getNotPaidInvoices();
+        $agreements = $this->clientinvoice->getAgreementsArray();
+        $clients = $this->buildUnpaidAccordionModel($invoices, $agreements);
+        $fakturowniaEndpoint = FAKTUROWNIA_ENDPOINT;
+        $fakturowniaEndpoint = preg_replace('#^http://#', 'https://', $fakturowniaEndpoint);
+        $smarty->assign('FAKTUROWNIA_ENDPOINT', $fakturowniaEndpoint);
+        $smarty->assign('FAKTUROWNIA_APITOKEN', FAKTUROWNIA_APITOKEN);
+        $smarty->assign('clients', $clients);
+    }
+
     function vindication()
     {
         global $smarty;
@@ -51,15 +68,17 @@ class clientinvoicesController extends InvoicesController
             if (isset($_POST['filters'])) {
                 $filters = $_POST['filters'];
             }
-//            echo json_encode(
-//                $this->getInvoicesByDateRange($_POST['period'], $_POST['date_from'], $_POST['date_to'], $filters)
-//            );
-
-            echo json_encode($this->clientinvoice->getInvoicesByDateRangeFromDb($_POST['period'], $_POST['date_from'], $_POST['date_to'], $filters = ''));
-
+            echo json_encode(
+                $this->getInvoicesByDateRange($_POST['period'], $_POST['date_from'], $_POST['date_to'], $filters)
+            );
         } else {
             echo "błędne parametry wejściowe";
         }
+    }
+
+    function getNotPaid()
+    {
+        echo json_encode($this->getNotPaidInvoices());
     }
 
     function sendpaimentreminder()
@@ -468,10 +487,248 @@ class clientinvoicesController extends InvoicesController
         $smarty->assign('rowClassName', $ROW_CLASS_NAME);
     }
 
-    function importinvoices() {
-        if( isset( $_SERVER['HTTP_X_REQUESTED_WITH'] ) && ( $_SERVER['HTTP_X_REQUESTED_WITH'] == 'XMLHttpRequest' ) )
-        {
+    function importinvoices()
+    {
+        if (isset($_SERVER['HTTP_X_REQUESTED_WITH']) && ($_SERVER['HTTP_X_REQUESTED_WITH'] == 'XMLHttpRequest')) {
             echo json_encode($this->clientinvoice->pullAllInvoices());
         }
     }
+
+    function buildUnpaidAccordionModel(array $invoices, array $agreements): array
+    {
+        // 1) Zbuduj indeks umów po NIP (client_nip)
+        $agreementsByNip = [];
+        foreach ($agreements as $agr) {
+            if (!is_array($agr)) {
+                continue;
+            }
+
+            $nip = $this->normalizeNip($agr['client_nip'] ?? null);
+            if ($nip === null) {
+                continue;
+            }
+
+            // Jeśli jest kilka umów na ten sam NIP, wybierz “najlepszą”:
+            // preferuj aktywną (agreement_isactive == 1), inaczej pierwszą.
+            if (!isset($agreementsByNip[$nip])) {
+                $agreementsByNip[$nip] = $agr;
+            } else {
+                $currActive = !empty($agreementsByNip[$nip]['agreement_isactive']);
+                $newActive  = !empty($agr['agreement_isactive']);
+                if (!$currActive && $newActive) {
+                    $agreementsByNip[$nip] = $agr;
+                }
+            }
+        }
+
+        $map = []; // clientId => client data
+
+        foreach ($invoices as $inv) {
+            $clientId = (string)($inv['client_id'] ?? '');
+            if ($clientId === '') {
+                continue;
+            }
+
+            $fallbackName = $inv['buyer_name'] ?? ('Client #' . $clientId);
+            $buyerNip = $this->normalizeNip($inv['buyer_tax_no'] ?? null);
+
+            // Kwoty w API są stringami, np. "405.9" / "0.0"
+            $priceGross = (float)($inv['price_gross'] ?? 0);
+            $paid       = (float)($inv['paid'] ?? 0);
+            $amountDue  = max(0.0, $priceGross - $paid);
+
+            if ($amountDue <= 0.00001) {
+                continue;
+            }
+
+            $currency = $inv['currency'] ?? 'PLN';
+
+            if (!isset($map[$clientId])) {
+                $map[$clientId] = [
+                    'client_id' => $clientId,
+                    'client_name' => $fallbackName,     // zostanie nadpisane z agreement jeśli znajdziemy
+                    'client_phone' => null,             // zostanie nadpisane z agreement jeśli niepuste
+                    '_phone_ts' => 0,                   // wewnętrzne
+                    '_agreement_bound' => false,         // wewnętrzne (żeby nie robić tego wielokrotnie)
+                    'unpaid_count' => 0,
+                    'unpaid_sum' => 0.0,
+                    'currency' => $currency,
+                    'oldest_due_date' => null,
+                    'invoices' => [],
+                ];
+            }
+
+            // 2) Podepnij dane z umowy (tylko raz per clientId)
+            if (!$map[$clientId]['_agreement_bound'] && $buyerNip !== null && isset($agreementsByNip[$buyerNip])) {
+                $agr = $agreementsByNip[$buyerNip];
+
+                // Nazwa: bierzemy z agreement['client_name']
+                if (!empty($agr['client_name'])) {
+                    $map[$clientId]['client_name'] = $agr['client_name'];
+                }
+
+                // Telefon: bierzemy z agreement['client_phone'] jeśli niepusty
+                $agrPhone = trim((string)($agr['client_phone'] ?? ''));
+                if ($agrPhone !== '') {
+                    $map[$clientId]['client_phone'] = $agrPhone;
+                    // ustawiamy _phone_ts wysoko, żeby telefon z faktur nie próbował tego nadpisywać
+                    $map[$clientId]['_phone_ts'] = PHP_INT_MAX;
+                }
+
+                $map[$clientId]['_agreement_bound'] = true;
+            }
+
+            $map[$clientId]['unpaid_count']++;
+            $map[$clientId]['unpaid_sum'] += $amountDue;
+
+            $due = $inv['payment_to'] ?? null;
+            if ($due && (!$map[$clientId]['oldest_due_date'] || $due < $map[$clientId]['oldest_due_date'])) {
+                $map[$clientId]['oldest_due_date'] = $due;
+            }
+
+            // 3) Fallback: phone z najnowszej faktury, ale tylko jeśli nie mamy telefonu z agreement
+            //    (wskazuje na to _phone_ts != PHP_INT_MAX)
+            if ($map[$clientId]['_phone_ts'] !== PHP_INT_MAX) {
+                $ts = $this->invoiceTimestampForPhone($inv);
+                if ($ts >= $map[$clientId]['_phone_ts']) {
+                    $phone = $this->buildInvoicePhoneString($inv);
+                    if ($phone !== null) {
+                        $map[$clientId]['client_phone'] = $phone;
+                        $map[$clientId]['_phone_ts'] = $ts;
+                    } elseif ($map[$clientId]['client_phone'] === null) {
+                        $map[$clientId]['_phone_ts'] = $ts;
+                    }
+                }
+            }
+
+            // view_url
+            $viewUrl = $inv['view_url'] ?? null;
+            if (!empty($viewUrl)) {
+                $viewUrl = fakturowniaUrl($viewUrl);
+            }
+
+            // status płatności
+            if (!empty($inv['cancelled'])) {
+                $statusLabel = 'Anulowana';
+                $statusType = 'cancelled';
+            } elseif (!empty($inv['overdue?'])) {
+                $statusLabel = 'Przeterminowana';
+                $statusType = 'overdue';
+            } elseif ((float)($inv['paid'] ?? 0) > 0) {
+                $statusLabel = 'Częściowo opłacona';
+                $statusType = 'partial';
+            } else {
+                $statusLabel = 'Nieopłacona';
+                $statusType = 'issued';
+            }
+
+            $map[$clientId]['invoices'][] = [
+                'id' => $inv['id'] ?? null,
+                'number' => $inv['number'] ?? null,
+                'issue_date' => $inv['issue_date'] ?? null,
+                'sell_date' => $inv['sell_date'] ?? null,
+                'due_date' => $inv['payment_to'] ?? null,
+                'amount_due' => $amountDue,
+                'price_gross' => $priceGross,
+                'paid' => $paid,
+                'currency' => $currency,
+                'view_url' => $viewUrl,
+                'payment_status' => $statusLabel,
+                'payment_status_type' => $statusType,
+            ];
+        }
+
+        // posprzątaj internal pola
+        $clients = array_values($map);
+        foreach ($clients as &$c) {
+            unset($c['_phone_ts'], $c['_agreement_bound']);
+        }
+        unset($c);
+
+        // Sort: 1) ilość niezapłaconych ↓, 2) suma ↓, 3) nazwa A–Z
+        usort($clients, function ($a, $b) {
+            $cmp = $b['unpaid_count'] <=> $a['unpaid_count'];
+            if ($cmp !== 0) return $cmp;
+
+            $cmp = $b['unpaid_sum'] <=> $a['unpaid_sum'];
+            if ($cmp !== 0) return $cmp;
+
+            return strcmp($a['client_name'], $b['client_name']);
+        });
+
+        // Sort: faktury w kliencie - najnowsze na górze
+        foreach ($clients as &$c) {
+            usort($c['invoices'], function ($a, $b) {
+                $aDate = $a['issue_date'] ?? $a['sell_date'] ?? $a['due_date'] ?? '';
+                $bDate = $b['issue_date'] ?? $b['sell_date'] ?? $b['due_date'] ?? '';
+                return $bDate <=> $aDate;
+            });
+        }
+        unset($c);
+
+        return $clients;
+    }
+
+    /**
+     * Normalizuje NIP do samych cyfr, np. "899-247-56-20" => "8992475620".
+     * Zwraca null jeśli brak/za krótki.
+     */
+    function normalizeNip($nip): ?string
+    {
+        if (empty($nip)) {
+            return null;
+        }
+        $digits = preg_replace('/\D+/', '', (string)$nip);
+        if ($digits === '') {
+            return null;
+        }
+        return $digits;
+    }
+
+    /**
+     * Timestamp "najnowszej faktury" do wyboru telefonu.
+     * Priorytet: issue_date -> sell_date -> created_at
+     */
+    function invoiceTimestampForPhone(array $inv): int
+    {
+        foreach (['issue_date', 'sell_date', 'created_at'] as $key) {
+            if (!empty($inv[$key]) && is_string($inv[$key])) {
+                $ts = strtotime($inv[$key]);
+                if ($ts !== false) {
+                    return $ts;
+                }
+            }
+        }
+        return 0;
+    }
+
+    /**
+     * Zwraca string z telefonami z JEDNEJ faktury:
+     * - buyer_mobile_phone + buyer_phone
+     * - obsługa wielu numerów w jednym polu (separator: , ; / |)
+     * - deduplikacja, trim, join ", "
+     */
+    function buildInvoicePhoneString(array $inv): ?string
+    {
+        $phones = [];
+
+        foreach (['buyer_mobile_phone', 'buyer_phone'] as $key) {
+            if (empty($inv[$key]) || !is_string($inv[$key])) {
+                continue;
+            }
+
+            $parts = preg_split('/[;,\/\|]+/', $inv[$key]) ?: [];
+            foreach ($parts as $p) {
+                $p = trim(preg_replace('/\s+/', ' ', $p));
+                if ($p !== '') {
+                    $phones[] = $p;
+                }
+            }
+        }
+
+        $phones = array_values(array_unique($phones));
+
+        return $phones ? implode(', ', $phones) : null;
+    }
+
 }

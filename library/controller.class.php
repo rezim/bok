@@ -65,6 +65,32 @@ function showCheckboxFilterOption($params, $smarty)
                 </div>";
 }
 
+/**
+ * Smarty modifier
+ * Replaces Fakturownia host with configured FAKTUROWNIA_ENDPOINT
+ *
+ * Usage in tpl:
+ * {$invoice.view_url|fakturownia_url}
+ */
+function fakturowniaUrl($url)
+{
+    if (empty($url) || !defined('FAKTUROWNIA_ENDPOINT')) {
+        return $url;
+    }
+
+    $parsed = parse_url($url);
+    if ($parsed === false) {
+        return $url;
+    }
+
+    $endpoint = rtrim(FAKTUROWNIA_ENDPOINT, '/');
+
+    return $endpoint
+        . ($parsed['path'] ?? '')
+        . (isset($parsed['query']) ? '?' . $parsed['query'] : '')
+        . (isset($parsed['fragment']) ? '#' . $parsed['fragment'] : '');
+}
+
 
 class Controller
 {
@@ -123,6 +149,7 @@ class Controller
             $smarty->registerPlugin('function', 'format_date_value', 'formatDateValue');
             $smarty->registerPlugin('function', 'show_txt_filter_option', 'showTextFilterOption');
             $smarty->registerPlugin('function', 'show_check_filter_option', 'showCheckboxFilterOption');
+            $smarty->registerPlugin('modifier', 'fakturownia_url', 'fakturowniaUrl');
             $smarty->assignGlobal('OUTDATED_COUNTERS_IN_DAYS_LIMIT', OUTDATED_COUNTERS_IN_DAYS_LIMIT);
         }
     }

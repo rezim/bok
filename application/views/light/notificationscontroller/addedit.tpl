@@ -36,6 +36,11 @@
                                     {if isset($item.ishide) && $item.ishide=='1'}style="display:none;"{/if}>
                                     {if $item.type=='link' || $item.type=='text'}
                                         <div class="input-group mb-1">
+                                            {if isset($item.placeholder)}
+                                                <div class="form-text text-muted small">
+                                                    {${$item.placeholder}}
+                                                </div>
+                                            {/if}
                                             <input class="form-control form-control-md" type="text" id='{$key}'
                                                    baza='{$item.baza}'
                                                    name='editobj'
@@ -239,6 +244,11 @@
                                 <td
                                         {if isset($item.ishide) && $item.ishide=='1'}style="display:none;"{/if}>
                                     {if $item.type=='link' || $item.type=='text'}
+                                        {if isset($item.placeholder)}
+                                            <div class="form-text text-muted small">
+                                                {${$item.placeholder}}
+                                            </div>
+                                        {/if}
                                         <input class="form-control form-control-md" type="text" id='{$key}'
                                                baza='{$item.baza}' name='editobj'
                                                {if isset($item.focus) && $item.focus=='1'}autofocus="true"{/if}
@@ -441,98 +451,102 @@
     {/if}
 
     {if $keyVal !== '0'}
-    <hr/>
-    <div id="warehouseDocuments" data-form>
+        <hr/>
+        <div id="warehouseDocuments" data-form>
 
-        <div class="container">
-            <div id='actionok' class="actionok alert alert-success" role="alert">
-                <strong>Dane zapisane poprawnie</strong>
-            </div>
-            <div id='actionerror' class="actionerror alert alert-danger" role="alert">
-                <strong>Błąd zapisu danych.</strong>
-            </div>
-        </div>
-
-        Magazyn:
-        <select id="warehouse_id" data-ref
-                onchange="onChangeWarehouse(this.value)">
-            {foreach from=$allWarehouses item=warehouse key=key}
-                <option value="{$warehouse.id}" {if $warehouse.name === 'FF'}selected{/if}>{$warehouse.name}</option>
-            {/foreach}
-        </select>
-
-        Produkt:
-        <select id="product_id" data-ref
-                onchange="onSelectProduct(event)"
-                class="form-control form-control-md selectpicker"
-                data-size="10"
-                data-width="340px"
-                data-none-selected-text="Nie wybrano żadnego produktu"
-                data-none-results-text="Nie znaleziono wyników dla podanego filtra"
-                data-live-search-placeholder="Wpisz filtr aby zawęzić listę produktów"
-                data-live-search="true">
-            <option value="" selected></option>
-
-            {foreach from=$allProducts item=product key=key}
-                <option data-quantity="{$product.warehouse_quantity|number_format:0}" value="{$product.id}">{$product.name} - ({$product.warehouse_quantity|number_format:0})</option>
-            {/foreach}
-        </select>
-        Ilość: <input id="quantity" data-ref
-                     type="number" min="1" max="0"/>
-
-        <input id="notification_id" data-ref value="{$keyVal}" type="hidden">
-
-        <a id="addRW" href="#" class="btn btn-outline-success active"
-           role="button"
-           aria-pressed="true"
-           onclick="addEditWarehouseDocument({$keyVal})">
-            <i class="fas fa-save"></i>&nbsp; Dodaj Pozycję</a>
-
-        <div class="container">
-            {if empty($documents)}
-                Aktualnie nie ma żadnych dokumentów RW dla tego zlecenia.
-            {else}
-                <div class="row font-weight-bold">
-                    <div class="col-2">Magazyn</div>
-                    <div class="col-2">Numer</div>
-                    <div class="col-2">Data Ost. Zapisu</div>
-                    <div class="col-2">Ilość</div>
-                    <div class="col-2">Netto</div>
-                    <div class="col-2"></div>
+            <div class="container">
+                <div id='actionok' class="actionok alert alert-success" role="alert">
+                    <strong>Dane zapisane poprawnie</strong>
                 </div>
-                {foreach from=$documents item=document key=key}
-                    <div class="row align-items-start">
-                        <div class="col">
-                            {$warehouseMap[$document.warehouse_id]}
-                        </div>
-                        <div class="col">
-                            <a target="_blank"
-                               href="https://faktury.otus.pl/warehouse_documents/{$document.id}">{$document.number}</a>
-                        </div>
-                        <div class="col">
-                            {$document.updated_at|date_format:"%Y-%m-%d %H:%M"}
-                        </div>
-                        <div class="col">
-                            {if isset($document.additional_fields.quantity)}{$document.additional_fields.quantity}{else}-{/if}
-                        </div>
-                        <div class="col">
-                            {$document.purchase_price_net}
-                        </div>
-                        <div class="col d-flex">
-{*                            <a href="#" class="btn btn-outline-danger d-inline-block" role="button"><i class="fas fa-save"></i>&nbsp; Generuj Przesyłkę</a>&nbsp;*}
-                            <a href="#"
-                               class="btn btn-outline-danger d-inline-block"
-                               role="button"
-                               aria-pressed="true" onclick="removeWarehouseDocument('{$document.id}', '{$document.number}', {$keyVal})">
-                                <i class="fas fa-times"></i>&nbsp; Usuń</a>
-                        </div>
-                    </div>
+                <div id='actionerror' class="actionerror alert alert-danger" role="alert">
+                    <strong>Błąd zapisu danych.</strong>
+                </div>
+            </div>
+
+            Magazyn:
+            <select id="warehouse_id" data-ref
+                    onchange="onChangeWarehouse(this.value)">
+                {foreach from=$allWarehouses item=warehouse key=key}
+                    <option value="{$warehouse.id}"
+                            {if $warehouse.name === 'FF'}selected{/if}>{$warehouse.name}</option>
                 {/foreach}
-            {/if}
+            </select>
+
+            Produkt:
+            <select id="product_id" data-ref
+                    onchange="onSelectProduct(event)"
+                    class="form-control form-control-md selectpicker"
+                    data-size="10"
+                    data-width="340px"
+                    data-none-selected-text="Nie wybrano żadnego produktu"
+                    data-none-results-text="Nie znaleziono wyników dla podanego filtra"
+                    data-live-search-placeholder="Wpisz filtr aby zawęzić listę produktów"
+                    data-live-search="true">
+                <option value="" selected></option>
+
+                {foreach from=$allProducts item=product key=key}
+                    <option data-quantity="{$product.warehouse_quantity|number_format:0}"
+                            value="{$product.id}">{$product.name} - ({$product.warehouse_quantity|number_format:0})
+                    </option>
+                {/foreach}
+            </select>
+            Ilość: <input id="quantity" data-ref
+                          type="number" min="1" max="0"/>
+
+            <input id="notification_id" data-ref value="{$keyVal}" type="hidden">
+
+            <a id="addRW" href="#" class="btn btn-outline-success active"
+               role="button"
+               aria-pressed="true"
+               onclick="addEditWarehouseDocument({$keyVal})">
+                <i class="fas fa-save"></i>&nbsp; Dodaj Pozycję</a>
+
+            <div class="container">
+                {if empty($documents)}
+                    Aktualnie nie ma żadnych dokumentów RW dla tego zlecenia.
+                {else}
+                    <div class="row font-weight-bold">
+                        <div class="col-2">Magazyn</div>
+                        <div class="col-2">Numer</div>
+                        <div class="col-2">Data Ost. Zapisu</div>
+                        <div class="col-2">Ilość</div>
+                        <div class="col-2">Netto</div>
+                        <div class="col-2"></div>
+                    </div>
+                    {foreach from=$documents item=document key=key}
+                        <div class="row align-items-start">
+                            <div class="col">
+                                {$warehouseMap[$document.warehouse_id]}
+                            </div>
+                            <div class="col">
+                                <a target="_blank"
+                                   href="https://faktury.otus.pl/warehouse_documents/{$document.id}">{$document.number}</a>
+                            </div>
+                            <div class="col">
+                                {$document.updated_at|date_format:"%Y-%m-%d %H:%M"}
+                            </div>
+                            <div class="col">
+                                {if isset($document.additional_fields.quantity)}{$document.additional_fields.quantity}{else}-{/if}
+                            </div>
+                            <div class="col">
+                                {$document.purchase_price_net}
+                            </div>
+                            <div class="col d-flex">
+                                {*                            <a href="#" class="btn btn-outline-danger d-inline-block" role="button"><i class="fas fa-save"></i>&nbsp; Generuj Przesyłkę</a>&nbsp;*}
+                                <a href="#"
+                                   class="btn btn-outline-danger d-inline-block"
+                                   role="button"
+                                   aria-pressed="true"
+                                   onclick="removeWarehouseDocument('{$document.id}', '{$document.number}', {$keyVal})">
+                                    <i class="fas fa-times"></i>&nbsp; Usuń</a>
+                            </div>
+                        </div>
+                    {/foreach}
+                {/if}
+            </div>
+            {* TODO: Przerobić mechanizm raportowania ilości wysłanych i odebranych tonerów od klienta *}
         </div>
-        {* TODO: Przerobić mechanizm raportowania ilości wysłanych i odebranych tonerów od klienta *}
-    </div>
-    <hr/>
+        <hr/>
     {/if}
 
     <div id="accordion" class="mt-5 mb-3 container">

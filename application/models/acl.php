@@ -118,6 +118,17 @@ class acl extends Model
             }
 
             $fullPath = $baseDir . DIRECTORY_SEPARATOR . $item;
+
+            // ⛔ omit folders started with "_"
+            if (is_dir($fullPath) && substr($item, 0, 1) === '_') {
+                continue;
+            }
+
+            // ⛔ omit config.php files
+            if (is_file($fullPath) && strtolower($item) === 'config.php') {
+                continue;
+            }
+
             $relativePath = ltrim($currentPath . '/' . $item, '/');
 
             if (is_dir($fullPath)) {

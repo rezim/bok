@@ -6,16 +6,44 @@ class clientinvoice extends Model
 {
     protected $dataod='',$datado='',$filterklient='',$filterdrukarka='',$nazwakrotka='';
 
-    function getAgreements() {
-        $query =
-            "select c.rowid as client_id, c.nazwapelna as client_name, c.nip as client_nip, c.telefon as client_phone, c.mailfaktury as client_mailfaktury,
-                    c.naliczacodsetki as client_naliczacodsetki, c.monitoringplatnosci as client_monitoringplatnosci,
-                    a.nrumowy as agreement_id, a.rowid as agreement_rowid, c.terminplatnosci as agreement_paymentdate,
-                    a.activity as agreement_isactive
-             from agreements a inner join clients c on a.rowidclient = c.rowid
-             where c.nip <> '0000000000' OR (c.nip = '0000000000' AND a.activity = 1)
-             order by nazwakrotka";
-        return json_encode($this->query($query,null,false));
+    private const ANON_NIP = '0000000000';
+
+    private function getAgreementsQuery(): string
+    {
+        return "
+        SELECT
+            c.rowid           AS client_id,
+            c.nazwapelna      AS client_name,
+            c.nip             AS client_nip,
+            c.telefon         AS client_phone,
+            c.mailfaktury     AS client_mailfaktury,
+            c.naliczacodsetki AS client_naliczacodsetki,
+            c.monitoringplatnosci AS client_monitoringplatnosci,
+            a.nrumowy         AS agreement_id,
+            a.rowid           AS agreement_rowid,
+            c.terminplatnosci AS agreement_paymentdate,
+            a.activity        AS agreement_isactive
+        FROM agreements a
+        INNER JOIN clients c ON a.rowidclient = c.rowid
+        WHERE c.nip <> '" . self::ANON_NIP . "'
+           OR (c.nip = '" . self::ANON_NIP . "' AND a.activity = 1)
+        ORDER BY nazwakrotka
+    ";
+    }
+
+    public function getAgreementsArray(): array
+    {
+        $rows = $this->query($this->getAgreementsQuery(), null, false);
+        return is_array($rows) ? $rows : [];
+    }
+
+    public function getAgreements(): string
+    {
+        // Encode agreements data to JSON and throw an exception if encoding fails
+        return json_encode($this->getAgreementsArray(), JSON_THROW_ON_ERROR);
+
+        // If you prefer silent failure instead of an exception,
+        // remove the JSON_THROW_ON_ERROR flag.
     }
 
     function addPaymentMessage($postParams, $tableName) {

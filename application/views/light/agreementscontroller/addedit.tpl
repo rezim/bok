@@ -399,12 +399,6 @@
 </div>
 
 <div class="container text-right mt-4 mb-2" wymaganylevel='r' wymaganyzrobiony='1'>
-    {if $editMode && $canSaveClosed && !($dataUmowa[0].activity == 1 && !$canEditActive)}
-        <a href="#" class="btn btn-danger mr-5" role="button" onclick='usunUmowe("{$rowid}");return false;'>
-            <i class="fas fa-trash"></i>&nbsp;&nbsp;Zamknij Umowę
-        </a>
-    {/if}
-
     <a href="#" class="btn btn-outline-secondary" role="button" onclick="$.colorbox.close();">Anuluj</a>
 
     <a href="#" id="saveAgreementBtn"
