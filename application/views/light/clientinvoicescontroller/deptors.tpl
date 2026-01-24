@@ -1,135 +1,87 @@
-<div class="container-fluid" ng-app="app" ng-controller="PaymentsCtrl as ctrl" ng-cloak
-     ng-init="ctrl.loadData(date_from, date_to, true, null, true)">
+<div class="container-fluid position-relative">
     {include file="$templates/partials/filters/deptors.tpl"}
-
-    {include file="$templates/invoice/paymentsClientMessages.tpl"}
-    <div class="otus-table-wrapper">
-        <main id='divRightCenter' class="col-12 col-md-12 col-xl">
-            <div class="table-responsive-sm">
-                <table class='table table-hover table-sm tablesorter payments' id='tableDeptors'>
-                    <thead class="thead-dark">
-                    <tr>
-                        <th ng-click="sortBy('name')" class="sortable">
-                            client
-                            <span class="sortorder" ng-show="orderBy.propertyName === 'name'"
-                                  ng-class="(orderBy.reverse) ? 'reverse': ''"></span>
-                        </th>
-                        <th>telefon</th>
-                        <th ng-click="sortBy('invoices.count.notPaid')"
-                            class="sortable">
-                            faktur niezapłaconych
-                            <span class="sortorder" ng-show="orderBy.propertyName === 'invoices.count.notPaid'"
-                                  ng-class="(orderBy.reverse) ? 'reverse': ''"></span>
-                        </th>
-                        <th ng-click="sortBy('balance')" class="sortable text-right">
-                            saldo
-                            <span class="sortorder" ng-show="orderBy.propertyName === 'balance'"
-                                  ng-class="(orderBy.reverse) ? 'reverse': ''"></span>
-                        </th>
-                        <th class="sortable text-right">
-                            nadpłata
-                        </th>
-                        <th>
-                            akcja
-                        </th>
-                    </tr>
-                    </thead>
-                    <!-- TODO: monitoring platnosci should be filtered on server side, see: filter: ctrl.paymentMonitoringFilter() -->
-                    <!-- filter: ctrl.paymentMonitoringFilter() | -->
-                    <tbody ng-repeat="clientInvoice in ctrl.getClientInvoices() | filter:search | filter: ctrl.clientInvoicesFilter() | orderBy:orderBy.propertyName:orderBy.reverse">
-
-                    <tr>
-                        <td class='tdLink' ng-click="ctrl.sortBy('name')">[[clientInvoice.name]]</td>
-                        <td>[[clientInvoice.phone]]</td>
-                        <td align="center" ng-click="ctrl.sortBy('clientInvoice.invoices.count.notPaid')" class="profit"
-                            ng-class="(clientInvoice.balance < 0) ? 'underpaid' : (clientInvoice.balance > 0) ? 'overpaid' : 'paid'">
-                            [[clientInvoice.invoices.count.notPaid]]
-                        </td>
-                        <td align="right" class="profit"
-                            ng-class="(clientInvoice.balance < 0) ? 'underpaid' : (clientInvoice.balance > 0) ? 'overpaid' : 'paid'">
-                            [[clientInvoice.balance.toFixed(2)]]
-                        </td>
-                        <td align="right" class="profit"
-                            ng-class="(clientInvoice.overpaid.sum > 0) ? 'overpaid' : 'paid'">
-                            [[clientInvoice.overpaid.sum.toFixed(2)]]
-                        </td>
-                        <td class="profit">
-
-
-                            <div class="dropdown show">
-                                <button class="btn border border-secondary dropdown-toggle" type="button"
-                                        id="dropdownMenuButton" data-toggle="dropdown" aria-haspopup="true"
-                                        aria-expanded="false">
-                                    <i class="fas fa-cog"></i>
-                                </button>
-                                <div class="dropdown-menu dropdown-menu-right" aria-labelledby="dropdownMenuLink">
-                                    <a href='{$smarty.const.SCIEZKA}/clientinvoices/showclient/[[clientInvoice.nip]]'
-                                       class="dropdown-item pointer"><i
-                                                class="fas fa-clipboard-list"></i></i>&nbsp;rozliczenie&nbsp;winien/ma</a>
-                                    <a href="#" class="dropdown-item pointer"
-                                       ng-click="ctrl.showDetails(clientInvoice);"><i class="fas fa-file-invoice"></i>&nbsp;&nbsp;faktury</a>
-                                    <a href="#" class="dropdown-item"
-                                       ng-click="ctrl.paymentsClientMessages(clientInvoice);$event.stopPropagation();"><i
-                                                class="fas fa-comment-dots"></i>&nbsp;&nbsp;notatki</a>
-                                    <a href="javascript:void(0)" class="dropdown-item"
-                                       ng-click="ctrl.sendPaymentReminderEmail(clientInvoice); $event.stopPropagation();"><i
-                                                class="fas fa-envelope"></i>&nbsp;&nbsp;wyślij przypomnienie</a></div>
-                            </div>
-                        </td>
-                    </tr>
-
-                    <tr ng-if="(ctrl.show_details[clientInvoice.nip] ) && clientInvoice.invoices.list.length">
-                        <td colspan="6" class="inner-table">
-                            <table class='tablesorter displaytable invoices' id='tableReport'>
-                                <thead>
-                                <tr>
-                                    <th width="200px">
-                                        numer faktury
-                                    </th>
-                                    <th width="200px">
-                                        data wystawienia
-                                    </th>
-                                    <th width="200px">
-                                        termin płatności
-                                    </th>
-                                    <th width="200px" style="text-align: right">
-                                        netto
-                                    </th>
-                                    <th width="200px" style="text-align: right">
-                                        brutto
-                                    </th>
-                                    <th width="200px" style="text-align: right">
-                                        zapłacono
-                                    </th>
-                                    <th width="200px" style="text-align: right">
-                                        opóźnienie dni
-                                    </th>
-                                </tr>
-                                </thead>
-                                <tbody>
-                                <tr ng-repeat="invoice in clientInvoice.invoices.list | filter: ctrl.notPaidInvoicesOnlyFilter()"
-                                    ng-class="(invoice.status === 'paid') ? 'paid' : (invoice.status === 'partial') ? 'partial': 'notpaid'">
-                                    <td><span>[[invoice.number]]</span>
-                                    </td>
-                                    <td>[[invoice.sell_date]]</td>
-                                    <td>[[invoice.payment_to]]</td>
-                                    <td align="right">[[invoice.price_net]]</td>
-                                    <td align="right">[[invoice.price_gross]]</td>
-                                    <td align="right">[[invoice.paid]]</td>
-                                    <td align="right">[[invoice.is_late_days]]</td>
-                                </tr>
-                                </tbody>
-                            </table>
-                        </td>
-                    </tr>
-                    </tbody>
-                    <tfoot>
-
-                    </tfoot>
-                </table>
-
-                <div ng-if="isPending" class="loading">Loading&#8230;</div>
-            </div>
-        </main>
-    </div>
+    {include file="$templates/partials/main.tpl" mainId="divRightCenter"}
 </div>
+<script type="text/javascript">
+    const dataContainerId = 'dataFilter';
+    const templateId = 'divRightCenter';
+    const actionButtonId = 'applyFilter';
+
+    const initDuplicateInvoiceListener = () => {
+        // zabezpieczenie przed wielokrotnym podpięciem
+        if (document.__duplicateInvoiceListenerAttached) {
+            return;
+        }
+        document.__duplicateInvoiceListenerAttached = true;
+
+        document.addEventListener('click', function (e) {
+            const link = e.target.closest('.duplicate-invoice');
+            if (!link) return;
+
+            e.preventDefault();
+
+            const today = new Date().toISOString().slice(0, 10);
+
+            const duplicateDate = prompt(
+                'Podaj datę duplikatu (YYYY-MM-DD):',
+                today
+            );
+
+            if (!duplicateDate) return;
+
+            const url =
+                link.dataset.url +
+                '&duplicate_date=' +
+                encodeURIComponent(duplicateDate);
+
+            window.open(url, '_blank');
+        });
+    };
+
+    const initAccordionHeaderListener = () => {
+        if (document.__accordionHeaderListenerAttached) {
+            return;
+        }
+        document.__accordionHeaderListenerAttached = true;
+
+        $("#tableDeptors").tablesorter({
+            textExtraction: function (node) {
+                const v = $(node).attr('data-value');
+                return v != null ? v : $(node).text();
+            }
+        });
+
+        $(document).on('click', '.js-acc-header', function (e) {
+            if ($(e.target).closest('.js-acc-toggle, a').length) return;
+
+            const clientId = $(this).data('client-id');
+            $(this)
+                .find('.js-acc-toggle[data-client-id="' + clientId + '"]')
+                .trigger('click');
+        });
+    };
+
+    const fnRenderTemplate = async () => {
+        const doneCallback = () => {
+
+            initDuplicateInvoiceListener();
+            // initAccordionHeaderListener();
+
+        };
+        renderTemplateAction("/clientinvoices/deptorsdata/todiv", dataContainerId, templateId, null, doneCallback);
+    };
+
+    // on enter press (any input in the form)
+    $('#' + dataContainerId + ' input').unbind("keypress").keypress((event) => {
+        if (event.keyCode === 13) {
+            event.preventDefault();
+            fnRenderTemplate();
+        }
+    });
+
+    // on filter button click
+    $('#' + actionButtonId).on('click', fnRenderTemplate);
+
+    // first render
+    fnRenderTemplate();
+</script>
