@@ -17,6 +17,7 @@ class InvoicesController extends Controller
     function getAllInvoices($filters = null): array {
         $url = FAKTUROWNIA_ENDPOINT . '/invoices.json?'
             . 'api_token=' . FAKTUROWNIA_APITOKEN
+            . '&kinds%5B%5D=vat&kinds%5B%5D=advance&kinds%5B%5D=correction'
             . '&order=issue_date'
             . ($filters ? "&{$filters}" : "");
 
@@ -28,6 +29,7 @@ class InvoicesController extends Controller
         $url = FAKTUROWNIA_ENDPOINT . '/invoices.json?'
             . 'client_id=' . $clientId
             . '&status=' . (($isPaid) ? 'paid' : 'not_paid')
+            . '&kinds%5B%5D=vat&kinds%5B%5D=advance&kinds%5B%5D=correction'
             . '&order=issue_date'
             . '&api_token=' . FAKTUROWNIA_APITOKEN;
         return getResultsByUrlQuery($url);
@@ -47,6 +49,7 @@ class InvoicesController extends Controller
             . '&date_to=' . $dateTo
             . '&client_id=' . $clientId
             . 'search_date_type=issue_date'
+            . '&kinds%5B%5D=vat&kinds%5B%5D=advance&kinds%5B%5D=correction'
             . '&order=issue_date.desc'
             . '&api_token=' . FAKTUROWNIA_APITOKEN;
         return getResultsByUrlQuery($url);
@@ -80,6 +83,7 @@ class InvoicesController extends Controller
             . '&date_from=' . $dateFrom
             . '&date_to=' . $dateTo
             . '&api_token=' . FAKTUROWNIA_APITOKEN
+            . '&kinds%5B%5D=vat&kinds%5B%5D=advance&kinds%5B%5D=correction'
             . '&order=issue_date'
             . $additionalFilters;
 
@@ -94,12 +98,48 @@ class InvoicesController extends Controller
         return $invoices;
     }
 
+    function getNotPaidInvoices(
+        ?string $clientName = null,
+        ?string $clientNip = null,
+        ?string $invoiceNumber = null,
+        ?string $filter = null
+    ): array {
+        // Pick the first non-empty filter value (LIKE via Fakturownia 'query' param).
+        // Priority: explicit params first, then the single combined $filter.
+        $queryValue = null;
+
+        foreach ([$clientName, $clientNip, $invoiceNumber, $filter] as $value) {
+            $value = is_string($value) ? trim($value) : null;
+            if ($value !== null && $value !== '') {
+                $queryValue = $value;
+                break;
+            }
+        }
+
+        $url = FAKTUROWNIA_ENDPOINT . '/invoices.json?'
+            . 'period=all'
+            . '&api_token=' . urlencode(FAKTUROWNIA_APITOKEN)
+            . '&kinds%5B%5D=vat&kinds%5B%5D=advance&kinds%5B%5D=correction'
+            . '&status%5B%5D=not_paid'
+            . '&order=issue_date';
+
+        // Fakturownia "query" works like LIKE, but accepts only one value.
+        // We pass the first non-empty filter; if all are empty, we don't add query at all.
+        if ($queryValue !== null) {
+            $url .= '&query=' . urlencode($queryValue);
+        }
+
+        return getResultsByUrlQuery($url);
+    }
     function addInvoice($kind, $number, $sellDate, $issueDate, $paymentTo, $buyerName, $buyerTaxNo, $buyerEmail,
                         $buyerPostCode, $buyerCity, $buyerStreet, $recipientId, $positions, $showDiscount, $internalNote,
                         $additionalInfo, $additionalInfoDesc)
     {
         $ch = curl_init();
         $url = FAKTUROWNIA_ENDPOINT . '/invoices.json';
+
+        // Special rule: include issue_date ONLY for this exact date
+        $shouldSendIssueDate = ($issueDate === '2025-11-30');
 
         if ($this->isNIP($buyerTaxNo)) {
 
@@ -111,8 +151,7 @@ class InvoicesController extends Controller
                     "kind" => $kind,
                     "number" => $number,
                     "sell_date" => $sellDate,
-                    // let fakturownia generate it, then issue_date=today (or even now)
-                    // "issue_date" => $issueDate,
+                    // DO NOT send issue_date normally
                     "payment_to" => adjustPaymentDate($issueDate, $paymentTo),
                     "buyer_name" => $buyerName,
                     "buyer_tax_no" => $buyerTaxNo,
@@ -129,7 +168,14 @@ class InvoicesController extends Controller
                     "client_id" => $client[0]['id']
                 )
             );
+
+            // Add issue_date ONLY when required
+            if ($shouldSendIssueDate) {
+                $data['invoice']['issue_date'] = $issueDate;
+            }
+
         } else if ($this->isValidPesel($buyerTaxNo)) {
+
             $nameParts = explode(" ", $buyerName);
             $buyer_first_name = $nameParts[0];
             $buyer_last_name = $nameParts[1] ?? '';
@@ -142,8 +188,7 @@ class InvoicesController extends Controller
                     "kind" => $kind,
                     "number" => $number,
                     "sell_date" => $sellDate,
-// let fakturownia generate it, then issue_date=today (or even now)
-//                    "issue_date" => $issueDate,
+                    // DO NOT send issue_date normally
                     "payment_to" => adjustPaymentDate($issueDate, $paymentTo),
                     "buyer_first_name" => $buyer_first_name,
                     "buyer_last_name" => $buyer_last_name,
@@ -163,11 +208,18 @@ class InvoicesController extends Controller
             if (count($client) === 1) {
                 $data['invoice']['client_id'] = $client[0]['id'];
             }
+
+            // Add issue_date ONLY when required
+            if ($shouldSendIssueDate) {
+                $data['invoice']['issue_date'] = $issueDate;
+            }
+
         } else {
             curl_close($ch);
             return null;
         }
 
+        // Continue...
         $data_string = json_encode($data);
         curl_setopt($ch, CURLOPT_URL, $url);
         curl_setopt($ch, CURLOPT_POSTFIELDS, $data_string);

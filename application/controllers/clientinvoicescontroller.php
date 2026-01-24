@@ -19,7 +19,17 @@ class clientinvoicesController extends InvoicesController
 
     function deptorsdata() {
         global $smarty;
-        $invoices = $this->getNotPaidInvoices();
+        $clientName = isset($_POST['filterklient']) ? trim((string)$_POST['filterklient']) : null;
+        $clientNip  = isset($_POST['filternip'])    ? trim((string)$_POST['filternip'])    : null;
+        $invoiceNo  = isset($_POST['filtervat'])    ? trim((string)$_POST['filtervat'])    : null;
+
+        // Normalize empty strings to null (so they don't affect filtering)
+        $clientName = ($clientName === '') ? null : $clientName;
+        $clientNip  = ($clientNip === '')  ? null : $clientNip;
+        $invoiceNo  = ($invoiceNo === '')  ? null : $invoiceNo;
+
+        $invoices = $this->getNotPaidInvoices($clientName, $clientNip, $invoiceNo);
+
         $agreements = $this->clientinvoice->getAgreementsArray();
         $clients = $this->buildUnpaidAccordionModel($invoices, $agreements);
         $fakturowniaEndpoint = FAKTUROWNIA_ENDPOINT;
