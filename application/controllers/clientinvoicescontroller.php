@@ -518,8 +518,8 @@ class clientinvoicesController extends InvoicesController
                 continue;
             }
 
-            // Jeśli jest kilka umów na ten sam NIP, wybierz “najlepszą”:
-            // preferuj aktywną (agreement_isactive == 1), inaczej pierwszą.
+            // If there are multiple agreements for the same NIP, pick the "best" one:
+            // prefer an active agreement (agreement_isactive == 1), otherwise keep the first one.
             if (!isset($agreementsByNip[$nip])) {
                 $agreementsByNip[$nip] = $agr;
             } else {
@@ -542,7 +542,7 @@ class clientinvoicesController extends InvoicesController
             $fallbackName = $inv['buyer_name'] ?? ('Client #' . $clientId);
             $buyerNip = $this->normalizeNip($inv['buyer_tax_no'] ?? null);
 
-            // Kwoty w API są stringami, np. "405.9" / "0.0"
+            // Amounts from the API are strings, e.g. "405.9" / "0.0"
             $priceGross = (float)($inv['price_gross'] ?? 0);
             $paid       = (float)($inv['paid'] ?? 0);
             $amountDue  = max(0.0, $priceGross - $paid);
@@ -556,32 +556,52 @@ class clientinvoicesController extends InvoicesController
             if (!isset($map[$clientId])) {
                 $map[$clientId] = [
                     'client_id' => $clientId,
-                    'client_name' => $fallbackName,     // zostanie nadpisane z agreement jeśli znajdziemy
-                    'client_phone' => null,             // zostanie nadpisane z agreement jeśli niepuste
-                    '_phone_ts' => 0,                   // wewnętrzne
-                    '_agreement_bound' => false,         // wewnętrzne (żeby nie robić tego wielokrotnie)
+                    'client_name' => $fallbackName,     // may be overridden by agreement
+                    'client_nip' => $buyerNip,          // exposed for Smarty; may be overridden by agreement
+                    'client_phone' => null,             // may be overridden by agreement if not empty
+                    'agreement_client_id' => null,      // may be overridden by agreement if not empty
+                    '_phone_ts' => 0,                   // internal
+                    '_agreement_bound' => false,        // internal (avoid repeating binding)
                     'unpaid_count' => 0,
                     'unpaid_sum' => 0.0,
                     'currency' => $currency,
                     'oldest_due_date' => null,
                     'invoices' => [],
                 ];
+            } elseif ($map[$clientId]['client_nip'] === null && $buyerNip !== null) {
+                // Fallback: if we didn't capture NIP earlier, take it from the invoice
+                $map[$clientId]['client_nip'] = $buyerNip;
             }
 
-            // 2) Podepnij dane z umowy (tylko raz per clientId)
-            if (!$map[$clientId]['_agreement_bound'] && $buyerNip !== null && isset($agreementsByNip[$buyerNip])) {
+            // 2) Bind agreement data (only once per clientId)
+            if (
+                !$map[$clientId]['_agreement_bound']
+                && $buyerNip !== null
+                && isset($agreementsByNip[$buyerNip])
+            ) {
                 $agr = $agreementsByNip[$buyerNip];
 
-                // Nazwa: bierzemy z agreement['client_name']
+                $agrClientId = $agr['client_id'] ?? null; // or: $agr['rowid'] ?? null;
+                if ($agrClientId !== null && $agrClientId !== '') {
+                    $map[$clientId]['agreement_client_id'] = (string)$agrClientId;
+                }
+
+                // Prefer NIP from agreement (normalized) as the canonical one for the view
+                $agrNip = $this->normalizeNip($agr['client_nip'] ?? null);
+                if ($agrNip !== null) {
+                    $map[$clientId]['client_nip'] = $agrNip;
+                }
+
+                // Name: take from agreement['client_name']
                 if (!empty($agr['client_name'])) {
                     $map[$clientId]['client_name'] = $agr['client_name'];
                 }
 
-                // Telefon: bierzemy z agreement['client_phone'] jeśli niepusty
+                // Phone: take from agreement['client_phone'] if not empty
                 $agrPhone = trim((string)($agr['client_phone'] ?? ''));
                 if ($agrPhone !== '') {
                     $map[$clientId]['client_phone'] = $agrPhone;
-                    // ustawiamy _phone_ts wysoko, żeby telefon z faktur nie próbował tego nadpisywać
+                    // Set _phone_ts high so invoice phone won't override it
                     $map[$clientId]['_phone_ts'] = PHP_INT_MAX;
                 }
 
@@ -596,8 +616,7 @@ class clientinvoicesController extends InvoicesController
                 $map[$clientId]['oldest_due_date'] = $due;
             }
 
-            // 3) Fallback: phone z najnowszej faktury, ale tylko jeśli nie mamy telefonu z agreement
-            //    (wskazuje na to _phone_ts != PHP_INT_MAX)
+            // 3) Fallback: phone from the newest invoice, only if we don't have agreement phone
             if ($map[$clientId]['_phone_ts'] !== PHP_INT_MAX) {
                 $ts = $this->invoiceTimestampForPhone($inv);
                 if ($ts >= $map[$clientId]['_phone_ts']) {
@@ -617,7 +636,7 @@ class clientinvoicesController extends InvoicesController
                 $viewUrl = fakturowniaUrl($viewUrl);
             }
 
-            // status płatności
+            // payment status
             if (!empty($inv['cancelled'])) {
                 $statusLabel = 'Anulowana';
                 $statusType = 'cancelled';
@@ -648,14 +667,14 @@ class clientinvoicesController extends InvoicesController
             ];
         }
 
-        // posprzątaj internal pola
+        // cleanup internal fields
         $clients = array_values($map);
         foreach ($clients as &$c) {
             unset($c['_phone_ts'], $c['_agreement_bound']);
         }
         unset($c);
 
-        // Sort: 1) ilość niezapłaconych ↓, 2) suma ↓, 3) nazwa A–Z
+        // Sort: 1) unpaid_count desc, 2) unpaid_sum desc, 3) name asc
         usort($clients, function ($a, $b) {
             $cmp = $b['unpaid_count'] <=> $a['unpaid_count'];
             if ($cmp !== 0) return $cmp;
@@ -666,7 +685,7 @@ class clientinvoicesController extends InvoicesController
             return strcmp($a['client_name'], $b['client_name']);
         });
 
-        // Sort: faktury w kliencie - najnowsze na górze
+        // Sort invoices per client - newest first
         foreach ($clients as &$c) {
             usort($c['invoices'], function ($a, $b) {
                 $aDate = $a['issue_date'] ?? $a['sell_date'] ?? $a['due_date'] ?? '';

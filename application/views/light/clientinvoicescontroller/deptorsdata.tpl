@@ -7,6 +7,7 @@
             <th class="text-center">Faktury</th>
             <th class="text-right">Kwota</th>
             <th>Najstarsza</th>
+            <th class="text-center">Winien / Ma</th>
             <th></th>
         </tr>
         </thead>
@@ -45,6 +46,20 @@
         </span>
                 </td>
 
+                <td class="text-center">
+                    {if $c.client_nip}
+                        <a href="{$smarty.const.SCIEZKA}/clientinvoices/showclient/{$c.client_nip|escape}"
+                           target="_blank"
+                           rel="noopener"
+                           class="text-primary font-weight-bold"
+                           title="Pokaż Winien / Ma">
+                            Winien / Ma
+                        </a>
+                    {else}
+                        <span class="text-muted">–</span>
+                    {/if}
+                </td>
+
                 <td class="text-right">
                     <a href="#" class="js-acc-toggle text-decoration-none"
                        data-client-id="{$c.client_id|escape}"
@@ -55,7 +70,7 @@
             </tr>
             {* ROW: details (hidden by default) *}
             <tr class="js-acc-body bg-light" data-client-id="{$c.client_id|escape}" style="display:none;">
-                <td colspan="6" class="p-3">
+                <td colspan="7" class="p-3">
 
                     <div class="card shadow-sm">
                         <div class="card-body p-2">
@@ -93,32 +108,31 @@
 
                                         <td class="text-right">
                                             {if $inv.id}
-                                                {* Wezwanie do zapłaty (PDF) *}
+                                                {* Demand for payment (PDF) *}
                                                 <a href="{$FAKTUROWNIA_ENDPOINT|escape}/invoices/{$inv.id|escape}/demand_for_payment?api_token={$FAKTUROWNIA_APITOKEN|escape}"
                                                    target="_blank"
                                                    class="text-warning mr-2 cursor-pointer demand-for-payment"
-                                                   title="Drukuj wezwanie do zapłaty">
+                                                   title="Print demand for payment">
                                                     <i class="far fa-flag"></i>
                                                 </a>
 
-                                                {* Duplikat faktury (PDF) *}
+                                                {* Invoice duplicate (PDF) *}
                                                 <a data-url="{$FAKTUROWNIA_ENDPOINT|escape}/invoices/{$inv.id|escape}.pdf?print_option=duplicate&api_token={$FAKTUROWNIA_APITOKEN|escape}"
                                                    target="_blank"
                                                    class="text-secondary mr-2 cursor-pointer duplicate-invoice"
-                                                   title="Pobierz duplikat faktury (PDF)">
+                                                   title="Download invoice duplicate (PDF)">
                                                     <i class="far fa-copy"></i>
                                                 </a>
 
-                                                {* Podgląd faktury *}
+                                                {* Invoice preview *}
                                                 {if $inv.view_url}
                                                     <a href="{$inv.view_url|escape}"
                                                        target="_blank"
                                                        class="text-success"
-                                                       title="Podgląd faktury">
+                                                       title="Invoice preview">
                                                         <i class="fas fa-external-link-alt"></i>
                                                     </a>
                                                 {/if}
-
                                             {/if}
                                         </td>
                                     </tr>

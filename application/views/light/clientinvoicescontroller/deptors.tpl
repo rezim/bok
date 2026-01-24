@@ -52,12 +52,41 @@
         });
 
         $(document).on('click', '.js-acc-header', function (e) {
-            if ($(e.target).closest('.js-acc-toggle, a').length) return;
 
-            const clientId = $(this).data('client-id');
-            $(this)
-                .find('.js-acc-toggle[data-client-id="' + clientId + '"]')
-                .trigger('click');
+
+            // // Prevent double trigger when clicking on toggle icon or links
+            // if ($(e.target).closest('.js-acc-toggle, a').length) return;
+            //
+            // const clientId = $(this).data('client-id');
+            //
+            // const $headerRow = $('.js-acc-header[data-client-id="' + clientId + '"]');
+            // const $bodyRow   = $('.js-acc-body[data-client-id="' + clientId + '"]');
+            //
+            // const isVisible = $bodyRow.is(':visible');
+            //
+            // // Trigger the actual toggle (single source of truth)
+            // $headerRow
+            //     .find('.js-acc-toggle[data-client-id="' + clientId + '"]')
+            //     .trigger('click');
+            //
+            // // Scroll only when expanding
+            // if (!isVisible) {
+            //
+            //     alert('visible')
+            //     // Delay to wait for slideToggle animation to start
+            //     setTimeout(function () {
+            //         const OFFSET = 10; // adjust if you have a sticky header
+            //
+            //         $('html, body').animate(
+            //             {
+            //                 scrollTop: $headerRow.offset().top - OFFSET
+            //             },
+            //             300
+            //         );
+            //     }, 220); // slightly more than slideToggle(200)
+            // } else {
+            //     alert('not visible')
+            // }
         });
     };
 
