@@ -125,13 +125,20 @@
                                                     <i class="far fa-copy"></i>
                                                 </a>
 
-                                                {* Invoice preview *}
                                                 {if $inv.view_url}
+                                                    {* Invoice preview *}
                                                     <a href="{$inv.view_url|escape}"
                                                        target="_blank"
                                                        class="text-success"
                                                        title="Invoice preview">
                                                         <i class="fas fa-external-link-alt"></i>
+                                                    </a>
+                                                    {* Invoice PDF download via view_url *}
+                                                    <a href="{$inv.view_url|escape}.pdf"
+                                                       target="_blank"
+                                                       class="text-danger ml-2 cursor-pointer invoice-pdf"
+                                                       title="Download invoice (PDF)">
+                                                        <i class="far fa-file-pdf"></i>
                                                     </a>
                                                 {/if}
                                             {/if}
