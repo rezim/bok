@@ -325,59 +325,96 @@ InvoiceManager = function (invoice_number_length) {
 
             // for invoices from Proforma invoices pattern is with P but number without,
             // probably bug on Fakturowania side
-            const invoices = loadedInvoices.filter(inv =>
+            let invoices = loadedInvoices.filter(inv =>
                 (inv['kind'] === 'vat' && (inv['pattern'] === 'nr-m/mm/yyyy' ||
                     (inv['pattern'] === 'Pnr-m/mm/yyyy' && inv['number']?.charAt(0) !== 'P')))
             );
+            // TR TODO: very temporary fix to exclude invoices created manually
+            invoices = invoices.filter(inv => inv.number !== '0273/01/2026' && inv.number !== '0274/01/2026');
 
             currentPeriodInvoices.invoices = invoices;
 
-            var orderedInvoices = Array.apply(null, Array(invoices.length)).map(function () {
-                return 0;
-            });
-
-            // groupByClient
+            // var orderedInvoices = Array.apply(null, Array(invoices.length)).map(function () {
+            //     return 0;
+            // });
+            //
+            // // groupByClient
+            // var groupedInvoices = {};
+            //
+            // var invNbPattern = null;
+            //
+            // $.each(invoices, function (index, invoice) {
+            //     var buyerTaxNo = invoice['buyer_tax_no'] || invoice['buyer_id'];
+            //     if (!groupedInvoices[buyerTaxNo]) {
+            //         groupedInvoices[buyerTaxNo] = [];
+            //     }
+            //
+            //     groupedInvoices[buyerTaxNo].push(invoice);
+            //
+            //     var invoiceIdx = parseInt(invoice.number.split('/')[0]) - 1;
+            //
+            //     if (invoiceIdx === orderedInvoices.length) {
+            //         orderedInvoices.push(0);
+            //     }
+            //
+            //     orderedInvoices[invoiceIdx]++;
+            //
+            //     if (!invNbPattern) {
+            //         invNbPattern = invoice.number.split('/');
+            //         invNbPattern.shift();
+            //         invNbPattern = invNbPattern.join('/');
+            //     }
+            // });
             var groupedInvoices = {};
-
             var invNbPattern = null;
+            var invoiceNumbers = [];
 
+            // Group invoices by buyer and extract invoice numbers
             $.each(invoices, function (index, invoice) {
                 var buyerTaxNo = invoice['buyer_tax_no'] || invoice['buyer_id'];
+
                 if (!groupedInvoices[buyerTaxNo]) {
                     groupedInvoices[buyerTaxNo] = [];
                 }
 
                 groupedInvoices[buyerTaxNo].push(invoice);
 
-                var invoiceIdx = parseInt(invoice.number.split('/')[0]) - 1;
+                // Extract invoice number before the first slash
+                var parts = invoice.number.split('/');
+                var nb = parseInt(parts[0], 10);
 
-                if (invoiceIdx === orderedInvoices.length) {
-                    orderedInvoices.push(0);
-                }
+                invoiceNumbers.push(nb);
 
-                orderedInvoices[invoiceIdx]++;
-
+                // Extract the static pattern (e.g. "11/2025")
                 if (!invNbPattern) {
-                    invNbPattern = invoice.number.split('/');
-                    invNbPattern.shift();
-                    invNbPattern = invNbPattern.join('/');
+                    parts.shift();           // Remove the numeric part
+                    invNbPattern = parts.join('/');
                 }
             });
 
             var missingInvoices = [];
 
             if (!anyFilterSet) {
-                $.each(orderedInvoices, function (index, invoiceCount) {
-                    // invoice contains
-                    if (invoiceCount != 1) {
+                // If there are no invoices, nothing to validate
+                if (invoiceNumbers.length === 0) {
+                    missingInvoices = [];
+                } else {
+                    var minNb = Math.min.apply(null, invoiceNumbers);
+                    var maxNb = Math.max.apply(null, invoiceNumbers);
 
-                        if (invoiceCount !== 0) {
-                            missingInvoices.push([[(index + 1), '/', invNbPattern].join(''), invoiceCount].join('-'));
-                        } else {
-                            missingInvoices.push([(index + 1), '/', invNbPattern].join(''));
+                    // Use a simple lookup map for existing invoice numbers
+                    var seen = {};
+                    $.each(invoiceNumbers, function (_, nb) {
+                        seen[nb] = true;
+                    });
+
+                    // Find numbers in the range [min..max] that never occurred
+                    for (var n = minNb; n <= maxNb; n++) {
+                        if (!seen[n]) {
+                            missingInvoices.push(n + '/' + invNbPattern);
                         }
                     }
-                });
+                }
             }
 
             currentPeriodInvoices.missingInvoices = missingInvoices;
@@ -593,9 +630,6 @@ InvoiceManager = function (invoice_number_length) {
 
     var getLocalization = function (agreement) {
         var localization = [];
-        // if (agreement["lokalizacja_ulica"]) {
-        //     localization.push( agreement["lokalizacja_ulica"].split(' ').join(' ') );
-        // }
 
         if (agreement["lokalizacja_miasto"]) {
             localization.push(agreement["lokalizacja_miasto"]);
@@ -605,13 +639,27 @@ InvoiceManager = function (invoice_number_length) {
     };
 
     var getPositionDesc = function (str, agreement, showSerialNumber, showCounterState) {
+        const localization = getLocalization(agreement);
+
         var desc = [
             str,
             agreement["model"]
         ];
 
-        if (showSerialNumber) {
-            desc.push(" (S/N:" + agreement["serial"] + ")");
+        // collect elements that should appear inside a single bracket
+        var bracketParts = [];
+
+        if (localization) {
+            bracketParts.push(`lokalizacja: ${localization}`);
+        }
+
+        if (showSerialNumber && agreement["serial"]) {
+            bracketParts.push(`S/N: ${agreement["serial"]}`);
+        }
+
+        // if we have any bracket elements, append them as one combined bracket
+        if (bracketParts.length > 0) {
+            desc.push(`(${bracketParts.join(', ')})`);
         }
 
         if (showCounterState) {
@@ -670,9 +718,9 @@ InvoiceManager = function (invoice_number_length) {
                         title = getPositionDesc(`${agreement["typ_umowy"][0].toUpperCase()}${agreement["typ_umowy"].slice(1)}`, agreement, invoice['pokaznumerseryjny']);
                 }
 
+                // TODO TR: remove additional_info (it should by moved to counters)
                 positions.push({
                     "name": title,
-                    "additional_info": getLocalization(agreement),
                     "tax": 23,
                     "quantity": 1,
                     "quantity_unit": "szt",
@@ -683,7 +731,6 @@ InvoiceManager = function (invoice_number_length) {
                 if (agreement["oplatainstalacyjna"] > 0) {
                     positions.push({
                         "name": getPositionDesc("Opłata instalacyjna", agreement, invoice['pokaznumerseryjny'], false),
-                        "additional_info": getLocalization(agreement),
                         "tax": 23,
                         "quantity": 1,
                         "quantity_unit": "szt",
@@ -695,7 +742,6 @@ InvoiceManager = function (invoice_number_length) {
                 if (agreement["wartoscblack"] > 0) {
                     positions.push({
                         "name": getPositionDesc("Wydruki powyżej abonamentu", agreement, invoice['pokaznumerseryjny'], false),
-                        "additional_info": getLocalization(agreement),
                         "tax": 23,
                         "quantity": agreement["stronblackpowyzej"],
                         "quantity_unit": "szt",
@@ -707,7 +753,6 @@ InvoiceManager = function (invoice_number_length) {
                 if (agreement["wartosckolor"] > 0) {
                     positions.push({
                         "name": getPositionDesc("Wydruki powyżej abonamentu", agreement, invoice['pokaznumerseryjny'], false),
-                        "additional_info": getLocalization(agreement),
                         "tax": 23,
                         "quantity": agreement["stronkolorpowyzej"],
                         "quantity_unit": "szt",
@@ -719,7 +764,6 @@ InvoiceManager = function (invoice_number_length) {
                 if (agreement["wartoscscans"] > 0) {
                     positions.push({
                         "name": getPositionDesc("Skany powyżej abonamentu", agreement, invoice['pokaznumerseryjny'], false),
-                        "additional_info": getLocalization(agreement),
                         "tax": 23,
                         "quantity": agreement["scanspowyzej"],
                         "quantity_unit": "szt",
@@ -754,8 +798,8 @@ InvoiceManager = function (invoice_number_length) {
             "positions": positions,
             "show_discount": "0",
             "internal_note": agreementIds.join(','),
-            "additional_info": "1",
-            "additional_info_desc": "Lokalizacja Urządzenia",
+            "additional_info": "0",
+            "additional_info_desc": "",
             "bank": invoice["bank"],
             "numer_rachunku": invoice["numerrachunku"]
         };
