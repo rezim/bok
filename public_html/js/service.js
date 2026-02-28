@@ -136,7 +136,9 @@ const renderTemplateWithDataAction = async (templateUrl, data, templateContainer
         }
     }).done(function () {
         if (doneCallback) {
-            doneCallback();
+            setTimeout(() => {
+                doneCallback?.();
+            }, 0);
         }
     });
 }

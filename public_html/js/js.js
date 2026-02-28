@@ -1279,10 +1279,10 @@ function zapiszNoti(czydelete, savelink) {
         success: function (dane) {
             $("#saveNotification").hide();
             if (czydelete === '1') {
-                checkReplay(objError, objLoad, null, objClick, dane, objOk, -1, 1000, null, 1);
+                checkReplay(objError, objLoad, null, objClick, dane, objOk, -1, 5000, null, 1);
             } else {
 
-                checkReplay(objError, objLoad, null, objClick, dane, objOk, 1, 1000, null, 1);
+                checkReplay(objError, objLoad, null, objClick, dane, objOk, 1, 5000, null, 1);
                 try {
                     dane = $.parseJSON(dane);
                     // przypisaneni rowid do tetboca
@@ -2078,6 +2078,7 @@ function showListOfNotifications() {
         type: 'POST',
         data: {
             filterklient: getElementById('txtfilterklient')?.value,
+            filterumowa: getElementById('txtfilterumowa')?.value,
             filternrseryjny: urlParams['filternrseryjny'] ?? getElementById('txtfilternrseryjny')?.value,
             filternrzlecenia: getElementById('txtfilternrzlecenia')?.value,
             filterdataod: getElementById('txtfilterdataod')?.value,

@@ -583,17 +583,17 @@ class report extends Model
                         ':kwota_w_abon'    => $this->num($u['kwotadowykorzystania'] ?? 0, 2),
 
                         ':czarne_szt_abon' => $this->intv($u['stronwabonamencie'] ?? 0),
-                        ':czarne_sztuk'    => $this->intv($u['stronblackpowyzej'] ?? 0),
+                        ':czarne_sztuk'    => $this->intv($u['strony_black_sum'] ?? 0),
                         ':czarne_cena'     => $this->num($u['cenazastrone'] ?? 0, 3),
                         ':czarne_wartosc'  => $this->num($u['wartoscblack'] ?? 0, 2),
 
                         ':kolor_szt_abon'  => $this->intv($u['stronwabonamencie_kolor'] ?? 0),
-                        ':kolor_sztuk'     => $this->intv($u['stronkolorpowyzej'] ?? 0),
+                        ':kolor_sztuk'     => $this->intv($u['strony_kolor_sum'] ?? 0),
                         ':kolor_cena'      => $this->num($u['cenazastrone_kolor'] ?? 0, 3),
                         ':kolor_wartosc'   => $this->num($u['wartosckolor'] ?? 0, 2),
 
                         ':skany_szt_abon'  => $this->intv($u['iloscskans'] ?? 0),
-                        ':skany_sztuk'     => $this->intv($u['scanspowyzej'] ?? 0),
+                        ':skany_sztuk'     => $this->intv($u['skany_sum'] ?? 0),
                         ':skany_cena'      => $this->num($u['cenazascan'] ?? 0, 3),
                         ':skany_wartosc'   => $this->num($u['wartoscscans'] ?? 0, 2),
 

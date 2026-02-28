@@ -922,7 +922,7 @@ class reportsController extends InvoicesController
         date_default_timezone_set('Europe/Warsaw');
 
         $from = new DateTime('2015-01-01'); // inclusive
-        $to = new DateTime('2025-10-01'); // exclusive
+        $to = new DateTime('2025-11-01'); // exclusive
 
         for ($cursor = clone $from; $cursor < $to; $cursor->modify('first day of next month')) {
             $dataod = $cursor->format('Y-m-d');
@@ -971,25 +971,62 @@ class reportsController extends InvoicesController
         if ($_POST['period'] && $_POST['date_from'] && $_POST['date_to']) {
             $this->report->populateWithPost();
 
+            $dateFrom = $_POST['date_from'];
+            $dateTo   = $_POST['date_to'];
+
+            // Temporary fix for November 2025
+            $isNovemberFix = ($dateFrom === '2025-11-01' && $dateTo === '2025-11-30');
+
+            // If special case → override date_from
+            if ($isNovemberFix) {
+                $dateFrom = $dateTo;
+            }
+
             $externalClientIds = $this->report->getExternalClientIds();
             $allInvoices = [];
 
             if (empty($externalClientIds) || count($externalClientIds) > 5) {
+
+                // default
                 $filters = "&search_date_type=transaction_date";
-                $allInvoices = $this->getInvoicesByDateRange($_POST['period'], $_POST['date_from'], $_POST['date_to'], $filters);
+
+                // temporary FIX
+                if ($isNovemberFix) {
+                    $filters = "&search_date_type=issue_date";
+                }
+
+                $allInvoices = $this->getInvoicesByDateRange(
+                    $_POST['period'],
+                    $dateFrom,
+                    $dateTo,
+                    $filters
+                );
+
             } else {
+
                 foreach ($externalClientIds as $clientObj) {
+
+                    // default
                     $filters = "&search_date_type=transaction_date&client_id={$clientObj['client_id']}";
-                    $invoices = $this->getInvoicesByDateRange($_POST['period'], $_POST['date_from'], $_POST['date_to'], $filters);
+
+                    // temporary FIX
+                    if ($isNovemberFix) {
+                        $filters = "&search_date_type=issue_date&client_id={$clientObj['client_id']}";
+                    }
+
+                    $invoices = $this->getInvoicesByDateRange(
+                        $_POST['period'],
+                        $dateFrom,
+                        $dateTo,
+                        $filters
+                    );
+
                     $allInvoices = array_merge($allInvoices, $invoices);
                 }
             }
-            // [TODO TR]: temporary fix to reproduce reported issue
-            $allInvoices = array_filter($allInvoices, function ($invoice) {
-                return $invoice['number'] !== '0265/04/2025';
-            });
 
             echo json_encode($allInvoices);
+
         } else {
             echo "błędne parametry wejściowe";
         }

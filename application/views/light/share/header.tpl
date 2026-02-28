@@ -123,6 +123,8 @@
     <script type="text/javascript" src="{$smarty.const.SCIEZKA}/js/auto-logout.js?{$smarty.const.APPVERSION}"></script>
 {/if}
 
+<script type="text/javascript" src="{$smarty.const.SCIEZKA}/js/unpaid-accordion.js"></script>
+
 </head>
 <?php flush(); ?>
 <body{if isset($isFiltersOpen) && $isFiltersOpen} class="otus-filters-open"{/if}>
@@ -242,6 +244,25 @@
                                href='https://www.podatki.gov.pl/wykaz-podatnikow-vat-wyszukiwarka?fbclid=IwAR2xqKi-wl7ImgKROSgtmHfD0--hQmfxq_wlBf7FdXQFWTYux8z0B65jBsU'
                                class="dropdown-item">VAT</a>
                         {/if}
+                    </div>
+                </li>
+            {/if}
+            {if isset($smarty.session.przypisanemenu['but_crm'])}
+                <li class="nav-item dropdown">
+                    <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button"
+                       data-toggle="dropdown"
+                       aria-haspopup="true" aria-expanded="false">
+                        <i class="fas fa-users"></i>&nbsp;CRM
+                    </a>
+                    <div class="dropdown-menu" aria-labelledby="navbarDropdown">
+                        <a href='{$smarty.const.SCIEZKA}/customized/show/_menu/Kontakty.php' class="dropdown-item"><i
+                                    class="fas fa-file"></i>&nbsp;Kontakty</a>
+                        <a href='{$smarty.const.SCIEZKA}/customized/show/_menu/Klienci.php' class="dropdown-item"><i
+                                    class="fas fa-file"></i>&nbsp;Klienci</a>
+                        <a href='{$smarty.const.SCIEZKA}/customized/show/_menu/Dzialania.php' class="dropdown-item"><i
+                                    class="fas fa-file"></i>&nbsp;Dzialania</a>
+                        <a href='{$smarty.const.SCIEZKA}/customized/show/_menu/Szanse.php' class="dropdown-item"><i
+                                    class="fas fa-file"></i>&nbsp;Szanse</a>
                     </div>
                 </li>
             {/if}
@@ -406,7 +427,9 @@
                     </div>
                 </li>
             {/if}
-            {if isset($smarty.session.przypisaneshares['customizedshow'])}
+            {if isset($smarty.session.przypisaneshares['customizedshow'])
+            && isset($smarty.session.customMenu)
+            && $smarty.session.customMenu|@count > 0}
                 <li class="nav-item dropdown">
                     <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button"
                        data-toggle="dropdown"
@@ -435,8 +458,11 @@
                     <i class="fas fa-user"></i>&nbsp;{$smarty.session.user.imie}&nbsp;{$smarty.session.user.nazwisko}
                 </a>
                 <div class="dropdown-menu dropdown-menu-right" aria-labelledby="navbarDropdown">
+                    <a class="dropdown-item" href='{$smarty.const.SCIEZKA}/customized/show/rcp.php'>RCP&nbsp;<i
+                                class="fas fa-clock mr-2"></i></a>
+                    <div class="dropdown-divider"></div>
                     <a class="dropdown-item" href='{$smarty.const.SCIEZKA}/acls/logout/notemplate'>Wyloguj się&nbsp;<i
-                                class="fas fa-unlock"></i></a>
+                                class="fas fa-unlock mr-2"></i></a>
                 </div>
             </li>
             {if

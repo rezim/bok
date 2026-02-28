@@ -104,7 +104,7 @@ trait PaymentsTrait
         $to = $dateTo
             ? new DateTimeImmutable($dateTo, $tz)
             : new DateTimeImmutable('today', $tz);
-        $apiDateTo = $to->modify('-1 day')->format('Y-m-d');
+        $apiDateTo = $to->format('Y-m-d');
 
         if (empty($dateTo)) {
             $dateTo = date('Y-m-d');

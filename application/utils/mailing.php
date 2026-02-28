@@ -249,7 +249,6 @@ class mailing
     function sendNewMail($mailto, $tresc, $temat, $zalaczniki = null, $mailFrom = null, $mailFromName = null, $replayTo = null, $replayToName = null)
     {
 
-
         if (empty($mailto) || $mailto == '')
             return;
 

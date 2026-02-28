@@ -309,4 +309,34 @@ class Controller
             return "Plik $filePath nie istnieje.";
         }
     }
+
+    protected function renderPdf(
+        string $html,
+        string $filename = 'document.pdf',
+        array $options = []
+    ): void {
+        $mpdf = new \Mpdf\Mpdf(array_merge([
+            'mode' => 'utf-8',
+            'format' => 'A4',
+
+            // margins for CONTENT
+            'margin_top'    => 25,
+            'margin_bottom' => 20,
+
+            // header/footer height
+            'margin_header' => 10,
+            'margin_footer' => 8,
+
+            'default_font'  => 'dejavusans',
+        ], $options));
+
+        header('Content-Type: application/pdf');
+        header('X-Content-Type-Options: nosniff');
+        header('Cache-Control: private, max-age=0, must-revalidate');
+        header('Pragma: public');
+
+        $mpdf->WriteHTML($html);
+        $mpdf->Output($filename, \Mpdf\Output\Destination::INLINE);
+        exit;
+    }
 }

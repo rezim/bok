@@ -163,6 +163,68 @@ class agreementsController extends Controller
 
     }
 
+    function print_pdf() {
+
+        global $smarty;
+
+        $contractNumber = $this->_queryString[0] ?? null;
+        if (!$contractNumber) {
+            http_response_code(400);
+            exit('Missing contract number');
+        }
+
+        $rows = $this->agreement->getUmowaCheck($contractNumber);
+        $agreementCheck = $rows[0] ?? null;
+        if (!$agreementCheck) {
+            http_response_code(404);
+            exit('Agreement not found');
+        }
+
+        $contract = [
+            'number'      => $agreementCheck['nr_umowy'],
+             'date'       => date('d.m.Y'),
+             'city'       => 'Wrocławiu',
+             'term_months'=> (int)($agreementCheck['ilosc_miesiecy'] ?? 0),
+        ];
+
+        $tenant = [
+            'name'            => $agreementCheck['Najemca'] ?? '',
+            'representative'  => $agreementCheck['Reprezentant'] ?? '',
+            'address'         => $agreementCheck['Adres_Siedziby'] ?? '',
+            'nip'             => $agreementCheck['NIP'] ?? '',
+            'krs_pesel'       => $agreementCheck['KRS_PESEL'] ?? '',
+            'invoice_email'   => $agreementCheck['Email_Faktury'] ?? '',
+            'install_address' => $agreementCheck['Adres_Instalacji'] ?? '',
+            'contact_person'  => $agreementCheck['Pomoc_Wniesienie'] ?? '',
+        ];
+
+        $device = [
+            'model'     => $agreementCheck['model_urzadzenia'] ?? '-',
+            'value_net' => $agreementCheck['wartoscurzadzenia'] ?? '-',
+        ];
+
+        $pricing = [
+            'rent_net'            => $agreementCheck['abonament'] ?? '',
+            'limit_mono'          => $agreementCheck['stronwabonamencie'] ?? '',
+            'price_mono_over'     => $agreementCheck['cenazastrone'] ?? '',
+            'limit_color'         => $agreementCheck['iloscstron_color'] ?? '',
+            'price_color_over'    => $agreementCheck['cenazastrone_kolor'] ?? '',
+            'limit_scan'          => $agreementCheck['iloscskans'] ?? '',
+            'price_scan_over'     => $agreementCheck['cenazascan'] ?? '',
+            'delivery_install_net'=> $agreementCheck['cenainstalacji'] ?? '',
+        ];
+
+        $smarty->assign('contract', $contract);
+        $smarty->assign('tenant', $tenant);
+        $smarty->assign('device', $device);
+        $smarty->assign('pricing', $pricing);
+
+        $tpl  = ROOT . '/templates/print_pdf.tpl';
+        $html = $smarty->fetch($tpl);
+
+        $this->renderPdf($html, 'umowa.pdf');
+    }
+
     private function assignAgreementAccessFlags(): array
     {
         global $smarty;

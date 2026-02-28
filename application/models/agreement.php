@@ -355,4 +355,22 @@ class agreement extends Model
         $query = "select rowid from agreements where serial='{$serial}' and activity=1";
         return $this->query($query, null, false);
     }
+
+
+    function getUmowaCheck($id) {
+        $query = "SELECT ac.*, 
+            CASE WHEN ac.client_type = 'google' THEN g.nazwa_firmy ELSE c.nazwakrotka END as Najemca,
+            CASE WHEN ac.client_type = 'google' THEN g.reprezentant ELSE 'Zgodnie z KRS' END as Reprezentant,
+            CASE WHEN ac.client_type = 'google' THEN g.adres_siedziby ELSE CONCAT(c.ulica, ', ', c.kodpocztowy, ' ', c.miasto) END as Adres_Siedziby,
+            CASE WHEN ac.client_type = 'google' THEN g.nip ELSE c.nip END as NIP,
+            CASE WHEN ac.client_type = 'google' THEN g.krs_pesel ELSE '' END as KRS_PESEL,
+            CASE WHEN ac.client_type = 'google' THEN g.email_faktury ELSE '' END as Email_Faktury,
+            CASE WHEN ac.client_type = 'google' THEN g.adres_instalacji ELSE '' END as Adres_Instalacji,
+            CASE WHEN ac.client_type = 'google' THEN g.osoba_wniesienie ELSE '' END as Pomoc_Wniesienie
+            FROM agreements_check ac
+            LEFT JOIN clients_google_form g ON ac.client_rowid = g.id AND ac.client_type = 'google'
+            LEFT JOIN clients c ON ac.client_rowid = c.rowid AND ac.client_type = 'permanent'
+            WHERE ac.id = {$id} LIMIT 1;";
+        return $this->query($query, null, false);
+    }
 }

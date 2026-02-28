@@ -31,7 +31,9 @@ function getLexmarkPrinterCounters(): array
         CURLOPT_SSL_VERIFYPEER => false, // ❗ tylko do testów
         CURLOPT_SSL_VERIFYHOST => false,
     ]);
-
+    if (USE_PROXY) {
+        curl_setopt($ch, CURLOPT_PROXY, '127.0.0.1:8888');
+    }
     $responseRaw = curl_exec($ch);
     if ($curlError = curl_error($ch)) {
         curl_close($ch);
@@ -55,40 +57,91 @@ function getLexmarkPrinterCounters(): array
 
     $accessToken = $response['access_token'];
 
-    // get counters
-    $ch = curl_init();
-    curl_setopt_array($ch, [
-        CURLOPT_URL => $countersUrl,
-        CURLOPT_RETURNTRANSFER => true,
-        CURLOPT_HTTPHEADER => [
-            "Authorization: Bearer $accessToken",
-            'Accept: application/json',
-            'User-Agent: ' . $userAgent
-        ],
-        CURLOPT_SSL_VERIFYPEER => false, // ❗ tylko do testów
-        CURLOPT_SSL_VERIFYHOST => false,
-    ]);
 
-    $responseRaw = curl_exec($ch);
-    if ($curlError = curl_error($ch)) {
+
+    $allCounters = [];
+    $page       = 0;
+    $last       = false;
+    $maxPages   = null; // zaczytamy z totalPages po pierwszej odpowiedzi
+
+    while (!$last) {
+        $url = $countersUrl . '?page=' . $page;
+
+        $ch = curl_init();
+        curl_setopt_array($ch, [
+            CURLOPT_URL => $url,
+            CURLOPT_RETURNTRANSFER => true,
+            CURLOPT_HTTPHEADER => [
+                "Authorization: Bearer $accessToken",
+                'Accept: application/json',
+                'User-Agent: ' . $userAgent
+            ],
+            CURLOPT_SSL_VERIFYPEER => false, // ❗ tylko do testów
+            CURLOPT_SSL_VERIFYHOST => false,
+        ]);
+        if (USE_PROXY) {
+            curl_setopt($ch, CURLOPT_PROXY, '127.0.0.1:8888');
+        }
+
+        $responseRaw = curl_exec($ch);
+        if ($curlError = curl_error($ch)) {
+            curl_close($ch);
+            return [
+                "error" => "CURL error during counters request",
+                "message" => $curlError
+            ];
+        }
         curl_close($ch);
-        return [
-            "error" => "CURL error during counters request",
-            "message" => $curlError
-        ];
-    }
-    curl_close($ch);
 
-    $response = json_decode($responseRaw, true);
-    if (!is_array($response)) {
+        $response = json_decode($responseRaw, true);
+
+        // Spodziewany format:
+        // {
+        //   "content": [...],
+        //   "last": false,
+        //   "totalPages": 2,
+        //   "number": 0,
+        //   ...
+        // }
+
+        if (!is_array($response) || !array_key_exists('content', $response)) {
+            // coś jest nie tak z odpowiedzią API
+            break;
+        }
+
+        $items = $response['content'];
+
+        if (!empty($items)) {
+            $allCounters = array_merge($allCounters, $items);
+        }
+
+        // aktualizacja flag z odpowiedzi
+        $last = !empty($response['last']); // bool
+        if ($maxPages === null && isset($response['totalPages'])) {
+            $maxPages = (int) $response['totalPages'];
+        }
+
+        $page++;
+
+        // bezpiecznik w razie błędu po stronie API – nie wyjdziemy poza totalPages
+        if ($maxPages !== null && $page >= $maxPages) {
+            break;
+        }
+    }
+
+// $allCounters zawiera wszystkie liczniki ze wszystkich stron
+
+
+    // $response = json_decode($allCounters, true);
+    if (!is_array($allCounters)) {
         return [
             "error" => "Invalid response",
             "message" => "API did not return valid JSON",
-            "raw" => $responseRaw
+            "raw" => $allCounters
         ];
     }
 
-    return $response;
+    return $allCounters;
 }
 
 function getLexmarkPrinterCountersSummary(): array
@@ -96,34 +149,36 @@ function getLexmarkPrinterCountersSummary(): array
     $response = getLexmarkPrinterCounters();
 
     if (isset($response['error'])) {
+        // Funkcja zwróciła błąd w tym samym formacie co wcześniej
         return $response;
     }
 
-    if (!isset($response['content']) || !is_array($response['content'])) {
+// Teraz spodziewamy się, że $response to *tablica urządzeń*.
+    if (!is_array($response)) {
         return [
             'error' => 'Invalid response format',
-            'message' => 'Missing "content" array in API response'
+            'message' => 'Expected an array of devices from API response'
         ];
     }
 
     $summary = [];
 
-    foreach ($response['content'] as $device) {
+    foreach ($response as $device) {
         $counters = $device['counters'] ?? null;
-        $serial = $device['serialNumber'] ?? 'UNKNOWN';
+        $serial   = $device['serialNumber'] ?? 'UNKNOWN';
 
         $timestampMs = $device['lastDataRefresh'] ?? null;
         $counterReadDate = $timestampMs
-            ? date('Y-m-d H:i:s', (int)($timestampMs / 1000))
+            ? date('Y-m-d H:i:s', (int) ($timestampMs / 1000))
             : null;
 
         $summary[] = [
-            'serialNumber' => $serial,
-            'monoPrintSideCount' => $counters['monoSideCount'] ?? null,
+            'serialNumber'        => $serial,
+            'monoPrintSideCount'  => $counters['monoSideCount']  ?? null,
             'colorPrintSideCount' => $counters['colorSideCount'] ?? null,
-            'totalPrintCount' => $counters['totalSideCount'] ?? null,
-            'totalScanCount' => $counters['totalScanCount'] ?? null,
-            'counterReadDate' => $counterReadDate,
+            'totalPrintCount'     => $counters['totalSideCount'] ?? null,
+            'totalScanCount'      => $counters['totalScanCount'] ?? null,
+            'counterReadDate'     => $counterReadDate,
         ];
     }
 

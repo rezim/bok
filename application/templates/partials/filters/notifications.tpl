@@ -23,6 +23,13 @@
                 klient.</small>
         </div>
         <div class="form-group">
+            <label for="txtfilterklient">Umowa</label>
+        </div>
+        <div class="form-group">
+            <input type="text" id='txtfilterumowa' class="form-control" aria-describedby="agreementHelp">
+            <small id="agreementHelp" class="form-text text-muted"><i class="fas fa-info-circle"></i> Podaj numer umowy.</small>
+        </div>
+        <div class="form-group">
             <label for="txtfilternrseryjny">Nr seryjny</label>
         </div>
         <div class="form-group">

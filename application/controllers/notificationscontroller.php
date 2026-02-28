@@ -47,6 +47,7 @@ class notificationsController extends InvoicesController
             $smarty->assign('daneStatus', $daneStatus);
             $smarty->assign('danePriority', $danePriority);
             $smarty->assign('daneType', $daneType);
+
             // $smarty->assign('daneConsumables', $daneConsumables);
 
             if (isset($_POST['serial']) && $_POST['serial']) {
@@ -54,6 +55,9 @@ class notificationsController extends InvoicesController
                 $printerData = $this->notification->getPrinterDataBySerial($_POST['serial']);
 
                 $smarty->assign('agreementSerial', $_POST['serial']);
+
+                $agreementIdAndSerial = array($_POST['serial'], $printerData[0]['agreementid']);
+                $this->assignAgreementPlaceholders($smarty, $agreementIdAndSerial);
 
                 // $consumablesData = $this->notification->getConsumablesByPrinterId($_POST['serial']);
 
@@ -97,7 +101,7 @@ class notificationsController extends InvoicesController
                     'date_insert' => null,
                     'activity' => 1,
                     'user_delete' => null,
-                    'date_delete' => null,
+                    'date_delete' => null
                 ));
                 $smarty->assign('dane', $dane);
 
@@ -105,7 +109,11 @@ class notificationsController extends InvoicesController
 
             } else {
                 if ($_POST['keyVal']) {
-                    $smarty->assign('agreementSerial', $this->notification->getAgreementSerial($_POST['keyVal'])[0]['serial']);
+                    $agreementIdAndSerial = $this->notification->getAgreementIdAndSerial($_POST['keyVal'])[0];
+
+                    $smarty->assign('agreementSerial', $agreementIdAndSerial['serial']);
+
+                    $this->assignAgreementPlaceholders($smarty, $agreementIdAndSerial);
                 }
             }
 
@@ -159,13 +167,58 @@ class notificationsController extends InvoicesController
 
         $closingTheNotification = $this->$nameOfModel->_filedsToEdit['status']['value'] == '3';
 
+
+        $serial = $this->$nameOfModel->_filedsToEdit['serial']['value'];
+        $rowid = $this->$nameOfModel->_filedsToEdit['rowid_agreements']['value'];
+        $data = $this->fetchCountersAndScans($serial, $rowid);
+
+        $counterRow = $data['counters'][0] ?? null;
+        $scanRow = $data['scans'][0] ?? null;
+
+        $this->$nameOfModel->_filedsToEdit['ilosc_black']['value'] = str_replace(' ', '', $this->$nameOfModel->_filedsToEdit['ilosc_black']['value']);
+        $this->$nameOfModel->_filedsToEdit['ilosc_color']['value'] = str_replace(' ', '', $this->$nameOfModel->_filedsToEdit['ilosc_color']['value']);
+        $this->$nameOfModel->_filedsToEdit['ilosc_scans']['value'] = str_replace(' ', '', $this->$nameOfModel->_filedsToEdit['ilosc_scans']['value']);
+
+
         if (!$returnOfConsumables && $closingTheNotification &&
-            ($this->$nameOfModel->_filedsToEdit['ilosc_km']['value'] == '' || $this->$nameOfModel->_filedsToEdit['czas_pracy']['value'] == '' || $this->$nameOfModel->_filedsToEdit['wartosc_materialow']['value'] == '')
+            ($this->$nameOfModel->_filedsToEdit['ilosc_km']['value'] == '' || $this->$nameOfModel->_filedsToEdit['czas_pracy']['value'] == '' || $this->$nameOfModel->_filedsToEdit['wartosc_materialow']['value'] == ''
+            )
         ) {
-            echo('Aby zamknąć zleceni muszą być uzupełnione wszystkie pola ( ilość km, czas pracy, wartość materiałów )');
+            echo('Aby zamknąć zlecenie muszą być uzupełnione wszystkie pola ( ilość km, czas pracy, wartość materiałów )');
             die();
 
         }
+
+        if (!$returnOfConsumables && $closingTheNotification) {
+            $serial = $this->$nameOfModel->_filedsToEdit['serial']['value'];
+            $rowid = $this->$nameOfModel->_filedsToEdit['rowid_agreements']['value'];
+            $new_ilosc_black = $this->$nameOfModel->_filedsToEdit['ilosc_black']['value'];
+            $new_ilosc_color = $this->$nameOfModel->_filedsToEdit['ilosc_color']['value'];
+            $new_ilosc_scans = $this->$nameOfModel->_filedsToEdit['ilosc_scans']['value'];
+            $ilosc_black = $counterRow['ilosc'];
+            $ilosc_color = $counterRow['ilosckolor'];
+            $ilosc_scans = $scanRow['ilosctotal'];
+
+            $canClose = $this->canCloseOrder(
+                $serial,
+                $rowid,
+                $ilosc_black,
+                $ilosc_color,
+                $ilosc_scans,
+                $new_ilosc_black,
+                $new_ilosc_color,
+                $new_ilosc_scans
+            );
+
+            if (!$canClose) {
+                echo $this->buildCountersMessage($ilosc_black, $ilosc_color, $ilosc_scans, $new_ilosc_black,
+                    $new_ilosc_color,
+                    $new_ilosc_scans);
+                die();
+            }
+        }
+
+
         // TODO TR: no confirmation emails from BOK
         //        if ($this->$nameOfModel->_filedsToEdit['status']['value'] == '3' && $this->$nameOfModel->_filedsToEdit['user_zakonczenia']['value'] == '') {
         //            $this->$nameOfModel->_filedsToEdit['user_zakonczenia']['value'] = $_SESSION['user']['rowid'];
@@ -397,10 +450,159 @@ class notificationsController extends InvoicesController
         }
     }
 
-    function removewarehousedocument() {
+    function removewarehousedocument()
+    {
         if ($_POST['documentId'] && $_POST['documentNumber']) {
             echo json_encode($this->removeDocument($_POST['documentId'], $_POST['documentNumber']));
         }
+    }
+
+    private function assignAgreementPlaceholders(Smarty $smarty, array $agreementIdAndSerial): void
+    {
+        $serial = $agreementIdAndSerial['serial'] ?? null;
+        $rowid = $agreementIdAndSerial['rowid_agreements'] ?? null;
+
+        $data = $this->fetchCountersAndScans($serial, $rowid);
+
+        $counterRow = $data['counters'][0] ?? null;
+        $scanRow = $data['scans'][0] ?? null;
+
+        $smarty->assign('placeholder_black', $this->buildPlaceholderFromRow($counterRow, 'ilosc'));
+        $smarty->assign('placeholder_color', $this->buildPlaceholderFromRow($counterRow, 'ilosckolor'));
+        $smarty->assign('placeholder_scans', $this->buildPlaceholderFromRow($scanRow, 'ilosctotal'));
+    }
+
+    private function fetchCountersAndScans(?string $serial, ?int $rowid): array
+    {
+        if (empty($serial) || empty($rowid)) {
+            return [
+                'counters' => [],
+                'scans' => []
+            ];
+        }
+
+        return [
+            'counters' => $this->notification->getCountersForNotification($serial, $rowid) ?: [],
+            'scans' => $this->notification->getScansForNotification($serial, $rowid) ?: []
+        ];
+    }
+
+
+    /**
+     * Buduje tekst w stylu:
+     * "stan na: 2025-01-01: 1234"
+     * albo pusty string jeśli nie ma danych.
+     */
+    private function buildPlaceholderFromRow(?array $row, string $valueKey): string
+    {
+        if (empty($row)) {
+            return '';
+        }
+
+        $value = $row[$valueKey] ?? '';
+        $date = $row['datawiadomosci'] ?? '';
+
+        if ($value === '' || $date === '') {
+            return '';
+        }
+
+        return sprintf('stan na: %s: %s', $date, $value);
+    }
+
+    private function canCloseOrder(
+        ?string $serial,
+        ?int    $rowid,
+                $ilosc_black,
+                $ilosc_color,
+                $ilosc_scans,
+                $new_ilosc_black,
+                $new_ilosc_color,
+                $new_ilosc_scans
+    ): bool
+    {
+
+        if (empty($serial) || empty($rowid)) {
+            return true;
+        }
+
+        if (!empty($ilosc_black)) {
+            if (empty($new_ilosc_black) || $new_ilosc_black < $ilosc_black) {
+                return false;
+            }
+        }
+
+        if (!empty($ilosc_color)) {
+            if (empty($new_ilosc_color) || $new_ilosc_color < $ilosc_color) {
+                return false;
+            }
+        }
+
+        if (!empty($ilosc_scans)) {
+            if (empty($new_ilosc_scans) || $new_ilosc_scans < $ilosc_scans) {
+                return false;
+            }
+        }
+
+        return true;
+    }
+
+    private function buildCountersMessage(
+        $ilosc_black,
+        $ilosc_color,
+        $ilosc_scans,
+        $new_ilosc_black,
+        $new_ilosc_color,
+        $new_ilosc_scans
+    ): string
+    {
+
+        $missing = [];
+        $invalid = [];
+
+        // --- BLACK ---
+        if (!empty($ilosc_black) && $ilosc_black > 0) {
+            if (empty($new_ilosc_black)) {
+                $missing[] = 'black';
+            } elseif ($new_ilosc_black < $ilosc_black) {
+                $invalid[] = 'black';
+            }
+        }
+
+        // --- COLOR ---
+        if (!empty($ilosc_color) && $ilosc_color > 0) {
+            if (empty($new_ilosc_color)) {
+                $missing[] = 'color';
+            } elseif ($new_ilosc_color < $ilosc_color) {
+                $invalid[] = 'color';
+            }
+        }
+
+        // --- SCANS ---
+        if (!empty($ilosc_scans) && $ilosc_scans > 0) {
+            if (empty($new_ilosc_scans)) {
+                $missing[] = 'scans';
+            } elseif ($new_ilosc_scans < $ilosc_scans) {
+                $invalid[] = 'scans';
+            }
+        }
+
+        // Nic nie brakuje, nic nie jest błędne → brak komunikatu
+        if (empty($missing) && empty($invalid)) {
+            return '';
+        }
+
+        // Budowa komunikatu
+        $parts = [];
+
+        if (!empty($missing)) {
+            $parts[] = 'Aby zamknąć umowę musisz podać liczniki: ' . implode(', ', $missing);
+        }
+
+        if (!empty($invalid)) {
+            $parts[] = 'Podaj poprawne liczniki: ' . implode(', ', $invalid);
+        }
+
+        return implode('. ', $parts);
     }
 
 }

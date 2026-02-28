@@ -292,6 +292,48 @@ class notification extends Model
             'divek' => 'divNotiWykonanie',
             'value' => '',
         ),
+        'ilosc_black' => array(
+            'baza' => 'ilosc_black',
+            'sql' => '`ilosc_black` as `ilosc_black`',
+            'datatype' => 'd',
+            'activity' => '1',
+            'type' => 'text',
+            'label' => 'Ilosc black',
+            'class' => 'textBoxForm liczba',
+            'style' => 'width:120px;min-width:120px;max-width:120px;',
+            'datatypeshow' => 'decimal',
+            'divek' => 'divNotiWykonanie',
+            'value' => '',
+            'placeholder' => 'placeholder_black'
+        ),
+        'ilosc_color' => array(
+            'baza' => 'ilosc_color',
+            'sql' => '`ilosc_color` as `ilosc_color`',
+            'datatype' => 'd',
+            'activity' => '1',
+            'type' => 'text',
+            'label' => 'Ilosc color',
+            'class' => 'textBoxForm liczba',
+            'style' => 'width:120px;min-width:120px;max-width:120px;',
+            'datatypeshow' => 'decimal',
+            'divek' => 'divNotiWykonanie',
+            'value' => '',
+            'placeholder' => 'placeholder_color'
+        ),
+        'ilosc_scans' => array(
+            'baza' => 'ilosc_scans',
+            'sql' => '`ilosc_scans` as `ilosc_scans`',
+            'datatype' => 'd',
+            'activity' => '1',
+            'type' => 'text',
+            'label' => 'Ilosc scans',
+            'class' => 'textBoxForm liczba',
+            'style' => 'width:120px;min-width:120px;max-width:120px;',
+            'datatypeshow' => 'decimal',
+            'divek' => 'divNotiWykonanie',
+            'value' => '',
+            'placeholder' => 'placeholder_scans'
+        ),
         'user_podjecia' => array(
             'baza' => 'user_podjecia',
             'sql' => '`user_podjecia` as `user_podjecia`',
@@ -440,7 +482,7 @@ class notification extends Model
     protected $_serial = 'serial';
 
 
-    protected $filterklient = '', $filternrseryjny = '', $filternrzlecenia = '', $filterdataod = '', $filterdatado = '', $filterstatusy = '';
+    protected $filterklient = '', $filterumowa = '', $filternrseryjny = '', $filternrzlecenia = '', $filterdataod = '', $filterdatado = '', $filterstatusy = '';
     protected $_filter = ' where a.activity<>0 ';
 
     function __construct()
@@ -551,9 +593,9 @@ class notification extends Model
         return $this->query($query, null, false);
     }
 
-    function getAgreementSerial($notifi_rowid)
+    function getAgreementIdAndSerial($notifi_rowid)
     {
-        $query = "select a.serial from notifications n 
+        $query = "select a.serial, n.rowid_agreements from notifications n 
                     left outer join agreements a on n.rowid_agreements = a.rowid where n.rowid = " . $notifi_rowid;
         return $this->query($query, null, false);
     }
@@ -589,6 +631,9 @@ a.SLA-(( unix_timestamp(now())
 
         if ($this->filterklient != '') {
             $this->_filter .= " and b.nazwakrotka like '%{$this->filterklient}%'";
+        }
+        if ($this->filterumowa != '') {
+            $this->_filter .= " and c.nrumowy like '%{$this->filterumowa}%'";
         }
         if ($this->filternrseryjny != '') {
             $this->_filter .= " and a.serial like '%{$this->filternrseryjny}%'";
@@ -718,6 +763,28 @@ a.SLA-(( unix_timestamp(now())
         $query = "SELECT c.nazwakrotka, c.nip, p.serial, p.model, a.nrumowy, p.ulica, p.miasto, p.kodpocztowy, p.telefon, p.mail, p.nazwa, p.osobakontaktowa
                   FROM `printers` p INNER JOIN `agreements` a on p.serial = a.serial INNER JOIN `clients` c on a.rowidclient = c.rowid 
                   WHERE p.serial = '{$serial}' AND a.activity=1";
+        return $this->query($query, null, false);
+    }
+
+
+    function getCountersForNotification($serial, $rowid_agreement) {
+        $query = "SELECT *
+                    FROM counters
+                    WHERE serial = '{$serial}'
+                      AND rowid_agreement = {$rowid_agreement}
+                    ORDER BY datawiadomosci DESC
+                    LIMIT 1;";
+        return $this->query($query, null, false);
+    }
+
+
+    function getScansForNotification($serial, $rowid_agreement) {
+        $query = "SELECT *
+                    FROM scans
+                    WHERE serial = '{$serial}'
+                      AND rowid_agreement = {$rowid_agreement}
+                    ORDER BY datawiadomosci DESC
+                    LIMIT 1;";
         return $this->query($query, null, false);
     }
 
