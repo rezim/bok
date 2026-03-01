@@ -3,7 +3,8 @@ name: Deploy via SSH (SCP)
 on:
   push:
     branches: [ master ]
-  workflow_dispatch:
+    paths-ignore:
+      - '.github/workflows/deploy-ssh.yml'
 
 jobs:
   deploy:
