@@ -62,7 +62,9 @@ class printersController extends Controller
         $smarty->assign('serial', $_POST['serial']);
 
         $canSaveUpdate = $this->hasAccessToAction('saveupdate');
+        $canViewLocalization = $this->hasAccessToAction('view_localization');
         $smarty->assign('canSaveUpdate', $canSaveUpdate);
+        $smarty->assign('canViewLocalization', $canViewLocalization);
     }
 
     function saveupdate()

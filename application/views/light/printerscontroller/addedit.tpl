@@ -232,6 +232,7 @@
         </tr>
     </table>
 </div>
+{if isset($canViewLocalization) && $canViewLocalization == true}
 <table class='tableform' cellspacing=0 cellpadding=0>
     <!-- device localization -->
     <tr>
@@ -391,6 +392,7 @@
         <td>&nbsp;</td>
     </tr>
 </table>
+{/if}
 <script type="text/javascript">
 
     $("#stanna").datepicker($.datepicker.regional['pl'], {
