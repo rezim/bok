@@ -1,0 +1,30 @@
+name: Deploy via SSH (SCP)
+
+on:
+  push:
+    branches: [ master ]
+  workflow_dispatch:
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+
+    - name: Copy project to server via SCP
+      uses: appleboy/scp-action@v0.1.7
+      with:
+        host: ${{ secrets.SSH_HOST }}
+        username: ${{ secrets.SSH_USER }}
+        key: ${{ secrets.SSH_PRIVATE_KEY }}
+        port: ${{ secrets.SSH_PORT }}
+        source: "application,config,library,public_html,sql,templates,*.php,.htaccess,.gitignore"
+        target: "/otusbok.otus.pl/bok"
+        overwrite: true
+        rm: false
+        strip_components: 0
+        tar_dereference: true
+        debug: true
+

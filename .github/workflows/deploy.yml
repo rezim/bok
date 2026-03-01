@@ -1,9 +1,7 @@
 name: Deploy to FTP Server
 
 on:
-  push:
-    branches: [ main, master ]
-  workflow_dispatch:  # Manual trigger possibility
+  workflow_dispatch:  # Manual trigger only (FTP data channel can be blocked on some hosts)
 
 jobs:
   deploy:
