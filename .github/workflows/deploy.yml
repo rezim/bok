@@ -19,7 +19,18 @@ jobs:
         server: ${{ secrets.FTP_HOST }}
         username: ${{ secrets.FTP_USER }}
         password: ${{ secrets.FTP_PASS }}
+        # Deploy whole project root to the application directory on FTP.
+        # This keeps public_html/ as webroot and application/library outside it.
         local-dir: ./
-        server-dir: /public_html/
+        server-dir: /otusbok.otus.pl/bok/
         state-name: .ftp-deploy-sync-state.json
         dangerous-clean-slate: false
+        exclude: |
+          **/.git*
+          **/.github/**
+          **/.idea/**
+          **/nbproject/**
+          **/tmp/**
+          **/templates_c/**
+          **/.DS_Store
+          **/Thumbs.db
