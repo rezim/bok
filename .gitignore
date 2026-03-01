@@ -11,3 +11,23 @@
 /.idea/encodings.xml
 /.idea/php.xml
 /.idea/workspace.xml
+
+# IDE and editor artifacts
+/.idea/shelf/
+/.idea/codeception.xml
+/.idea/phpspec.xml
+/.idea/phpunit.xml
+/.vscode/
+/*.code-workspace
+
+# OS artifacts
+**/.DS_Store
+
+# Local build/cache/temp artifacts
+/templates_c/
+/public_html/templates_c/
+/tmp/
+/library/vendor/mpdf/mpdf/tmp/
+/library/test.json
+/library/composer.phar
+/hs_err_pid*.log
