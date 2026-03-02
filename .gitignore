@@ -20,6 +20,9 @@
 /.vscode/
 /*.code-workspace
 
+# Environment files
+.env
+
 # OS artifacts
 **/.DS_Store
 

@@ -330,7 +330,7 @@ InvoiceManager = function (invoice_number_length) {
                     (inv['pattern'] === 'Pnr-m/mm/yyyy' && inv['number']?.charAt(0) !== 'P')))
             );
             // TR TODO: very temporary fix to exclude invoices created manually
-            invoices = invoices.filter(inv => inv.number !== '0273/01/2026' && inv.number !== '0274/01/2026');
+            invoices = invoices.filter(inv => inv.number !== '0273/01/2026' && inv.number !== '0274/01/2026' && inv.number !== '0276/02/2026');
 
             currentPeriodInvoices.invoices = invoices;
 
