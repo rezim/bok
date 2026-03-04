@@ -54,12 +54,12 @@ class report extends Model
             die();
         }
         $query = "
-                select `s`.`serial` AS `skany_serial`, min(`s`.`ilosctotal`) AS `skany_start`, 
+                select `s`.`serial` AS `skany_serial`, COALESCE(MIN(IF(`s`.`ilosctotal` > 0, `s`.`ilosctotal`, NULL)), 0) AS `skany_start`, 
                        max(`s`.`ilosctotal`) AS `skany_koniec`, min(`s`.`datawiadomosci`) AS `data_wiadomosci_scans_start`,max(`s`.`datawiadomosci`) AS `data_wiadomosci_scans_koniec`,
                        `p`.`model` AS `skany_model_urzadzenia` 
                 FROM ((`scans` `s` join `agreements` `a` on(`s`.`serial` = `a`.`serial`)) 
                     join `printers` `p` on(`s`.`serial` = `p`.`serial`)) 
-                WHERE `a`.`activity` = 1 and `s`.`datawiadomosci` >= '{$dateFrom}' and `s`.`datawiadomosci` < '{$dateTo}' group by `s`.`serial` order by max(`s`.`ilosctotal`) - min(`s`.`ilosctotal`) desc;";
+                WHERE `a`.`activity` = 1 and `s`.`datawiadomosci` >= '{$dateFrom}' and `s`.`datawiadomosci` < '{$dateTo}' group by `s`.`serial` order by max(`s`.`ilosctotal`) - COALESCE(MIN(IF(`s`.`ilosctotal` > 0, `s`.`ilosctotal`, NULL)), 0) desc;";
         return $this->query($query, null, false);
     }
 

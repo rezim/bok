@@ -2275,6 +2275,11 @@ function insertScanCounter($serial, $scantotal, $dataWiadomosci)
 {
     $mysqli = getMySqlConn();
 
+    $scanTotalNumeric = (int)str_replace(' ', '', (string)$scantotal);
+    if ($scanTotalNumeric <= 0) {
+        return;
+    }
+
     $deleteQuery = "DELETE FROM `scans` WHERE datawiadomosci = '{$dataWiadomosci}' AND serial = '{$serial}'";
 
     mysqli_query($mysqli, $deleteQuery);
@@ -2282,7 +2287,7 @@ function insertScanCounter($serial, $scantotal, $dataWiadomosci)
     $query = "insert into scans(serial,dateinsert,datawiadomosci,ilosctotal,rowid_agreement,product_version) values 
                             (
                                 '{$serial}','" . date('Y-m-d H:i:s') . "','{$dataWiadomosci}'                                
-                                ," . ($scantotal == '' ? 'null' : $scantotal) . ",
+                                ," . $scanTotalNumeric . ",
                                 (select rowid from agreements where serial='" . $serial . "' and activity=1),
                                 (select product_version FROM printers where serial = '" . $serial . "')
                                 )";

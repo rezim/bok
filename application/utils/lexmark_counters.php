@@ -258,22 +258,24 @@ function insertLexmarkCounters(): void
             DataSource::LEXMARK
         ]);
 
-        // INSERT to scans
-        $insertScans = $pdo->prepare("
-        INSERT INTO scans (serial, ilosctotal, datawiadomosci, rowid_agreement, dateinsert)
-        VALUES (?, ?, ?, ?, ?)
-        ON DUPLICATE KEY UPDATE
-            ilosctotal = VALUES(ilosctotal),
-            rowid_agreement = VALUES(rowid_agreement),
-            dateinsert = VALUES(dateinsert);        
-        ");
-        $insertScans->execute([
-            $serial,
-            $totalScanCount,
-            $datawiadomosci,
-            $rowid_agreement,
-            $dateinsert
-        ]);
+        if ((int)$totalScanCount > 0) {
+            // INSERT to scans
+            $insertScans = $pdo->prepare("
+            INSERT INTO scans (serial, ilosctotal, datawiadomosci, rowid_agreement, dateinsert)
+            VALUES (?, ?, ?, ?, ?)
+            ON DUPLICATE KEY UPDATE
+                ilosctotal = VALUES(ilosctotal),
+                rowid_agreement = VALUES(rowid_agreement),
+                dateinsert = VALUES(dateinsert);
+            ");
+            $insertScans->execute([
+                $serial,
+                $totalScanCount,
+                $datawiadomosci,
+                $rowid_agreement,
+                $dateinsert
+            ]);
+        }
 
         echo "✅ SN: $serial – dodano do pages i scans.\n";
     }
