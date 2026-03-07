@@ -39,6 +39,30 @@ InvoiceManager = function (invoice_number_length) {
         return result;
     };
 
+    const getAjaxErrorMessage = function (error) {
+        if (error && error.responseJSON) {
+            if (typeof error.responseJSON.message === 'string' && error.responseJSON.message.trim() !== '') {
+                return error.responseJSON.message;
+            }
+            return JSON.stringify(error.responseJSON);
+        }
+
+        if (error && typeof error.responseText === 'string' && error.responseText.trim() !== '') {
+            try {
+                const parsed = JSON.parse(error.responseText);
+                if (parsed && typeof parsed.message === 'string' && parsed.message.trim() !== '') {
+                    return parsed.message;
+                }
+            } catch (ignored) {
+                // Keep raw responseText when it's not JSON.
+            }
+
+            return error.responseText;
+        }
+
+        return 'Nieznany błąd.';
+    };
+
     this.reportData = null;
 
     this.setReportData = function (data) {
@@ -132,20 +156,27 @@ InvoiceManager = function (invoice_number_length) {
 
                 console.log(params);
 
-                let newInvoice;
+                let createdInvoice = null;
                 try {
-                    newInvoice = await loadAsyncData('/clientinvoices/addnewinvoice/notemplate', params);
+                    const newInvoice = await loadAsyncData('/clientinvoices/addnewinvoice/notemplate', params);
+                    createdInvoice = typeof newInvoice === 'string' ? JSON.parse(newInvoice) : newInvoice;
                 } catch (e) {
-                    errorMsg += `Błąd!, nie można wystawić FV dla '${invoice['nazwapelna']}', komunikat błędu: ${e.responseText}! `;
+                    errorMsg += `Błąd!, nie można wystawić FV dla '${invoice['nazwapelna']}', komunikat błędu: ${getAjaxErrorMessage(e)}! `;
+                    continue;
                 }
-                try {
-                    const {id, buyer_tax_no} = JSON.parse(newInvoice);
-                    await loadAsyncData('/clientinvoices/addinterestnotestoinvoice/notemplate', {
-                        invoice_id: id,
-                        nip: buyer_tax_no
-                    });
-                } catch (e) {
-                    errorMsg += `Błąd!, nie można dołaczyć not odsetkowych do wystawionej faktury, komunikat błędu: ${e.responseText}! `;
+
+                if (window.ENABLE_ADD_INTEREST_NOTES_TO_INVOICE === true
+                    && createdInvoice
+                    && createdInvoice.id
+                    && createdInvoice.buyer_tax_no) {
+                    try {
+                        await loadAsyncData('/clientinvoices/addinterestnotestoinvoice/notemplate', {
+                            invoice_id: createdInvoice.id,
+                            nip: createdInvoice.buyer_tax_no
+                        });
+                    } catch (e) {
+                        errorMsg += `Błąd!, nie można dołaczyć not odsetkowych do wystawionej faktury, komunikat błędu: ${getAjaxErrorMessage(e)}! `;
+                    }
                 }
             }
             await this.refreshInvoices();
@@ -188,20 +219,27 @@ InvoiceManager = function (invoice_number_length) {
 
                     for (const agrIds of groupedAgreementIds) {
                         const params = getInvoiceParams(report, agrIds);
-                        let newInvoice;
+                        let createdInvoice = null;
                         try {
-                            newInvoice = await loadAsyncData('/clientinvoices/addnewinvoice/notemplate', params);
+                            const newInvoice = await loadAsyncData('/clientinvoices/addnewinvoice/notemplate', params);
+                            createdInvoice = typeof newInvoice === 'string' ? JSON.parse(newInvoice) : newInvoice;
                         } catch (e) {
-                            errorMsg += `Błąd!, nie można wystawić FV dla '${invoice['nazwapelna']}', komunikat błędu: ${e.responseText}! `;
+                            errorMsg += `Błąd!, nie można wystawić FV dla '${report['nazwapelna']}', komunikat błędu: ${getAjaxErrorMessage(e)}! `;
+                            continue;
                         }
-                        try {
-                            const {id, buyer_tax_no} = JSON.parse(newInvoice);
-                            await loadAsyncData('/clientinvoices/addinterestnotestoinvoice/notemplate', {
-                                invoice_id: id,
-                                nip: buyer_tax_no
-                            });
-                        } catch (e) {
-                            errorMsg += `Błąd!, nie można dołaczyć not odsetkowych do wystawionej faktury, komunikat błędu: ${e.responseText}! `;
+
+                        if (window.ENABLE_ADD_INTEREST_NOTES_TO_INVOICE === true
+                            && createdInvoice
+                            && createdInvoice.id
+                            && createdInvoice.buyer_tax_no) {
+                            try {
+                                await loadAsyncData('/clientinvoices/addinterestnotestoinvoice/notemplate', {
+                                    invoice_id: createdInvoice.id,
+                                    nip: createdInvoice.buyer_tax_no
+                                });
+                            } catch (e) {
+                                errorMsg += `Błąd!, nie można dołaczyć not odsetkowych do wystawionej faktury, komunikat błędu: ${getAjaxErrorMessage(e)}! `;
+                            }
                         }
                     }
 
@@ -329,8 +367,6 @@ InvoiceManager = function (invoice_number_length) {
                 (inv['kind'] === 'vat' && (inv['pattern'] === 'nr-m/mm/yyyy' ||
                     (inv['pattern'] === 'Pnr-m/mm/yyyy' && inv['number']?.charAt(0) !== 'P')))
             );
-            // TR TODO: very temporary fix to exclude invoices created manually
-            invoices = invoices.filter(inv => inv.number !== '0273/01/2026' && inv.number !== '0274/01/2026' && inv.number !== '0276/02/2026');
 
             currentPeriodInvoices.invoices = invoices;
 
@@ -366,8 +402,6 @@ InvoiceManager = function (invoice_number_length) {
             //     }
             // });
             var groupedInvoices = {};
-            var invNbPattern = null;
-            var invoiceNumbers = [];
 
             // Group invoices by buyer and extract invoice numbers
             $.each(invoices, function (index, invoice) {
@@ -382,42 +416,106 @@ InvoiceManager = function (invoice_number_length) {
                 // Extract invoice number before the first slash
                 var parts = invoice.number.split('/');
                 var nb = parseInt(parts[0], 10);
-
-                invoiceNumbers.push(nb);
-
-                // Extract the static pattern (e.g. "11/2025")
-                if (!invNbPattern) {
-                    parts.shift();           // Remove the numeric part
-                    invNbPattern = parts.join('/');
-                }
             });
 
             var missingInvoices = [];
+            var debugCurrentMonthPattern = null;
+            var debugCurrentMonthInvoiceNumbers = [];
+            var debugInvoiceContinuity = window.__DEBUG_INVOICE_CONTINUITY__ !== false;
+            var debugSimulation = window.__INVOICE_CONTINUITY_SIMULATION__ || null;
+            var debugSimulationApplied = null;
 
             if (!anyFilterSet) {
+                var now = new Date();
+                var currentMonth = String(now.getMonth() + 1).padStart(2, '0');
+                var currentYear = String(now.getFullYear());
+                var currentMonthPattern = currentMonth + '/' + currentYear;
+                debugCurrentMonthPattern = currentMonthPattern;
+
+                // Continuity is checked only for invoices numbered in the current month.
+                var currentMonthInvoiceNumbers = [];
+                $.each(invoices, function (_, invoice) {
+                    var parts = (invoice.number || '').split('/');
+                    if (parts.length < 3) {
+                        return;
+                    }
+
+                    var pattern = parts.slice(1).join('/');
+                    if (pattern !== currentMonthPattern) {
+                        return;
+                    }
+
+                    var nb = parseInt(parts[0], 10);
+                    if (!isNaN(nb)) {
+                        currentMonthInvoiceNumbers.push(nb);
+                    }
+                });
+
+                // Debug-only: simulate continuity issues without changing real invoices in Fakturownia.
+                if (debugSimulation && debugSimulation.enabled) {
+                    var simAction = debugSimulation.action;
+                    var simNumber = parseInt(debugSimulation.number, 10);
+
+                    if (!isNaN(simNumber)) {
+                        if (simAction === 'remove') {
+                            var beforeLength = currentMonthInvoiceNumbers.length;
+                            currentMonthInvoiceNumbers = currentMonthInvoiceNumbers.filter(function (nb) {
+                                return nb !== simNumber;
+                            });
+                            debugSimulationApplied = {
+                                action: simAction,
+                                number: simNumber,
+                                removedCount: beforeLength - currentMonthInvoiceNumbers.length
+                            };
+                        }
+
+                        if (simAction === 'add') {
+                            currentMonthInvoiceNumbers.push(simNumber);
+                            debugSimulationApplied = {
+                                action: simAction,
+                                number: simNumber,
+                                addedCount: 1
+                            };
+                        }
+                    }
+                }
+
+                debugCurrentMonthInvoiceNumbers = currentMonthInvoiceNumbers.slice();
+
                 // If there are no invoices, nothing to validate
-                if (invoiceNumbers.length === 0) {
+                if (currentMonthInvoiceNumbers.length === 0) {
                     missingInvoices = [];
                 } else {
-                    var minNb = Math.min.apply(null, invoiceNumbers);
-                    var maxNb = Math.max.apply(null, invoiceNumbers);
+                    var minNb = Math.min.apply(null, currentMonthInvoiceNumbers);
+                    var maxNb = Math.max.apply(null, currentMonthInvoiceNumbers);
 
                     // Use a simple lookup map for existing invoice numbers
                     var seen = {};
-                    $.each(invoiceNumbers, function (_, nb) {
+                    $.each(currentMonthInvoiceNumbers, function (_, nb) {
                         seen[nb] = true;
                     });
 
                     // Find numbers in the range [min..max] that never occurred
                     for (var n = minNb; n <= maxNb; n++) {
                         if (!seen[n]) {
-                            missingInvoices.push(n + '/' + invNbPattern);
+                            missingInvoices.push(n + '/' + currentMonthPattern);
                         }
                     }
                 }
             }
 
             currentPeriodInvoices.missingInvoices = missingInvoices;
+
+            if (debugInvoiceContinuity) {
+                console.info('[Invoice continuity debug]', {
+                    anyFilterSet: anyFilterSet,
+                    currentMonthPattern: debugCurrentMonthPattern,
+                    currentMonthInvoiceNumbers: debugCurrentMonthInvoiceNumbers,
+                    simulation: debugSimulationApplied,
+                    missingInvoices: missingInvoices,
+                    totalLoadedInvoices: invoices.length
+                });
+            }
 
             // reset all invoice counts
             updateInvoiceCountStyle('.invoice-count', false);
@@ -479,7 +577,22 @@ InvoiceManager = function (invoice_number_length) {
             });
 
             if (self.getMissingInvoices().length > 0) {
-                this.showActionError(true, `Uwaga: występuje brak ciągłości numeracji faktur. Faktury powodujące problem [numer]-[ilosc]: ${self.getMissingInvoices().join(', ')}`);
+                var missing = self.getMissingInvoices();
+                var previewLimit = 5;
+                var preview = missing.slice(0, previewLimit).join(', ');
+                var remainingCount = Math.max(0, missing.length - previewLimit);
+                var message = `Uwaga: brak ciągłości numeracji faktur (${missing.length} brakujących numerów).`;
+
+                if (preview.length > 0) {
+                    message += ` Przykłady: ${preview}`;
+                    if (remainingCount > 0) {
+                        message += ` i ${remainingCount} więcej.`;
+                    } else {
+                        message += '.';
+                    }
+                }
+
+                this.showActionError(true, message);
             } else {
                 this.showActionError(false);
             }
@@ -495,13 +608,50 @@ InvoiceManager = function (invoice_number_length) {
 
     this.showActionError = function (show, message) {
         const actionErrorSelector = '#actionerror';
+        const actionError = $(actionErrorSelector);
 
         if (show) {
-            $(actionErrorSelector).html(`<span><i class="fas fa-exclamation-triangle"></i>&nbsp;${message}</span>`);
-            $(actionErrorSelector).show();
+            actionError.css({
+                position: 'relative',
+                height: 'auto',
+                'min-height': '50px',
+                padding: '12px 44px 12px 14px',
+                'text-align': 'left',
+                'box-sizing': 'border-box'
+            });
+
+            const closeButton = $('<button/>', {
+                type: 'button',
+                'aria-label': 'Zamknij komunikat',
+                title: 'Zamknij',
+                class: 'invoice-error-close',
+                html: '&times;'
+            }).attr('style', [
+                'position:absolute',
+                'top:8px',
+                'right:10px',
+                'border:0',
+                'background:transparent',
+                'font-size:22px',
+                'line-height:1',
+                'cursor:pointer',
+                'color:#a94442'
+            ].join(';'));
+
+            const content = $('<div/>').append(
+                $('<div/>').attr('style', 'font-weight:bold;line-height:1.35;margin:0;').append(
+                    $('<i/>', {class: 'fas fa-exclamation-triangle'}),
+                    document.createTextNode(' ' + message)
+                ),
+                closeButton
+            );
+
+            actionError.empty().append(content).show();
+            actionError.off('click.invoiceErrorClose').on('click.invoiceErrorClose', '.invoice-error-close', function () {
+                self.showActionError(false);
+            });
         } else {
-            $(actionErrorSelector).html('');
-            $(actionErrorSelector).hide();
+            actionError.off('click.invoiceErrorClose').html('').hide();
         }
     };
 

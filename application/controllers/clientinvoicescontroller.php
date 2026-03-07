@@ -147,22 +147,120 @@ class clientinvoicesController extends InvoicesController
             'buyer_email', 'buyer_post_code', 'buyer_city', 'buyer_street', 'positions',
             'show_discount', 'internal_note', 'additional_info', 'additional_info_desc', 'buyer_tax_no', 'buyer_name'];
 
-        if ($this->validatePostParams($required)) {
+        $missingParams = $this->findMissingRequiredPostParams($required);
+        if (count($missingParams) > 0) {
+            $this->respondJsonError('Brak wymaganych parametrów.', 400, ['missing_params' => $missingParams]);
+            return;
+        }
 
+        try {
             $invoice = $this->addInvoice(
                 $_POST['kind'], $_POST['number'], $_POST['sell_date'], $_POST['issue_date'], $_POST['payment_to'], $_POST['buyer_name'],
                 $_POST['buyer_tax_no'], $_POST['buyer_email'], $_POST['buyer_post_code'], $_POST['buyer_city'], $_POST['buyer_street'],
                 $_POST['recipient_id'], $_POST['positions'], $_POST['show_discount'], $_POST['internal_note'], $_POST['additional_info'],
-                $_POST['additional_info_desc']);
+                $_POST['additional_info_desc']
+            );
+        } catch (Throwable $e) {
+            $this->respondJsonError('Błąd wewnętrzny podczas wystawiania faktury.', 500, ['exception' => $e->getMessage()]);
+            return;
+        }
 
-            if ($invoice) {
-                echo json_encode($invoice);
-            } else {
-                echo "Podany identyfikator klienta nie jest NIP-em ani PESELEM: " . $_POST['buyer_tax_no'];
-                http_response_code(400);
+        // Fakturownia may return HTTP 200 with business error payload: { code: "error", message: ... }.
+        // Expose it as HTTP 400 so frontend can handle it in error flow.
+        if (is_array($invoice) && isset($invoice['code']) && $invoice['code'] === 'error') {
+            $this->respondJsonError(
+                $this->extractInvoiceApiErrorMessage($invoice),
+                400,
+                ['provider_code' => $invoice['code'], 'provider_message' => $invoice['message'] ?? null]
+            );
+            return;
+        }
+
+        if ($invoice) {
+            header('Content-Type: application/json; charset=utf-8');
+            echo json_encode($invoice, JSON_UNESCAPED_UNICODE);
+        } else {
+            $this->respondJsonError(
+                'Podany identyfikator klienta nie jest NIP-em ani PESELEM.',
+                400,
+                ['buyer_tax_no' => $_POST['buyer_tax_no'] ?? null]
+            );
+        }
+
+    }
+
+    private function respondJsonError(string $message, int $statusCode = 400, array $details = []): void
+    {
+        http_response_code($statusCode);
+        header('Content-Type: application/json; charset=utf-8');
+
+        $payload = [
+            'code' => 'error',
+            'message' => $message,
+        ];
+
+        if (!empty($details)) {
+            $payload['details'] = $details;
+        }
+
+        echo json_encode($payload, JSON_UNESCAPED_UNICODE);
+    }
+
+    private function findMissingRequiredPostParams(array $required): array
+    {
+        return array_values(array_filter($required, function ($param) {
+            return !isset($_POST[$param]) || (!$_POST[$param] && $_POST[$param] != 0);
+        }));
+    }
+
+    private function extractInvoiceApiErrorMessage(array $invoiceResponse): string
+    {
+        $message = $invoiceResponse['message'] ?? null;
+
+        if (is_string($message) && trim($message) !== '') {
+            return trim($message);
+        }
+
+        if (is_array($message)) {
+            $parts = [];
+            foreach ($message as $field => $fieldError) {
+                $flattened = $this->flattenInvoiceApiErrorValue($fieldError);
+                if ($flattened !== '') {
+                    $parts[] = is_string($field) ? "{$field}: {$flattened}" : $flattened;
+                }
+            }
+
+            if (!empty($parts)) {
+                return implode('; ', $parts);
             }
         }
 
+        return 'Nie udało się wystawić faktury. Fakturownia zwróciła błąd.';
+    }
+
+    private function flattenInvoiceApiErrorValue($value): string
+    {
+        if (is_string($value)) {
+            return trim($value);
+        }
+
+        if (!is_array($value)) {
+            return '';
+        }
+
+        $result = [];
+        foreach ($value as $item) {
+            $flat = $this->flattenInvoiceApiErrorValue($item);
+            if ($flat !== '') {
+                $result[] = $flat;
+            }
+        }
+
+        if (empty($result)) {
+            return '';
+        }
+
+        return implode(', ', array_values(array_unique($result)));
     }
 
     function addinvoicepayment()
