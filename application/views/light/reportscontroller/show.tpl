@@ -27,6 +27,7 @@
 
 
 <script type="text/javascript">
+    window.ENABLE_ADD_INTEREST_NOTES_TO_INVOICE = {if $smarty.const.ENABLE_ADD_INTEREST_NOTES_TO_INVOICE}true{else}false{/if};
     const invMgr = new InvoiceManager('{$smarty.const.FAKTUROWNIA_INVOICE_NUMBER_LENGTH}');
 
     function startReportGeneration() {
