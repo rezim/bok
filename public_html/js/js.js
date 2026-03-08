@@ -98,6 +98,31 @@ function showAgreementMessages(nrumowy, agreementType, clientName) {
     openModal("/messages/showmodal/todiv", {description, type, foreignkey: nrumowy});
 }
 
+function showAgreementPriceHistory(rowid, nrUmowy) {
+
+    $.colorbox
+    ({
+        height: 650 + 'px',
+        width: 1050 + 'px',
+        title: "Historia indeksacji umowy: " + nrUmowy,
+        data:
+            {
+                rowid: rowid,
+                nrumowy: nrUmowy
+            },
+
+        href: sciezka + "/agreements/showpricehistory/todiv",
+        onClosed: function () {
+
+        },
+        onComplete: function () {
+
+            uprawnienia();
+
+        }
+    });
+}
+
 
 function showNewClientAdd(rowid) {
 

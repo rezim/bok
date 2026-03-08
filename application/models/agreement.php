@@ -344,6 +344,27 @@ class agreement extends Model
         return $this->query($query, null, false);
     }
 
+    function getPriceHistoryByAgreementRowid($rowid)
+    {
+        $rowid = (int)$rowid;
+        $query = "SELECT
+                    h.id,
+                    h.rowid_agreement,
+                    h.valid_from,
+                    h.valid_to,
+                    h.cenazastrone,
+                    h.cenazastrone_kolor,
+                    h.abonament,
+                    h.indexation_percent,
+                    h.reason,
+                    h.created_at
+                  FROM agreements_price_history h
+                  WHERE h.rowid_agreement = {$rowid}
+                  ORDER BY h.valid_from DESC, h.id DESC";
+
+        return $this->query($query, null, false);
+    }
+
     function getUmowaByClient($rowidClient)
     {
         $query = "select rowid from agreements where rowidclient={$rowidClient} and activity=1";
