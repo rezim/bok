@@ -124,6 +124,28 @@ class agreementsController extends Controller
         }
     }
 
+    function showpricehistory()
+    {
+        if (isset($_SERVER['HTTP_X_REQUESTED_WITH']) && ($_SERVER['HTTP_X_REQUESTED_WITH'] == 'XMLHttpRequest')) {
+            global $smarty;
+
+            $rowid = isset($_POST['rowid']) ? (int)$_POST['rowid'] : 0;
+            $agreementNb = isset($_POST['nrumowy']) ? $_POST['nrumowy'] : '';
+
+            if ($rowid <= 0) {
+                $smarty->assign('priceHistory', []);
+                $smarty->assign('agreementNb', $agreementNb);
+                return;
+            }
+
+            $priceHistory = $this->agreement->getPriceHistoryByAgreementRowid($rowid);
+            $smarty->assign('priceHistory', $priceHistory);
+            $smarty->assign('agreementNb', $agreementNb);
+        } else {
+            header("Location: /");
+        }
+    }
+
     function showdane()
     {
         if (isset($_SERVER['HTTP_X_REQUESTED_WITH']) && ($_SERVER['HTTP_X_REQUESTED_WITH'] == 'XMLHttpRequest')) {

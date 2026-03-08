@@ -123,6 +123,9 @@
                                 <a href="javascript:void(0)" class="dropdown-item"
                                    onClick="showAgreementMessages('{$item.nrumowy}', '{$item.type}', '{$item.nazwakrotka}')"><i
                                             class="fas fa-comment-dots"></i>&nbsp;&nbsp;notatki</a>
+                                          <a href="javascript:void(0)" class="dropdown-item"
+                                              onClick="showAgreementPriceHistory('{$item.rowid}', '{$item.nrumowy|escape:'htmlall'}')"><i
+                                                          class="fas fa-chart-line"></i>&nbsp;&nbsp;Historia</a>
                                 {if !empty($item.serial)}
                                     <div class="border-top my-1"></div>
                                     <a class="dropdown-item" href="#" onClick='pokazLogi("{$item.serial}")'><i
