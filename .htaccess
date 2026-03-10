@@ -1,4 +1,11 @@
-Allow from all
+Order Deny,Allow
+Deny from all
+Allow from 127.0.0.1 # localhost
+Allow from ::1
+Allow from 188.122.18.86 # Tomek office
+Allow from 91.90.174.83 # Tomek home
+Allow from 91.231.124.35 # Otus office
+
 <IfModule mod_rewrite.c>
     RewriteEngine on
     RewriteRule    ^$    public_html/    [L]
