@@ -336,8 +336,10 @@ function importClientPaymentsFromEmailBox()
             try {
                 $decrypted = $emailReader->pgpDecryptBytes($attachments[$pgpIndex]['content'], $passphrase, $gnupgHome);
                 $attachments[$pgpIndex]['content'] = $decrypted;
-
                 $pgpFileName = $attachments[$pgpIndex]['filename'] ?: ($attachments[$pgpIndex]['name'] ?: 'unknown');
+                // Przy mailach z podpisami/innymi załącznikami chcemy procesować tylko odszyfrowany payload.
+                $attachments = [$attachments[$pgpIndex]];
+
                 reportPaymentsProcessingMessage(
                     'PGP decrypt success',
                     'file=' . $pgpFileName . '; bytes=' . strlen($decrypted),
@@ -376,6 +378,9 @@ function processPaymentAttachments($attachments, $emailDate)
         foreach ($contentLines as $contentLine) {
 
             $insertPaymentQuery = insertIntoPaymentsQuery($contentLine);
+            if ($insertPaymentQuery === null) {
+                continue;
+            }
 
             $insertPaymentResult = mysqli_query($mysqli, $insertPaymentQuery);
 
@@ -396,12 +401,41 @@ function processPaymentAttachments($attachments, $emailDate)
 
 function insertIntoPaymentsQuery($content)
 {
+    $content = trim($content);
+    if ($content === '') {
+        return null;
+    }
+
+    if (strpos($content, '-----BEGIN PGP') === 0 || strpos($content, '-----END PGP') === 0) {
+        return null;
+    }
+
     $contentValues = preg_split("/\",\"|,\"|\",/", $content); // explode(',', $content);
+    if (!is_array($contentValues) || count($contentValues) < 11) {
+        return null;
+    }
 
     $firstContentPart = explode(',', $contentValues[0]);
+    if (count($firstContentPart) < 5) {
+        return null;
+    }
+
     $message_type = $firstContentPart[0];
-    $date = date('Y-m-d', strtotime($firstContentPart[1]));
-    $amount = $firstContentPart[2];
+    if (!is_numeric($message_type)) {
+        return null;
+    }
+
+    $parsedDate = strtotime($firstContentPart[1]);
+    if ($parsedDate === false) {
+        return null;
+    }
+    $date = date('Y-m-d', $parsedDate);
+
+    $amount = str_replace(',', '.', $firstContentPart[2]);
+    if (!is_numeric($amount)) {
+        return null;
+    }
+
     $senderBranchNumber = $firstContentPart[3];
     $recipientBranchNumber = $firstContentPart[4];
 
@@ -412,8 +446,11 @@ function insertIntoPaymentsQuery($content)
     $recipientName = addslashes(w1250_to_utf8($contentValues[4]));
 
     $secondContentPart = explode(',', $contentValues[5]);
+    if (count($secondContentPart) < 2) {
+        return null;
+    }
 
-    $intermediateBranchNumber = $secondContentPart[0];
+    $intermediateBranchNumber = is_numeric($secondContentPart[0]) ? $secondContentPart[0] : 'null';
     $finalBranchNumber = $secondContentPart[1];
 
     $details = addslashes(w1250_to_utf8($contentValues[6]));
