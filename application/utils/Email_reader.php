@@ -171,6 +171,111 @@ class Email_reader
         return array_filter($attachments, fn($attachment) => $attachment["is_attachment"]);
     }
 
+    function isPgpAttachment(array $att): bool
+    {
+        $name = strtolower($att['filename'] ?: $att['name'] ?: '');
+
+        if ($name !== '' && preg_match('/\.(pgp|gpg|asc)$/i', $name)) {
+            return true;
+        }
+
+        // Czasem plik nie ma rozszerzenia, więc sprawdzamy treść
+        $content = $att['content'] ?? '';
+        if (!is_string($content) || $content === '') {
+            return false;
+        }
+
+        // ASCII armored
+        if (strpos($content, '-----BEGIN PGP MESSAGE-----') !== false) {
+            return true;
+        }
+
+        // Binary PGP często ma na początku pakiet tag 0x84/0x85/0x8c itp.
+        // (to nie jest 100% pewne, ale pomaga)
+        $first = ord($content[0]);
+        return ($first & 0x80) === 0x80; // high bit set => "może być" pakiet OpenPGP
+    }
+
+    function pgpDecryptBytes(string $encryptedBytes, string $passphrase, ?string $gnupgHome = null): string
+    {
+        $tmpDir = sys_get_temp_dir();
+        $inFile  = tempnam($tmpDir, 'pgp_in_');
+        $outFile = tempnam($tmpDir, 'pgp_out_');
+
+        if ($inFile === false || $outFile === false) {
+            throw new RuntimeException('Unable to create temp files.');
+        }
+
+        try {
+            file_put_contents($inFile, $encryptedBytes);
+
+            $cmd = [
+                'gpg',
+                '--batch',
+                '--yes',
+                '--no-tty',
+                '--decrypt',
+                '--output', $outFile,
+            ];
+
+            if ($passphrase !== '') {
+                $cmd = array_merge($cmd, [
+                    '--pinentry-mode', 'loopback',
+                    '--passphrase-fd', '0',
+                ]);
+            }
+
+            $cmd[] = $inFile;
+
+            $descriptors = [
+                0 => ['pipe', 'r'],
+                1 => ['pipe', 'w'],
+                2 => ['pipe', 'w'],
+            ];
+
+            $env = null;
+            if ($gnupgHome) {
+                $env = $_ENV;
+                $env['GNUPGHOME'] = $gnupgHome;
+            }
+
+            $process = proc_open($cmd, $descriptors, $pipes, null, $env);
+            if (!is_resource($process)) {
+                throw new RuntimeException('Failed to start gpg process.');
+            }
+
+            if ($passphrase !== '') {
+                fwrite($pipes[0], $passphrase);
+            }
+            fclose($pipes[0]);
+
+            $stdout = stream_get_contents($pipes[1]) ?: '';
+            fclose($pipes[1]);
+
+            $stderr = stream_get_contents($pipes[2]) ?: '';
+            fclose($pipes[2]);
+
+            $exitCode = proc_close($process);
+
+            if ($exitCode !== 0) {
+                throw new RuntimeException("gpg decrypt failed (exit=$exitCode). STDERR: " . trim($stderr));
+            }
+
+            $out = file_get_contents($outFile);
+            if ($out === false || $out === '') {
+                // awaryjnie, ale przy --output raczej niepotrzebne
+                if ($stdout !== '') return $stdout;
+                throw new RuntimeException('Decryption succeeded but output is empty.');
+            }
+
+            return $out;
+        } finally {
+            @unlink($inFile);
+            @unlink($outFile);
+        }
+    }
+
+
     // read the inbox
     function inbox()
     {
@@ -212,6 +317,37 @@ function importClientPaymentsFromEmailBox()
         $hasAttachments = count($attachments) > 0;
         if (!$hasAttachments) {
             $emailReader->rejected($email);
+            continue;
+        }
+
+        $pgpAttachments = array_keys(
+            array_filter(
+                $attachments,
+                fn($attachment) => $emailReader->isPgpAttachment($attachment)
+            )
+        );
+
+        if (count($pgpAttachments) > 0) {
+
+            $pgpIndex = $pgpAttachments[0];
+            $passphrase = SANTANDER_PGP_PASSPHRASE;
+            $gnupgHome = defined('SANTANDER_PGP_GNUPG_HOME') ? SANTANDER_PGP_GNUPG_HOME : null;
+
+            try {
+                $decrypted = $emailReader->pgpDecryptBytes($attachments[$pgpIndex]['content'], $passphrase, $gnupgHome);
+                $attachments[$pgpIndex]['content'] = $decrypted;
+
+                $pgpFileName = $attachments[$pgpIndex]['filename'] ?: ($attachments[$pgpIndex]['name'] ?: 'unknown');
+                reportPaymentsProcessingMessage(
+                    'PGP decrypt success',
+                    'file=' . $pgpFileName . '; bytes=' . strlen($decrypted),
+                    $emailDate
+                );
+            } catch (Throwable $e) {
+                reportPaymentsProcessingMessage('PGP decrypt error', $e->getMessage(), $emailDate);
+                $emailReader->rejected($email);
+                continue;
+            }
         }
 
         $paymentsWithAttachmentsProcessResult = processPaymentAttachments($attachments, $emailDate);
