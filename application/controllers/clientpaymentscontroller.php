@@ -125,6 +125,16 @@ class clientpaymentsController extends InvoicesController
 
             if ($tax_no != '9102113580') {
                 $extClient = $this->getClientByTaxNo($tax_no);
+                if (empty($extClient) || !isset($extClient[0]['id'])) {
+                    error_log(sprintf(
+                        '[clientpaymentsController::addClientsPayments] External client not found for tax_no=%s, payment_rowid=%s, payment_date=%s, payment_amount=%s',
+                        $tax_no,
+                        isset($payment['rowid']) ? $payment['rowid'] : 'unknown',
+                        isset($payment['date']) ? $payment['date'] : 'unknown',
+                        isset($payment['amount']) ? $payment['amount'] : 'unknown'
+                    ));
+                    continue;
+                }
                 $extClientId = $extClient[0]['id'];
             } else {
                 $extClientId = '158948316';

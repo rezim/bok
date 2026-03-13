@@ -29,9 +29,14 @@ trait ExternalClientsTrait
         if (USE_PROXY) {
             curl_setopt($ch, CURLOPT_PROXY, '127.0.0.1:8888');
         }
-        $client = json_decode(curl_exec($ch), true);
+        $response = curl_exec($ch);
+        $client = json_decode($response, true);
 
         curl_close($ch);
+
+        if (!is_array($client)) {
+            return array();
+        }
 
         return $client;
     }
@@ -47,9 +52,14 @@ trait ExternalClientsTrait
         if (USE_PROXY) {
             curl_setopt($ch, CURLOPT_PROXY, '127.0.0.1:8888');
         }
-        $client = json_decode(curl_exec($ch), true);
+        $response = curl_exec($ch);
+        $client = json_decode($response, true);
 
         curl_close($ch);
+
+        if (!is_array($client)) {
+            return array();
+        }
 
         return $client;
     }
