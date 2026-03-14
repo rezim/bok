@@ -251,6 +251,14 @@ class clientpaymentsController extends InvoicesController
                         ));
                         continue;
                     }
+                    $externalPaymentsJson = json_encode($externalPayments, JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES);
+                    if ($externalPaymentsJson === false) {
+                        error_log('$externalPaymentsJson jest false');
+                        $externalPaymentsJson = var_export($externalPayments, true);
+                    }
+                    error_log('test logowania');
+                    error_log('[clientpaymentsController::addClientsPayments] addPayment result: ' . $externalPaymentsJson);
+
 
                     $processedPayments = array_map(function ($externalPayment) use (&$payment, &$notPaidInvoices) {
                         $invoiceId = $externalPayment['invoice_id'];
