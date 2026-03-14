@@ -147,13 +147,15 @@ class clientpaymentsController extends InvoicesController
                     $equalPriceInvoices = array_filter($notPaidInvoices, fn($inv) => floatval($inv['price_gross']) == $price && floatval($inv['paid'] == 0));
                     $equalPriceInvoicesCount = count($equalPriceInvoices);
                     $invoice = $equalPriceInvoicesCount > 0 ? array_values($equalPriceInvoices)[0] : array_values($notPaidInvoices)[0];
-
+                    error_log('[test przed external payment]');
                     $externalPayments = $this->addPayment($price, $invoice['id'], $extClientId, $tax_no, "Płatność za FV numer {$invoice['number']} - (automatyczna)", $payment['date'], $price);
-
+                    error_log('[po ext payment]');
                     $externalPaymentsJson = json_encode($externalPayments, JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES);
+                    error_log('[po ext payment to json]');
                     if ($externalPaymentsJson === false) {
                         $externalPaymentsJson = var_export($externalPayments, true);
                     }
+                    error_log('test logowania');
                     error_log('[clientpaymentsController::addClientsPayments] addPayment result: ' . $externalPaymentsJson);
 
                     if (!is_array($externalPayments) || count($externalPayments) === 0) {
