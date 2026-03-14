@@ -111,25 +111,11 @@ class clientpaymentsController extends InvoicesController
 
     function addClientsPayments()
     {
-        $runId = uniqid('client_payments_', true);
-        $startedAt = microtime(true);
-
         // this is because for older payments we do not have records in `payments_processed` table,
         // therefore we do not know if they were processed or not
         $PROCESSED_PAYMENTS_START_DATE = PROCESSED_PAYMENTS_START_DATE;
 
-        error_log(sprintf(
-            '[clientpaymentsController::addClientsPayments][%s] START. PROCESSED_PAYMENTS_START_DATE=%s',
-            $runId,
-            $PROCESSED_PAYMENTS_START_DATE
-        ));
-
         $notProcessedPayments = $this->clientpayment->getNotProcessedPaymentsFromDate($PROCESSED_PAYMENTS_START_DATE);
-        error_log(sprintf(
-            '[clientpaymentsController::addClientsPayments][%s] Loaded not processed payments count=%d',
-            $runId,
-            is_array($notProcessedPayments) ? count($notProcessedPayments) : 0
-        ));
 
         $allNewProcessedPayments = array();
 
@@ -137,64 +123,20 @@ class clientpaymentsController extends InvoicesController
             try {
                 $tax_no = isset($payment['nip']) ? $payment['nip'] : null;
                 $paymentRowId = isset($payment['rowid']) ? $payment['rowid'] : 'unknown';
-                $paymentDate = isset($payment['date']) ? $payment['date'] : 'unknown';
-                $paymentAmountCents = isset($payment['amount']) ? $payment['amount'] : 'unknown';
-
-                error_log(sprintf(
-                    '[clientpaymentsController::addClientsPayments][%s] Processing payment idx=%d rowid=%s nip=%s date=%s amount_cents=%s',
-                    $runId,
-                    $idx,
-                    $paymentRowId,
-                    (string)$tax_no,
-                    $paymentDate,
-                    (string)$paymentAmountCents
-                ));
 
                 if ($tax_no != '9102113580') {
                     $extClient = $this->getClientByTaxNo($tax_no);
-                    error_log(sprintf(
-                        '[clientpaymentsController::addClientsPayments][%s] getClientByTaxNo(%s) returned count=%d',
-                        $runId,
-                        (string)$tax_no,
-                        is_array($extClient) ? count($extClient) : 0
-                    ));
 
                     if (empty($extClient) || !isset($extClient[0]['id'])) {
-                        error_log(sprintf(
-                            '[clientpaymentsController::addClientsPayments][%s] External client not found for tax_no=%s, payment_rowid=%s, payment_date=%s, payment_amount=%s',
-                            $runId,
-                            (string)$tax_no,
-                            $paymentRowId,
-                            $paymentDate,
-                            (string)$paymentAmountCents
-                        ));
+                        error_log('[clientpaymentsController::addClientsPayments] External client not found. payment_rowid=' . $paymentRowId . ', tax_no=' . (string)$tax_no);
                         continue;
                     }
                     $extClientId = $extClient[0]['id'];
                 } else {
                     $extClientId = '158948316';
-                    error_log(sprintf(
-                        '[clientpaymentsController::addClientsPayments][%s] Using hardcoded extClientId=%s for tax_no=%s',
-                        $runId,
-                        $extClientId,
-                        (string)$tax_no
-                    ));
                 }
 
-                error_log(sprintf(
-                    '[clientpaymentsController::addClientsPayments][%s] Selected extClientId=%s for payment_rowid=%s',
-                    $runId,
-                    (string)$extClientId,
-                    $paymentRowId
-                ));
-
                 $notPaidInvoices = $this->getInvoicesByClientId($extClientId, false);
-                error_log(sprintf(
-                    '[clientpaymentsController::addClientsPayments][%s] getInvoicesByClientId(%s, false) returned count=%d',
-                    $runId,
-                    (string)$extClientId,
-                    is_array($notPaidInvoices) ? count($notPaidInvoices) : 0
-                ));
 
                 $invoiceKeys = array_map(function ($invoice) {
                     return $invoice['id'];
@@ -203,62 +145,39 @@ class clientpaymentsController extends InvoicesController
 
                 if (count($notPaidInvoices) > 0) {
                     $price = $payment['amount'] / 100;
-                    error_log(sprintf(
-                        '[clientpaymentsController::addClientsPayments][%s] Calculated price=%s from amount_cents=%s for payment_rowid=%s',
-                        $runId,
-                        (string)$price,
-                        (string)$paymentAmountCents,
-                        $paymentRowId
-                    ));
 
                     $equalPriceInvoices = array_filter($notPaidInvoices, fn($inv) => floatval($inv['price_gross']) == $price && floatval($inv['paid'] == 0));
                     $equalPriceInvoicesCount = count($equalPriceInvoices);
                     $invoice = $equalPriceInvoicesCount > 0 ? array_values($equalPriceInvoices)[0] : array_values($notPaidInvoices)[0];
 
-                    error_log(sprintf(
-                        '[clientpaymentsController::addClientsPayments][%s] Chosen invoice id=%s number=%s equal_price_candidates=%d total_not_paid=%d',
-                        $runId,
-                        isset($invoice['id']) ? (string)$invoice['id'] : 'unknown',
-                        isset($invoice['number']) ? (string)$invoice['number'] : 'unknown',
-                        $equalPriceInvoicesCount,
-                        count($notPaidInvoices)
-                    ));
-
-                    error_log(sprintf(
-                        '[clientpaymentsController::addClientsPayments][%s] Calling addPayment(price=%s, invoice_id=%s, extClientId=%s, tax_no=%s, payment_date=%s)',
-                        $runId,
-                        (string)$price,
-                        isset($invoice['id']) ? (string)$invoice['id'] : 'unknown',
-                        (string)$extClientId,
-                        (string)$tax_no,
-                        $paymentDate
-                    ));
-
                     $externalPayments = $this->addPayment($price, $invoice['id'], $extClientId, $tax_no, "Płatność za FV numer {$invoice['number']} - (automatyczna)", $payment['date'], $price);
-                    error_log(sprintf(
-                        '[clientpaymentsController::addClientsPayments][%s] addPayment returned type=%s count=%d for payment_rowid=%s',
-                        $runId,
-                        gettype($externalPayments),
-                        is_array($externalPayments) ? count($externalPayments) : 0,
-                        $paymentRowId
-                    ));
 
                     if (!is_array($externalPayments) || count($externalPayments) === 0) {
-                        error_log(sprintf(
-                            '[clientpaymentsController::addClientsPayments][%s] No external payments created for payment_rowid=%s',
-                            $runId,
-                            $paymentRowId
-                        ));
+                        error_log('[clientpaymentsController::addClientsPayments] Empty addPayment response. payment_rowid=' . $paymentRowId);
                         continue;
                     }
-                    $externalPaymentsJson = json_encode($externalPayments, JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES);
-                    if ($externalPaymentsJson === false) {
-                        error_log('$externalPaymentsJson jest false');
-                        $externalPaymentsJson = var_export($externalPayments, true);
-                    }
-                    error_log('test logowania');
-                    error_log('[clientpaymentsController::addClientsPayments] addPayment result: ' . $externalPaymentsJson);
 
+                    if (isset($externalPayments[0]['code']) && $externalPayments[0]['code'] === 'error') {
+                        $errorPayload = json_encode($externalPayments[0], JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES);
+                        if ($errorPayload === false) {
+                            $errorPayload = var_export($externalPayments[0], true);
+                        }
+                        error_log('[clientpaymentsController::addClientsPayments] addPayment error. payment_rowid=' . $paymentRowId . ', payload=' . $errorPayload);
+                        continue;
+                    }
+
+                    $externalPayments = array_values(array_filter($externalPayments, function ($externalPayment) {
+                        return is_array($externalPayment)
+                            && isset($externalPayment['invoice_id'])
+                            && !empty($externalPayment['invoice_id'])
+                            && isset($externalPayment['id'])
+                            && !empty($externalPayment['id']);
+                    }));
+
+                    if (count($externalPayments) === 0) {
+                        error_log('[clientpaymentsController::addClientsPayments] Payment created but not linked to invoice. payment_rowid=' . $paymentRowId . ', expected_invoice_id=' . (string)$invoice['id']);
+                        continue;
+                    }
 
                     $processedPayments = array_map(function ($externalPayment) use (&$payment, &$notPaidInvoices) {
                         $invoiceId = $externalPayment['invoice_id'];
@@ -273,62 +192,16 @@ class clientpaymentsController extends InvoicesController
                         );
                     }, $externalPayments);
 
-                    error_log(sprintf(
-                        '[clientpaymentsController::addClientsPayments][%s] Prepared processedPayments count=%d for payment_rowid=%s',
-                        $runId,
-                        count($processedPayments),
-                        $paymentRowId
-                    ));
-
                     $this->clientpayment->addProcessedPayments($processedPayments);
-                    error_log(sprintf(
-                        '[clientpaymentsController::addClientsPayments][%s] addProcessedPayments done for payment_rowid=%s',
-                        $runId,
-                        $paymentRowId
-                    ));
 
                     array_push($allNewProcessedPayments, $payment);
-                    error_log(sprintf(
-                        '[clientpaymentsController::addClientsPayments][%s] Payment marked as successfully processed. payment_rowid=%s total_success=%d',
-                        $runId,
-                        $paymentRowId,
-                        count($allNewProcessedPayments)
-                    ));
-                } else {
-                    error_log(sprintf(
-                        '[clientpaymentsController::addClientsPayments][%s] No unpaid invoices found for extClientId=%s and payment_rowid=%s',
-                        $runId,
-                        (string)$extClientId,
-                        $paymentRowId
-                    ));
                 }
             } catch (Throwable $e) {
-                error_log(sprintf(
-                    '[clientpaymentsController::addClientsPayments][%s] EXCEPTION while processing payment idx=%d rowid=%s: %s at %s:%d',
-                    $runId,
-                    isset($idx) ? $idx : -1,
-                    isset($payment['rowid']) ? $payment['rowid'] : 'unknown',
-                    $e->getMessage(),
-                    $e->getFile(),
-                    $e->getLine()
-                ));
-                error_log(sprintf(
-                    '[clientpaymentsController::addClientsPayments][%s] EXCEPTION TRACE: %s',
-                    $runId,
-                    $e->getTraceAsString()
-                ));
+                error_log('[clientpaymentsController::addClientsPayments] Exception for payment_rowid=' . $paymentRowId . ': ' . $e->getMessage());
             }
         }
         // check once again after processing operation is done, to get list of all not processed
         $notProcessedPayments = $this->clientpayment->getNotProcessedPaymentsFromDate($PROCESSED_PAYMENTS_START_DATE);
-
-        error_log(sprintf(
-            '[clientpaymentsController::addClientsPayments][%s] END. succeedProcessedPayments=%d notProcessedPayments=%d duration_seconds=%.3f',
-            $runId,
-            count($allNewProcessedPayments),
-            is_array($notProcessedPayments) ? count($notProcessedPayments) : 0,
-            microtime(true) - $startedAt
-        ));
 
         return array("succeedProcessedPayments" => $allNewProcessedPayments, "notProcessedPayments" => $notProcessedPayments);
     }
