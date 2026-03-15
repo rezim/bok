@@ -209,6 +209,17 @@ class Email_reader
         try {
             file_put_contents($inFile, $encryptedBytes);
 
+            if ($gnupgHome !== null) {
+                $gnupgHome = trim($gnupgHome);
+                if ($gnupgHome === '') {
+                    $gnupgHome = null;
+                }
+            }
+
+            if ($gnupgHome !== null && !is_dir($gnupgHome)) {
+                throw new RuntimeException("GNUPGHOME directory does not exist: {$gnupgHome}");
+            }
+
             $cmd = [
                 'gpg',
                 '--batch',
@@ -217,6 +228,10 @@ class Email_reader
                 '--decrypt',
                 '--output', $outFile,
             ];
+
+            if ($gnupgHome !== null) {
+                $cmd = array_merge($cmd, ['--homedir', $gnupgHome]);
+            }
 
             if ($passphrase !== '') {
                 $cmd = array_merge($cmd, [
@@ -258,7 +273,8 @@ class Email_reader
             $exitCode = proc_close($process);
 
             if ($exitCode !== 0) {
-                throw new RuntimeException("gpg decrypt failed (exit=$exitCode). STDERR: " . trim($stderr));
+                $usedHome = $gnupgHome ?: '(default)';
+                throw new RuntimeException("gpg decrypt failed (exit=$exitCode, homedir=$usedHome). STDERR: " . trim($stderr));
             }
 
             $out = file_get_contents($outFile);
@@ -292,6 +308,19 @@ class Email_reader
             );
         }
 
+        usort($in, function ($a, $b) {
+            $aDate = isset($a['header']->udate) ? (int)$a['header']->udate : 0;
+            $bDate = isset($b['header']->udate) ? (int)$b['header']->udate : 0;
+
+            if ($aDate === $bDate) {
+                $aIndex = isset($a['index']) ? (int)$a['index'] : 0;
+                $bIndex = isset($b['index']) ? (int)$b['index'] : 0;
+                return $aIndex <=> $bIndex;
+            }
+
+            return $aDate <=> $bDate;
+        });
+
         $this->inbox = $in;
     }
 
@@ -309,7 +338,7 @@ function importClientPaymentsFromEmailBox()
         $isDailyPaymentsReport = strpos($email['header']->subject, TEMATRAPORTDZIENNYOPERACJI);
         if ($isDailyPaymentsReport === false) {
             $emailReader->rejected($email);
-            return;//  continue;
+            continue;
         }
 
         $attachments = $emailReader->getAttachments($email);
@@ -331,7 +360,9 @@ function importClientPaymentsFromEmailBox()
 
             $pgpIndex = $pgpAttachments[0];
             $passphrase = SANTANDER_PGP_PASSPHRASE;
-            $gnupgHome = defined('SANTANDER_PGP_GNUPG_HOME') ? SANTANDER_PGP_GNUPG_HOME : null;
+            $gnupgHome = defined('SANTANDER_PGP_GNUPG_HOME')
+                ? SANTANDER_PGP_GNUPG_HOME
+                : (getenv('SANTANDER_PGP_GNUPG_HOME') ?: null);
 
             try {
                 $decrypted = $emailReader->pgpDecryptBytes($attachments[$pgpIndex]['content'], $passphrase, $gnupgHome);
