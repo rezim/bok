@@ -19,7 +19,7 @@ include 'application/controllers/clientpaymentscontroller.php';
 include 'application/utils/ProcessClientPayments.php';
 
 importClientPaymentsFromEmailBox();
-processClientPayments('tregimowicz@gmail.com');
+// processClientPayments('tregimowicz@gmail.com');
 
 
 
