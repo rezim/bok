@@ -119,85 +119,56 @@ class clientpaymentsController extends InvoicesController
 
         $allNewProcessedPayments = array();
 
-        foreach ($notProcessedPayments as $idx => $payment) {
-            try {
-                $tax_no = isset($payment['nip']) ? $payment['nip'] : null;
-                $paymentRowId = isset($payment['rowid']) ? $payment['rowid'] : 'unknown';
+        foreach ($notProcessedPayments as $payment) {
 
-                if ($tax_no != '9102113580') {
-                    $extClient = $this->getClientByTaxNo($tax_no);
+            $tax_no = $payment['nip'];
 
-                    if (empty($extClient) || !isset($extClient[0]['id'])) {
-                        error_log('[clientpaymentsController::addClientsPayments] External client not found. payment_rowid=' . $paymentRowId . ', tax_no=' . (string)$tax_no);
-                        continue;
-                    }
-                    $extClientId = $extClient[0]['id'];
-                } else {
-                    $extClientId = '158948316';
+            if ($tax_no != '9102113580') {
+                $extClient = $this->getClientByTaxNo($tax_no);
+                if (empty($extClient) || !isset($extClient[0]['id'])) {
+                    error_log(sprintf(
+                        '[clientpaymentsController::addClientsPayments] External client not found for tax_no=%s, payment_rowid=%s, payment_date=%s, payment_amount=%s',
+                        $tax_no,
+                        isset($payment['rowid']) ? $payment['rowid'] : 'unknown',
+                        isset($payment['date']) ? $payment['date'] : 'unknown',
+                        isset($payment['amount']) ? $payment['amount'] : 'unknown'
+                    ));
+                    continue;
                 }
+                $extClientId = $extClient[0]['id'];
+            } else {
+                $extClientId = '158948316';
+            }
+            $notPaidInvoices = $this->getInvoicesByClientId($extClientId, false);
 
-                $notPaidInvoices = $this->getInvoicesByClientId($extClientId, false);
+            $invoiceKeys = array_map(function ($invoice) {
+                return $invoice['id'];
+            }, $notPaidInvoices);
+            $notPaidInvoices = array_combine($invoiceKeys, $notPaidInvoices);
 
-                $invoiceKeys = array_map(function ($invoice) {
-                    return $invoice['id'];
-                }, $notPaidInvoices);
-                $notPaidInvoices = array_combine($invoiceKeys, $notPaidInvoices);
+            if (count($notPaidInvoices) > 0) {
+                $price = $payment['amount'] / 100;
 
-                if (count($notPaidInvoices) > 0) {
-                    $price = $payment['amount'] / 100;
+                $equalPriceInvoices = array_filter($notPaidInvoices, fn($inv) => floatval($inv['price_gross']) == $price && floatval($inv['paid'] == 0));
+                $invoice = count($equalPriceInvoices) > 0 ? array_values($equalPriceInvoices)[0] : array_values($notPaidInvoices)[0];
 
-                    $equalPriceInvoices = array_filter($notPaidInvoices, fn($inv) => floatval($inv['price_gross']) == $price && floatval($inv['paid'] == 0));
-                    $equalPriceInvoicesCount = count($equalPriceInvoices);
-                    $invoice = $equalPriceInvoicesCount > 0 ? array_values($equalPriceInvoices)[0] : array_values($notPaidInvoices)[0];
+                $externalPayments = $this->addPayment($price, $invoice['id'], $extClientId, $tax_no, "Płatność za FV numer {$invoice['number']} - (automatyczna)", $payment['date'], $price);
 
-                    $externalPayments = $this->addPayment($price, $invoice['id'], $extClientId, $tax_no, "Płatność za FV numer {$invoice['number']} - (automatyczna)", $payment['date'], $price);
+                $processedPayments = array_map(function ($externalPayment) use (&$payment, &$notPaidInvoices) {
+                    $invoiceId = $externalPayment['invoice_id'];
+                    return array(
+                        "rowid_payments" => $payment['rowid'],
+                        "ext_invoice_id" => $invoiceId,
+                        "ext_invoice_nb" => $notPaidInvoices[$invoiceId]['number'],
+                        "ext_payment_id" => $externalPayment['id'],
+                        "ext_payment_name" => $externalPayment['name'],
+                        "ext_payment_desc" => $externalPayment['description']
+                    );
+                }, $externalPayments);
 
-                    if (!is_array($externalPayments) || count($externalPayments) === 0) {
-                        error_log('[clientpaymentsController::addClientsPayments] Empty addPayment response. payment_rowid=' . $paymentRowId);
-                        continue;
-                    }
+                $this->clientpayment->addProcessedPayments($processedPayments);
 
-                    if (isset($externalPayments[0]['code']) && $externalPayments[0]['code'] === 'error') {
-                        $errorPayload = json_encode($externalPayments[0], JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES);
-                        if ($errorPayload === false) {
-                            $errorPayload = var_export($externalPayments[0], true);
-                        }
-                        error_log('[clientpaymentsController::addClientsPayments] addPayment error. payment_rowid=' . $paymentRowId . ', payload=' . $errorPayload);
-                        continue;
-                    }
-
-                    $externalPayments = array_values(array_filter($externalPayments, function ($externalPayment) {
-                        return is_array($externalPayment)
-                            && isset($externalPayment['invoice_id'])
-                            && !empty($externalPayment['invoice_id'])
-                            && isset($externalPayment['id'])
-                            && !empty($externalPayment['id']);
-                    }));
-
-                    if (count($externalPayments) === 0) {
-                        error_log('[clientpaymentsController::addClientsPayments] Payment created but not linked to invoice. payment_rowid=' . $paymentRowId . ', expected_invoice_id=' . (string)$invoice['id']);
-                        continue;
-                    }
-
-                    $processedPayments = array_map(function ($externalPayment) use (&$payment, &$notPaidInvoices) {
-                        $invoiceId = $externalPayment['invoice_id'];
-                        $invoiceNumber = isset($notPaidInvoices[$invoiceId]['number']) ? $notPaidInvoices[$invoiceId]['number'] : 'unknown';
-                        return array(
-                            "rowid_payments" => $payment['rowid'],
-                            "ext_invoice_id" => $invoiceId,
-                            "ext_invoice_nb" => $invoiceNumber,
-                            "ext_payment_id" => $externalPayment['id'],
-                            "ext_payment_name" => $externalPayment['name'],
-                            "ext_payment_desc" => $externalPayment['description']
-                        );
-                    }, $externalPayments);
-
-                    $this->clientpayment->addProcessedPayments($processedPayments);
-
-                    array_push($allNewProcessedPayments, $payment);
-                }
-            } catch (Throwable $e) {
-                error_log('[clientpaymentsController::addClientsPayments] Exception for payment_rowid=' . $paymentRowId . ': ' . $e->getMessage());
+                array_push($allNewProcessedPayments, $payment);
             }
         }
         // check once again after processing operation is done, to get list of all not processed

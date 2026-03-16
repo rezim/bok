@@ -36,54 +36,9 @@ trait PaymentsTrait
                 'Content-Length: ' . strlen($data_string))
         );
 
-        $response = curl_exec($ch);
-
-        if ($response === false) {
-            $curlError = curl_error($ch);
-            curl_close($ch);
-            error_log('[PaymentsTrait::addPayment] HTTP request failed: ' . $curlError);
-            return array(array(
-                'code' => 'error',
-                'message' => array('http' => $curlError)
-            ));
-        }
-
-        $newPayment = json_decode($response, true);
+        $newPayment = json_decode(curl_exec($ch), true);
 
         curl_close($ch);
-
-        if (!is_array($newPayment)) {
-            error_log('[PaymentsTrait::addPayment] Invalid JSON response: ' . (string)$response);
-            return array(array(
-                'code' => 'error',
-                'message' => array('response' => 'invalid_json')
-            ));
-        }
-
-        if (isset($newPayment['code']) && $newPayment['code'] === 'error') {
-            return array($newPayment);
-        }
-
-        // New API behavior: payment can be created but not linked to invoice.
-        if (!empty($newPayment['auto_link_error']) || empty($newPayment['invoice_id'])) {
-            $paymentId = isset($newPayment['id']) ? (string)$newPayment['id'] : 'unknown';
-            $autoLinkError = isset($newPayment['auto_link_error']) ? (string)$newPayment['auto_link_error'] : 'Brak invoice_id w odpowiedzi';
-            error_log(sprintf(
-                '[PaymentsTrait::addPayment] Payment not linked to invoice. invoice_id=%s payment_id=%s reason=%s',
-                (string)$invoiceId,
-                $paymentId,
-                $autoLinkError
-            ));
-
-            return array(array(
-                'code' => 'error',
-                'message' => array(
-                    'auto_link_error' => $autoLinkError,
-                    'invoice_id' => $invoiceId,
-                    'payment_id' => $paymentId
-                )
-            ));
-        }
 
         $splitPayments = array();
         if (floatval($newPayment['overpaid']) > 0) {
