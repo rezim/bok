@@ -154,19 +154,26 @@ class clientpaymentsController extends InvoicesController
 
                 $externalPayments = $this->addPayment($price, $invoice['id'], $extClientId, $tax_no, "Płatność za FV numer {$invoice['number']} - (automatyczna)", $payment['date'], $price);
 
-                $processedPayments = array_map(function ($externalPayment) use (&$payment, &$notPaidInvoices) {
-                    $invoiceId = $externalPayment['invoice_id'];
+                $processedPayments = array_values(array_filter(array_map(function ($externalPayment) use (&$payment, &$notPaidInvoices) {
+                    $invoiceId = isset($externalPayment['invoice_id']) ? $externalPayment['invoice_id'] : null;
+
+                    if (empty($invoiceId)) {
+                        return null;
+                    }
+
                     return array(
                         "rowid_payments" => $payment['rowid'],
                         "ext_invoice_id" => $invoiceId,
-                        "ext_invoice_nb" => $notPaidInvoices[$invoiceId]['number'],
+                        "ext_invoice_nb" => isset($notPaidInvoices[$invoiceId]['number']) ? $notPaidInvoices[$invoiceId]['number'] : 'unknown',
                         "ext_payment_id" => $externalPayment['id'],
                         "ext_payment_name" => $externalPayment['name'],
                         "ext_payment_desc" => $externalPayment['description']
                     );
-                }, $externalPayments);
+                }, $externalPayments)));
 
-                $this->clientpayment->addProcessedPayments($processedPayments);
+                if (count($processedPayments) > 0) {
+                    $this->clientpayment->addProcessedPayments($processedPayments);
+                }
 
                 array_push($allNewProcessedPayments, $payment);
             }

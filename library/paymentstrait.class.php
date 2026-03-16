@@ -40,6 +40,33 @@ trait PaymentsTrait
 
         curl_close($ch);
 
+        // Backward-compatibility fallback: refresh payment with include=invoices
+        // and copy first linked invoice id into invoice_id.
+        if (is_array($newPayment) && isset($newPayment['id']) && !empty($newPayment['id'])) {
+            $paymentId = (int)$newPayment['id'];
+            if ($paymentId > 0) {
+                $detailsUrl = FAKTUROWNIA_ENDPOINT . '/banking/payments/' . $paymentId . '.json?api_token=' . FAKTUROWNIA_APITOKEN . '&include=invoices';
+                
+                $detailsCh = curl_init();
+                curl_setopt($detailsCh, CURLOPT_URL, $detailsUrl);
+                curl_setopt($detailsCh, CURLOPT_RETURNTRANSFER, true);
+                if (USE_PROXY) {
+                    curl_setopt($detailsCh, CURLOPT_PROXY, '127.0.0.1:8888');
+                }
+
+                $detailsRaw = curl_exec($detailsCh);
+                curl_close($detailsCh);
+
+                $detailsPayment = json_decode($detailsRaw, true);
+                if (is_array($detailsPayment) && isset($detailsPayment['invoices']) && is_array($detailsPayment['invoices']) && count($detailsPayment['invoices']) > 0) {
+                    $firstInvoice = $detailsPayment['invoices'][0];
+                    if (is_array($firstInvoice) && isset($firstInvoice['id']) && !empty($firstInvoice['id'])) {
+                        $newPayment['invoice_id'] = $firstInvoice['id'];
+                    }
+                }
+            }
+        }
+
         $splitPayments = array();
         if (floatval($newPayment['overpaid']) > 0) {
             $splitPayments = $this->splitPayments($clientId);
