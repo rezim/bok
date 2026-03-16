@@ -1732,7 +1732,15 @@ function saveUpdateMessage(dataContainerId, containerId, type, foreignkey) {
 
 
 function sendPaymentsReport() {
-    window.location.href = "/clientpayments/sendpaymentsreport/notemplate";
+    const actionUrl = "/clientpayments/sendpaymentsreport/notemplate";
+    const successCallback = () => {
+        alert('Wiadomość została wysłana');
+    };
+    const errorCallback = () => {
+        alert('Nie można wysłać wiadomości');
+    };
+
+    callServiceAction(actionUrl, null, successCallback, errorCallback);
 }
 
 function showMessages(containerId, type, foreignkey) {
