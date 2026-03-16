@@ -28,24 +28,16 @@ class clientpaymentsController extends InvoicesController
 
         $this->createCSVFile($fileCSV, $csvHeader, $csvContent);
 
-        $topic = 'Raport platnosci za miesiac ' . $monthName . '.';
+        // Send file as download instead of email
+        header('Content-Type: text/csv; charset=utf-8');
+        header('Content-Disposition: attachment; filename="' . $fileCSV . '"');
+        header('Pragma: no-cache');
+        header('Expires: 0');
 
-        $message = 'Dzień Dobry,' . '<br/><br/>' .
-            'W załączeniu znajduje się plik z raportem.<br/><br/>' .
-            'Pozdrawiamy,' . '<br/>' .
-            'Zespół Otus.pl';
-
-        $attachments = [["path" => $fileCSV, "filename" => $fileCSV]];
-
-        $mailTo = $_SESSION['appConfig']['email_raportu_platnosci'];
-
-        $mailing = new mailing();
-        $mailing->sendNewMail($mailTo, $message, $topic, $attachments, $mailFrom = null, $mailFromName = null);
-        unset($mailing);
-
+        readfile($fileCSV);
+        
         unlink($fileCSV);
-
-        echo json_encode("OK");
+        exit;
     }
 
     function createCSVFile(&$fileName, $header, $content)
