@@ -123,28 +123,30 @@ class clientpayment extends Model
 
                 // check if we already have processed payments for given payment
                 $existingResults = $this->selectWithPDO(
-                    'SELECT rowid FROM payments_processed WHERE rowid_payments = :rowid_payments AND ext_payment_id = :ext_payment_id',
+                    'SELECT rowid FROM payments_processed WHERE rowid_payments = :rowid_payments AND ext_payment_id = :ext_payment_id AND ext_invoice_id = :ext_invoice_id',
                     array(
                         ':rowid_payments' => $rowidPayments,
                         ':ext_payment_id' => $extPaymentId,
+                        ':ext_invoice_id' => $extInvoiceId,
                     )
                 );
 
                 $existingCount = is_array($existingResults) ? count($existingResults) : 0;
                 error_log(sprintf(
-                    '[clientpayment::addProcessedPayments][%s] Existing processed rows=%d for rowid_payments=%d ext_payment_id=%d',
+                    '[clientpayment::addProcessedPayments][%s] Existing processed rows=%d for rowid_payments=%d ext_payment_id=%d ext_invoice_id=%d',
                     $runId,
                     $existingCount,
                     $rowidPayments,
-                    $extPaymentId
+                    $extPaymentId,
+                    $extInvoiceId
                 ));
 
                 if ($existingCount > 0) {
                     // remove processed payments if already exists
                     $deleteResult = $this->update(
-                        'DELETE FROM `payments_processed` WHERE rowid_payments = ? and ext_payment_id = ?',
-                        'ii',
-                        array($rowidPayments, $extPaymentId)
+                        'DELETE FROM `payments_processed` WHERE rowid_payments = ? and ext_payment_id = ? and ext_invoice_id = ?',
+                        'iii',
+                        array($rowidPayments, $extPaymentId, $extInvoiceId)
                     );
                     error_log(sprintf(
                         '[clientpayment::addProcessedPayments][%s] Delete existing result status=%s rows_affected=%s info=%s',

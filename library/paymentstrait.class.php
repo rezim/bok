@@ -14,7 +14,7 @@ trait PaymentsTrait
             "banking_payment" => array(
                 "name" => $name,
                 "price" => $price,
-                "invoice_id" => $invoiceIds,
+                "invoice_ids" => $invoiceIds,
                 "client_id" => $clientId,
                 "invoice_tax_no" => $invoiceTaxNo,
                 "paid_date" => $paidDate,
@@ -59,20 +59,27 @@ trait PaymentsTrait
 
                 $detailsPayment = json_decode($detailsRaw, true);
                 if (is_array($detailsPayment) && isset($detailsPayment['invoices']) && is_array($detailsPayment['invoices']) && count($detailsPayment['invoices']) > 0) {
-                    $firstInvoice = $detailsPayment['invoices'][0];
-                    if (is_array($firstInvoice) && isset($firstInvoice['id']) && !empty($firstInvoice['id'])) {
-                        $newPayment['invoice_id'] = $firstInvoice['id'];
+                    $newPayment['invoices'] = $detailsPayment['invoices'];
+                    $invoiceIds = array();
+                    foreach ($detailsPayment['invoices'] as $invoice) {
+                        if (is_array($invoice) && isset($invoice['id']) && !empty($invoice['id'])) {
+                            $invoiceIds[] = $invoice['id'];
+                        }
+                    }
+                    if (!empty($invoiceIds)) {
+                        $newPayment['invoice_id'] = implode(',', $invoiceIds);
                     }
                 }
             }
         }
 
-        $splitPayments = array();
-        if (floatval($newPayment['overpaid']) > 0) {
-            $splitPayments = $this->splitPayments($clientId);
-        }
+        // TODO TR: should be removed
+        //        $splitPayments = array();
+        //        if (floatval($newPayment['overpaid']) > 0) {
+        //            $splitPayments = $this->splitPayments($clientId);
+        //        }
 
-        return array_merge(array($newPayment), $splitPayments);
+        return array($newPayment);
     }
     function updatePaymentById($paymentId, $price)
     {
