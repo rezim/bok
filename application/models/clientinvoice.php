@@ -173,13 +173,16 @@ class clientinvoice extends Model
         // this is because for older payments we do not have records in `payments_processed` table,
         // therefore we do not know if they were processed or not
         $PROCESSED_PAYMENTS_START_DATE = PROCESSED_PAYMENTS_START_DATE;
-        $where = "WHERE p.date >= '{$startDate}' and p.date >= '{$PROCESSED_PAYMENTS_START_DATE}' and p.date <= '{$endDate}' and c.nip = '{$clientTaxNo}'";
+        $where = "WHERE p.date >= '{$startDate}' and p.date >= '{$PROCESSED_PAYMENTS_START_DATE}' and p.date <= '{$endDate}' and substring(p.recipient_acount, -10) = '{$clientTaxNo}'";
         $orderBy = 'p.date DESC';
 
-        $query = "SELECT p.details as 'content', TRUNCATE(p.amount / 100, 2) as 'price_gross', (select GROUP_CONCAT(pp.ext_invoice_nb separator ', ') from payments_processed pp where pp.rowid_payments = p.rowid) as 'invoice', CONCAT(c.nazwakrotka, CONCAT(' NIP: ', c.nip)) as 'client', p.date as 'issue_date' FROM `payments` p 
-                        inner join clients c on substring(p.recipient_acount, -10) = c.nip
+        $query = "SELECT p.details as 'content', TRUNCATE(p.amount / 100, 2) as 'price_gross', p.date as 'issue_date' FROM `payments` p
                       {$where}
-                  HAVING invoice is NULL                                                                                                                                                                                                                                                                                   
+                        AND NOT EXISTS (
+                            SELECT 1
+                            FROM payments_processed pp
+                            WHERE pp.rowid_payments = p.rowid
+                        )
                   ORDER BY {$orderBy}";
 
         return $this->query($query, null, null);
