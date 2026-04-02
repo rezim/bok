@@ -7,7 +7,14 @@ Allow from 91.90.174.83
 Allow from 91.231.124.35
 
 <IfModule mod_rewrite.c>
-    RewriteEngine on
-    RewriteRule    ^$    public_html/    [L]
-    RewriteRule    (.*) public_html/$1    [L]
+    RewriteEngine On
+
+    # Nie przepisuj tego konkretnego pliku
+    RewriteRule ^loadclientpayments\.php$ - [L]
+
+    # Nie przepisuj jeśli już jesteśmy w public_html
+    RewriteRule ^public_html/ - [L]
+
+    RewriteRule ^$ public_html/ [L]
+    RewriteRule ^(.*)$ public_html/$1 [L]
 </IfModule>
