@@ -1732,15 +1732,15 @@ function saveUpdateMessage(dataContainerId, containerId, type, foreignkey) {
 
 
 function sendPaymentsReport() {
-    const actionUrl = "/clientpayments/sendpaymentsreport/notemplate";
-    const successCallback = () => {
-        alert('Wiadomość została wysłana');
-    };
-    const errorCallback = () => {
-        alert('Nie można wysłać wiadomości');
-    };
+    const form = document.createElement('form');
 
-    callServiceAction(actionUrl, null, successCallback, errorCallback);
+    form.method = 'POST';
+    form.action = `${sciezka}/clientpayments/sendpaymentsreport/notemplate`;
+    form.style.display = 'none';
+
+    document.body.appendChild(form);
+    form.submit();
+    document.body.removeChild(form);
 }
 
 function showMessages(containerId, type, foreignkey) {

@@ -4,7 +4,6 @@ class clientpaymentsController extends InvoicesController
 {
     function sendpaymentsreport()
     {
-        global $smarty;
         global $months;
 
         $today = date('Y-m-d');
@@ -24,28 +23,35 @@ class clientpaymentsController extends InvoicesController
 
         $csvHeader = array($statementNumber, $headerDate, $headerDate, null, null, '86 1090 2398 0000 0001 5252 1901', 'PLN', null, null, null, null, null, null, count($csvContent), 'N');
 
-        $fileCSV = 'Raport ' . $monthName . '.csv';
+        $downloadFileName = 'Raport ' . $monthName . '.csv';
+        $temporaryFilePath = tempnam(sys_get_temp_dir(), 'payments_report_');
 
-        $this->createCSVFile($fileCSV, $csvHeader, $csvContent);
+        if ($temporaryFilePath === false) {
+            http_response_code(500);
+            echo 'Nie mozna przygotowac raportu platnosci.';
+            return;
+        }
 
-        $topic = 'Raport platnosci za miesiac ' . $monthName . '.';
+        $this->createCSVFile($temporaryFilePath, $csvHeader, $csvContent);
 
-        $message = 'Dzień Dobry,' . '<br/><br/>' .
-            'W załączeniu znajduje się plik z raportem.<br/><br/>' .
-            'Pozdrawiamy,' . '<br/>' .
-            'Zespół Otus.pl';
+        $fallbackFileName = 'raport-platnosci.csv';
 
-        $attachments = [["path" => $fileCSV, "filename" => $fileCSV]];
+        while (ob_get_level() > 0) {
+            ob_end_clean();
+        }
 
-        $mailTo = $_SESSION['appConfig']['email_raportu_platnosci'];
+        header('Content-Description: File Transfer');
+        header('Content-Type: text/csv; charset=UTF-8');
+        header('Content-Disposition: attachment; filename="' . $fallbackFileName . '"; filename*=UTF-8\'\'' . rawurlencode($downloadFileName));
+        header('Content-Transfer-Encoding: binary');
+        header('Expires: 0');
+        header('Cache-Control: must-revalidate');
+        header('Pragma: public');
+        header('Content-Length: ' . filesize($temporaryFilePath));
 
-        $mailing = new mailing();
-        $mailing->sendNewMail($mailTo, $message, $topic, $attachments, $mailFrom = null, $mailFromName = null);
-        unset($mailing);
-
-        unlink($fileCSV);
-
-        echo json_encode("OK");
+        readfile($temporaryFilePath);
+        unlink($temporaryFilePath);
+        exit;
     }
 
     function createCSVFile(&$fileName, $header, $content)

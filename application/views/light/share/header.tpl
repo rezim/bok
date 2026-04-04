@@ -338,7 +338,7 @@
                     </a>
                     <div class="dropdown-menu" aria-labelledby="navbarDropdown">
                         {if isset($smarty.session.przypisanemenu['li_clientpaymentsreport'])}
-                            <a href='#' onclick="sendPaymentsReport()" class="dropdown-item">Wyślij Raport Płatności</a>
+                            <a href='#' onclick="sendPaymentsReport(); return false;" class="dropdown-item">Pobierz Raport Płatności</a>
                         {/if}
                         {if isset($smarty.session.przypisanemenu['li_clientinvoicesshow'])}
                             <a href='{$smarty.const.SCIEZKA}/clientinvoices/show' class="dropdown-item">Płatności</a>
