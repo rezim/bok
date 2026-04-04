@@ -1732,15 +1732,7 @@ function saveUpdateMessage(dataContainerId, containerId, type, foreignkey) {
 
 
 function sendPaymentsReport() {
-    const form = document.createElement('form');
-
-    form.method = 'POST';
-    form.action = `${sciezka}/clientpayments/sendpaymentsreport/notemplate`;
-    form.style.display = 'none';
-
-    document.body.appendChild(form);
-    form.submit();
-    document.body.removeChild(form);
+    window.location.href = `${sciezka}/clientpayments/sendpaymentsreport/notemplate`;
 }
 
 function showMessages(containerId, type, foreignkey) {
