@@ -147,7 +147,7 @@
         <span class="navbar-toggler-icon"></span>
     </button>
     <a class="navbar-brand" href="{$smarty.const.SCIEZKA}/">
-        <i class="fas fa-cogs"></i>&nbsp;OTUS
+        <i class="fas fa-cogs"></i>&nbsp;BOK - OTUS
     </a>
     <div class="collapse navbar-collapse" id="navbarSupportedContent">
         <ul class="navbar-nav mr-auto">
