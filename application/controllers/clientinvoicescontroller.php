@@ -541,7 +541,7 @@ class clientinvoicesController extends InvoicesController
             fn($invoice) => array(
                 'data' => $invoice['issue_date'],
                 'winien' => $invoice['price_gross'],
-                'ma' => null,
+                'ma' => ($invoice['payment_type'] === 'cash' && (float)($invoice['paid'] ?? 0) > 0) ? (float)($invoice['paid'] ?? 0) : null,
                 'treść' => $invoice['number'],
                 'uwagi' => '',
                 'className' => 'text-danger'), $invoices);
