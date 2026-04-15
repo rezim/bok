@@ -537,11 +537,25 @@ class clientinvoicesController extends InvoicesController
         $client = $this->clientinvoice->getClientByTaxNb($clientTaxNo, $activeOnly = false);
         $smarty->assign('client', $client);
 
+        $cashPayments = array_map(
+            fn($invoice) => array(
+                'data' => $invoice['issue_date'],
+                'winien' => null,
+                'ma' => (float)$invoice['paid'],
+                'treść' => 'Płatność gotówką',
+                'uwagi' => '',
+                'className' => 'text-success'),
+            array_filter(
+                $invoices,
+                fn($invoice) => ($invoice['payment_type'] ?? null) === 'cash' && (float)($invoice['paid'] ?? 0) > 0
+            )
+        );
+
         $invoices = array_map(
             fn($invoice) => array(
                 'data' => $invoice['issue_date'],
                 'winien' => $invoice['price_gross'],
-                'ma' => ($invoice['payment_type'] === 'cash' && (float)($invoice['paid'] ?? 0) > 0) ? (float)($invoice['paid'] ?? 0) : null,
+                'ma' => null,
                 'treść' => $invoice['number'],
                 'uwagi' => '',
                 'className' => 'text-danger'), $invoices);
@@ -571,6 +585,7 @@ class clientinvoicesController extends InvoicesController
                 'uwagi' => '',
                 'className' => 'text-success'), $payments);
 
+        $payments = array_merge($payments, $cashPayments);
         $payments = array_merge($payments, $notProcessedPayments);
         $accountingSettlements = array_merge($invoices, $payments);
 
