@@ -4,7 +4,7 @@
 </div>
 <script>
     const startAndEndDate = {
-        startDate: new Date('2019-12-31'),
+        startDate: new Date('2021-12-31'),
         endDate: new Date()
     };
 
