@@ -2,7 +2,9 @@ Order Deny,Allow
 Deny from all
 Allow from 127.0.0.1
 Allow from ::1
+# Tomek Office
 Allow from 188.122.18.86
+# Tomek Home
 Allow from 91.90.174.83
 # BOK Office
 Allow from 91.231.124.35
