@@ -186,8 +186,9 @@ class clientsController extends InvoicesController
             $createOrUpdateClientData = array(
                 "name" => $client["nazwapelna"],
                 "shortcut" => $client["nazwakrotka"],
+                "bank" => BANK_NAME,
                 "use_mass_payment" => true,
-                "mass_payment_code" => BANK_NAME . ' ' . $client["numerrachunku"],
+                "mass_payment_code" => $client["numerrachunku"],
                 "email" => $client["mailfaktury"],
                 "street" => $client["ulica"],
                 "post_code" => $client["kodpocztowy"],
