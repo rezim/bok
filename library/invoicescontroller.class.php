@@ -137,6 +137,9 @@ class InvoicesController extends Controller
     {
         $ch = curl_init();
         $url = FAKTUROWNIA_ENDPOINT . '/invoices.json';
+        $defaultDepartmentId = defined('FAKTUROWNIA_DEFAULT_DEPARTMENT_ID')
+            ? (int) FAKTUROWNIA_DEFAULT_DEPARTMENT_ID
+            : 107157;
 
         // Special rule: include issue_date ONLY for this exact date
         $shouldSendIssueDate = ($issueDate === '2025-11-30');
@@ -165,7 +168,8 @@ class InvoicesController extends Controller
                     "internal_note" => $internalNote,
                     "additional_info" => $additionalInfo,
                     "additional_info_desc" => $additionalInfoDesc,
-                    "client_id" => $client[0]['id']
+                    "client_id" => $client[0]['id'],
+                    "department_id" => $defaultDepartmentId
                 )
             );
 
@@ -201,7 +205,8 @@ class InvoicesController extends Controller
                     "show_discount" => $showDiscount,
                     "internal_note" => $internalNote,
                     "additional_info" => $additionalInfo,
-                    "additional_info_desc" => $additionalInfoDesc
+                    "additional_info_desc" => $additionalInfoDesc,
+                    "department_id" => $defaultDepartmentId
                 )
             );
 
