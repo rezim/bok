@@ -6,6 +6,6 @@ include 'application/utils/mailTemplates.php';
 include 'application/utils/mailing.php';
 include 'application/utils/Email_reader.php';
 
-readDeviceCounters('tregimowicz@gmail.com');
+readDeviceCounters();
 
 
