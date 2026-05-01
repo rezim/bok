@@ -20,7 +20,7 @@
             <tr{if isset($rowScan[$rowClassName])} class="{$rowScan[$rowClassName]}"{/if}>
                 {foreach $columnNames as $key}
                     <td>
-                        {if isset($isGroupedView) && $isGroupedView && ($key === 'treść' || $key === 'data płatności' || $key === 'saldo')}
+                        {if isset($isGroupedView) && $isGroupedView && ($key === 'treść' || $key === 'data płatności' || $key === 'saldo' || $key === 'uwagi')}
                             {$rowScan[$key] nofilter}
                         {else}
                             {$rowScan[$key]}

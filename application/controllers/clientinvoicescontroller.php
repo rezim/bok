@@ -310,6 +310,21 @@ class clientinvoicesController extends InvoicesController
         return '<span class="' . $className . '">' . $this->formatBalanceAmount($normalizedAmount) . '</span>';
     }
 
+    private function formatBalanceRemark(float $amount, string $fallback = ''): string
+    {
+        $normalizedAmount = round($amount, 2);
+
+        if ($normalizedAmount < -0.01) {
+            return '<span class="text-danger">niedopłata</span>';
+        }
+
+        if ($normalizedAmount > 0.01) {
+            return '<span class="text-success">nadpłata</span>';
+        }
+
+        return htmlspecialchars($fallback, ENT_QUOTES, 'UTF-8');
+    }
+
     private function buildGroupedAccountingSettlements(array $invoiceRows, array $paymentRows): array
     {
         $paymentsIndex = array_map(function ($payment) {
@@ -370,7 +385,10 @@ class clientinvoicesController extends InvoicesController
                         ? $this->formatGroupedPaymentAmounts($paymentAmounts)
                         : $paymentAmount,
                     'treść' => $this->formatGroupedPaymentContent($paymentContents),
-                    'uwagi' => count($matchedPaymentIndexes) > 1 ? ('Powiązano płatności: ' . count($matchedPaymentIndexes)) : '',
+                    'uwagi' => $this->formatBalanceRemark(
+                        $balanceAmount,
+                        count($matchedPaymentIndexes) > 1 ? ('Powiązano płatności: ' . count($matchedPaymentIndexes)) : ''
+                    ),
                     'saldo' => $this->formatBalanceLabel($balanceAmount),
                     'sortDate' => max(array_merge([(string)$invoice['data']], $paymentDates)),
                     'ma_value' => $paymentAmount,
@@ -390,7 +408,7 @@ class clientinvoicesController extends InvoicesController
                 'data płatności' => '',
                 'ma' => null,
                 'treść' => '',
-                'uwagi' => 'Brak dopasowanej płatności',
+                'uwagi' => $this->formatBalanceRemark($balanceAmount, 'Brak dopasowanej płatności'),
                 'saldo' => $this->formatBalanceLabel($balanceAmount),
                 'sortDate' => (string)$invoice['data'],
                 'ma_value' => 0.0,
@@ -413,7 +431,7 @@ class clientinvoicesController extends InvoicesController
                 'data płatności' => $payment['data'],
                 'ma' => $paymentAmount,
                 'treść' => $this->formatGroupedPaymentContent([$payment['content']]),
-                'uwagi' => 'Płatność bez dopasowanej faktury',
+                'uwagi' => $this->formatBalanceRemark($paymentAmount, 'Płatność bez dopasowanej faktury'),
                 'saldo' => $this->formatBalanceLabel($paymentAmount),
                 'sortDate' => $payment['data'],
                 'ma_value' => $paymentAmount,
