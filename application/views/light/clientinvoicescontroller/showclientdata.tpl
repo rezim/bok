@@ -18,10 +18,14 @@
         </tr>
         {foreach $accountingSettlements as $rowScan}
             <tr{if isset($rowScan[$rowClassName])} class="{$rowScan[$rowClassName]}"{/if}>
-                {foreach $rowScan as $key=>$colScan}
-                    {if $key !== $rowClassName}
-                    <td>{$colScan}</td>
-                    {/if}
+                {foreach $columnNames as $key}
+                    <td>
+                        {if isset($isGroupedView) && $isGroupedView && ($key === 'treść' || $key === 'data płatności' || $key === 'saldo')}
+                            {$rowScan[$key] nofilter}
+                        {else}
+                            {$rowScan[$key]}
+                        {/if}
+                    </td>
                 {/foreach}
             </tr>
         {/foreach}

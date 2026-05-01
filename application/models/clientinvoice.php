@@ -188,6 +188,47 @@ class clientinvoice extends Model
         return $this->query($query, null, null);
     }
 
+    function getProcessedPaymentDetailsByExtPaymentIds(array $extPaymentIds): array
+    {
+        $extPaymentIds = array_values(array_unique(array_filter(array_map('intval', $extPaymentIds))));
+
+        if (empty($extPaymentIds)) {
+            return [];
+        }
+
+        $placeholders = [];
+        $params = [];
+
+        foreach ($extPaymentIds as $index => $extPaymentId) {
+            $placeholder = ':ext_payment_id_' . $index;
+            $placeholders[] = $placeholder;
+            $params[$placeholder] = $extPaymentId;
+        }
+
+        $query = "SELECT pp.ext_payment_id, MAX(p.details) AS details
+                  FROM payments_processed pp
+                  INNER JOIN payments p ON p.rowid = pp.rowid_payments
+                  WHERE pp.ext_payment_id IN (" . implode(', ', $placeholders) . ")
+                  GROUP BY pp.ext_payment_id";
+
+        $rows = $this->selectWithPDO($query, $params);
+        if (!is_array($rows)) {
+            return [];
+        }
+
+        $detailsByExtPaymentId = [];
+        foreach ($rows as $row) {
+            $extPaymentId = isset($row['ext_payment_id']) ? (int)$row['ext_payment_id'] : 0;
+            if ($extPaymentId <= 0) {
+                continue;
+            }
+
+            $detailsByExtPaymentId[$extPaymentId] = isset($row['details']) ? (string)$row['details'] : '';
+        }
+
+        return $detailsByExtPaymentId;
+    }
+
     function pullAllInvoices() {
         $db = [
             'host'    => DB_HOST,

@@ -263,6 +263,173 @@ class clientinvoicesController extends InvoicesController
         return implode(', ', array_values(array_unique($result)));
     }
 
+    private function normalizeSettlementReference(string $value): string
+    {
+        return strtoupper((string)preg_replace('/[^a-z0-9]/i', '', $value));
+    }
+
+    private function formatGroupedPaymentContent(array $paymentContents): string
+    {
+        $safeContents = array_map(
+            fn($content) => '<span class="text-success">' . htmlspecialchars((string)$content, ENT_QUOTES, 'UTF-8') . '</span>',
+            $paymentContents
+        );
+
+        return implode('<br>', $safeContents);
+    }
+
+    private function formatGroupedPaymentAmounts(array $paymentAmounts): string
+    {
+        $safeAmounts = array_map(
+            fn($amount) => number_format((float)$amount, 2, '.', ''),
+            $paymentAmounts
+        );
+
+        return implode('<br>', $safeAmounts);
+    }
+
+    private function formatBalanceAmount(float $amount): string
+    {
+        $normalizedAmount = round($amount, 2);
+
+        if (abs($normalizedAmount) < 0.01) {
+            return '-';
+        }
+
+        $absValue = number_format(abs($normalizedAmount), 2, '.', '');
+        $absValue = rtrim(rtrim($absValue, '0'), '.');
+
+        return ($normalizedAmount > 0 ? '+' : '-') . $absValue;
+    }
+
+    private function formatBalanceLabel(float $amount): string
+    {
+        $normalizedAmount = round($amount, 2);
+        $className = $normalizedAmount < -0.01 ? 'text-danger' : 'text-success';
+
+        return '<span class="' . $className . '">' . $this->formatBalanceAmount($normalizedAmount) . '</span>';
+    }
+
+    private function buildGroupedAccountingSettlements(array $invoiceRows, array $paymentRows): array
+    {
+        $paymentsIndex = array_map(function ($payment) {
+            $content = (string)($payment['treść'] ?? '');
+
+            return [
+                'data' => (string)($payment['data'] ?? ''),
+                'ma' => (float)($payment['ma'] ?? 0),
+                'content' => $content,
+                'normalizedContent' => $this->normalizeSettlementReference($content),
+                'isUsed' => false,
+            ];
+        }, $paymentRows);
+
+        $groupedRows = [];
+
+        foreach ($invoiceRows as $invoice) {
+            $invoiceNumber = (string)($invoice['treść'] ?? '');
+            $normalizedInvoiceNumber = $this->normalizeSettlementReference($invoiceNumber);
+            $matchedPaymentIndexes = [];
+
+            if ($normalizedInvoiceNumber !== '') {
+                foreach ($paymentsIndex as $idx => $payment) {
+                    if ($payment['isUsed']) {
+                        continue;
+                    }
+
+                    if (strpos($payment['normalizedContent'], $normalizedInvoiceNumber) !== false) {
+                        $matchedPaymentIndexes[] = $idx;
+                    }
+                }
+            }
+
+            if (!empty($matchedPaymentIndexes)) {
+                $paymentDates = [];
+                $paymentContents = [];
+                $paymentAmounts = [];
+                $paymentTotal = 0.0;
+
+                foreach ($matchedPaymentIndexes as $matchedPaymentIndex) {
+                    $paymentsIndex[$matchedPaymentIndex]['isUsed'] = true;
+                    $paymentDates[] = $paymentsIndex[$matchedPaymentIndex]['data'];
+                    $paymentContents[] = $paymentsIndex[$matchedPaymentIndex]['content'];
+                    $paymentAmounts[] = $paymentsIndex[$matchedPaymentIndex]['ma'];
+                    $paymentTotal += $paymentsIndex[$matchedPaymentIndex]['ma'];
+                }
+
+                $invoiceAmount = round((float)($invoice['winien'] ?? 0), 2);
+                $paymentAmount = round($paymentTotal, 2);
+                $balanceAmount = round($paymentAmount - $invoiceAmount, 2);
+
+                $groupedRows[] = [
+                    'data faktury' => $invoice['data'],
+                    'faktura' => $invoiceNumber,
+                    'winien' => $invoice['winien'],
+                    'data płatności' => implode('<br>', $paymentDates),
+                    'ma' => count($paymentAmounts) > 1
+                        ? $this->formatGroupedPaymentAmounts($paymentAmounts)
+                        : $paymentAmount,
+                    'treść' => $this->formatGroupedPaymentContent($paymentContents),
+                    'uwagi' => count($matchedPaymentIndexes) > 1 ? ('Powiązano płatności: ' . count($matchedPaymentIndexes)) : '',
+                    'saldo' => $this->formatBalanceLabel($balanceAmount),
+                    'sortDate' => max(array_merge([(string)$invoice['data']], $paymentDates)),
+                    'ma_value' => $paymentAmount,
+                    'saldo_value' => $balanceAmount,
+                    'className' => $balanceAmount < -0.01 ? 'text-danger' : 'text-success',
+                ];
+                continue;
+            }
+
+            $invoiceAmount = round((float)($invoice['winien'] ?? 0), 2);
+            $balanceAmount = round(-$invoiceAmount, 2);
+
+            $groupedRows[] = [
+                'data faktury' => $invoice['data'],
+                'faktura' => $invoiceNumber,
+                'winien' => $invoice['winien'],
+                'data płatności' => '',
+                'ma' => null,
+                'treść' => '',
+                'uwagi' => 'Brak dopasowanej płatności',
+                'saldo' => $this->formatBalanceLabel($balanceAmount),
+                'sortDate' => (string)$invoice['data'],
+                'ma_value' => 0.0,
+                'saldo_value' => $balanceAmount,
+                'className' => 'text-danger',
+            ];
+        }
+
+        foreach ($paymentsIndex as $payment) {
+            if ($payment['isUsed']) {
+                continue;
+            }
+
+            $paymentAmount = round((float)$payment['ma'], 2);
+
+            $groupedRows[] = [
+                'data faktury' => '',
+                'faktura' => '',
+                'winien' => null,
+                'data płatności' => $payment['data'],
+                'ma' => $paymentAmount,
+                'treść' => $this->formatGroupedPaymentContent([$payment['content']]),
+                'uwagi' => 'Płatność bez dopasowanej faktury',
+                'saldo' => $this->formatBalanceLabel($paymentAmount),
+                'sortDate' => $payment['data'],
+                'ma_value' => $paymentAmount,
+                'saldo_value' => $paymentAmount,
+                'className' => 'text-success',
+            ];
+        }
+
+        usort($groupedRows, fn($a, $b) => strcmp((string)$b['sortDate'], (string)$a['sortDate']));
+
+        return array_map(function ($row) {
+            unset($row['sortDate']);
+            return $row;
+        }, $groupedRows);
+    }
+
     function addinvoicepayment()
     {
         if ($_POST['price'] && $_POST['invoice_id'] && $_POST['invoice_tax_no'] && $_POST['client_id'] && $_POST['paid_name'] && $_POST['paid_date']) {
@@ -531,6 +698,7 @@ class clientinvoicesController extends InvoicesController
         $clientTaxNo = $_POST['clientNIP'];
         $dateFrom = $_POST['startDate'];
         $dateTo = $_POST['endDate'];
+        $isGroupedView = filter_var($_POST['groupByInvoiceWithPayments'] ?? false, FILTER_VALIDATE_BOOLEAN);
 
         $invoices = $this->getInvoicesByClientTaxNo($clientTaxNo, $dateFrom, $dateTo);
 
@@ -562,6 +730,9 @@ class clientinvoicesController extends InvoicesController
 
         $clientId = $this->getClientIdByTaxNo($clientTaxNo);
         $payments = $this->getClientPayments($clientId, $dateFrom, $dateTo);
+        $paymentDetailsByExtPaymentId = $this->clientinvoice->getProcessedPaymentDetailsByExtPaymentIds(
+            array_column($payments, 'id')
+        );
 
         $notProcessedPayments = $this->clientinvoice->getNotProcessedPaymentsByClientTaxNo($clientTaxNo, $dateFrom, $dateTo);
 
@@ -581,12 +752,44 @@ class clientinvoicesController extends InvoicesController
                 'data' => (new DateTime($payment['paid_date']))->format('Y-m-d'),
                 'winien' => null,
                 'ma' => $payment['price'],
-                'treść' => $payment['name'],
+                'treść' => $paymentDetailsByExtPaymentId[(int)($payment['id'] ?? 0)] ?? $payment['name'],
                 'uwagi' => '',
                 'className' => 'text-success'), $payments);
 
         $payments = array_merge($payments, $cashPayments);
         $payments = array_merge($payments, $notProcessedPayments);
+
+        if ($isGroupedView) {
+            $groupedAccountingSettlements = $this->buildGroupedAccountingSettlements($invoices, $payments);
+
+            if (empty($groupedAccountingSettlements)) {
+                $smarty->assign('isEmptyMessage', 'Dla podanego zakresu dat nie ma żadnych dokumentów.');
+                return;
+            }
+
+            $ROW_CLASS_NAME = 'className';
+            $columnNames = array_filter(
+                array_keys($groupedAccountingSettlements[0]),
+                fn($key) => $key !== $ROW_CLASS_NAME && $key !== 'ma_value' && $key !== 'saldo_value'
+            );
+            $columnSummaries = array_map(
+                fn($columnName) => $columnName === 'ma'
+                    ? array_sum(array_column($groupedAccountingSettlements, 'ma_value'))
+                    : ($columnName === 'saldo'
+                        ? array_sum(array_column($groupedAccountingSettlements, 'saldo_value'))
+                        : array_sum(array_map(fn($val) => is_numeric($val) ? $val : 0, array_column($groupedAccountingSettlements, $columnName)))
+                    ),
+                $columnNames
+            );
+
+            $smarty->assign('isGroupedView', true);
+            $smarty->assign('columnNames', $columnNames);
+            $smarty->assign('columnSummaries', $columnSummaries);
+            $smarty->assign('accountingSettlements', $groupedAccountingSettlements);
+            $smarty->assign('rowClassName', $ROW_CLASS_NAME);
+            return;
+        }
+
         $accountingSettlements = array_merge($invoices, $payments);
 
         if (empty($accountingSettlements)) {
@@ -608,6 +811,7 @@ class clientinvoicesController extends InvoicesController
         $smarty->assign('columnSummaries', $columnSummaries);
         $smarty->assign('accountingSettlements', $accountingSettlements);
         $smarty->assign('rowClassName', $ROW_CLASS_NAME);
+        $smarty->assign('isGroupedView', false);
     }
 
     function importinvoices()
