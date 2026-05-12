@@ -68,3 +68,131 @@
         window.location.href = url.toString();
     };
 </script>
+
+{literal}
+<script>
+    let currentClientPaymentMessagesNip = null;
+    let currentClientPaymentMessages = [];
+
+    function escapeClientPaymentMessageHtml(value) {
+        return $('<div/>').text(value || '').html();
+    }
+
+    function renderClientPaymentMessages(messages) {
+        const listContainer = $('#clientPaymentMessagesList');
+        if (!listContainer.length) {
+            return;
+        }
+
+        if (!messages || !messages.length) {
+            listContainer.html('<div class="row py-2"><div class="col-sm-12 text-muted">Brak notatek.</div></div>');
+            return;
+        }
+
+        const rowsHtml = messages.map(function (message) {
+            return '' +
+                '<div class="row py-2 border-bottom">' +
+                '<div class="col-sm-2">' + escapeClientPaymentMessageHtml(message.message_date) + '</div>' +
+                '<div class="col-sm-6">' + escapeClientPaymentMessageHtml(message.message) + '</div>' +
+                '<div class="col-sm-3">' + escapeClientPaymentMessageHtml(message.owner) + '</div>' +
+                '<div class="col-sm-1">' +
+                '<span class="action fa fa-times fa-3 text-danger" role="button" onclick="removeClientPaymentMessage(' + Number(message.rowid) + ')"></span>' +
+                '</div>' +
+                '</div>';
+        }).join('');
+
+        listContainer.html(rowsHtml);
+    }
+
+    function fetchClientPaymentMessages() {
+        if (!currentClientPaymentMessagesNip) {
+            return;
+        }
+
+        $.ajax({
+            url: sciezka + '/clientinvoices/getpaymentclientmessages/notemplate',
+            type: 'POST',
+            dataType: 'json',
+            data: {client_nip: currentClientPaymentMessagesNip},
+            success: function (messages) {
+                currentClientPaymentMessages = Array.isArray(messages) ? messages : [];
+                renderClientPaymentMessages(currentClientPaymentMessages);
+            },
+            error: function () {
+                $('#clientPaymentMessagesList').html('<div class="row py-2"><div class="col-sm-12 text-danger">Problem z pobraniem notatek.</div></div>');
+            }
+        });
+    }
+
+    window.openClientPaymentMessagesModal = function (nip, clientName) {
+        currentClientPaymentMessagesNip = nip;
+        $('#clientPaymentMessagesSubtitle').text('Klient: ' + (clientName || '') + ', NIP: ' + nip);
+        $('#clientPaymentMessageText').val('');
+        $('#clientPaymentMessageDate').datepicker({dateFormat: 'yy-mm-dd'}).datepicker('setDate', 'today');
+        fetchClientPaymentMessages();
+        $('#clientPaymentMessagesModal').modal({keyboard: true});
+    };
+
+    window.removeClientPaymentMessage = function (rowid) {
+        if (!confirm('Czy na pewno usunąć wiadomość?')) {
+            return;
+        }
+
+        $.ajax({
+            url: sciezka + '/clientinvoices/removeclientmessage/notemplate',
+            type: 'POST',
+            data: {rowid: rowid},
+            success: function () {
+                currentClientPaymentMessages = currentClientPaymentMessages.filter(function (item) {
+                    return Number(item.rowid) !== Number(rowid);
+                });
+                renderClientPaymentMessages(currentClientPaymentMessages);
+            },
+            error: function () {
+                alert('Nie można usunąć wiadomości.');
+            }
+        });
+    };
+
+    $(document)
+        .off('click', '#clientPaymentMessagesSaveBtn')
+        .on('click', '#clientPaymentMessagesSaveBtn', function () {
+            const messageDate = $('#clientPaymentMessageDate').val();
+            const messageText = $('#clientPaymentMessageText').val();
+
+            if (!currentClientPaymentMessagesNip || !messageDate || !messageText) {
+                alert('Uzupełnij datę i treść wiadomości.');
+                return;
+            }
+
+            $.ajax({
+                url: sciezka + '/clientinvoices/addpaymentclientmessage/notemplate',
+                type: 'POST',
+                dataType: 'json',
+                data: {
+                    client_nip: currentClientPaymentMessagesNip,
+                    message_date: messageDate,
+                    message: messageText
+                },
+                success: function (newMessages) {
+                    const inserted = Array.isArray(newMessages) ? newMessages : [];
+                    currentClientPaymentMessages = inserted.concat(currentClientPaymentMessages);
+                    renderClientPaymentMessages(currentClientPaymentMessages);
+                    $('#clientPaymentMessageText').val('');
+                },
+                error: function () {
+                    alert('Nie można zapisać wiadomości.');
+                }
+            });
+        });
+
+    $(document)
+        .off('keypress', '#clientPaymentMessageText')
+        .on('keypress', '#clientPaymentMessageText', function (event) {
+            if (event.keyCode === 13) {
+                event.preventDefault();
+                $('#clientPaymentMessagesSaveBtn').trigger('click');
+            }
+        });
+</script>
+{/literal}
