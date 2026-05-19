@@ -54,6 +54,54 @@ class clientpaymentsController extends InvoicesController
         exit;
     }
 
+    function sendpaymentsreporttxt()
+    {
+        global $months;
+
+        $today = date('Y-m-d');
+        $previousMonth = date('Y-m-d', strtotime('-1 month', strtotime($today)));
+        $firstDayOfPreviousMonth = date('Y-m-01', strtotime($previousMonth));
+        $lastDayOfPreviousMonth = date('Y-m-t', strtotime($previousMonth));
+
+        $date = new DateTime($firstDayOfPreviousMonth);
+        $year = $date->format('Y');
+        $month = $date->format('m');
+        $statementNumber = $year . '/' . str_pad($month, 3, '0', STR_PAD_LEFT);
+        $monthName = $months[$month];
+
+        $txtContent = $this->clientpayment->getPayments($firstDayOfPreviousMonth, $lastDayOfPreviousMonth, $statementNumber);
+
+        $downloadFileName = 'Raport ' . $monthName . '.txt';
+        $temporaryFilePath = tempnam(sys_get_temp_dir(), 'payments_report_txt_');
+
+        if ($temporaryFilePath === false) {
+            http_response_code(500);
+            echo 'Nie mozna przygotowac raportu platnosci TXT.';
+            return;
+        }
+
+        $this->createTXTFile($temporaryFilePath, $txtContent);
+
+        $fallbackFileName = 'raport-platnosci.txt';
+
+        while (ob_get_level() > 0) {
+            ob_end_clean();
+        }
+
+        header('Content-Description: File Transfer');
+        header('Content-Type: text/plain; charset=UTF-8');
+        header('Content-Disposition: attachment; filename="' . $fallbackFileName . '"; filename*=UTF-8\'\'' . rawurlencode($downloadFileName));
+        header('Content-Transfer-Encoding: binary');
+        header('Expires: 0');
+        header('Cache-Control: must-revalidate');
+        header('Pragma: public');
+        header('Content-Length: ' . filesize($temporaryFilePath));
+
+        readfile($temporaryFilePath);
+        unlink($temporaryFilePath);
+        exit;
+    }
+
     function createCSVFile(&$fileName, $header, $content)
     {
         $handle = fopen($fileName, 'w');
@@ -61,6 +109,52 @@ class clientpaymentsController extends InvoicesController
         fputs($handle, implode(',', $header) . "\n");
         foreach ($content as $row) {
             fputs($handle, implode(',', $row) . "\n");
+        }
+
+        fclose($handle);
+    }
+
+    function createTXTFile(&$fileName, $content)
+    {
+        $handle = fopen($fileName, 'w');
+
+        foreach ($content as $row) {
+            $rowValues = array_values($row);
+
+            $title = isset($rowValues[3]) ? trim((string)$rowValues[3], '"') : '';
+            $amountMA = isset($rowValues[11]) ? trim((string)$rowValues[11], '"') : '';
+            $bookingDate = isset($rowValues[1]) ? (string)$rowValues[1] : '';
+            $operationDate = isset($rowValues[2]) ? (string)$rowValues[2] : '';
+
+            $bookingDateIso = DateTime::createFromFormat('d-m-Y', $bookingDate);
+            $operationDateIso = DateTime::createFromFormat('d-m-Y', $operationDate);
+
+            $txtRow = array(
+                isset($rowValues[0]) ? $rowValues[0] : '',
+                $bookingDate,
+                $operationDate,
+                $title,
+                isset($rowValues[4]) ? $rowValues[4] : '',
+                isset($rowValues[5]) ? $rowValues[5] : '',
+                '',
+                '',
+                '',
+                '',
+                '',
+                $amountMA,
+                '',
+                isset($rowValues[13]) ? $rowValues[13] : '',
+                isset($rowValues[14]) ? $rowValues[14] : '',
+                '',
+                '',
+                '',
+                '0',
+                '1',
+                $bookingDateIso ? $bookingDateIso->format('Y-m-d') : '',
+                $operationDateIso ? $operationDateIso->format('Y-m-d') : ''
+            );
+
+            fputs($handle, implode("\t", $txtRow) . "\n");
         }
 
         fclose($handle);

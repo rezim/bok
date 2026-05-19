@@ -1732,7 +1732,7 @@ function saveUpdateMessage(dataContainerId, containerId, type, foreignkey) {
 
 
 function sendPaymentsReport() {
-    window.location.href = `${sciezka}/clientpayments/sendpaymentsreport/notemplate`;
+    window.location.href = `${sciezka}/clientpayments/sendpaymentsreporttxt/notemplate`;
 }
 
 function showMessages(containerId, type, foreignkey) {
