@@ -40,18 +40,11 @@
         <div class="border-top my-4 otus-separator"></div>
 
         <div class="form-group">
-            <div class="custom-control custom-switch">
-                <input data-ref type="checkbox" class="custom-control-input" id="groupByInvoiceWithPayments">
-                <label class="custom-control-label" for="groupByInvoiceWithPayments">Widok: faktura + płatność</label>
-            </div>
-            <small class="form-text text-muted"><i class="fas fa-info-circle"></i> Łączy wpisy, gdy numer faktury występuje w opisie płatności.</small>
-        </div>
-
-        <div class="form-group">
             <button id="applyFilter" class="btn btn-info btn-block" type="button">
                 Filtruj
             </button>
         </div>
         <input data-ref type="hidden" id="clientNIP" value="{$clientNIP}" />
+        <input data-ref type="hidden" id="groupByInvoiceWithPayments" value="{if isset($isGroupedView) && $isGroupedView}true{else}false{/if}" />
     </form>
 </div>

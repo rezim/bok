@@ -763,6 +763,7 @@ class clientinvoicesController extends InvoicesController
         $smarty->assign('months', $months);
         $smarty->assign('rok', date("Y"));
         $smarty->assign('clientNIP', $this->_queryString[0]);
+        $smarty->assign('isGroupedView', !empty($_SESSION['clientinvoices_groupByInvoiceWithPayments']));
     }
 
     function showclientdata()
@@ -771,7 +772,19 @@ class clientinvoicesController extends InvoicesController
         $clientTaxNo = $_POST['clientNIP'];
         $dateFrom = $_POST['startDate'];
         $dateTo = $_POST['endDate'];
-        $isGroupedView = filter_var($_POST['groupByInvoiceWithPayments'] ?? false, FILTER_VALIDATE_BOOLEAN);
+        $isGroupedViewFromRequest = array_key_exists('groupByInvoiceWithPayments', $_POST)
+            ? filter_var($_POST['groupByInvoiceWithPayments'], FILTER_VALIDATE_BOOLEAN)
+            : null;
+
+        if ($isGroupedViewFromRequest !== null) {
+            $_SESSION['clientinvoices_groupByInvoiceWithPayments'] = $isGroupedViewFromRequest;
+        }
+
+        $isGroupedView = isset($_SESSION['clientinvoices_groupByInvoiceWithPayments'])
+            ? (bool)$_SESSION['clientinvoices_groupByInvoiceWithPayments']
+            : false;
+
+        $smarty->assign('isGroupedView', $isGroupedView);
 
         $invoices = $this->getInvoicesByClientTaxNo($clientTaxNo, $dateFrom, $dateTo);
 

@@ -11,6 +11,20 @@
             Pokaż dane klienta
         </a>
     </p>
+
+    <div class="mb-3">
+        <div class="custom-control custom-switch">
+            <input
+                type="checkbox"
+                class="custom-control-input"
+                id="groupByInvoiceWithPaymentsSwitch"
+                {if isset($isGroupedView) && $isGroupedView}checked{/if}
+            >
+            <label class="custom-control-label" for="groupByInvoiceWithPaymentsSwitch">Widok: faktura + płatność</label>
+        </div>
+        <small class="form-text text-muted"><i class="fas fa-info-circle"></i> Łączy wpisy, gdy numer faktury występuje w opisie płatności.</small>
+    </div>
+
     <div class="collapse" id="clientDetails">
         <table class='table table-sm table-bordered mb-3'>
             <tbody>
@@ -94,6 +108,24 @@
     </table>
     {/if}
 </div>
+
+<script>
+    (function () {
+        const groupedViewSwitch = document.getElementById('groupByInvoiceWithPaymentsSwitch');
+        const groupedViewHiddenInput = document.getElementById('groupByInvoiceWithPayments');
+
+        if (!groupedViewSwitch || !groupedViewHiddenInput) {
+            return;
+        }
+
+        groupedViewHiddenInput.value = groupedViewSwitch.checked ? 'true' : 'false';
+
+        groupedViewSwitch.addEventListener('change', function () {
+            groupedViewHiddenInput.value = groupedViewSwitch.checked ? 'true' : 'false';
+            renderTemplateAction('/clientinvoices/showclientdata/todiv', 'dataFilter', 'divRightCenter');
+        });
+    })();
+</script>
 
 <div class="modal fade" id="clientPaymentMessagesModal" tabindex="-1" role="dialog" aria-hidden="true">
     <div class="modal-dialog modal-dialog-centered modal-xl" role="document">
