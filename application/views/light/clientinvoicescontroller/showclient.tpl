@@ -38,9 +38,38 @@
     const dataContainerId = 'dataFilter';
     const templateId = 'divRightCenter';
 
-    const renderTemplate = () => renderTemplateAction("/clientinvoices/showclientdata/todiv", dataContainerId, templateId);
+    const syncGroupedViewHiddenField = () => {
+        const groupedViewSwitch = document.getElementById('groupByInvoiceWithPaymentsSwitch');
+        const groupedViewHiddenInput = document.getElementById('groupByInvoiceWithPayments');
+
+        if (!groupedViewSwitch || !groupedViewHiddenInput) {
+            return;
+        }
+
+        groupedViewHiddenInput.value = groupedViewSwitch.checked ? 'true' : 'false';
+    };
+
+    const renderTemplate = () => renderTemplateAction(
+        "/clientinvoices/showclientdata/todiv",
+        dataContainerId,
+        templateId,
+        null,
+        syncGroupedViewHiddenField
+    );
 
     $("#applyFilter").on('click', renderTemplate);
+
+    $(document)
+        .off('change', '#groupByInvoiceWithPaymentsSwitch')
+        .on('change', '#groupByInvoiceWithPaymentsSwitch', function () {
+            const groupedViewHiddenInput = document.getElementById('groupByInvoiceWithPayments');
+            if (groupedViewHiddenInput) {
+                groupedViewHiddenInput.value = this.checked ? 'true' : 'false';
+            }
+
+            renderTemplate();
+        });
+
     renderTemplate();
 </script>
 

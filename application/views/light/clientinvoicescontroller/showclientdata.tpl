@@ -109,24 +109,6 @@
     {/if}
 </div>
 
-<script>
-    (function () {
-        const groupedViewSwitch = document.getElementById('groupByInvoiceWithPaymentsSwitch');
-        const groupedViewHiddenInput = document.getElementById('groupByInvoiceWithPayments');
-
-        if (!groupedViewSwitch || !groupedViewHiddenInput) {
-            return;
-        }
-
-        groupedViewHiddenInput.value = groupedViewSwitch.checked ? 'true' : 'false';
-
-        groupedViewSwitch.addEventListener('change', function () {
-            groupedViewHiddenInput.value = groupedViewSwitch.checked ? 'true' : 'false';
-            renderTemplateAction('/clientinvoices/showclientdata/todiv', 'dataFilter', 'divRightCenter');
-        });
-    })();
-</script>
-
 <div class="modal fade" id="clientPaymentMessagesModal" tabindex="-1" role="dialog" aria-hidden="true">
     <div class="modal-dialog modal-dialog-centered modal-xl" role="document">
         <div class="modal-content">
