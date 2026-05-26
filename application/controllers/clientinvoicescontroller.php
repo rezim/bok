@@ -265,7 +265,62 @@ class clientinvoicesController extends InvoicesController
 
     private function normalizeSettlementReference(string $value): string
     {
-        return strtoupper((string)preg_replace('/[^a-z0-9]/i', '', $value));
+        $normalizedValue = strtoupper($value);
+        $normalizedValue = str_replace('-', '/', $normalizedValue);
+        $normalizedValue = preg_replace('/\s+/', '', $normalizedValue);
+        $normalizedValue = preg_replace('/[^A-Z0-9\/]/', '', $normalizedValue);
+        $normalizedValue = preg_replace('#/{2,}#', '/', $normalizedValue);
+
+        return trim((string)$normalizedValue, '/');
+    }
+
+    private function buildSettlementReferencePattern(string $invoiceNumber): ?string
+    {
+        $normalizedInvoiceNumber = $this->normalizeSettlementReference($invoiceNumber);
+        if ($normalizedInvoiceNumber === '') {
+            return null;
+        }
+
+        $parts = array_values(array_filter(explode('/', $normalizedInvoiceNumber), fn($part) => $part !== ''));
+        if (empty($parts)) {
+            return null;
+        }
+
+        $firstPart = $parts[0];
+        $firstPartPattern = preg_quote($firstPart, '/');
+
+        if (preg_match('/^([A-Z]*)(\d+)$/', $firstPart, $matches) === 1) {
+            $prefix = $matches[1];
+            $numericPart = $matches[2];
+            $trimmedNumericPart = ltrim($numericPart, '0');
+            $numericPattern = $trimmedNumericPart === ''
+                ? '0+'
+                : '0*' . preg_quote($trimmedNumericPart, '/');
+
+            $firstPartPattern = preg_quote($prefix, '/') . $numericPattern;
+        }
+
+        $pattern = $firstPartPattern;
+        for ($index = 1; $index < count($parts); $index++) {
+            $pattern .= '[\\/-]?' . preg_quote($parts[$index], '/');
+        }
+
+        return '/' . $pattern . '/';
+    }
+
+    private function matchesSettlementReference(string $paymentContent, string $invoiceNumber): bool
+    {
+        $pattern = $this->buildSettlementReferencePattern($invoiceNumber);
+        if ($pattern === null) {
+            return false;
+        }
+
+        $normalizedPaymentContent = $this->normalizeSettlementReference($paymentContent);
+        if ($normalizedPaymentContent === '') {
+            return false;
+        }
+
+        return preg_match($pattern, $normalizedPaymentContent) === 1;
     }
 
     private function formatGroupedPaymentContent(array $paymentContents): string
@@ -352,7 +407,7 @@ class clientinvoicesController extends InvoicesController
                         continue;
                     }
 
-                    if (strpos($payment['normalizedContent'], $normalizedInvoiceNumber) !== false) {
+                    if ($this->matchesSettlementReference($payment['content'], $invoiceNumber)) {
                         $matchedPaymentIndexes[] = $idx;
                     }
                 }
