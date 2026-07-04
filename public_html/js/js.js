@@ -485,6 +485,9 @@ function zapiszKlienta(rowid) {
     if (doc.getElementById("checkNaliczacOdsetki")) {
         data['naliczacodsetki'] = doc.getElementById("checkNaliczacOdsetki").checked ? 1 : 0
     }
+    if (doc.getElementById("checkKlientNiesciagalny")) {
+        data['klientniesciagalny'] = doc.getElementById("checkKlientNiesciagalny").checked ? 1 : 0
+    }
 
     const protectDisabledValues = true;
 

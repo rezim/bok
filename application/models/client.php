@@ -9,6 +9,7 @@ class client extends Model
         $umowazbiorcza = null, $telefon = null, $mail = null, $stanowisko = null, $zamowieniatelefon = null,
         $zamowieniaemail = null, $zamowieniastanowisko = null, $fakturyimienazwisko = null, $mailfaktury = null, $fakturykomorka = null,
         $fakturytelefon = null, $fakturystanowisko = null, $fakturyuwagi = null, $monitoringplatnosci = null, $naliczacodsetki = null,
+        $klientniesciagalny = null,
         $imienazwisko = null, $zamowieniaimienazwisko = null, $fakturyemail = null;
 
     protected $filternazwa = '', $filternip = '', $filtermiasto = '', $filterserial = '';
@@ -108,6 +109,8 @@ class client extends Model
             array_push($columnList, array('name' => '`monitoringplatnosci`', 'type' => 'i', 'value' => $this->monitoringplatnosci));
         if ($this->naliczacodsetki !== null)
             array_push($columnList, array('name' => '`naliczacodsetki`', 'type' => 'i', 'value' => $this->naliczacodsetki));
+        if ($this->klientniesciagalny !== null)
+            array_push($columnList, array('name' => '`klientniesciagalny`', 'type' => 'i', 'value' => $this->klientniesciagalny));
         if ($this->imienazwisko !== null)
             array_push($columnList, array('name' => '`imienazwisko`', 'type' => 's', 'value' => $this->imienazwisko));
         if ($this->zamowieniaimienazwisko !== null)

@@ -149,7 +149,8 @@ class clientsController extends InvoicesController
                 if (
                     isset($_POST['pokaznumerseryjny']) || isset($_POST['pokazstanlicznika']) ||
                     isset($_POST['fakturadlakazdejumowy']) || isset($_POST['umowazbiorcza']) ||
-                    isset($_POST['monitoringplatnosci']) || isset($_POST['naliczacodsetki'])
+                    isset($_POST['monitoringplatnosci']) || isset($_POST['naliczacodsetki']) ||
+                    isset($_POST['klientniesciagalny'])
                 ) {
                     $this->forbidden('Nie masz prawa do zapisu tych wartości');
                 }
