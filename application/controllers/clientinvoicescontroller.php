@@ -920,11 +920,18 @@ class clientinvoicesController extends InvoicesController
 
     function buildUnpaidAccordionModel(array $invoices, array $agreements): array
     {
+        $agreementsByExternalClientId = [];
+
         // 1) Zbuduj indeks umów po NIP (client_nip)
         $agreementsByNip = [];
         foreach ($agreements as $agr) {
             if (!is_array($agr)) {
                 continue;
+            }
+
+            $externalClientId = trim((string)($agr['client_external_id'] ?? ''));
+            if ($externalClientId !== '' && !isset($agreementsByExternalClientId[$externalClientId])) {
+                $agreementsByExternalClientId[$externalClientId] = $agr;
             }
 
             $nip = $this->normalizeNip($agr['client_nip'] ?? null);
@@ -989,6 +996,36 @@ class clientinvoicesController extends InvoicesController
             }
 
             // 2) Bind agreement data (only once per clientId)
+            if (
+                !$map[$clientId]['_agreement_bound']
+                && isset($agreementsByExternalClientId[$clientId])
+            ) {
+                $agr = $agreementsByExternalClientId[$clientId];
+
+                $agrClientId = $agr['client_id'] ?? null;
+                if ($agrClientId !== null && $agrClientId !== '') {
+                    $map[$clientId]['agreement_client_id'] = (string)$agrClientId;
+                }
+
+                $agrNip = $this->normalizeNip($agr['client_nip'] ?? null);
+                if ($agrNip !== null) {
+                    $map[$clientId]['client_nip'] = $agrNip;
+                }
+
+                if (!empty($agr['client_name'])) {
+                    $map[$clientId]['client_name'] = $agr['client_name'];
+                }
+
+                $agrPhone = trim((string)($agr['client_phone'] ?? ''));
+                if ($agrPhone !== '') {
+                    $map[$clientId]['client_phone'] = $agrPhone;
+                    $map[$clientId]['_phone_ts'] = PHP_INT_MAX;
+                }
+
+                $map[$clientId]['client_klientniesciagalny'] = (int)($agr['client_klientniesciagalny'] ?? 0);
+                $map[$clientId]['_agreement_bound'] = true;
+            }
+
             if (
                 !$map[$clientId]['_agreement_bound']
                 && $buyerNip !== null

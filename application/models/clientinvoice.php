@@ -13,12 +13,14 @@ class clientinvoice extends Model
         return "
         SELECT
             c.rowid           AS client_id,
+            c.client_id       AS client_external_id,
             c.nazwapelna      AS client_name,
             c.nip             AS client_nip,
             c.telefon         AS client_phone,
             c.mailfaktury     AS client_mailfaktury,
             c.naliczacodsetki AS client_naliczacodsetki,
             c.monitoringplatnosci AS client_monitoringplatnosci,
+            c.klientniesciagalny AS client_klientniesciagalny,
             a.nrumowy         AS agreement_id,
             a.rowid           AS agreement_rowid,
             c.terminplatnosci AS agreement_paymentdate,
