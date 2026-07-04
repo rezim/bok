@@ -55,7 +55,7 @@ jobs:
         rm: false
         strip_components: 0
         tar_dereference: true
-        timeout: 120s
-        command_timeout: 20m
+        timeout: 10m
+        command_timeout: 60m
         debug: true
 
