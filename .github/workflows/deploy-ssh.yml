@@ -5,6 +5,7 @@ on:
     branches: [ master ]
     paths-ignore:
       - '.github/workflows/deploy-ssh.yml'
+  workflow_dispatch:
 
 jobs:
   deploy:
@@ -13,6 +14,33 @@ jobs:
     steps:
     - name: Checkout code
       uses: actions/checkout@v4
+
+    - name: Preflight SSH connectivity and target permissions
+      uses: appleboy/ssh-action@v1.0.3
+      with:
+        host: ${{ secrets.SSH_HOST }}
+        username: ${{ secrets.SSH_USER }}
+        password: ${{ secrets.SSH_PASSWORD }}
+        port: ${{ secrets.SSH_PORT }}
+        script_stop: true
+        script: |
+          set -e
+          TARGET_DIR="/otusbok.otus.pl/bok"
+
+          echo "Connected to $(hostname)"
+          echo "Using target: ${TARGET_DIR}"
+
+          mkdir -p "${TARGET_DIR}"
+
+          if [ ! -w "${TARGET_DIR}" ]; then
+            echo "ERROR: target directory is not writable: ${TARGET_DIR}"
+            ls -ld "${TARGET_DIR}"
+            exit 1
+          fi
+
+          touch "${TARGET_DIR}/.deploy_write_test"
+          rm -f "${TARGET_DIR}/.deploy_write_test"
+          echo "Preflight OK"
 
     - name: Copy project to server via SCP
       uses: appleboy/scp-action@v0.1.7
@@ -27,5 +55,7 @@ jobs:
         rm: false
         strip_components: 0
         tar_dereference: true
+        timeout: 120s
+        command_timeout: 20m
         debug: true
 
