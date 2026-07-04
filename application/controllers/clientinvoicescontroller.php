@@ -22,6 +22,7 @@ class clientinvoicesController extends InvoicesController
         $clientName = isset($_POST['filterklient']) ? trim((string)$_POST['filterklient']) : null;
         $clientNip  = isset($_POST['filternip'])    ? trim((string)$_POST['filternip'])    : null;
         $invoiceNo  = isset($_POST['filtervat'])    ? trim((string)$_POST['filtervat'])    : null;
+        $showOnlyUncollectible = isset($_POST['filterOnlyUncollectible']) && $_POST['filterOnlyUncollectible'] === 'true';
 
         // Normalize empty strings to null (so they don't affect filtering)
         $clientName = ($clientName === '') ? null : $clientName;
@@ -32,6 +33,16 @@ class clientinvoicesController extends InvoicesController
 
         $agreements = $this->clientinvoice->getAgreementsArray();
         $clients = $this->buildUnpaidAccordionModel($invoices, $agreements);
+        if ($showOnlyUncollectible) {
+            $clients = array_values(array_filter($clients, function ($client) {
+                return isset($client['client_klientniesciagalny']) && (int)$client['client_klientniesciagalny'] === 1;
+            }));
+        } else {
+            $clients = array_values(array_filter($clients, function ($client) {
+                return !isset($client['client_klientniesciagalny']) || (int)$client['client_klientniesciagalny'] !== 1;
+            }));
+        }
+
         $fakturowniaEndpoint = FAKTUROWNIA_ENDPOINT;
         $fakturowniaEndpoint = preg_replace('#^http://#', 'https://', $fakturowniaEndpoint);
         $smarty->assign('FAKTUROWNIA_ENDPOINT', $fakturowniaEndpoint);
@@ -962,6 +973,7 @@ class clientinvoicesController extends InvoicesController
                     'client_name' => $fallbackName,     // may be overridden by agreement
                     'client_nip' => $buyerNip,          // exposed for Smarty; may be overridden by agreement
                     'client_phone' => null,             // may be overridden by agreement if not empty
+                    'client_klientniesciagalny' => 0,   // may be overridden by agreement
                     'agreement_client_id' => null,      // may be overridden by agreement if not empty
                     '_phone_ts' => 0,                   // internal
                     '_agreement_bound' => false,        // internal (avoid repeating binding)
@@ -1007,6 +1019,8 @@ class clientinvoicesController extends InvoicesController
                     // Set _phone_ts high so invoice phone won't override it
                     $map[$clientId]['_phone_ts'] = PHP_INT_MAX;
                 }
+
+                $map[$clientId]['client_klientniesciagalny'] = (int)($agr['client_klientniesciagalny'] ?? 0);
 
                 $map[$clientId]['_agreement_bound'] = true;
             }

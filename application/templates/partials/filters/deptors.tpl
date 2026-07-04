@@ -9,6 +9,18 @@
 
         <div class="border-top my-4 otus-separator"></div>
 
+        <div class="form-group mb-3">
+            <div class="custom-control custom-checkbox">
+                <input data-ref type="checkbox" class="custom-control-input" id="filterOnlyUncollectible">
+                <label class="custom-control-label" for="filterOnlyUncollectible">
+                    Pokaż tylko klientów nieściągalnych
+                </label>
+            </div>
+            <small class="form-text text-muted">
+                Domyślnie klienci nieściągalni są ukryci na liście dłużników.
+            </small>
+        </div>
+
         <div class="form-group">
             <button id="applyFilter" class="btn btn-info btn-block" type="button">
                 Filtruj

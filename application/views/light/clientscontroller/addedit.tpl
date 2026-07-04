@@ -365,6 +365,8 @@
                             />
                         </td>
                     </tr>
+                    {* This option remains in code but is hidden in the form to simplify the UI. *}
+                    {*
                     <tr>
                         <th>
                             Naliczać odsetki
@@ -373,6 +375,18 @@
                             <input type="checkbox" id='checkNaliczacOdsetki' class="form-control form-control-sm"
                                    class="text-left"
                                    {if $rowid!=0 && !empty($dataClient[0].naliczacodsetki) && $dataClient[0].naliczacodsetki==1}checked{/if}
+                            />
+                        </td>
+                    </tr>
+                    *}
+                    <tr>
+                        <th>
+                            Klient nieściągalny
+                        </th>
+                        <td class="text-left">
+                            <input type="checkbox" id='checkKlientNiesciagalny' class="form-control form-control-sm"
+                                   class="text-left"
+                                   {if $rowid!=0 && !empty($dataClient[0].klientniesciagalny) && $dataClient[0].klientniesciagalny==1}checked{/if}
                             />
                         </td>
                     </tr>
