@@ -391,16 +391,34 @@ class clientinvoicesController extends InvoicesController
         return htmlspecialchars($fallback, ENT_QUOTES, 'UTF-8');
     }
 
+    private function isCompensationPayment(array $payment, string $content = ''): bool
+    {
+        $provider = strtolower(trim((string)($payment['provider'] ?? '')));
+        if ($provider === 'compensation') {
+            return true;
+        }
+
+        $haystack = strtolower(trim(implode(' ', [
+            (string)($payment['name'] ?? ''),
+            (string)($payment['description'] ?? ''),
+            $content,
+        ])));
+
+        return $haystack !== '' && strpos($haystack, 'kompensat') !== false;
+    }
+
     private function buildGroupedAccountingSettlements(array $invoiceRows, array $paymentRows): array
     {
         $paymentsIndex = array_map(function ($payment) {
             $content = (string)($payment['treść'] ?? '');
+            $isCompensation = (($payment['className'] ?? '') === 'text-compensation');
 
             return [
                 'data' => (string)($payment['data'] ?? ''),
                 'ma' => (float)($payment['ma'] ?? 0),
                 'content' => $content,
                 'normalizedContent' => $this->normalizeSettlementReference($content),
+                'isCompensation' => $isCompensation,
                 'isUsed' => false,
             ];
         }, $paymentRows);
@@ -429,6 +447,8 @@ class clientinvoicesController extends InvoicesController
                 $paymentContents = [];
                 $paymentAmounts = [];
                 $paymentTotal = 0.0;
+                $paymentIncludedTotal = 0.0;
+                $hasCompensationPayment = false;
 
                 foreach ($matchedPaymentIndexes as $matchedPaymentIndex) {
                     $paymentsIndex[$matchedPaymentIndex]['isUsed'] = true;
@@ -436,11 +456,22 @@ class clientinvoicesController extends InvoicesController
                     $paymentContents[] = $paymentsIndex[$matchedPaymentIndex]['content'];
                     $paymentAmounts[] = $paymentsIndex[$matchedPaymentIndex]['ma'];
                     $paymentTotal += $paymentsIndex[$matchedPaymentIndex]['ma'];
+                    if ($paymentsIndex[$matchedPaymentIndex]['isCompensation']) {
+                        $hasCompensationPayment = true;
+                    } else {
+                        $paymentIncludedTotal += $paymentsIndex[$matchedPaymentIndex]['ma'];
+                    }
                 }
 
                 $invoiceAmount = round((float)($invoice['winien'] ?? 0), 2);
                 $paymentAmount = round($paymentTotal, 2);
-                $balanceAmount = round($paymentAmount - $invoiceAmount, 2);
+                $includedPaymentAmount = round($paymentIncludedTotal, 2);
+                $balanceAmount = round($includedPaymentAmount - $invoiceAmount, 2);
+                $remarkFallback = count($matchedPaymentIndexes) > 1 ? ('Powiązano płatności: ' . count($matchedPaymentIndexes)) : '';
+
+                if ($hasCompensationPayment) {
+                    $remarkFallback = trim(($remarkFallback !== '' ? $remarkFallback . '. ' : '') . 'Kompensata (nie wliczana do sumy)');
+                }
 
                 $groupedRows[] = [
                     'data faktury' => $invoice['data'],
@@ -451,15 +482,14 @@ class clientinvoicesController extends InvoicesController
                         ? $this->formatGroupedPaymentAmounts($paymentAmounts)
                         : $paymentAmount,
                     'treść' => $this->formatGroupedPaymentContent($paymentContents),
-                    'uwagi' => $this->formatBalanceRemark(
-                        $balanceAmount,
-                        count($matchedPaymentIndexes) > 1 ? ('Powiązano płatności: ' . count($matchedPaymentIndexes)) : ''
-                    ),
+                    'uwagi' => $this->formatBalanceRemark($balanceAmount, $remarkFallback),
                     'saldo' => $this->formatBalanceLabel($balanceAmount),
                     'sortDate' => max(array_merge([(string)$invoice['data']], $paymentDates)),
-                    'ma_value' => $paymentAmount,
+                    'ma_value' => $includedPaymentAmount,
                     'saldo_value' => $balanceAmount,
-                    'className' => $balanceAmount < -0.01 ? 'text-danger' : 'text-success',
+                    'className' => $hasCompensationPayment
+                        ? 'text-compensation'
+                        : ($balanceAmount < -0.01 ? 'text-danger' : 'text-success'),
                 ];
                 continue;
             }
@@ -489,6 +519,11 @@ class clientinvoicesController extends InvoicesController
             }
 
             $paymentAmount = round((float)$payment['ma'], 2);
+            $includedPaymentAmount = $payment['isCompensation'] ? 0.0 : $paymentAmount;
+            $balanceAmount = $includedPaymentAmount;
+            $paymentRemark = $payment['isCompensation']
+                ? 'Kompensata (nie wliczana do sumy)'
+                : 'Płatność bez dopasowanej faktury';
 
             $groupedRows[] = [
                 'data faktury' => '',
@@ -497,12 +532,12 @@ class clientinvoicesController extends InvoicesController
                 'data płatności' => $payment['data'],
                 'ma' => $paymentAmount,
                 'treść' => $this->formatGroupedPaymentContent([$payment['content']]),
-                'uwagi' => $this->formatBalanceRemark($paymentAmount, 'Płatność bez dopasowanej faktury'),
-                'saldo' => $this->formatBalanceLabel($paymentAmount),
+                'uwagi' => $this->formatBalanceRemark($balanceAmount, $paymentRemark),
+                'saldo' => $this->formatBalanceLabel($balanceAmount),
                 'sortDate' => $payment['data'],
-                'ma_value' => $paymentAmount,
-                'saldo_value' => $paymentAmount,
-                'className' => 'text-success',
+                'ma_value' => $includedPaymentAmount,
+                'saldo_value' => $balanceAmount,
+                'className' => $payment['isCompensation'] ? 'text-compensation' : 'text-success',
             ];
         }
 
@@ -845,13 +880,23 @@ class clientinvoicesController extends InvoicesController
             $notProcessedPayments);
 
         $payments = array_map(
-            fn($payment) => array(
-                'data' => (new DateTime($payment['paid_date']))->format('Y-m-d'),
-                'winien' => null,
-                'ma' => $payment['price'],
-                'treść' => $paymentDetailsByExtPaymentId[(int)($payment['id'] ?? 0)] ?? $payment['name'],
-                'uwagi' => '',
-                'className' => 'text-success'), $payments);
+            function ($payment) use ($paymentDetailsByExtPaymentId) {
+                $content = $paymentDetailsByExtPaymentId[(int)($payment['id'] ?? 0)]
+                    ?? ($payment['name'] ?? '')
+                    ?? ($payment['description'] ?? '');
+                $isCompensation = $this->isCompensationPayment($payment, (string)$content);
+
+                return array(
+                    'data' => (new DateTime($payment['paid_date']))->format('Y-m-d'),
+                    'winien' => null,
+                    'ma' => $payment['price'],
+                    'treść' => $content,
+                    'uwagi' => $isCompensation ? 'Kompensata (nie wliczana do sumy)' : '',
+                    'className' => $isCompensation ? 'text-compensation' : 'text-success'
+                );
+            },
+            $payments
+        );
 
         $payments = array_merge($payments, $cashPayments);
         $payments = array_merge($payments, $notProcessedPayments);
@@ -900,7 +945,16 @@ class clientinvoicesController extends InvoicesController
 
         $columnNames = array_filter(array_keys($accountingSettlements[0]), fn($key) => $key !== $ROW_CLASS_NAME);
 
-        $columnSummaries = array_map(fn($columnName) => array_sum(array_map(fn($val) => is_numeric($val) ? $val : 0, array_column($accountingSettlements, $columnName))), $columnNames);
+        $columnSummaries = array_map(function ($columnName) use ($accountingSettlements) {
+            return array_sum(array_map(function ($row) use ($columnName) {
+                if (($row['className'] ?? '') === 'text-compensation' && ($columnName === 'ma' || $columnName === 'winien')) {
+                    return 0;
+                }
+
+                $val = $row[$columnName] ?? 0;
+                return is_numeric($val) ? (float)$val : 0;
+            }, $accountingSettlements));
+        }, $columnNames);
 
         $columnSummaries[count($columnSummaries) - 2] = round($columnSummaries[count($columnSummaries) - 3] - $columnSummaries[count($columnSummaries) - 4], 2);
 

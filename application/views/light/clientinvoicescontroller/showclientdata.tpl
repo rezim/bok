@@ -1,4 +1,9 @@
 <div>
+    <style>
+        .text-compensation {
+            color: #e67e22 !important;
+        }
+    </style>
 
     <p>Rozliczenie szczegółowe dla: <b>{$client['nazwakrotka']}</b>, NIP: <b>{$client['nip']}</b></p>
     <p>
