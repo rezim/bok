@@ -102,7 +102,8 @@ class InvoicesController extends Controller
         ?string $clientName = null,
         ?string $clientNip = null,
         ?string $invoiceNumber = null,
-        ?string $filter = null
+        ?string $filter = null,
+        ?string $statusFilter = null
     ): array {
         // Pick the first non-empty filter value (LIKE via Fakturownia 'query' param).
         // Priority: explicit params first, then the single combined $filter.
@@ -120,8 +121,15 @@ class InvoicesController extends Controller
             . 'period=all'
             . '&api_token=' . urlencode(FAKTUROWNIA_APITOKEN)
             . '&kinds%5B%5D=vat&kinds%5B%5D=advance&kinds%5B%5D=correction'
-            . '&status%5B%5D=not_paid'
             . '&order=issue_date';
+
+        // Use explicit status from caller when provided (e.g. overdue_not_paid).
+        // Fallback to classic not_paid filter for backward compatibility.
+        if ($statusFilter !== null && trim($statusFilter) !== '') {
+            $url .= '&status=' . urlencode(trim($statusFilter));
+        } else {
+            $url .= '&status%5B%5D=not_paid';
+        }
 
         // Fakturownia "query" works like LIKE, but accepts only one value.
         // We pass the first non-empty filter; if all are empty, we don't add query at all.

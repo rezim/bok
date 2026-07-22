@@ -10,14 +10,26 @@
         <div class="border-top my-4 otus-separator"></div>
 
         <div class="form-group mb-3">
-            <div class="custom-control custom-checkbox">
-                <input data-ref type="checkbox" class="custom-control-input" id="filterOnlyUncollectible">
-                <label class="custom-control-label" for="filterOnlyUncollectible">
+            <div class="form-check">
+                <input data-ref type="checkbox" class="form-check-input" id="filterOnlyUncollectible">
+                <label class="form-check-label" for="filterOnlyUncollectible">
                     Pokaż tylko klientów nieściągalnych
                 </label>
             </div>
             <small class="form-text text-muted">
                 Domyślnie klienci nieściągalni są ukryci na liście dłużników.
+            </small>
+        </div>
+
+        <div class="form-group mb-3">
+            <div class="form-check">
+                <input data-ref type="checkbox" class="form-check-input" id="filterIncludeNotOverdue">
+                <label class="form-check-label" for="filterIncludeNotOverdue">
+                    Pokaż również nieprzeterminowane nieopłacone faktury
+                </label>
+            </div>
+            <small class="form-text text-muted">
+                Domyślnie widoczne są tylko faktury przeterminowane.
             </small>
         </div>
 

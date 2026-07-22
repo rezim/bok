@@ -23,13 +23,15 @@ class clientinvoicesController extends InvoicesController
         $clientNip  = isset($_POST['filternip'])    ? trim((string)$_POST['filternip'])    : null;
         $invoiceNo  = isset($_POST['filtervat'])    ? trim((string)$_POST['filtervat'])    : null;
         $showOnlyUncollectible = isset($_POST['filterOnlyUncollectible']) && $_POST['filterOnlyUncollectible'] === 'true';
+        $showAlsoNotOverdueUnpaid = isset($_POST['filterIncludeNotOverdue']) && $_POST['filterIncludeNotOverdue'] === 'true';
 
         // Normalize empty strings to null (so they don't affect filtering)
         $clientName = ($clientName === '') ? null : $clientName;
         $clientNip  = ($clientNip === '')  ? null : $clientNip;
         $invoiceNo  = ($invoiceNo === '')  ? null : $invoiceNo;
 
-        $invoices = $this->getNotPaidInvoices($clientName, $clientNip, $invoiceNo);
+        $statusFilter = $showAlsoNotOverdueUnpaid ? 'not_paid' : 'overdue_not_paid';
+        $invoices = $this->getNotPaidInvoices($clientName, $clientNip, $invoiceNo, null, $statusFilter);
 
         $agreements = $this->clientinvoice->getAgreementsArray();
         $clients = $this->buildUnpaidAccordionModel($invoices, $agreements);
@@ -43,11 +45,66 @@ class clientinvoicesController extends InvoicesController
             }));
         }
 
+        $clients = $this->filterClientsByOverdueInvoices($clients, $showAlsoNotOverdueUnpaid);
+
         $fakturowniaEndpoint = FAKTUROWNIA_ENDPOINT;
         $fakturowniaEndpoint = preg_replace('#^http://#', 'https://', $fakturowniaEndpoint);
         $smarty->assign('FAKTUROWNIA_ENDPOINT', $fakturowniaEndpoint);
         $smarty->assign('FAKTUROWNIA_APITOKEN', FAKTUROWNIA_APITOKEN);
         $smarty->assign('clients', $clients);
+    }
+
+    private function filterClientsByOverdueInvoices(array $clients, bool $showAlsoNotOverdueUnpaid): array
+    {
+        if ($showAlsoNotOverdueUnpaid) {
+            return $clients;
+        }
+
+        $filteredClients = [];
+
+        foreach ($clients as $client) {
+            $invoices = isset($client['invoices']) && is_array($client['invoices'])
+                ? $client['invoices']
+                : [];
+
+            $overdueInvoices = array_values(array_filter($invoices, function ($invoice) {
+                return isset($invoice['payment_status_type']) && $invoice['payment_status_type'] === 'overdue';
+            }));
+
+            if (count($overdueInvoices) === 0) {
+                continue;
+            }
+
+            $client['invoices'] = $overdueInvoices;
+            $client['unpaid_count'] = count($overdueInvoices);
+            $client['unpaid_sum'] = array_sum(array_map(function ($invoice) {
+                return (float)($invoice['amount_due'] ?? 0);
+            }, $overdueInvoices));
+
+            $dueDates = array_values(array_filter(array_map(function ($invoice) {
+                return $invoice['due_date'] ?? null;
+            }, $overdueInvoices)));
+            sort($dueDates);
+            $client['oldest_due_date'] = count($dueDates) > 0 ? $dueDates[0] : null;
+
+            $filteredClients[] = $client;
+        }
+
+        usort($filteredClients, function ($a, $b) {
+            $cmp = $b['unpaid_count'] <=> $a['unpaid_count'];
+            if ($cmp !== 0) {
+                return $cmp;
+            }
+
+            $cmp = $b['unpaid_sum'] <=> $a['unpaid_sum'];
+            if ($cmp !== 0) {
+                return $cmp;
+            }
+
+            return strcmp($a['client_name'], $b['client_name']);
+        });
+
+        return $filteredClients;
     }
 
     function vindication()
