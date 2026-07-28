@@ -412,7 +412,7 @@
 <div class="container text-right mt-4 mb-2" wymaganylevel='r' wymaganyzrobiony='1'>
     <a href="#" class="btn btn-outline-secondary" role="button" onclick="$.colorbox.close();">Anuluj</a>
 
-    {if $editMode && isset($dataUmowa[0].activity) && $dataUmowa[0].activity == 1 && $canSaveReplacement}
+    {if $editMode && isset($dataUmowa[0].activity) && $dataUmowa[0].activity == 1}
         <a href="#"
            id="requestReplacementBtn"
            class="btn btn-outline-warning"

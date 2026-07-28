@@ -67,10 +67,6 @@ class agreementsController extends Controller
             return;
         }
 
-        if (!$this->hasAccessToAction('canSaveReplacement')) {
-            $this->forbidden('Nie masz prawa zgłoszenia wymiany urządzenia');
-        }
-
         $rowid = isset($_POST['rowid']) ? (int)$_POST['rowid'] : 0;
         if ($rowid <= 0) {
             $this->badRequest('Nieprawidłowe rowid umowy');
