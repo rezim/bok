@@ -98,6 +98,8 @@
 
                     {if $item.activity == 1}
                         <span class="badge badge-success">{$statusLabel}</span>
+                    {elseif $item.activity == 2}
+                        <span class="badge badge-info">{$statusLabel}</span>
                     {elseif $item.activity == 0}
                         <span class="badge badge-secondary">{$statusLabel}</span>
                     {elseif $item.activity == -1}

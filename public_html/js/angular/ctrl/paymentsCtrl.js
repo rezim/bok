@@ -35,6 +35,9 @@ PaymentsCtrl = function ($scope, rest, $q, $filter, $uibModal, $interpolate, app
     this.clientInvoicesFilter = function () {
 
         return function (item) {
+            if (item.klientNiesciagalny === 1) {
+                return false;
+            }
 
             if (self.filters.invoiceNb !== '') {
                 if (item.invoices.list.some(
@@ -155,7 +158,7 @@ PaymentsCtrl = function ($scope, rest, $q, $filter, $uibModal, $interpolate, app
         }
     };
 
-    const initClientInvoice = function (name, nip, phone, agreementClientId, mailFaktury, naliczacOdsetki, monitoringplatnosci) {
+    const initClientInvoice = function (name, nip, phone, agreementClientId, mailFaktury, naliczacOdsetki, monitoringplatnosci, klientNiesciagalny) {
         return {
             name,
             nip,
@@ -164,6 +167,7 @@ PaymentsCtrl = function ($scope, rest, $q, $filter, $uibModal, $interpolate, app
             mailFaktury,
             naliczacOdsetki,
             monitoringplatnosci,
+            klientNiesciagalny,
             clientId: null,
             agreements: {},
             invoices: {
@@ -193,7 +197,7 @@ PaymentsCtrl = function ($scope, rest, $q, $filter, $uibModal, $interpolate, app
 
             if (!objClientInvoice[agreement['client_nip']]) {
                 objClientInvoice[agreement['client_nip']] =
-                    initClientInvoice(agreement['client_name'], agreement['client_nip'], agreement['client_phone'], agreement['client_id'], agreement['client_mailfaktury'], agreement['client_naliczacodsetki'], agreement['client_monitoringplatnosci']);
+                    initClientInvoice(agreement['client_name'], agreement['client_nip'], agreement['client_phone'], agreement['client_id'], agreement['client_mailfaktury'], agreement['client_naliczacodsetki'], agreement['client_monitoringplatnosci'], agreement['client_klientniesciagalny']);
 
                 let client = objClientInvoice[agreement['client_nip']];
 

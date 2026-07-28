@@ -49,6 +49,8 @@
         {assign var="defaultStatus" value=""}
         {if $canListActive}
             {assign var="defaultStatus" value=1}
+        {elseif $canListReplacement}
+            {assign var="defaultStatus" value=2}
         {elseif $canListDraft}
             {assign var="defaultStatus" value=-1}
         {elseif $canListClosed}
@@ -62,6 +64,9 @@
             <div id="status-filters">
                 {if $canListActive}
                     <span class="badge badge-status badge-aktywna {if $defaultStatus == 1}selected{/if}" data-value="1">aktywna</span>
+                {/if}
+                {if $canListReplacement}
+                    <span class="badge badge-status badge-wymiana {if $defaultStatus == 2}selected{/if}" data-value="2">wymiana</span>
                 {/if}
                 {if $canListDraft}
                     <span class="badge badge-status badge-robocza {if $defaultStatus == -1}selected{/if}"

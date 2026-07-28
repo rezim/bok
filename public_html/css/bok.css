@@ -641,11 +641,15 @@ input[type="checkbox"] {
     color: #fff;
 }
 .badge-status.selected.badge-robocza {
-    background-color: #ffc107;
-    color: #212529;
+    background-color: #d39e00;
+    color: #fff;
 }
 .badge-status.selected.badge-zamknieta {
     background-color: #6c757d;
+    color: #fff;
+}
+.badge-status.selected.badge-wymiana {
+    background-color: #17a2b8;
     color: #fff;
 }
 
