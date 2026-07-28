@@ -31,7 +31,7 @@ class agreementsController extends Controller
                 die('Poda datę startu umowy!');
             }
 
-            list($canSaveActive, $canSaveDraft, $canSaveClosed) = $this->assignAgreementAccessFlagsForSave();
+            list($canSaveActive, $canSaveDraft, $canSaveClosed, $canSaveReplacement) = $this->assignAgreementAccessFlagsForSave();
 
             $requestedActivity = isset($_POST['activity']) ? (int)$_POST['activity'] : null;
 
@@ -45,6 +45,9 @@ class agreementsController extends Controller
             if ($canSaveClosed) {
                 $allowedActivities[] = 0;
             }
+            if ($canSaveReplacement) {
+                $allowedActivities[] = 2;
+            }
 
             if (!in_array($requestedActivity, $allowedActivities, true)) {
                 $this->forbidden('Nie masz prawa zapisu w tym statusie');
@@ -55,6 +58,25 @@ class agreementsController extends Controller
         } else {
             echo('Błędne wywołanie');
         }
+    }
+
+    function requestreplacement()
+    {
+        if (!(isset($_SERVER['HTTP_X_REQUESTED_WITH']) && ($_SERVER['HTTP_X_REQUESTED_WITH'] == 'XMLHttpRequest'))) {
+            echo('Błędne wywołanie');
+            return;
+        }
+
+        if (!$this->hasAccessToAction('canSaveReplacement')) {
+            $this->forbidden('Nie masz prawa zgłoszenia wymiany urządzenia');
+        }
+
+        $rowid = isset($_POST['rowid']) ? (int)$_POST['rowid'] : 0;
+        if ($rowid <= 0) {
+            $this->badRequest('Nieprawidłowe rowid umowy');
+        }
+
+        echo(json_encode($this->agreement->requestreplacement($rowid)));
     }
 
     function addedit()
@@ -155,12 +177,13 @@ class agreementsController extends Controller
             $smarty->assign('activityStatuses', [
                 -1 => 'robocza',
                 0 => 'zamknięta',
-                1 => 'aktywna'
+                1 => 'aktywna',
+                2 => 'wymiana'
             ]);
 
-            list($canListActive, $canListDraft, $canListClosed) = $this->assignAgreementAccessFlags();
+            list($canListActive, $canListDraft, $canListClosed, $canListReplacement) = $this->assignAgreementAccessFlags();
 
-            $dataAgreements = $this->agreement->getAgreements($canListActive, $canListDraft, $canListClosed);
+            $dataAgreements = $this->agreement->getAgreements($canListActive, $canListDraft, $canListClosed, $canListReplacement);
 
             $smarty->assign('dataAgreements', $dataAgreements);
             $smarty->assign('czycolorbox', isset($_POST['czycolorbox']) ? $_POST['czycolorbox'] : '');
@@ -254,12 +277,14 @@ class agreementsController extends Controller
         $canListActive = $this->hasAccessToAction('canListActive');
         $canListDraft = $this->hasAccessToAction('canListDraft');
         $canListClosed = $this->hasAccessToAction('canListClosed');
+        $canListReplacement = $this->hasAccessToAction('canListReplacement');
 
         $smarty->assign('canListActive', $canListActive);
         $smarty->assign('canListDraft', $canListDraft);
         $smarty->assign('canListClosed', $canListClosed);
+        $smarty->assign('canListReplacement', $canListReplacement);
 
-        return [$canListActive, $canListDraft, $canListClosed];
+        return [$canListActive, $canListDraft, $canListClosed, $canListReplacement];
     }
 
     private function assignAgreementAccessFlagsForEdit(): array
@@ -269,12 +294,14 @@ class agreementsController extends Controller
         $canEditActive = $this->hasAccessToAction('canEditActive');
         $canEditDraft = $this->hasAccessToAction('canEditDraft');
         $canEditClosed = $this->hasAccessToAction('canEditClosed');
+        $canEditReplacement = $this->hasAccessToAction('canEditReplacement');
 
         $smarty->assign('canEditActive', $canEditActive);
         $smarty->assign('canEditDraft', $canEditDraft);
         $smarty->assign('canEditClosed', $canEditClosed);
+        $smarty->assign('canEditReplacement', $canEditReplacement);
 
-        return [$canEditActive, $canEditDraft, $canEditClosed];
+        return [$canEditActive, $canEditDraft, $canEditClosed, $canEditReplacement];
     }
 
     private function assignAgreementAccessFlagsForAdd(): array
@@ -284,12 +311,14 @@ class agreementsController extends Controller
         $canAddActive = $this->hasAccessToAction('canAddActive');
         $canAddDraft = $this->hasAccessToAction('canAddDraft');
         $canAddClosed = $this->hasAccessToAction('canAddClosed');
+        $canAddReplacement = $this->hasAccessToAction('canAddReplacement');
 
         $smarty->assign('canAddActive', $canAddActive);
         $smarty->assign('canAddDraft', $canAddDraft);
         $smarty->assign('canAddClosed', $canAddClosed);
+        $smarty->assign('canAddReplacement', $canAddReplacement);
 
-        return [$canAddActive, $canAddDraft, $canAddClosed];
+        return [$canAddActive, $canAddDraft, $canAddClosed, $canAddReplacement];
     }
 
     private function assignAgreementAccessFlagsForSave(): array
@@ -299,11 +328,13 @@ class agreementsController extends Controller
         $canSaveActive = $this->hasAccessToAction('canSaveActive');
         $canSaveDraft = $this->hasAccessToAction('canSaveDraft');
         $canSaveClosed = $this->hasAccessToAction('canSaveClosed');
+        $canSaveReplacement = $this->hasAccessToAction('canSaveReplacement');
 
         $smarty->assign('canSaveActive', $canSaveActive);
         $smarty->assign('canSaveDraft', $canSaveDraft);
         $smarty->assign('canSaveClosed', $canSaveClosed);
+        $smarty->assign('canSaveReplacement', $canSaveReplacement);
 
-        return [$canSaveActive, $canSaveDraft, $canSaveClosed];
+        return [$canSaveActive, $canSaveDraft, $canSaveClosed, $canSaveReplacement];
     }
 }

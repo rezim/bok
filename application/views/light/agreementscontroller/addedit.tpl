@@ -71,23 +71,24 @@
                         Drukarka&nbsp;<span class="text-danger">*</span>
                     </th>
                     <td class='tdWartosc' colspan="3">
+                        <div id="drukarkaFieldWrapper">
+                            <select id='txtdrukarka' class="form-control form-control-md selectpicker"
+                                    onchange="updateAgreementWithPrinter({$rowid}, this.value)"
+                                    data-size="10"
+                                    data-width="340px"
+                                    data-none-selected-text="Nie wybrano żadnej drukarki"
+                                    data-none-results-text="Nie znaleziono wyników dla podanego filtra"
+                                    data-live-search-placeholder="Wpisz filtr aby zawęzić list drukarek"
+                                    data-live-search="true">
+                                <option value="" selected></option>
 
-                        <select id='txtdrukarka' class="form-control form-control-md selectpicker"
-                                onchange="updateAgreementWithPrinter({$rowid}, this.value)"
-                                data-size="10"
-                                data-width="340px"
-                                data-none-selected-text="Nie wybrano żadnej drukarki"
-                                data-none-results-text="Nie znaleziono wyników dla podanego filtra"
-                                data-live-search-placeholder="Wpisz filtr aby zawęzić list drukarek"
-                                data-live-search="true">
-                            <option value="" selected></option>
-
-                            {foreach from=$dataPrinters item=item key=key}
-                                <option value="{$item.serial}"
-                                        {if $rowid!=0 && $dataUmowa[0].serial==$item.serial}selected{/if}>{$item.serial}
-                                    - {$item.model}</option>
-                            {/foreach}
-                        </select>
+                                {foreach from=$dataPrinters item=item key=key}
+                                    <option value="{$item.serial}"
+                                            {if $rowid!=0 && $dataUmowa[0].serial==$item.serial}selected{/if}>{$item.serial}
+                                        - {$item.model}</option>
+                                {/foreach}
+                            </select>
+                        </div>
                     </td>
                 </tr>
                 <tr id='trtxtrozliczenie'>
@@ -288,10 +289,17 @@
                                 <select id='txtstatusumowy' class="form-control form-control-md" disabled>
                                     <option value="1" selected>aktywna</option>
                                 </select>
+                            {elseif $dataUmowa[0].activity == 2 && !$canEditReplacement}
+                                <select id='txtstatusumowy' class="form-control form-control-md" disabled>
+                                    <option value="2" selected>wymiana</option>
+                                </select>
                             {else}
                                 <select id='txtstatusumowy' class="form-control form-control-md">
                                     {if $canEditActive}
                                         <option value="1" {if $dataUmowa[0].activity == 1}selected{/if}>aktywna</option>
+                                    {/if}
+                                    {if $canEditReplacement}
+                                        <option value="2" {if $dataUmowa[0].activity == 2}selected{/if}>wymiana</option>
                                     {/if}
                                     {if $canEditClosed}
                                         <option value="0" {if $dataUmowa[0].activity == 0}selected{/if}>zamknięta</option>
@@ -305,6 +313,9 @@
                             <select id='txtstatusumowy' class="form-control form-control-md">
                                 {if $canAddActive}
                                     <option value="1">aktywna</option>
+                                {/if}
+                                {if $canAddReplacement}
+                                    <option value="2">wymiana</option>
                                 {/if}
                                 {if $canAddClosed}
                                     <option value="0">zamknięta</option>
@@ -401,6 +412,16 @@
 <div class="container text-right mt-4 mb-2" wymaganylevel='r' wymaganyzrobiony='1'>
     <a href="#" class="btn btn-outline-secondary" role="button" onclick="$.colorbox.close();">Anuluj</a>
 
+    {if $editMode && isset($dataUmowa[0].activity) && $dataUmowa[0].activity == 1 && $canSaveReplacement}
+        <a href="#"
+           id="requestReplacementBtn"
+           class="btn btn-outline-warning"
+           role="button"
+           onmousedown='requestAgreementReplacement("{$rowid}");return false;'>
+            <i class="fas fa-exchange-alt"></i>&nbsp;Wymiana urządzenia
+        </a>
+    {/if}
+
     <a href="#" id="saveAgreementBtn"
        class="btn btn-outline-success active"
        role="button"
@@ -408,6 +429,7 @@
        data-can-save-active="{$canSaveActive|default:false}"
        data-can-save-draft="{$canSaveDraft|default:false}"
        data-can-save-closed="{$canSaveClosed|default:false}"
+    data-can-save-replacement="{$canSaveReplacement|default:false}"
        onmousedown='zapiszUmowe("{$rowid}");return false;'>
         <i class="fas fa-save"></i>&nbsp;Zapisz
     </a>
@@ -442,26 +464,96 @@
 
 <script>
 
+        function requestAgreementReplacement(rowid) {
+            if (!rowid || rowid === '0') {
+                return false;
+            }
+
+            if (!confirm('Czy na pewno zgłosić wymianę urządzenia dla tej umowy?')) {
+                return false;
+            }
+
+            var
+                doc = document,
+                objLoad = doc.getElementById('actionloader'),
+                objOk = doc.getElementById('actionok'),
+                objError = doc.getElementById('actionerror'),
+                objClick = doc.getElementById('actionbuttonclick');
+
+            $(objClick).hide();
+            $(objLoad).show();
+
+            $.ajax({
+                type: 'POST',
+                url: sciezka + "/agreements/requestreplacement/notemplate",
+                async: true,
+                data: {
+                    rowid: rowid
+                },
+                success: function (dane) {
+                    checkReplay(objError, objLoad, null, objClick, dane, objOk, 1, 3000, null);
+                    return false;
+                },
+                error: function (error) {
+                    var errorText = error && error.responseText ? error.responseText : null;
+                    showError(objError, objLoad, errorText, objClick, 5000);
+                    return false;
+                }
+            });
+        }
+
         const statusSelect = document.getElementById('txtstatusumowy');
         const saveButton = document.getElementById('saveAgreementBtn');
+        const printerSelect = document.getElementById('txtdrukarka');
+        const printerWrapper = $('#drukarkaFieldWrapper');
+        const isPersistedReplacement = {if $rowid != 0 && isset($dataUmowa[0].activity) && $dataUmowa[0].activity == 2}true{else}false{/if};
+        const printerLockedMessage = 'Pole Drukarka odblokuje się po zapisie statusu: wymiana.';
+
+        function updatePrinterFieldAvailability() {
+            if (!statusSelect || !printerSelect) {
+                return;
+            }
+
+            // Availability is based on persisted status only.
+            printerSelect.disabled = !isPersistedReplacement;
+            $('.selectpicker').selectpicker('refresh');
+
+            const pickerButton = $('#drukarkaFieldWrapper .bootstrap-select .dropdown-toggle');
+            if (!pickerButton.length) {
+                return;
+            }
+
+            if (!isPersistedReplacement) {
+                printerWrapper.attr('title', printerLockedMessage);
+                pickerButton.attr('title', printerLockedMessage);
+            } else {
+                printerWrapper.removeAttr('title');
+                pickerButton.removeAttr('title');
+            }
+        }
 
         function updateSaveButtonVisibility() {
             const selectedValue = parseInt(statusSelect.value);
             const canSaveActive = saveButton.dataset.canSaveActive === "1" || saveButton.dataset.canSaveActive === "true";
             const canSaveDraft = saveButton.dataset.canSaveDraft === "1" || saveButton.dataset.canSaveDraft === "true";
             const canSaveClosed = saveButton.dataset.canSaveClosed === "1" || saveButton.dataset.canSaveClosed === "true";
+            const canSaveReplacement = saveButton.dataset.canSaveReplacement === "1" || saveButton.dataset.canSaveReplacement === "true";
 
             let show = false;
             if (selectedValue === 1 && canSaveActive) show = true;
             if (selectedValue === 0 && canSaveClosed) show = true;
             if (selectedValue === -1 && canSaveDraft) show = true;
+            if (selectedValue === 2 && canSaveReplacement) show = true;
 
             saveButton.style.display = show ? 'inline-block' : 'none';
         }
 
+        updatePrinterFieldAvailability();
         updateSaveButtonVisibility();
 
-        statusSelect.addEventListener('change', updateSaveButtonVisibility);
+        statusSelect.addEventListener('change', function () {
+            updateSaveButtonVisibility();
+        });
 
 </script>
 

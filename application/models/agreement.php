@@ -47,7 +47,42 @@ class agreement extends Model
         return $result;
     }
 
-    function getAgreements($canListActive, $canListDraft, $canListClosed)
+    function requestreplacement($rowid)
+    {
+        $rowid = (int)$rowid;
+        if ($rowid <= 0) {
+            return [
+                'status' => 0,
+                'info' => 'Nieprawidłowe rowid umowy',
+                'rows_affected' => 0
+            ];
+        }
+
+        $agreement = $this->query("SELECT rowid, activity FROM agreements WHERE rowid = {$rowid} LIMIT 1");
+        if (!$agreement || !isset($agreement[0])) {
+            return [
+                'status' => 0,
+                'info' => 'Nie znaleziono umowy',
+                'rows_affected' => 0
+            ];
+        }
+
+        if ((int)$agreement[0]['activity'] !== 1) {
+            return [
+                'status' => 0,
+                'info' => 'Wymiana urządzenia jest dostępna tylko dla aktywnej umowy',
+                'rows_affected' => 0
+            ];
+        }
+
+        return $this->update(
+            "UPDATE agreements SET activity = 2 WHERE rowid = ? AND activity = 1",
+            'i',
+            [$rowid]
+        );
+    }
+
+    function getAgreements($canListActive, $canListDraft, $canListClosed, $canListReplacement)
     {
 
         $availableStatuses = [];
@@ -61,13 +96,16 @@ class agreement extends Model
         if ($canListClosed) {
             $availableStatuses[] = 0;
         }
+        if ($canListReplacement) {
+            $availableStatuses[] = 2;
+        }
 
         $where = '';
 
         if ($this->selectedStatuses !== '') {
             $selectedStatuses = array_filter(
                 array_map('intval', explode(',', $this->selectedStatuses)),
-                fn($s) => in_array($s, [-1, 0, 1], true)
+                fn($s) => in_array($s, [-1, 0, 1, 2], true)
             );
 
             $statuses = array_values(array_intersect($availableStatuses, $selectedStatuses));
@@ -77,7 +115,7 @@ class agreement extends Model
                 $where = "WHERE a.activity IN ($in)";
             } else {
                 // Nie ma wspólnych statusów między UI a dostępem
-                $where = "WHERE a.activity NOT IN (-1, 0, 1)";
+                $where = "WHERE a.activity NOT IN (-1, 0, 1, 2)";
             }
         } else {
             // [TODO TR]: not sure if this is needed
@@ -85,7 +123,7 @@ class agreement extends Model
 //                $in = implode(', ', $availableStatuses);
 //                $where = "WHERE a.activity IN ($in)";
 //            } else {
-                $where = "WHERE a.activity NOT IN (-1, 0, 1)";
+                $where = "WHERE a.activity NOT IN (-1, 0, 1, 2)";
 //            }
         }
 
