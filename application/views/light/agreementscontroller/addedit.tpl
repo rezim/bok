@@ -506,6 +506,7 @@
         const saveButton = document.getElementById('saveAgreementBtn');
         const printerSelect = document.getElementById('txtdrukarka');
         const printerWrapper = $('#drukarkaFieldWrapper');
+        const isNewAgreement = {if $rowid == 0}true{else}false{/if};
         const isPersistedReplacement = {if $rowid != 0 && isset($dataUmowa[0].activity) && $dataUmowa[0].activity == 2}true{else}false{/if};
         const printerLockedMessage = 'Pole Drukarka odblokuje się po zapisie statusu: wymiana.';
 
@@ -514,8 +515,9 @@
                 return;
             }
 
-            // Availability is based on persisted status only.
-            printerSelect.disabled = !isPersistedReplacement;
+            // For new agreements printer selection must be available immediately.
+            const shouldEnablePrinterSelect = isNewAgreement || isPersistedReplacement;
+            printerSelect.disabled = !shouldEnablePrinterSelect;
             $('.selectpicker').selectpicker('refresh');
 
             const pickerButton = $('#drukarkaFieldWrapper .bootstrap-select .dropdown-toggle');
@@ -523,7 +525,7 @@
                 return;
             }
 
-            if (!isPersistedReplacement) {
+            if (!shouldEnablePrinterSelect) {
                 printerWrapper.attr('title', printerLockedMessage);
                 pickerButton.attr('title', printerLockedMessage);
             } else {
