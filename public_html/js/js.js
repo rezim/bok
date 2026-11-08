@@ -1734,8 +1734,92 @@ function saveUpdateMessage(dataContainerId, containerId, type, foreignkey) {
 }
 
 
+function getPreviousMonthDateRangeForReport() {
+    const now = new Date();
+    const firstDayOfPreviousMonth = new Date(now.getFullYear(), now.getMonth() - 1, 1);
+    const lastDayOfPreviousMonth = new Date(now.getFullYear(), now.getMonth(), 0);
+
+    return {
+        from: $.datepicker.formatDate('yy-mm-dd', firstDayOfPreviousMonth),
+        to: $.datepicker.formatDate('yy-mm-dd', lastDayOfPreviousMonth)
+    };
+}
+
 function sendPaymentsReport() {
-    window.location.href = `${sciezka}/clientpayments/sendpaymentsreporttxt/notemplate`;
+    const defaultDateRange = getPreviousMonthDateRangeForReport();
+    const popupHtml = `
+        <div style="padding: 14px;">
+            <div style="margin-bottom: 10px;">
+                <label for="paymentsReportDateFrom" style="display:block; margin-bottom:4px;">Data od</label>
+                <input id="paymentsReportDateFrom" type="text" value="${defaultDateRange.from}" style="width:100%; box-sizing:border-box;"/>
+            </div>
+            <div style="margin-bottom: 14px;">
+                <label for="paymentsReportDateTo" style="display:block; margin-bottom:4px;">Data do</label>
+                <input id="paymentsReportDateTo" type="text" value="${defaultDateRange.to}" style="width:100%; box-sizing:border-box;"/>
+            </div>
+            <div style="display:flex; justify-content:space-between; gap:8px;">
+                <button id="paymentsReportPreviousMonthButton" type="button">Poprzedni miesiąc</button>
+                <div style="display:flex; gap:8px;">
+                <button id="paymentsReportCancelButton" type="button">Anuluj</button>
+                <button id="paymentsReportDownloadButton" type="button">Pobierz raport</button>
+                </div>
+            </div>
+        </div>
+    `;
+
+    $.colorbox({
+        html: popupHtml,
+        width: '440px',
+        title: 'Zakres raportu płatności',
+        onComplete: function () {
+            const datepickerOptions = $.extend({}, $.datepicker.regional['pl'], {
+                dateFormat: "yy-mm-dd",
+                changeMonth: true,
+                changeYear: true
+            });
+            const downloadReport = function () {
+                const from = ($('#paymentsReportDateFrom').val() || '').trim();
+                const to = ($('#paymentsReportDateTo').val() || '').trim();
+                const isDateFormatValid = /^\d{4}-\d{2}-\d{2}$/;
+
+                if (!isDateFormatValid.test(from) || !isDateFormatValid.test(to)) {
+                    alert('Podaj poprawne daty w formacie YYYY-MM-DD.');
+                    return;
+                }
+
+                if (from > to) {
+                    alert('Data "od" nie może być późniejsza niż data "do".');
+                    return;
+                }
+
+                $.colorbox.close();
+                window.location.href = `${sciezka}/clientpayments/sendpaymentsreporttxt/notemplate?from=${encodeURIComponent(from)}&to=${encodeURIComponent(to)}`;
+            };
+
+            $('#paymentsReportDateFrom, #paymentsReportDateTo').datepicker(datepickerOptions);
+            $('#paymentsReportDateFrom, #paymentsReportDateTo').datepicker(datepickerOptions);
+            $('#paymentsReportDateFrom, #paymentsReportDateTo').off('keydown').on('keydown', function (event) {
+                if (event.key === 'Enter') {
+                    event.preventDefault();
+                    downloadReport();
+                }
+            });
+
+            $('#paymentsReportPreviousMonthButton').off('click').on('click', function () {
+                const previousMonthDateRange = getPreviousMonthDateRangeForReport();
+                $('#paymentsReportDateFrom').val(previousMonthDateRange.from);
+                $('#paymentsReportDateTo').val(previousMonthDateRange.to);
+            });
+
+            $('#paymentsReportCancelButton').off('click').on('click', function () {
+                $.colorbox.close();
+            });
+
+            $('#paymentsReportDownloadButton').off('click').on('click', function () {
+                downloadReport();
+            });
+        }
+    });
 }
 
 function showMessages(containerId, type, foreignkey) {

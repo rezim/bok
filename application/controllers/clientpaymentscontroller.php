@@ -2,28 +2,101 @@
 
 class clientpaymentsController extends InvoicesController
 {
+    function resolveReportDateRange()
+    {
+        $today = date('Y-m-d');
+        $previousMonth = date('Y-m-d', strtotime('-1 month', strtotime($today)));
+        $defaultStartDate = date('Y-m-01', strtotime($previousMonth));
+        $defaultEndDate = date('Y-m-t', strtotime($previousMonth));
+
+        $from = isset($_GET['from']) ? trim((string)$_GET['from']) : '';
+        $to = isset($_GET['to']) ? trim((string)$_GET['to']) : '';
+
+        if ($from === '' && $to === '') {
+            return array(
+                'status' => true,
+                'startDate' => $defaultStartDate,
+                'endDate' => $defaultEndDate
+            );
+        }
+
+        if ($from === '' || $to === '') {
+            return array(
+                'status' => false,
+                'message' => 'Nalezy podac obie daty: from i to w formacie YYYY-MM-DD.'
+            );
+        }
+
+        $startDate = DateTime::createFromFormat('Y-m-d', $from);
+        $endDate = DateTime::createFromFormat('Y-m-d', $to);
+
+        $isStartDateValid = $startDate && $startDate->format('Y-m-d') === $from;
+        $isEndDateValid = $endDate && $endDate->format('Y-m-d') === $to;
+
+        if (!$isStartDateValid || !$isEndDateValid) {
+            return array(
+                'status' => false,
+                'message' => 'Niepoprawny format daty. Uzyj YYYY-MM-DD.'
+            );
+        }
+
+        if ($startDate > $endDate) {
+            return array(
+                'status' => false,
+                'message' => 'Data poczatkowa nie moze byc wieksza niz data koncowa.'
+            );
+        }
+
+        return array(
+            'status' => true,
+            'startDate' => $from,
+            'endDate' => $to
+        );
+    }
+
+    function getStatementNumberByDate($date)
+    {
+        $dateObj = new DateTime($date);
+        $year = $dateObj->format('Y');
+        $month = $dateObj->format('m');
+
+        return $year . '/' . str_pad($month, 3, '0', STR_PAD_LEFT);
+    }
+
+    function getDateRangeLabel($startDate, $endDate)
+    {
+        return sprintf('%s-%s', $startDate, $endDate);
+    }
+
     function sendpaymentsreport()
     {
         global $months;
 
-        $today = date('Y-m-d');
-        $previousMonth = date('Y-m-d', strtotime('-1 month', strtotime($today)));
-        $firstDayOfPreviousMonth = date('Y-m-01', strtotime($previousMonth));
-        $lastDayOfPreviousMonth = date('Y-m-t', strtotime($previousMonth));
+        $dateRange = $this->resolveReportDateRange();
+        if (!$dateRange['status']) {
+            http_response_code(400);
+            echo $dateRange['message'];
+            return;
+        }
 
-        $date = new DateTime($firstDayOfPreviousMonth);
+        $startDate = $dateRange['startDate'];
+        $endDate = $dateRange['endDate'];
+
+        $date = new DateTime($startDate);
         $year = $date->format('Y');
         $month = $date->format('m');
         $day = $date->format('d');
-        $statementNumber = $year . '/' . str_pad($month, 3, '0', STR_PAD_LEFT);
+        $statementNumber = $this->getStatementNumberByDate($startDate);
         $headerDate = implode("-", array($day, $month, $year));
         $monthName = $months[$month];
 
-        $csvContent = $this->clientpayment->getPayments($firstDayOfPreviousMonth, $lastDayOfPreviousMonth, $statementNumber);
+        $csvContent = $this->clientpayment->getPayments($startDate, $endDate, $statementNumber);
 
         $csvHeader = array($statementNumber, $headerDate, $headerDate, null, null, '86 1090 2398 0000 0001 5252 1901', 'PLN', null, null, null, null, null, null, count($csvContent), 'N');
 
-        $downloadFileName = 'Raport ' . $monthName . '.csv';
+        $downloadFileName = $startDate === $endDate
+            ? 'Raport ' . $monthName . '.csv'
+            : 'Raport ' . $this->getDateRangeLabel($startDate, $endDate) . '.csv';
         $temporaryFilePath = tempnam(sys_get_temp_dir(), 'payments_report_');
 
         if ($temporaryFilePath === false) {
@@ -58,20 +131,26 @@ class clientpaymentsController extends InvoicesController
     {
         global $months;
 
-        $today = date('Y-m-d');
-        $previousMonth = date('Y-m-d', strtotime('-1 month', strtotime($today)));
-        $firstDayOfPreviousMonth = date('Y-m-01', strtotime($previousMonth));
-        $lastDayOfPreviousMonth = date('Y-m-t', strtotime($previousMonth));
+        $dateRange = $this->resolveReportDateRange();
+        if (!$dateRange['status']) {
+            http_response_code(400);
+            echo $dateRange['message'];
+            return;
+        }
 
-        $date = new DateTime($firstDayOfPreviousMonth);
-        $year = $date->format('Y');
+        $startDate = $dateRange['startDate'];
+        $endDate = $dateRange['endDate'];
+
+        $date = new DateTime($startDate);
         $month = $date->format('m');
-        $statementNumber = $year . '/' . str_pad($month, 3, '0', STR_PAD_LEFT);
+        $statementNumber = $this->getStatementNumberByDate($startDate);
         $monthName = $months[$month];
 
-        $txtContent = $this->clientpayment->getPayments($firstDayOfPreviousMonth, $lastDayOfPreviousMonth, $statementNumber);
+        $txtContent = $this->clientpayment->getPayments($startDate, $endDate, $statementNumber);
 
-        $downloadFileName = 'Raport ' . $monthName . '.txt';
+        $downloadFileName = $startDate === $endDate
+            ? 'Raport ' . $monthName . '.txt'
+            : 'Raport ' . $this->getDateRangeLabel($startDate, $endDate) . '.txt';
         $temporaryFilePath = tempnam(sys_get_temp_dir(), 'payments_report_txt_');
 
         if ($temporaryFilePath === false) {
