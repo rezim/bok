@@ -9,8 +9,13 @@ class clientpaymentsController extends InvoicesController
         $defaultStartDate = date('Y-m-01', strtotime($previousMonth));
         $defaultEndDate = date('Y-m-t', strtotime($previousMonth));
 
-        $from = isset($_GET['from']) ? trim((string)$_GET['from']) : '';
-        $to = isset($_GET['to']) ? trim((string)$_GET['to']) : '';
+        $from = isset($_POST['from']) ? trim((string)$_POST['from']) : '';
+        $to = isset($_POST['to']) ? trim((string)$_POST['to']) : '';
+
+        if ($from === '' && $to === '') {
+            $from = isset($_GET['from']) ? trim((string)$_GET['from']) : '';
+            $to = isset($_GET['to']) ? trim((string)$_GET['to']) : '';
+        }
 
         if ($from === '' && $to === '') {
             return array(

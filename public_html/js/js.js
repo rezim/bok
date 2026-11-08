@@ -1777,6 +1777,18 @@ function sendPaymentsReport() {
                 changeMonth: true,
                 changeYear: true
             });
+            const submitPaymentsReportForm = function (from, to) {
+                const form = $('<form>', {
+                    method: 'POST',
+                    action: `${sciezka}/clientpayments/sendpaymentsreporttxt/notemplate`
+                });
+                form.append($('<input>', {type: 'hidden', name: 'from', value: from}));
+                form.append($('<input>', {type: 'hidden', name: 'to', value: to}));
+
+                $('body').append(form);
+                form.trigger('submit');
+                form.remove();
+            };
             const downloadReport = function () {
                 const from = ($('#paymentsReportDateFrom').val() || '').trim();
                 const to = ($('#paymentsReportDateTo').val() || '').trim();
@@ -1793,11 +1805,11 @@ function sendPaymentsReport() {
                 }
 
                 $.colorbox.close();
-                window.location.href = `${sciezka}/clientpayments/sendpaymentsreporttxt/notemplate?from=${encodeURIComponent(from)}&to=${encodeURIComponent(to)}`;
+                submitPaymentsReportForm(from, to);
             };
 
             $('#paymentsReportDateFrom, #paymentsReportDateTo').datepicker(datepickerOptions);
-            $('#paymentsReportDateFrom, #paymentsReportDateTo').datepicker(datepickerOptions);
+            $('#paymentsReportDateFrom').focus();
             $('#paymentsReportDateFrom, #paymentsReportDateTo').off('keydown').on('keydown', function (event) {
                 if (event.key === 'Enter') {
                     event.preventDefault();
