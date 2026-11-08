@@ -19,10 +19,11 @@ class clientpayment extends Model
                     '' as 'Kwota WN',
                     CONCAT('\"',FORMAT(amount/100, 2, 'pl_PL'),'\"') as 'Kwota MA',
                     '' as 'Saldo',
-                    ROW_NUMBER() OVER (),
+                    ROW_NUMBER() OVER (ORDER BY `date` ASC, `rowid` ASC),
                     'N' as 'Zmiana salda'
                     FROM `payments` 
-                    where date >= '${startDate}' and date <= '${endDate}'";
+                    where date >= '${startDate}' and date <= '${endDate}'
+                    ORDER BY `date` ASC, `rowid` ASC";
 
         return $this->query($query, null, false);
     }
